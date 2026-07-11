@@ -1,4 +1,6 @@
-﻿namespace CymruBlazor.AccessibilityTests;
+﻿using Xunit;
+
+namespace CymruBlazor.AccessibilityTests;
 
 public class UnitTest1
 {

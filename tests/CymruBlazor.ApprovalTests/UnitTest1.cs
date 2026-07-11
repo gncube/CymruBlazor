@@ -1,4 +1,6 @@
-﻿namespace CymruBlazor.ApprovalTests;
+﻿using Xunit;
+
+namespace CymruBlazor.ApprovalTests;
 
 public class UnitTest1
 {
