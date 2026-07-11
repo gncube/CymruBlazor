@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <!-- Target -->
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+
+    <!-- Assembly identity (GitVersion patches these at build time) -->
+    <AssemblyVersion>0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0</FileVersion>
+    <InformationalVersion>0.0.0</InformationalVersion>
+
+    <!-- NuGet metadata -->
+    <PackageId>CymruBlazor</PackageId>
+    <Title>CymruBlazor</Title>
+    <Description>
+      An open-source Blazor component library implementing the NHS Wales Design System.
+      Provides accessible, enterprise-grade components aligned with WCAG 2.2 AA.
+    </Description>
+    <Authors>CymruBlazor Contributors</Authors>
+    <Company>Digital Health and Care Wales Community</Company>
+    <Copyright>Copyright © 2025 CymruBlazor Contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/gncube/CymruBlazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/gncube/CymruBlazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>blazor;nhs;nhswales;design-system;components;accessibility;wcag</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+
+    <!-- Source link and symbols -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- XML docs -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CymruBlazor.xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+
+    <!-- Trimming / AOT -->
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <!-- Warnings as errors in CI -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="icon.png" Pack="true" PackagePath="\" Condition="Exists('icon.png')" />
+  </ItemGroup>
+
+  <!-- SourceLink (GitHub) -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="all" />
+    <PackageReference Include="MinVer" Version="*" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>
