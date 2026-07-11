@@ -7,12 +7,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
-    <PackageReference Include="xunit" Version="*" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="*" PrivateAssets="all" />
-    <PackageReference Include="bunit" Version="*" />
-    <PackageReference Include="Shouldly" Version="*" />
-    <PackageReference Include="coverlet.collector" Version="*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <PackageReference Include="bunit" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CymruBlazor\CymruBlazor.csproj" />

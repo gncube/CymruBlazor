@@ -2,27 +2,25 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <ItemGroup Label="ASP.NET Core / Blazor">
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.*" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.*" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.*" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Authentication.WebAssembly.Msal" Version="10.0.9" />
   </ItemGroup>
-
   <ItemGroup Label="Testing">
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-    <PackageVersion Include="xunit" Version="2.*" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.*" />
-    <PackageVersion Include="bunit" Version="1.*" />
-    <PackageVersion Include="Shouldly" Version="4.*" />
-    <PackageVersion Include="ApprovalTests" Version="5.*" />
-    <PackageVersion Include="coverlet.collector" Version="6.*" />
-    <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.*" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.*" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="bunit" Version="2.7.2" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="ApprovalTests" Version="7.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.12.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.61.0" />
   </ItemGroup>
-
   <ItemGroup Label="Source Link">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.*" />
-    <PackageVersion Include="MinVer" Version="4.*" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageVersion Include="MinVer" Version="4.0.0" />
   </ItemGroup>
 </Project>

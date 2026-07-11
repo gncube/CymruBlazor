@@ -60,8 +60,8 @@
 
   <!-- SourceLink (GitHub) -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="all" />
-    <PackageReference Include="MinVer" Version="*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+    <PackageReference Include="MinVer" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
