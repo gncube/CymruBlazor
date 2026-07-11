@@ -1,0 +1,13 @@
+<Project>
+  <Target Name="ApplyGitVersioning"
+          BeforeTargets="GetAssemblyVersion"
+          Condition="'$(CI)' == 'true'">
+    <Exec Command="dotnet gitversion /output json /showvariable NuGetVersionV2"
+          ConsoleToMsBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitVersion_NuGetVersionV2" />
+    </Exec>
+    <PropertyGroup>
+      <Version>$(GitVersion_NuGetVersionV2)</Version>
+    </PropertyGroup>
+  </Target>
+</Project>

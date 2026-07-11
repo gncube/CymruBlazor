@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Label="ASP.NET Core / Blazor">
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.*" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.*" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.*" />
+  </ItemGroup>
+
+  <ItemGroup Label="Testing">
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageVersion Include="xunit" Version="2.*" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.*" />
+    <PackageVersion Include="bunit" Version="1.*" />
+    <PackageVersion Include="Shouldly" Version="4.*" />
+    <PackageVersion Include="ApprovalTests" Version="5.*" />
+    <PackageVersion Include="coverlet.collector" Version="6.*" />
+    <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.*" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup Label="Source Link">
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.*" />
+    <PackageVersion Include="MinVer" Version="4.*" />
+  </ItemGroup>
+</Project>
