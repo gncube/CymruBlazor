@@ -8,6 +8,7 @@
     <Project Path="src/CymruBlazor.Demo/CymruBlazor.Demo.csproj" />
     <Project Path="src/CymruBlazor.Icons/CymruBlazor.Icons.csproj" />
     <Project Path="src/CymruBlazor.Theming/CymruBlazor.Theming.csproj" />
+    <Project Path="src/CymruBlazor/CymruBlazor.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CymruBlazor.AccessibilityTests/CymruBlazor.AccessibilityTests.csproj" />

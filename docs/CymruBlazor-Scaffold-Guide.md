@@ -1,4 +1,5 @@
 # CymruBlazor — Complete Scaffold Guide
+
 > .NET 10 · C# 14 · NHS Wales Design System · Open Source Component Library
 
 ---
@@ -57,7 +58,7 @@ EOF
 
 ### 1.3 Add initial repo metadata files
 
-```bash
+````bash
 cat > README.md << 'EOF'
 # CymruBlazor
 
@@ -71,7 +72,7 @@ An open-source Blazor component library implementing the NHS Wales Design System
 
 ```shell
 dotnet add package CymruBlazor
-```
+````
 
 Add the stylesheet to your `App.razor` or `_Host.cshtml`:
 
@@ -85,7 +86,8 @@ See the [Demo application](src/CymruBlazor.Demo) and [documentation](docs/) for 
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 EOF
-```
+
+````
 
 ```bash
 cat > LICENSE << 'EOF'
@@ -111,7 +113,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 EOF
-```
+````
 
 ```bash
 cat > CONTRIBUTING.md << 'EOF'
@@ -127,9 +129,11 @@ All contributions are welcome. Please:
 ## Commit message format
 
 ```
+
 feat(Button): add secondary variant
 fix(TextBox): correct focus ring colour
 docs(Cards): update accessibility notes
+
 ```
 
 Supported types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`.
@@ -345,7 +349,10 @@ EOF
 dotnet new blazorwasm \
   --name CymruBlazor.Demo \
   --output src/CymruBlazor.Demo \
-  --no-restore
+  --auth SingleOrg \
+  --pwa --empty \
+  --no-restore \
+  --force
 
 cat > src/CymruBlazor.Demo/CymruBlazor.Demo.csproj << 'EOF'
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
@@ -357,9 +364,9 @@ cat > src/CymruBlazor.Demo/CymruBlazor.Demo.csproj << 'EOF'
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-                      Version="10.*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CymruBlazor\CymruBlazor.csproj" />
@@ -2262,7 +2269,7 @@ git commit -m "feat(demo): wire up Blazor WASM demo application with CymruBlazor
 
 ## Phase 9 — Documentation Structure
 
-```bash
+````bash
 mkdir -p docs/components docs/patterns docs/accessibility docs/getting-started
 
 cat > docs/getting-started/installation.md << 'EOF'
@@ -2272,7 +2279,7 @@ cat > docs/getting-started/installation.md << 'EOF'
 
 ```shell
 dotnet add package CymruBlazor
-```
+````
 
 ## Manual reference
 
@@ -2309,8 +2316,10 @@ In `Program.cs`:
 ```csharp
 builder.Services.AddCymruBlazor();
 ```
+
 EOF
-```
+
+````
 
 ```bash
 cat > docs/components/Button.md << 'EOF'
@@ -2324,17 +2333,17 @@ Triggers an action. Follows NHS Wales design guidance.
 <Button Variant="ButtonVariant.Primary" OnClick="HandleSave">
     Save changes
 </Button>
-```
+````
 
 ## Parameters
 
-| Parameter | Type            | Default   | Description                        |
-|-----------|-----------------|-----------|-------------------------------------|
-| Variant   | ButtonVariant   | Primary   | Visual style variant               |
-| Type      | string          | "button"  | HTML button type                   |
-| Disabled  | bool            | false     | Disables the button                |
-| OnClick   | EventCallback   | —         | Click event handler                |
-| Class     | string?         | null      | Additional CSS class names         |
+| Parameter | Type          | Default  | Description                |
+| --------- | ------------- | -------- | -------------------------- |
+| Variant   | ButtonVariant | Primary  | Visual style variant       |
+| Type      | string        | "button" | HTML button type           |
+| Disabled  | bool          | false    | Disables the button        |
+| OnClick   | EventCallback | —        | Click event handler        |
+| Class     | string?       | null     | Additional CSS class names |
 
 ## Variants
 
@@ -2348,13 +2357,14 @@ Triggers an action. Follows NHS Wales design guidance.
 - Uses semantic `<button>` element.
 - Sets `aria-disabled` alongside the `disabled` attribute.
 - Focus visible outline meets WCAG 2.2 AA 3:1 contrast ratio.
-EOF
-```
+  EOF
+
+````
 
 ```bash
 git add .
 git commit -m "docs: add getting-started installation guide and Button component documentation"
-```
+````
 
 ---
 
@@ -2419,14 +2429,14 @@ chore: verify full solution builds, tests pass, and demo runs
 
 ## Recommended next iteration (Phase 2)
 
-| Work item | Priority |
-|---|---|
-| Footer, PageHeader, HeroBanner, Navigation components | High |
-| Select, Checkbox, ValidationSummary form components | High |
-| Typography and Icons library | High |
-| Demo pages for every component (living docs) | High |
-| Playwright accessibility tests wired to axe-core | Medium |
-| nhsuk-frontend npm integration via build pipeline | Medium |
-| Storybook or custom demo pages for each component | Medium |
-| NuGet icon, SourceLink end-to-end test | Low |
-| StarterApp and HealthcarePortal sample completion | Low |
+| Work item                                             | Priority |
+| ----------------------------------------------------- | -------- |
+| Footer, PageHeader, HeroBanner, Navigation components | High     |
+| Select, Checkbox, ValidationSummary form components   | High     |
+| Typography and Icons library                          | High     |
+| Demo pages for every component (living docs)          | High     |
+| Playwright accessibility tests wired to axe-core      | Medium   |
+| nhsuk-frontend npm integration via build pipeline     | Medium   |
+| Storybook or custom demo pages for each component     | Medium   |
+| NuGet icon, SourceLink end-to-end test                | Low      |
+| StarterApp and HealthcarePortal sample completion     | Low      |
