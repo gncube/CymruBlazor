@@ -1,0 +1,16 @@
+/* Minimal reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: var(--cymru-font-family);
+  background: var(--cymru-color-background);
+  color: var(--cymru-color-text);
+}

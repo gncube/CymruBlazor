@@ -1,0 +1,30 @@
+:root {
+  /* Semantic colour tokens (default theme: NHS Wales) */
+  --cymru-color-primary: #005ea5;
+  --cymru-color-primary-hover: #003f7a;
+
+  --cymru-color-secondary: #6c757d;
+
+  --cymru-color-success: #28a745;
+  --cymru-color-warning: #ffc107;
+  --cymru-color-danger: #dc3545;
+  --cymru-color-info: #17a2b8;
+
+  --cymru-color-surface: #ffffff;
+  --cymru-color-surface-alt: #f8f9fa;
+  --cymru-color-background: #f3f4f6;
+
+  --cymru-color-border: #d1d5db;
+  --cymru-color-text: #0b0c0c;
+  --cymru-color-text-muted: #6b7280;
+
+  --cymru-color-focus: #ffbf47;
+}
+
+[data-theme="dark"] {
+  /* placeholders for dark theme */
+}
+
+[data-theme="high-contrast"] {
+  /* placeholders for high contrast theme */
+}

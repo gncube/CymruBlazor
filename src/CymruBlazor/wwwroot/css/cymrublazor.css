@@ -1,0 +1,19 @@
+/* CymruBlazor bundled stylesheet - minimal initial bundle */
+@layer tokens,base,layout,utilities,components;
+
+@layer tokens {
+  /* tokens inlined for single-file consumer use */
+}
+
+@layer base {
+  /* reset and accessibility */
+}
+
+@layer layout {
+}
+
+@layer utilities {
+}
+
+/* Note: Individual token files are shipped in the package under css/tokens/ so consumers
+   can inspect them. This bundled file keeps initial payload minimal. */

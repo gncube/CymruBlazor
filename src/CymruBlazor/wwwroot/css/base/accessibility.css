@@ -1,0 +1,11 @@
+/* Focus and reduced motion */
+:focus {
+  outline: 3px solid var(--cymru-color-focus);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

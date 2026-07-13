@@ -1,0 +1,13 @@
+.cymru-btn {
+  display: inline-block;
+  background: var(--cymru-color-primary);
+  color: var(--cymru-color-surface);
+  padding: var(--cymru-space-2) var(--cymru-space-3);
+  border: 1px solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-sm);
+  font-family: var(--cymru-font-family);
+  font-size: var(--cymru-font-size-md);
+}
+.cymru-btn:hover {
+  background: var(--cymru-color-primary-hover);
+}

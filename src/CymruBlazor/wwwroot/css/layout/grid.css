@@ -1,0 +1,8 @@
+/* Simple container helpers */
+.cymru-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--cymru-space-4);
+  padding-right: var(--cymru-space-4);
+}

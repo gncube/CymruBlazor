@@ -1,0 +1,15 @@
+:root {
+  --cymru-font-family: system-ui, "Segoe UI", Arial, sans-serif;
+
+  --cymru-font-size-xs: 0.75rem;
+  --cymru-font-size-sm: 0.875rem;
+  --cymru-font-size-md: 1rem;
+  --cymru-font-size-lg: 1.125rem;
+  --cymru-font-size-xl: 1.25rem;
+
+  --cymru-font-weight-normal: 400;
+  --cymru-font-weight-semibold: 600;
+  --cymru-font-weight-bold: 700;
+
+  --cymru-line-height: 1.4;
+}
