@@ -1,12 +1,86 @@
-.m-0 {
+@layer utilities;
+
+/*
+ * CymruBlazor Utilities - Spacing
+ *
+ * Intentionally limited.
+ * Components should normally define their own spacing.
+ */
+
+/* Margin */
+
+.u-m-0 {
   margin: 0;
 }
-.p-0 {
+
+.u-m-xs {
+  margin: var(--cymru-space-1);
+}
+.u-m-sm {
+  margin: var(--cymru-space-2);
+}
+.u-m-md {
+  margin: var(--cymru-space-3);
+}
+.u-m-lg {
+  margin: var(--cymru-space-4);
+}
+.u-m-xl {
+  margin: var(--cymru-space-5);
+}
+
+/* Margin Block */
+
+.u-my-sm {
+  margin-block: var(--cymru-space-2);
+}
+
+.u-my-md {
+  margin-block: var(--cymru-space-3);
+}
+
+.u-my-lg {
+  margin-block: var(--cymru-space-4);
+}
+
+/* Margin Inline */
+
+.u-mx-auto {
+  margin-inline: auto;
+}
+
+/* Padding */
+
+.u-p-0 {
   padding: 0;
 }
-.mt-1 {
-  margin-top: var(--cymru-space-1);
+
+.u-p-sm {
+  padding: var(--cymru-space-2);
 }
-.mb-1 {
-  margin-bottom: var(--cymru-space-1);
+
+.u-p-md {
+  padding: var(--cymru-space-3);
+}
+
+.u-p-lg {
+  padding: var(--cymru-space-4);
+}
+
+.u-p-xl {
+  padding: var(--cymru-space-5);
+}
+
+/* Gap */
+
+.u-gap-sm {
+  gap: var(--cymru-space-2);
+}
+
+.u-gap-md {
+  gap: var(--cymru-space-3);
+}
+
+.u-gap-lg {
+  gap: var(--cymru-space-4);
 }

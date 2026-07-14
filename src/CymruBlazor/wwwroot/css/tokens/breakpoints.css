@@ -1,0 +1,53 @@
+@layer tokens;
+
+/*
+ * CymruBlazor Design Tokens - Breakpoints
+ *
+ * IMPORTANT
+ * ---------
+ * CSS custom properties cannot currently be used inside @media queries.
+ *
+ * These tokens exist to:
+ *
+ *  - Document the official responsive breakpoints
+ *  - Support JavaScript interop
+ *  - Support container queries
+ *  - Provide consistent layout calculations
+ *
+ * Media queries should continue to use literal values.
+ */
+
+:root {
+  /* ==========================================================================
+       Responsive Breakpoints
+       ========================================================================== */
+
+  --cymru-breakpoint-mobile: 30rem; /* 480px */
+  --cymru-breakpoint-tablet: 48rem; /* 768px */
+  --cymru-breakpoint-desktop: 64rem; /* 1024px */
+  --cymru-breakpoint-wide: 90rem; /* 1440px */
+
+  /* ==========================================================================
+       Maximum Container Widths
+       ========================================================================== */
+
+  --cymru-container-sm: 30rem;
+  --cymru-container-md: 48rem;
+  --cymru-container-lg: 64rem;
+  --cymru-container-xl: 80rem;
+  --cymru-container-2xl: 90rem;
+
+  /* ==========================================================================
+       Responsive Gutters
+       ========================================================================== */
+
+  --cymru-gutter-mobile: var(--cymru-space-3);
+  --cymru-gutter-tablet: var(--cymru-space-4);
+  --cymru-gutter-desktop: var(--cymru-space-5);
+
+  /* ==========================================================================
+       Reading Width
+       ========================================================================== */
+
+  --cymru-reading-width: 75ch;
+}

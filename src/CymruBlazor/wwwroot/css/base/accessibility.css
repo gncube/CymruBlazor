@@ -1,11 +1,175 @@
-/* Focus and reduced motion */
+@layer base;
+
+/*
+ * CymruBlazor Accessibility Foundation
+ *
+ * Provides:
+ *  - WCAG 2.2 AA focus indicators
+ *  - Reduced motion support
+ *  - Forced colours compatibility
+ *  - High contrast preferences
+ *  - Selection colours
+ *  - Improved scrolling behaviour
+ */
+
+/* ==========================================================================
+   Keyboard Focus
+   ========================================================================== */
+
+/*
+ * Remove browser defaults in favour of a consistent focus style.
+ */
+
 :focus {
-  outline: 3px solid var(--cymru-color-focus);
-  outline-offset: 2px;
+  outline: none;
 }
+
+/*
+ * Display focus only for keyboard users.
+ */
+
+:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+
+  outline-offset: var(--cymru-focus-offset);
+
+  box-shadow: 0 0 0 2px var(--cymru-color-focus-outline);
+}
+
+/*
+ * Mouse users should not receive focus rings.
+ */
+
+:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   Text Selection
+   ========================================================================== */
+
+::selection {
+  background: var(--cymru-color-selection);
+
+  color: var(--cymru-color-text);
+}
+
+/* ==========================================================================
+   Skip Links
+   ========================================================================== */
+
+.cymru-skip-link {
+  position: absolute;
+
+  left: var(--cymru-space-3);
+
+  top: calc(-1 * var(--cymru-space-8));
+
+  z-index: var(--cymru-z-toast);
+
+  padding: var(--cymru-space-2) var(--cymru-space-3);
+
+  background: var(--cymru-color-focus);
+
+  color: var(--cymru-color-focus-text);
+
+  text-decoration: none;
+
+  border-radius: var(--cymru-radius-sm);
+
+  transition: top var(--cymru-duration-fast, 150ms);
+}
+
+.cymru-skip-link:focus-visible {
+  top: var(--cymru-space-3);
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Smooth Scrolling
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ==========================================================================
+   High Contrast (Windows)
+   ========================================================================== */
+
+@media (forced-colors: active) {
   * {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
+    forced-color-adjust: auto;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight;
+
+    outline-offset: 2px;
+
+    box-shadow: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    border: 1px solid ButtonText;
+  }
+}
+
+/* ==========================================================================
+   Increased Contrast Preference
+   ========================================================================== */
+
+@media (prefers-contrast: more) {
+  :root {
+    --cymru-color-border: var(--cymru-color-text);
+
+    --cymru-border-width-control: var(--cymru-border-width-medium);
+  }
+
+  :focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* ==========================================================================
+   Printing
+   ========================================================================== */
+
+@media print {
+  * {
+    box-shadow: none !important;
+
+    text-shadow: none !important;
+  }
+
+  a {
+    text-decoration: underline;
   }
 }

@@ -1,0 +1,37 @@
+@layer utilities;
+
+/*
+ * CymruBlazor Utilities - Visibility
+ */
+
+.u-visible {
+  visibility: visible;
+}
+
+.u-invisible {
+  visibility: hidden;
+}
+
+.u-overflow-hidden {
+  overflow: hidden;
+}
+
+.u-overflow-auto {
+  overflow: auto;
+}
+
+.u-overflow-scroll {
+  overflow: scroll;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-text-start {
+  text-align: start;
+}
+
+.u-text-end {
+  text-align: end;
+}

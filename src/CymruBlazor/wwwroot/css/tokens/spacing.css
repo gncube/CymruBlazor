@@ -1,9 +1,109 @@
+@layer tokens;
+
+/*
+ * CymruBlazor Design Tokens - Spacing
+ *
+ * Based on the NHS 8-point spacing system.
+ *
+ * Spacing tokens are organised into:
+ *   1. Primitive spacing scale
+ *   2. Semantic spacing aliases
+ *
+ * Components should consume semantic spacing tokens wherever possible.
+ */
+
 :root {
-  --cymru-space-0: 0rem;
-  --cymru-space-1: 0.25rem;
-  --cymru-space-2: 0.5rem;
-  --cymru-space-3: 0.75rem;
-  --cymru-space-4: 1rem;
-  --cymru-space-5: 1.5rem;
-  --cymru-space-6: 2rem;
+  /* ==========================================================================
+       Primitive Spacing Scale
+       ========================================================================== */
+
+  --cymru-space-0: 0;
+
+  --cymru-space-1: 0.25rem; /* 4px */
+  --cymru-space-2: 0.5rem; /* 8px */
+  --cymru-space-3: 1rem; /* 16px */
+  --cymru-space-4: 1.5rem; /* 24px */
+  --cymru-space-5: 2rem; /* 32px */
+  --cymru-space-6: 3rem; /* 48px */
+  --cymru-space-7: 4rem; /* 64px */
+  --cymru-space-8: 5rem; /* 80px */
+  --cymru-space-9: 6rem; /* 96px */
+
+  /* ==========================================================================
+       Component Padding
+       ========================================================================== */
+
+  --cymru-padding-xs: var(--cymru-space-1);
+  --cymru-padding-sm: var(--cymru-space-2);
+  --cymru-padding-md: var(--cymru-space-3);
+  --cymru-padding-lg: var(--cymru-space-4);
+  --cymru-padding-xl: var(--cymru-space-5);
+
+  /* ==========================================================================
+       Component Margins
+       ========================================================================== */
+
+  --cymru-margin-xs: var(--cymru-space-1);
+  --cymru-margin-sm: var(--cymru-space-2);
+  --cymru-margin-md: var(--cymru-space-3);
+  --cymru-margin-lg: var(--cymru-space-4);
+  --cymru-margin-xl: var(--cymru-space-5);
+
+  /* ==========================================================================
+       Layout
+       ========================================================================== */
+
+  --cymru-layout-gap-xs: var(--cymru-space-1);
+  --cymru-layout-gap-sm: var(--cymru-space-2);
+  --cymru-layout-gap-md: var(--cymru-space-3);
+  --cymru-layout-gap-lg: var(--cymru-space-4);
+  --cymru-layout-gap-xl: var(--cymru-space-5);
+
+  --cymru-container-padding-inline: var(--cymru-space-3);
+  --cymru-container-padding-block: var(--cymru-space-4);
+
+  --cymru-section-spacing: var(--cymru-space-6);
+
+  /* ==========================================================================
+       Form Controls
+       ========================================================================== */
+
+  --cymru-control-padding-inline: var(--cymru-space-3);
+  --cymru-control-padding-block: var(--cymru-space-2);
+
+  --cymru-control-gap: var(--cymru-space-2);
+
+  /* ==========================================================================
+       Cards
+       ========================================================================== */
+
+  --cymru-card-padding: var(--cymru-space-4);
+  --cymru-card-gap: var(--cymru-space-3);
+
+  /* ==========================================================================
+       Buttons
+       ========================================================================== */
+
+  --cymru-button-padding-inline: var(--cymru-space-3);
+  --cymru-button-padding-block: var(--cymru-space-2);
+
+  --cymru-button-gap: var(--cymru-space-2);
+
+  /* ==========================================================================
+       Lists
+       ========================================================================== */
+
+  --cymru-list-gap: var(--cymru-space-2);
+
+  /* ==========================================================================
+       Dialogs & Panels
+       ========================================================================== */
+
+  --cymru-dialog-padding: var(--cymru-space-5);
+
+  /* ==========================================================================
+       Focus
+       ========================================================================== */
+
+  --cymru-focus-offset: 2px;
 }
