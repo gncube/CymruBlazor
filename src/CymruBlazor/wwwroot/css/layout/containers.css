@@ -1,0 +1,82 @@
+@layer layout;
+
+/*
+ * CymruBlazor Layout - Containers
+ *
+ * Responsive container primitives.
+ *
+ * Containers should constrain content width while maintaining
+ * consistent inline padding across viewports.
+ */
+
+.cymru-container {
+  width: min(100%, var(--cymru-container-xl));
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+.cymru-container-sm {
+  width: min(100%, var(--cymru-container-sm));
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+.cymru-container-md {
+  width: min(100%, var(--cymru-container-md));
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+.cymru-container-lg {
+  width: min(100%, var(--cymru-container-lg));
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+.cymru-container-xl {
+  width: min(100%, var(--cymru-container-xl));
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+.cymru-container-fluid {
+  width: 100%;
+
+  padding-inline: var(--cymru-gutter-mobile);
+}
+
+/*
+ * Responsive gutters
+ */
+
+@media (min-width: 48rem) {
+  .cymru-container,
+  .cymru-container-sm,
+  .cymru-container-md,
+  .cymru-container-lg,
+  .cymru-container-xl,
+  .cymru-container-fluid {
+    padding-inline: var(--cymru-gutter-tablet);
+  }
+}
+
+@media (min-width: 64rem) {
+  .cymru-container,
+  .cymru-container-sm,
+  .cymru-container-md,
+  .cymru-container-lg,
+  .cymru-container-xl,
+  .cymru-container-fluid {
+    padding-inline: var(--cymru-gutter-desktop);
+  }
+}

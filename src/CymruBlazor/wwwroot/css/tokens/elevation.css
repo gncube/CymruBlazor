@@ -1,0 +1,110 @@
+@layer tokens;
+
+/*
+ * CymruBlazor Design Tokens - Elevation
+ *
+ * This file defines:
+ *   1. Border widths
+ *   2. Border radius
+ *   3. Shadows (Elevation)
+ *   4. Z-Index
+ *
+ * Components should consume semantic tokens wherever possible.
+ */
+
+:root {
+  /* ==========================================================================
+       Border Widths
+       ========================================================================== */
+
+  --cymru-border-width-none: 0;
+  --cymru-border-width-thin: 1px;
+  --cymru-border-width-medium: 2px;
+  --cymru-border-width-thick: 3px;
+
+  /* ==========================================================================
+       Border Radius
+       ========================================================================== */
+
+  --cymru-radius-none: 0;
+
+  --cymru-radius-xs: 0.125rem; /* 2px */
+  --cymru-radius-sm: 0.25rem; /* 4px */
+  --cymru-radius-md: 0.5rem; /* 8px */
+  --cymru-radius-lg: 0.75rem; /* 12px */
+  --cymru-radius-xl: 1rem; /* 16px */
+  --cymru-radius-pill: 9999px;
+  --cymru-radius-circle: 50%;
+
+  /* ==========================================================================
+       Shadows
+       ========================================================================== */
+
+  --cymru-shadow-none: none;
+
+  --cymru-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
+
+  --cymru-shadow-sm: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
+
+  --cymru-shadow-md: 0 4px 6px rgb(0 0 0 / 0.1), 0 2px 4px rgb(0 0 0 / 0.06);
+
+  --cymru-shadow-lg: 0 10px 15px rgb(0 0 0 / 0.1), 0 4px 6px rgb(0 0 0 / 0.05);
+
+  --cymru-shadow-xl:
+    0 20px 25px rgb(0 0 0 / 0.12), 0 8px 10px rgb(0 0 0 / 0.08);
+
+  /* ==========================================================================
+       Semantic Elevation
+       ========================================================================== */
+
+  --cymru-elevation-surface: var(--cymru-shadow-none);
+
+  --cymru-elevation-card: var(--cymru-shadow-sm);
+
+  --cymru-elevation-dropdown: var(--cymru-shadow-md);
+
+  --cymru-elevation-popover: var(--cymru-shadow-lg);
+
+  --cymru-elevation-dialog: var(--cymru-shadow-xl);
+
+  /* ==========================================================================
+       Semantic Border Radius
+       ========================================================================== */
+
+  --cymru-radius-control: var(--cymru-radius-sm);
+
+  --cymru-radius-card: var(--cymru-radius-md);
+
+  --cymru-radius-dialog: var(--cymru-radius-lg);
+
+  --cymru-radius-badge: var(--cymru-radius-pill);
+
+  /* ==========================================================================
+       Semantic Border Width
+       ========================================================================== */
+
+  --cymru-border-width-control: var(--cymru-border-width-thin);
+
+  --cymru-border-width-focus: var(--cymru-border-width-medium);
+
+  --cymru-border-width-divider: var(--cymru-border-width-thin);
+
+  /* ==========================================================================
+       Z-Index Scale
+       ========================================================================== */
+
+  /*
+     * Components should always consume semantic z-index
+     * tokens instead of numeric values.
+     */
+
+  --cymru-z-base: 0;
+  --cymru-z-dropdown: 1000;
+  --cymru-z-sticky: 1020;
+  --cymru-z-fixed: 1030;
+  --cymru-z-overlay: 1040;
+  --cymru-z-modal: 1050;
+  --cymru-z-popover: 1060;
+  --cymru-z-tooltip: 1070;
+  --cymru-z-toast: 1080;
+}

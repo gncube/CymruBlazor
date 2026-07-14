@@ -1,0 +1,63 @@
+@layer base;
+
+/*
+ * CymruBlazor Theme
+ *
+ * High Contrast
+ *
+ * Optimised for maximum readability.
+ */
+
+[data-theme="high-contrast"] {
+  color-scheme: dark;
+
+  --cymru-color-background: #000000;
+
+  --cymru-color-surface: #000000;
+
+  --cymru-color-surface-alt: #000000;
+
+  --cymru-color-text: #ffffff;
+
+  --cymru-color-text-muted: #ffffff;
+
+  --cymru-color-text-inverse: #000000;
+
+  --cymru-color-border: #ffffff;
+
+  --cymru-color-border-strong: #ffffff;
+
+  --cymru-color-primary: #00ffff;
+
+  --cymru-color-primary-hover: #ffffff;
+
+  --cymru-color-primary-subtle: #000000;
+
+  --cymru-color-secondary: #ffff00;
+
+  --cymru-color-link: #00ffff;
+
+  --cymru-color-link-hover: #ffffff;
+
+  --cymru-color-link-visited: #ffff00;
+
+  --cymru-color-success: #00ff00;
+
+  --cymru-color-success-background: #000000;
+
+  --cymru-color-warning: #ffff00;
+
+  --cymru-color-warning-background: #000000;
+
+  --cymru-color-danger: #ff4040;
+
+  --cymru-color-danger-background: #000000;
+
+  --cymru-color-info: #00ffff;
+
+  --cymru-color-info-background: #000000;
+
+  --cymru-color-focus: #ffff00;
+
+  --cymru-color-focus-outline: #ffffff;
+}

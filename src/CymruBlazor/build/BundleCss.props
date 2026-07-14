@@ -1,0 +1,40 @@
+<Project>
+    <!-- CSS File Discovery for CymruBlazor CSS Bundler -->
+    <!-- This file declares all CSS files to be bundled in the correct cascade layer order -->
+
+    <ItemGroup>
+        <!-- Reset layer: Must come first to establish baseline -->
+        <CymruCss Include="wwwroot\css\base\reset.css" />
+
+        <!-- Tokens layer: Semantic CSS custom properties -->
+        <CymruCss Include="wwwroot\css\tokens\colours.css" />
+        <CymruCss Include="wwwroot\css\tokens\typography.css" />
+        <CymruCss Include="wwwroot\css\tokens\spacing.css" />
+        <CymruCss Include="wwwroot\css\tokens\elevation.css" />
+        <CymruCss Include="wwwroot\css\tokens\breakpoints.css" />
+
+        <!-- Base layer: Normalization and accessibility -->
+        <CymruCss Include="wwwroot\css\base\accessibility.css" />
+
+        <!-- Themes layer: Theme-specific variable overrides -->
+        <CymruCss Include="wwwroot\css\themes\default.css" />
+        <CymruCss Include="wwwroot\css\themes\dark.css" />
+        <CymruCss Include="wwwroot\css\themes\high-contrast.css" />
+
+        <!-- Layout layer: Structural grid and container utilities -->
+        <CymruCss Include="wwwroot\css\layout\grid.css" />
+        <CymruCss Include="wwwroot\css\layout\containers.css" />
+
+        <!-- Components layer: Component-specific styles (isolated via .razor.css) -->
+        <CymruCss Include="wwwroot\css\components\*.css" />
+
+        <!-- Utilities layer: Helper and modifier classes -->
+        <CymruCss Include="wwwroot\css\utilities\spacing.css" />
+        <CymruCss Include="wwwroot\css\utilities\display.css" />
+        <CymruCss Include="wwwroot\css\utilities\visibility.css" />
+
+        <!-- Overrides layer: Last-resort utility overrides (use sparingly) -->
+        <CymruCss Include="wwwroot\css\overrides\*.css" />
+    </ItemGroup>
+
+</Project>

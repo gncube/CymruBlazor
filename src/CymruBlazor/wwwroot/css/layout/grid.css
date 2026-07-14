@@ -1,0 +1,148 @@
+@layer layout;
+
+/*
+ * CymruBlazor Layout - Grid
+ *
+ * Modern Grid and Flex layout primitives.
+ *
+ * These are intentionally lightweight and composable.
+ */
+
+/* ==========================================================================
+   Stack
+   ========================================================================== */
+
+.cymru-stack {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cymru-stack-sm {
+  gap: var(--cymru-layout-gap-sm);
+}
+
+.cymru-stack-lg {
+  gap: var(--cymru-layout-gap-lg);
+}
+
+/* ==========================================================================
+   Cluster
+   ========================================================================== */
+
+.cymru-cluster {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cymru-cluster-between {
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   Grid
+   ========================================================================== */
+
+.cymru-grid {
+  display: grid;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cymru-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cymru-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cymru-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/*
+ * Responsive grid
+ */
+
+@media (max-width: 47.99rem) {
+  .cymru-grid-2,
+  .cymru-grid-3,
+  .cymru-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  .cymru-grid-3,
+  .cymru-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Auto Grid
+   ========================================================================== */
+
+.cymru-auto-grid {
+  display: grid;
+
+  gap: var(--cymru-layout-gap-md);
+
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+/* ==========================================================================
+   Sidebar Layout
+   ========================================================================== */
+
+.cymru-sidebar {
+  display: grid;
+
+  gap: var(--cymru-layout-gap-lg);
+
+  grid-template-columns: 20rem 1fr;
+}
+
+@media (max-width: 63.99rem) {
+  .cymru-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Centre
+   ========================================================================== */
+
+.cymru-centre {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+/* ==========================================================================
+   Frame
+   ========================================================================== */
+
+.cymru-frame {
+  aspect-ratio: 16 / 9;
+
+  overflow: hidden;
+}
+
+.cymru-frame > * {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}

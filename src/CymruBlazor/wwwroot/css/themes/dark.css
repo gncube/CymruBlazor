@@ -1,0 +1,77 @@
+@layer base;
+
+/*
+ * CymruBlazor Theme
+ *
+ * Dark Theme
+ *
+ * Only semantic tokens are overridden.
+ */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ==========================================================================
+       Surfaces
+       ========================================================================== */
+
+  --cymru-color-background: #121212;
+  --cymru-color-surface: #1e1e1e;
+  --cymru-color-surface-alt: #2b2b2b;
+
+  /* ==========================================================================
+       Borders
+       ========================================================================== */
+
+  --cymru-color-border: #4a4a4a;
+  --cymru-color-border-strong: #6b6b6b;
+
+  /* ==========================================================================
+       Typography
+       ========================================================================== */
+
+  --cymru-color-text: #f8f9fa;
+  --cymru-color-text-muted: #d2d6db;
+  --cymru-color-text-inverse: #121212;
+
+  /* ==========================================================================
+       Brand
+       ========================================================================== */
+
+  --cymru-color-primary: #66c2ff;
+  --cymru-color-primary-hover: #8dd3ff;
+  --cymru-color-primary-subtle: #143b59;
+
+  --cymru-color-secondary: #b497ff;
+
+  /* ==========================================================================
+       Links
+       ========================================================================== */
+
+  --cymru-color-link: #66c2ff;
+  --cymru-color-link-hover: #9fdcff;
+  --cymru-color-link-visited: #c5b3ff;
+
+  /* ==========================================================================
+       Status
+       ========================================================================== */
+
+  --cymru-color-success: #56d364;
+  --cymru-color-success-background: #17391d;
+
+  --cymru-color-warning: #ffd866;
+  --cymru-color-warning-background: #4b3d08;
+
+  --cymru-color-danger: #ff7b72;
+  --cymru-color-danger-background: #4f1d1d;
+
+  --cymru-color-info: #66c2ff;
+  --cymru-color-info-background: #143b59;
+
+  /* ==========================================================================
+       Focus
+       ========================================================================== */
+
+  --cymru-color-focus: #ffd54f;
+  --cymru-color-focus-outline: #ffffff;
+}
