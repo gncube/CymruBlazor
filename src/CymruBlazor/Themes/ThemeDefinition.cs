@@ -1,12 +1,9 @@
 namespace CymruBlazor.Themes;
 
 /// <summary>
-/// Represents a theme definition. Currently a placeholder for future expansion.
+/// Represents a theme definition.
 /// </summary>
-public sealed class ThemeDefinition
-{
-    /// <summary>
-    /// Optional display name for the theme.
-    /// </summary>
-    public string? Name { get; init; }
-}
+public sealed record ThemeDefinition(
+    ThemeMode Mode,
+    string Name,
+    string CssTheme);

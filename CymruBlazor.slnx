@@ -15,4 +15,7 @@
     <Project Path="tests/CymruBlazor.ApprovalTests/CymruBlazor.ApprovalTests.csproj" />
     <Project Path="tests/CymruBlazor.Tests/CymruBlazor.Tests.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/CymruBlazor.CssBundler/CymruBlazor.CssBundler.csproj" />
+  </Folder>
 </Solution>

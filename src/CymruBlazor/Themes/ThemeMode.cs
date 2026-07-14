@@ -1,16 +1,27 @@
 namespace CymruBlazor.Themes;
 
 /// <summary>
-/// Supported theme modes.
+/// Represents the supported CymruBlazor theme modes.
 /// </summary>
 public enum ThemeMode
 {
-    /// <summary>Default (NHS Wales) theme.</summary>
-    Default,
+    /// <summary>
+    /// Follow the operating system preference.
+    /// </summary>
+    System = 0,
 
-    /// <summary>Dark theme placeholder.</summary>
-    Dark,
+    /// <summary>
+    /// NHS Wales light theme.
+    /// </summary>
+    Light = 1,
 
-    /// <summary>High contrast theme placeholder.</summary>
-    HighContrast
+    /// <summary>
+    /// Dark theme.
+    /// </summary>
+    Dark = 2,
+
+    /// <summary>
+    /// High contrast accessibility theme.
+    /// </summary>
+    HighContrast = 3
 }
