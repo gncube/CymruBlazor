@@ -54,14 +54,14 @@ This implementation plan establishes the reusable component foundation for Cymru
 
 - GOAL-002: Define reusable component interfaces.
 
-| Task     | Description                   | Completed | Date |
-| -------- | ----------------------------- | --------- | ---- |
-| TASK-007 | Create `IHasSize`.            |           |      |
-| TASK-008 | Create `IHasColour`.          |           |      |
-| TASK-009 | Create `IHasVariant`.         |           |      |
-| TASK-010 | Create `IHasIcon`.            |           |      |
-| TASK-011 | Create `IHasDisabledState`.   |           |      |
-| TASK-012 | Create `IHasValidationState`. |           |      |
+| Task     | Description                   | Completed | Date       |
+| -------- | ----------------------------- | --------- | ---------- |
+| TASK-007 | Create `IHasSize`.            | ✅        | 2026-07-15 |
+| TASK-008 | Create `IHasColour`.          | ✅        | 2026-07-15 |
+| TASK-009 | Create `IHasVariant`.         | ✅        | 2026-07-15 |
+| TASK-010 | Create `IHasIcon`.            | ✅        | 2026-07-15 |
+| TASK-011 | Create `IHasDisabledState`.   | ✅        | 2026-07-15 |
+| TASK-012 | Create `IHasValidationState`. | ✅        | 2026-07-15 |
 
 ---
 
@@ -69,14 +69,14 @@ This implementation plan establishes the reusable component foundation for Cymru
 
 - GOAL-003: Eliminate magic strings throughout the component library.
 
-| Task     | Description                     | Completed | Date |
-| -------- | ------------------------------- | --------- | ---- |
-| TASK-013 | Create `ComponentSize.cs`.      |           |      |
-| TASK-014 | Create `ComponentVariant.cs`.   |           |      |
-| TASK-015 | Create `ComponentColour.cs`.    |           |      |
-| TASK-016 | Create `ComponentElevation.cs`. |           |      |
-| TASK-017 | Create `IconPosition.cs`.       |           |      |
-| TASK-018 | Create `ValidationState.cs`.    |           |      |
+| Task     | Description                     | Completed | Date       |
+| -------- | ------------------------------- | --------- | ---------- |
+| TASK-013 | Create `ComponentSize.cs`.      | ✅        | 2026-07-15 |
+| TASK-014 | Create `ComponentVariant.cs`.   | ✅        | 2026-07-15 |
+| TASK-015 | Create `ComponentColour.cs`.    | ✅        | 2026-07-15 |
+| TASK-016 | Create `ComponentElevation.cs`. | ✅        | 2026-07-15 |
+| TASK-017 | Create `IconPosition.cs`.       | ✅        | 2026-07-15 |
+| TASK-018 | Create `ValidationState.cs`.    | ✅        | 2026-07-15 |
 
 ---
 
