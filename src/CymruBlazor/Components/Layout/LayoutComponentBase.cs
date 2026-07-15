@@ -12,8 +12,8 @@ public abstract class LayoutComponentBase : CymruComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public string Tag { get; set; } = "div";
+    // [Parameter]
+    // public string Tag { get; set; } = "div";
 
     protected CssBuilder CreateLayoutCss() =>
         CssBuilder.Empty
@@ -31,6 +31,6 @@ public abstract class LayoutComponentBase : CymruComponentBase
     {
         base.ValidateParameters();
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(Tag);
+        // ArgumentException.ThrowIfNullOrWhiteSpace(Tag);
     }
 }

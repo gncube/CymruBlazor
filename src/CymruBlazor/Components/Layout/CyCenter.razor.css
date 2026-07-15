@@ -1,0 +1,15 @@
+.cy-center {
+    display: flex;
+}
+
+.cy-center--horizontal {
+    justify-content: center;
+}
+
+.cy-center--vertical {
+    align-items: center;
+}
+
+.cy-center--full-height {
+    min-height: 100%;
+}
