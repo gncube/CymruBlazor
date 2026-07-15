@@ -1,5 +1,6 @@
-using CymruBlazor.Enums;
 using Microsoft.AspNetCore.Components;
+using CymruBlazor.Enums;
+using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 
@@ -19,20 +20,18 @@ public partial class CySidebar : LayoutComponentBase
 
     [Parameter]
     public EventCallback<bool> CollapsedChanged { get; set; }
-    protected override string ComponentClass => "cy-sidebar";
 
-    protected override string CssClass =>
-        CreateLayoutCss()
-            // Position mapping
+    protected override string BaseCssClass => "cy-sidebar";
+
+    protected override string BuildCssClass() =>
+        CssBuilder.Empty
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
             .AddClass("cy-sidebar--left", Position == SidebarPosition.Left)
             .AddClass("cy-sidebar--right", Position == SidebarPosition.Right)
-
-            // Width mapping
             .AddClass("cy-sidebar--sm", Width == SidebarWidth.Small)
             .AddClass("cy-sidebar--md", Width == SidebarWidth.Medium)
             .AddClass("cy-sidebar--lg", Width == SidebarWidth.Large)
-
-            // State mapping
             .AddClass("cy-sidebar--collapsed", Collapsed)
             .Build();
 
@@ -43,25 +42,7 @@ public partial class CySidebar : LayoutComponentBase
     {
         Collapsed = !Collapsed;
         await CollapsedChanged.InvokeAsync(Collapsed);
-        await InvokeAsync(StateHasChanged);
+        // Use direct synchronous state dispatching if working inside standard rendering scope
+        StateHasChanged();
     }
-}
-
-/// <summary>
-/// Minimal fluent helper supporting the class generation pattern.
-/// </summary>
-public class ClassBuilder(string baseClass)
-{
-    private readonly List<string> _classes = [baseClass];
-
-    public ClassBuilder AddClass(string className, bool condition)
-    {
-        if (condition)
-        {
-            _classes.Add(className);
-        }
-        return this;
-    }
-
-    public string Build() => string.Join(" ", _classes);
 }

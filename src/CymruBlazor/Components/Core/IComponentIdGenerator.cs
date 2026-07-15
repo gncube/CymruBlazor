@@ -14,5 +14,5 @@ public interface IComponentIdGenerator
     /// <returns>
     /// A unique identifier.
     /// </returns>
-    string Create(string prefix);
+    string Create(string? prefix = null);
 }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
-
 using CymruBlazor.Enums;
+using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 
@@ -21,27 +21,12 @@ public partial class CyGrid : LayoutComponentBase
     [Parameter]
     public bool AutoRows { get; set; }
 
-    protected override string ComponentClass => "cy-grid";
+    protected override string BaseCssClass => "cy-grid";
 
-    protected override string CssClass =>
-        CreateLayoutCss()
-
-            .AddClass($"cy-grid--cols-{GetColumnClass()}")
-
-            .AddClass($"cy-gap-{Gap.ToString().ToLowerInvariant()}")
-
-            .AddClass("cy-grid--dense",
-                Dense)
-
-            .AddClass("cy-grid--auto-rows",
-                AutoRows)
-
-            .Build();
-
-    private string GetColumnClass() =>
-        Columns switch
+    protected override string BuildCssClass()
+    {
+        var colSuffix = Columns switch
         {
-            GridColumns.Auto => "auto",
             GridColumns.One => "1",
             GridColumns.Two => "2",
             GridColumns.Three => "3",
@@ -51,4 +36,14 @@ public partial class CyGrid : LayoutComponentBase
             GridColumns.Twelve => "12",
             _ => "auto"
         };
+
+        return CssBuilder.Empty
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .AddClass($"cy-grid--cols-{colSuffix}")
+            .AddClass($"cy-gap-{Gap.ToString().ToLowerInvariant()}")
+            .AddClass("cy-grid--dense", Dense)
+            .AddClass("cy-grid--auto-rows", AutoRows)
+            .Build();
+    }
 }

@@ -1,0 +1,13 @@
+@using CymruBlazor.Enums
+@inherits CymruBlazor.Components.Core.CymruComponentBase
+@implements IDisposable
+
+<div @ref="_elementRef"
+     id="@Id"
+     class="@CssClass"
+     aria-live="@PolitenessString"
+     aria-atomic="@AriaAtomic.ToString().ToLowerInvariant()"
+     aria-relevant="@AriaRelevant"
+     @attributes="AdditionalAttributes">
+    @_activeMessage
+</div>
