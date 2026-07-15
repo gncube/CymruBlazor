@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
-
 using CymruBlazor.Enums;
+using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 
@@ -24,25 +24,17 @@ public partial class CyStack : LayoutComponentBase
     [Parameter]
     public bool Wrap { get; set; }
 
-    protected override string ComponentClass => "cy-stack";
+    protected override string BaseCssClass => "cy-stack";
 
-    protected override string CssClass =>
-        CreateLayoutCss()
-
-            .AddClass("cy-stack--horizontal",
-                Orientation == Orientation.Horizontal)
-
-            .AddClass("cy-stack--vertical",
-                Orientation == Orientation.Vertical)
-
-            .AddClass("cy-stack--wrap",
-                Wrap)
-
+    protected override string BuildCssClass() =>
+        CssBuilder.Empty
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .AddClass("cy-stack--horizontal", Orientation == Orientation.Horizontal)
+            .AddClass("cy-stack--vertical", Orientation == Orientation.Vertical)
+            .AddClass("cy-stack--wrap", Wrap)
             .AddClass($"cy-gap-{Gap.ToString().ToLowerInvariant()}")
-
             .AddClass($"cy-align-{AlignItems.ToString().ToLowerInvariant()}")
-
             .AddClass($"cy-justify-{JustifyContent.ToString().ToLowerInvariant()}")
-
             .Build();
 }

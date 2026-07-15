@@ -13,12 +13,15 @@ public sealed class ComponentIdGenerator : IComponentIdGenerator
 {
     private long _nextId;
 
-    /// <inheritdoc />
-    public string Create(string prefix)
+   /// <inheritdoc />
+    public string Create(string? prefix = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(prefix);
-
         var id = Interlocked.Increment(ref _nextId);
+
+        if (string.IsNullOrWhiteSpace(prefix))
+        {
+            return $"cy-{id}";
+        }
 
         return string.Create(
             CultureInfo.InvariantCulture,

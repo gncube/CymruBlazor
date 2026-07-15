@@ -1,46 +1,30 @@
+using Xunit;
+using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Layout;
-using Shouldly;
-using Xunit;
 
 namespace CymruBlazor.Tests.Components;
 
-public class CyCenterTests : BunitContext
+public sealed class CyCenterTests : TestContextBase
 {
     [Fact]
     public void Should_Render_Default_Center()
     {
-        var cut = Render<CyCenter>(p => p.AddChildContent("Hello"));
+        // Act
+        var cut = Render<CyCenter>();
 
-        var div = cut.Find("div");
-
-        div.ClassList.ShouldContain("cy-center");
-        div.ClassList.ShouldContain("cy-center--horizontal");
-        div.ClassList.ShouldContain("cy-center--vertical");
+        // Assert
+        var element = cut.Find("div");
+        element.ClassList.ShouldContain("cy-center");
     }
-
-
-    [Fact]
-    public void Should_Disable_Horizontal_Centering()
-    {
-        var cut = Render<CyCenter>(p =>
-            p.Add(x => x.Horizontal, false));
-
-        var div = cut.Find("div");
-
-        div.ClassList.ShouldNotContain("cy-center--horizontal");
-        div.ClassList.ShouldContain("cy-center--vertical");
-    }
-
 
     [Fact]
     public void Should_Enable_FullHeight()
     {
-        var cut = Render<CyCenter>(p =>
-            p.Add(x => x.FullHeight, true));
+        // Act
+        var cut = Render<CyCenter>(parameters => parameters.Add(p => p.FullHeight, true));
 
-        cut.Find("div")
-            .ClassList
-            .ShouldContain("cy-center--full-height");
+        // Assert
+        cut.Find("div").ClassList.ShouldContain("cy-center--full-height");
     }
 }

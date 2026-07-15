@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-
 using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
@@ -12,25 +11,12 @@ public abstract class LayoutComponentBase : CymruComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    // [Parameter]
-    // public string Tag { get; set; } = "div";
-
-    protected CssBuilder CreateLayoutCss() =>
+    /// <summary>
+    /// Implements the base component's hook to construct structural styles seamlessly.
+    /// </summary>
+    protected override string BuildCssClass() =>
         CssBuilder.Empty
-            .AddClass(ComponentClass)
-            .AddClass(Class);
-
-    protected StyleBuilder CreateLayoutStyle() =>
-        StyleBuilder.Empty
-            .AddStyle(Style);
-
-    protected override string CssStyle =>
-        CreateLayoutStyle().Build();
-
-    protected override void ValidateParameters()
-    {
-        base.ValidateParameters();
-
-        // ArgumentException.ThrowIfNullOrWhiteSpace(Tag);
-    }
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .Build();
 }
