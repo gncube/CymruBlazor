@@ -1,3 +1,5 @@
+using CymruBlazor.Enums;
+
 namespace CymruBlazor.Contracts;
 
 /// <summary>

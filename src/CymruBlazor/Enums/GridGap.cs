@@ -1,11 +1,11 @@
 namespace CymruBlazor.Enums;
 
 /// <summary>
-/// Specifies the standard component sizing scale.
+/// Specifies the spacing between grid items.
 /// </summary>
-public enum ComponentSize
+public enum GridGap
 {
-    Unspecified = 0,
+    None = 0,
 
     ExtraSmall = 1,
 
