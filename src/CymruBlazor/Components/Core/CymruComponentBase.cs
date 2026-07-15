@@ -1,0 +1,119 @@
+using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.AspNetCore.Components;
+
+namespace CymruBlazor.Components.Core;
+
+/// <summary>
+/// Provides the common foundation for all CymruBlazor components.
+///
+/// This base class intentionally remains lightweight and supplies only
+/// functionality that is universally applicable across the component library.
+/// More specialised behaviour (interactive controls, forms, JavaScript interop,
+/// validation, etc.) is provided by derived base classes.
+/// </summary>
+public abstract class CymruComponentBase : ComponentBase
+{
+    /// <summary>
+    /// Gets or sets additional HTML attributes that do not correspond
+    /// to strongly typed component parameters.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional HTML id attribute.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets inline CSS styles.
+    /// </summary>
+    [Parameter]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Gets the root CSS class for the component.
+    /// Derived components override this to provide their base class.
+    /// </summary>
+    protected virtual string ComponentClass => string.Empty;
+
+    /// <summary>
+    /// Gets the computed CSS class string.
+    /// </summary>
+    protected virtual string CssClass =>
+        CssBuilder.Empty
+            .AddClass(ComponentClass)
+            .AddClass(Class)
+            .Build();
+
+    /// <summary>
+    /// Gets the computed inline style string.
+    /// </summary>
+    protected virtual string CssStyle =>
+        StyleBuilder.Empty
+            .AddStyle(Style)
+            .Build();
+
+    /// <summary>
+    /// Determines whether the component should render.
+    /// Derived components may override for performance optimisation.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if rendering should proceed; otherwise
+    /// <see langword="false"/>.
+    /// </returns>
+    protected override bool ShouldRender() => true;
+
+    /// <summary>
+    /// Validates component parameters after they have been assigned.
+    /// Derived components should override to enforce invariants.
+    /// </summary>
+    protected virtual void ValidateParameters()
+    {
+    }
+
+    /// <inheritdoc />
+    protected sealed override void OnParametersSet()
+    {
+        ValidateParameters();
+
+        OnParametersValidated();
+    }
+
+    /// <summary>
+    /// Called after parameter validation has completed successfully.
+    /// </summary>
+    protected virtual void OnParametersValidated()
+    {
+    }
+
+    /// <summary>
+    /// Attempts to retrieve an unmatched HTML attribute.
+    /// </summary>
+    /// <param name="attributeName">
+    /// The attribute name.
+    /// </param>
+    /// <param name="value">
+    /// The attribute value if found.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if the attribute exists.
+    /// </returns>
+    protected bool TryGetAdditionalAttribute(
+        string attributeName,
+        [NotNullWhen(true)] out object? value)
+    {
+        value = null;
+
+        return AdditionalAttributes is not null &&
+               AdditionalAttributes.TryGetValue(attributeName, out value);
+    }
+}

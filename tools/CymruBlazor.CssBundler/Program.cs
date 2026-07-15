@@ -1,4 +1,3 @@
-#!/usr/bin/env dotnet-script
 /*
  * CymruBlazor CSS Bundler
  *

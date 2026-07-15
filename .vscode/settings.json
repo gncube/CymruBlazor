@@ -1,0 +1,6 @@
+{
+  "[razor]": {
+    "editor.formatOnSave": false
+  },
+  "razor.format.enable": false
+}
