@@ -7,7 +7,7 @@ namespace CymruBlazor.Components.Accessibility;
 /// A high-performance utility component that visually hides content
 /// while keeping it accessible to screen readers using 'sr-only' styling.
 /// </summary>
-public partial class CyScreenReaderOnly : CymruComponentBase
+public partial class CyScreenReaderOnly : CyComponentBase
 {
     private ElementReference _elementRef;
 

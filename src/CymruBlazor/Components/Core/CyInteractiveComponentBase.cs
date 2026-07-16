@@ -6,14 +6,14 @@ namespace CymruBlazor.Components.Core;
 /// <summary>
 /// Provides the common foundation for interactive CymruBlazor components.
 ///
-/// This base class extends <see cref="CymruComponentBase"/> with
+/// This base class extends <see cref="CyComponentBase"/> with
 /// functionality shared by interactive controls, including disabled state,
 /// accessibility metadata, and keyboard navigation configuration.
 ///
 /// Form binding, validation, and JavaScript interop are intentionally
 /// implemented by more specialised derived classes.
 /// </summary>
-public abstract class CymruInteractiveComponentBase : CymruComponentBase
+public abstract class CyInteractiveComponentBase : CyComponentBase
 {
     /// <summary>
     /// Gets or sets whether the component is disabled.

@@ -4,7 +4,7 @@ using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 
-public partial class CyContainer : LayoutComponentBase
+public partial class CyContainer : CyLayoutComponentBase
 {
     [Parameter]
     public ContainerSize Size { get; set; } = ContainerSize.Large;

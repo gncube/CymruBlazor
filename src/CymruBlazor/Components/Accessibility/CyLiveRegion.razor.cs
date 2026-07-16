@@ -9,7 +9,7 @@ namespace CymruBlazor.Components.Accessibility;
 /// <summary>
 /// An accessibility component that dynamically announces content changes to screen readers using ARIA live regions.
 /// </summary>
-public partial class CyLiveRegion : CymruComponentBase, INotificationHandler<LiveRegionAnnouncement>
+public partial class CyLiveRegion : CyComponentBase, INotificationHandler<LiveRegionAnnouncement>
 {
     private ElementReference _elementRef;
     private string _activeMessage = string.Empty;

@@ -6,7 +6,7 @@ namespace CymruBlazor.Components.Layout;
 /// <summary>
 /// Base class for layout components.
 /// </summary>
-public abstract class LayoutComponentBase : CymruComponentBase
+public abstract class CyLayoutComponentBase : CyComponentBase
 {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

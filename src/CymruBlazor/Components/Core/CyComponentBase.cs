@@ -12,7 +12,7 @@ namespace CymruBlazor.Components.Core;
 /// More specialised behaviour (interactive controls, forms, JavaScript interop,
 /// validation, etc.) is provided by derived base classes.
 /// </summary>
-public abstract class CymruComponentBase : ComponentBase
+public abstract class CyComponentBase : ComponentBase
 {
     private string _id = string.Empty;
     private string _cssClass = string.Empty;

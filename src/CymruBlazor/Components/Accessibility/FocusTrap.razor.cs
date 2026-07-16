@@ -4,7 +4,7 @@ using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Accessibility;
 
-public partial class FocusTrap : CymruComponentBase, IAsyncDisposable
+public partial class FocusTrap : CyComponentBase, IAsyncDisposable
 {
     [Inject]
     protected IFocusManager FocusManager { get; set; } = default!;
