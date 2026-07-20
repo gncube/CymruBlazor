@@ -481,18 +481,24 @@ EOF
 dotnet new blazorwasm \
   --name StarterApp \
   --output samples/StarterApp \
+  --auth SingleOrg \
+  --pwa --empty \
   --no-restore
 
 # Healthcare portal example
 dotnet new blazorwasm \
   --name HealthcarePortal \
   --output samples/HealthcarePortal \
+  --auth SingleOrg \
+  --pwa --empty \
   --no-restore
 
 # Dashboard example
 dotnet new blazorwasm \
   --name Dashboard \
   --output samples/Dashboard \
+  --auth SingleOrg \
+  --pwa --empty \
   --no-restore
 ```
 

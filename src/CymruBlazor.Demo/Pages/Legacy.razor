@@ -1,0 +1,76 @@
+﻿@page "/legacy"
+@inject IMediator DemoMediator
+
+<PageTitle>CymruBlazor Component Integration Demo</PageTitle>
+
+<CyCenter FullHeight="true" Class="demo-container">
+    <CyStack Space="6">
+
+        <header>
+            <h1>CymruBlazor Visual Sandbox</h1>
+            <p>Verifying layout isolation, DOM accessibility, and asynchronous mediator propagation pipelines.</p>
+        </header>
+
+        <hr />
+
+        <!-- Layout Verification Sandbox -->
+        <div class="layout-showcase" style="border: 1px dashed #ccc; padding: 1rem; width: 100%; min-width: 600px;">
+            <CySidebar @ref="_sidebar" Collapsed="_sidebarCollapsed" Position="SidebarPosition.Left" Width="SidebarWidth.Medium">
+                <nav style="padding: 1rem;">
+                    <h3>Navigation</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><a href="#">Dashboard Core</a></li>
+                        <li><a href="#">System Controls</a></li>
+                    </ul>
+                </nav>
+            </CySidebar>
+
+            <main style="padding: 1rem; background: #f9f9f9;">
+                <h2>Main Application Frame</h2>
+                <button class="btn btn-primary" @onclick="ToggleSidebarAsync">
+                    Toggle Sidebar Programmatically
+                </button>
+                <button class="btn btn-secondary" @onclick="TriggerLiveAnnouncementAsync">
+                    Broadcast Test Notification Event
+                </button>
+            </main>
+        </div>
+
+        <!-- Accessibility Primitives Mapping -->
+        <section class="accessibility-testing">
+            <h3>Accessibility Matrix Verification</h3>
+            <CyScreenReaderOnly>
+                This contextual workflow notice is visually hidden but read aloud by screen reader accessibility technologies.
+            </CyScreenReaderOnly>
+
+            <!-- Global Screen Reader Broadcaster Node -->
+            <CyLiveRegion Politeness="LiveRegionPoliteness.Polite" />
+        </section>
+
+    </CyStack>
+</CyCenter>
+
+@code {
+    private CySidebar _sidebar = default!;
+    private bool _sidebarCollapsed;
+    private int _announcementCounter;
+
+    private async Task ToggleSidebarAsync()
+    {
+        // Safe interactive execution within UI dispatcher loop
+        await _sidebar.ToggleAsync();
+        _sidebarCollapsed = _sidebar.Collapsed;
+    }
+
+    private async Task TriggerLiveAnnouncementAsync()
+    {
+        _announcementCounter++;
+
+        // Dispatch an immutable announcement through Mediator
+        // The active CyLiveRegion catches this out-of-band and announces it to screen readers
+        await DemoMediator.Publish(new LiveRegionAnnouncement(
+            $"System Diagnostic Broadcast Executed: Event Count {_announcementCounter}.",
+            LiveRegionPoliteness.Assertive
+        ));
+    }
+}

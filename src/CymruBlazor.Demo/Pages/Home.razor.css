@@ -1,0 +1,8 @@
+.lead {
+    font-size: 1.25rem;
+    max-width: 70ch;
+}
+
+section {
+    max-width: 80rem;
+}

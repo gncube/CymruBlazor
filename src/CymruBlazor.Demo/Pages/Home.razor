@@ -1,76 +1,78 @@
 ﻿@page "/"
-@inject IMediator DemoMediator
 
-<PageTitle>CymruBlazor Component Integration Demo</PageTitle>
+<PageTitle>CymruBlazor</PageTitle>
 
-<CyCenter FullHeight="true" Class="demo-container">
-    <CyStack Space="6">
+<CyContainer Size="ContainerSize.Large">
 
-        <header>
-            <h1>CymruBlazor Visual Sandbox</h1>
-            <p>Verifying layout isolation, DOM accessibility, and asynchronous mediator propagation pipelines.</p>
-        </header>
+    <CyStack
+        Orientation="Orientation.Vertical"
+        Gap="ComponentSize.ExtraLarge">
 
-        <hr />
+        <section>
 
-        <!-- Layout Verification Sandbox -->
-        <div class="layout-showcase" style="border: 1px dashed #ccc; padding: 1rem; width: 100%; min-width: 600px;">
-            <CySidebar @ref="_sidebar" Collapsed="_sidebarCollapsed" Position="SidebarPosition.Left" Width="SidebarWidth.Medium">
-                <nav style="padding: 1rem;">
-                    <h3>Navigation</h3>
-                    <ul style="list-style: none; padding: 0;">
-                        <li><a href="#">Dashboard Core</a></li>
-                        <li><a href="#">System Controls</a></li>
-                    </ul>
-                </nav>
-            </CySidebar>
+            <h1>CymruBlazor</h1>
 
-            <main style="padding: 1rem; background: #f9f9f9;">
-                <h2>Main Application Frame</h2>
-                <button class="btn btn-primary" @onclick="ToggleSidebarAsync">
-                    Toggle Sidebar Programmatically
-                </button>
-                <button class="btn btn-secondary" @onclick="TriggerLiveAnnouncementAsync">
-                    Broadcast Test Notification Event
-                </button>
-            </main>
-        </div>
+            <p class="lead">
+                A modern Blazor component library built for accessibility,
+                performance and maintainability.
+            </p>
 
-        <!-- Accessibility Primitives Mapping -->
-        <section class="accessibility-testing">
-            <h3>Accessibility Matrix Verification</h3>
-            <CyScreenReaderOnly>
-                This contextual workflow notice is visually hidden but read aloud by screen reader accessibility technologies.
-            </CyScreenReaderOnly>
+            <p>
+                CymruBlazor embraces a C# First, JavaScript Last philosophy,
+                delivering accessible components, responsive layouts and
+                compile-time optimisations for modern Blazor applications.
+            </p>
 
-            <!-- Global Screen Reader Broadcaster Node -->
-            <CyLiveRegion Politeness="LiveRegionPoliteness.Polite" />
+        </section>
+
+        <section>
+
+            <h2>Getting Started</h2>
+
+            <p>
+                New to CymruBlazor? Start with the installation guide and build
+                your first application in minutes.
+            </p>
+
+            <ul>
+                <li><NavLink href="/getting-started">Getting Started</NavLink></li>
+                <li><NavLink href="/installation">Installation</NavLink></li>
+                <li><NavLink href="/layouts">Layouts</NavLink></li>
+            </ul>
+
+        </section>
+
+        <section>
+
+            <h2>Explore Components</h2>
+
+            <p>
+                Browse the complete component catalogue with interactive examples,
+                accessibility guidance and API documentation.
+            </p>
+
+            <ul>
+                <li><NavLink href="/components">Component Gallery</NavLink></li>
+                <li><NavLink href="/playground">Playground</NavLink></li>
+                <li><NavLink href="/design-tokens">Design Tokens</NavLink></li>
+            </ul>
+
+        </section>
+
+        <section>
+
+            <h2>Design Principles</h2>
+
+            <ul>
+                <li>Accessibility by default</li>
+                <li>C# First, JavaScript Last</li>
+                <li>Compile-time generation</li>
+                <li>Strong typing</li>
+                <li>Native WebAssembly optimisation</li>
+            </ul>
+
         </section>
 
     </CyStack>
-</CyCenter>
 
-@code {
-    private CySidebar _sidebar = default!;
-    private bool _sidebarCollapsed;
-    private int _announcementCounter;
-
-    private async Task ToggleSidebarAsync()
-    {
-        // Safe interactive execution within UI dispatcher loop
-        await _sidebar.ToggleAsync();
-        _sidebarCollapsed = _sidebar.Collapsed;
-    }
-
-    private async Task TriggerLiveAnnouncementAsync()
-    {
-        _announcementCounter++;
-
-        // Dispatch an immutable announcement through Mediator
-        // The active CyLiveRegion catches this out-of-band and announces it to screen readers
-        await DemoMediator.Publish(new LiveRegionAnnouncement(
-            $"System Diagnostic Broadcast Executed: Event Count {_announcementCounter}.",
-            LiveRegionPoliteness.Assertive
-        ));
-    }
-}
+</CyContainer>

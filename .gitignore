@@ -487,3 +487,4 @@ $RECYCLE.BIN/
 .nuke/
 artifacts/
 GitVersion.yml.bak
+*.zip
