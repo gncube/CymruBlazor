@@ -1,0 +1,61 @@
+/* ── DemoSidebar ──────────────────────────────────────────────────────────── */
+
+.cb-sidebar-nav {
+    padding-block: var(--cymru-space-4);
+    padding-inline: var(--cymru-space-3);
+    height: 100%;
+    overflow-y: auto;
+}
+
+.cb-sidebar-nav__section {
+    margin-block-end: var(--cymru-space-4);
+}
+
+.cb-sidebar-nav__heading {
+    display: block;
+    font-size: var(--cymru-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cymru-color-text-muted);
+    padding-inline: var(--cymru-space-2);
+    margin-block-end: var(--cymru-space-1);
+}
+
+.cb-sidebar-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cb-sidebar-nav__link {
+    display: block;
+    padding: var(--cymru-space-1) var(--cymru-space-2);
+    color: var(--cymru-color-text);
+    text-decoration: none;
+    font-size: var(--cymru-font-size-sm);
+    border-radius: var(--cymru-radius-sm);
+    transition: background-color 120ms ease, color 120ms ease;
+    border-inline-start: 2px solid transparent;
+}
+
+.cb-sidebar-nav__link:hover {
+    background-color: var(--cymru-color-surface-alt);
+    color: var(--cymru-color-primary);
+}
+
+.cb-sidebar-nav__link:focus-visible {
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+    outline-offset: var(--cymru-focus-offset);
+}
+
+.cb-sidebar-nav__link--active {
+    color: var(--cymru-color-primary);
+    font-weight: 600;
+    background-color: var(--cymru-color-primary-subtle);
+    border-inline-start-color: var(--cymru-color-primary);
+}
+
+.cb-sidebar-nav__link--active:hover {
+    background-color: var(--cymru-color-primary-subtle);
+}

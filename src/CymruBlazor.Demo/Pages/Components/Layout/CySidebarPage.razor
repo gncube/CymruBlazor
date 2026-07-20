@@ -1,0 +1,213 @@
+@page "/layouts/sidebar"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CySidebar</h1>
+    <p class="cb-page-description">
+        A collapsible, responsive sidebar panel. Renders as
+        <code>&lt;aside&gt;</code> for correct ARIA landmark semantics.
+        Supports left and right docking, three width variants, and
+        programmatic toggle via <code>ToggleAsync()</code>.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Default</h2>
+    <p class="cb-section-description">
+        Position defaults to <code>Left</code>, width to <code>Medium</code>.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+
+        <div class="cb-example__preview">
+            <div style="display:flex;gap:var(--cymru-space-3);height:180px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
+                <CySidebar Width="SidebarWidth.Small">
+                    <div style="padding:var(--cymru-space-3);font-size:var(--cymru-font-size-sm);
+                                color:var(--cymru-color-text-muted)">
+                        Sidebar content
+                    </div>
+                </CySidebar>
+
+                <div style="flex:1;padding:var(--cymru-space-3);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Main content area
+                </div>
+            </div>
+        </div>
+
+        <pre class="cb-example__code"><code>&lt;CySidebar Width="SidebarWidth.Small"&gt;
+    &lt;!-- navigation --&gt;
+&lt;/CySidebar&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Collapsible with two-way binding</h2>
+
+    <p class="cb-section-description">
+        Bind <code>&#64;bind-Collapsed</code> and call
+        <code>ToggleAsync()</code> on the component reference
+        to toggle programmatically.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+
+        <div class="cb-example__preview">
+
+            <div style="margin-block-end:var(--cymru-space-3)">
+                <button class="cb-demo-btn"
+                        @onclick="ToggleSidebar">
+                    @(_collapsed ? "Expand sidebar" : "Collapse sidebar")
+                </button>
+            </div>
+
+            <div style="display:flex;gap:0;height:140px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);
+                        border-radius:var(--cymru-radius-md)">
+
+                <CySidebar @ref="_sidebar"
+                           @bind-Collapsed="_collapsed"
+                           Width="SidebarWidth.Small">
+
+                    <div style="padding:var(--cymru-space-3);
+                                font-size:var(--cymru-font-size-sm);
+                                color:var(--cymru-color-text-muted);
+                                white-space:nowrap">
+                        Sidebar
+                    </div>
+
+                </CySidebar>
+
+                <div style="flex:1;padding:var(--cymru-space-3);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Collapsed:
+                    <strong>@_collapsed</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <pre class="cb-example__code"><code>&lt;CySidebar &#64;ref="_sidebar"
+           &#64;bind-Collapsed="_collapsed"
+           Width="SidebarWidth.Small"&gt;
+    ...
+&lt;/CySidebar&gt;
+
+&lt;button &#64;onclick="ToggleSidebar"&gt;
+    Toggle
+&lt;/button&gt;
+
+&#64;code {
+    private CySidebar? _sidebar;
+    private bool _collapsed;
+
+    private async Task ToggleSidebar()
+    {
+        if (_sidebar is not null)
+        {
+            await _sidebar.ToggleAsync();
+        }
+    }
+}</code></pre>
+
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Position variants</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Right-docked</span>
+
+        <div class="cb-example__preview">
+
+            <div style="display:flex;gap:0;height:120px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);
+                        border-radius:var(--cymru-radius-md)">
+
+                <div style="flex:1;padding:var(--cymru-space-3);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Main content
+                </div>
+
+                <CySidebar Position="SidebarPosition.Right"
+                           Width="SidebarWidth.Small">
+
+                    <div style="padding:var(--cymru-space-3);
+                                font-size:var(--cymru-font-size-sm);
+                                color:var(--cymru-color-text-muted);
+                                white-space:nowrap">
+                        Right sidebar
+                    </div>
+
+                </CySidebar>
+
+            </div>
+
+        </div>
+
+        <pre class="cb-example__code"><code>&lt;CySidebar Position="SidebarPosition.Right"
+           Width="SidebarWidth.Small"&gt;
+    ...
+&lt;/CySidebar&gt;</code></pre>
+
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+
+    <!-- API tables unchanged -->
+
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-4)">
+
+        <li>
+            Renders as <code>&lt;aside&gt;</code> — a complementary landmark.
+            Screen readers announce it as a separate navigation region.
+        </li>
+
+        <li>
+            The toggle trigger must carry a descriptive
+            <code>aria-label</code>
+            or
+            <code>aria-expanded</code>.
+            CySidebar does not render the trigger itself.
+        </li>
+
+        <li>
+            On mobile, the collapsed sidebar uses
+            <code>transform: translateX</code>
+            rather than
+            <code>display: none</code>.
+        </li>
+
+    </ul>
+</div>
+
+@code
+{
+    private CySidebar? _sidebar;
+    private bool _collapsed;
+
+    private async Task ToggleSidebar()
+    {
+        if (_sidebar is not null)
+        {
+            await _sidebar.ToggleAsync();
+        }
+    }
+}

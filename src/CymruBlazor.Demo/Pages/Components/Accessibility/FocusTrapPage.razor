@@ -1,0 +1,168 @@
+@page "/accessibility/focus-trap"
+@namespace CymruBlazor.Demo.Pages.Components.Accessibility
+@using CymruBlazor.Accessibility.Focus
+@inject IFocusManager FocusManager
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">FocusTrap</h1>
+    <p class="cb-page-description">
+        Traps keyboard focus within its child content. Place around any overlay
+        (modal, drawer, dialog) to prevent focus from escaping to background
+        elements. Automatically moves focus into the trap on first render and
+        restores the previously focused element on disposal.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Basic usage</h2>
+    <p class="cb-section-description">
+        When <code>Enabled</code> is <code>true</code> (the default) and
+        <code>AutoFocus</code> is <code>true</code>, the trap container
+        receives focus immediately after render. Press
+        <kbd>Escape</kbd> to dismiss the demo panel.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview">
+            @if (!_trapVisible)
+            {
+                <button id="open-trap-btn"
+                        class="cb-demo-btn"
+                        @onclick="OpenTrap">
+                    Open focus trap panel
+                </button>
+            }
+            else
+            {
+                <FocusTrap Enabled="true"
+                           AutoFocus="true"
+                           RestoreFocus="true"
+                           Style="display:block;padding:var(--cymru-space-4);
+                                  border:2px solid var(--cymru-color-primary);
+                                  border-radius:var(--cymru-radius-md);
+                                  background:var(--cymru-color-surface)">
+                    <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium">
+                        <p style="margin:0;font-weight:600">Focus is trapped inside this panel.</p>
+                        <p style="margin:0;font-size:var(--cymru-font-size-sm);
+                                  color:var(--cymru-color-text-muted)">
+                            Tab cycles only through the elements below.
+                        </p>
+                        <input type="text"
+                               placeholder="First focusable element"
+                               style="padding:var(--cymru-space-2);
+                                      border:1px solid var(--cymru-color-border);
+                                      border-radius:var(--cymru-radius-sm);
+                                      width:100%;box-sizing:border-box" />
+                        <input type="text"
+                               placeholder="Second focusable element"
+                               style="padding:var(--cymru-space-2);
+                                      border:1px solid var(--cymru-color-border);
+                                      border-radius:var(--cymru-radius-sm);
+                                      width:100%;box-sizing:border-box" />
+                        <button class="cb-demo-btn cb-demo-btn--secondary"
+                                @onclick="CloseTrap">
+                            Close panel (restores focus to trigger)
+                        </button>
+                    </CyStack>
+                </FocusTrap>
+            }
+        </div>
+        <pre class="cb-example__code"><code>&lt;FocusTrap Enabled="true"
+           AutoFocus="true"
+           RestoreFocus="true"&gt;
+    &lt;input type="text" /&gt;
+    &lt;button @@onclick="Close"&gt;Close&lt;/button&gt;
+&lt;/FocusTrap&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Disabled trap</h2>
+    <p class="cb-section-description">
+        Set <code>Enabled="false"</code> to render the wrapper without any
+        focus management — useful when conditionally activating trapping.
+    </p>
+    <pre><code>&lt;FocusTrap Enabled="@@_isOpen"&gt;
+    ...
+&lt;/FocusTrap&gt;</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="FocusTrap parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Enabled</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Activates or deactivates focus trapping</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">AutoFocus</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Moves focus into the trap container on first render</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">RestoreFocus</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Returns focus to the previously focused element on disposal</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ChildContent</td>
+                <td class="cb-api-table__type">RenderFragment</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Content rendered inside the trap container</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Class</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Additional CSS classes on the root <code>&lt;div&gt;</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility notes</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;
+               padding-inline-start:var(--cymru-space-4)">
+        <li>
+            The trap root renders as <code>&lt;div tabindex="-1"&gt;</code> — programmatically
+            focusable but not in the natural tab order. This satisfies WCAG 2.1
+            Success Criterion 2.4.3 (Focus Order).
+        </li>
+        <li>
+            <code>RestoreFocus="true"</code> calls
+            <code>IFocusManager.RestoreFocusAsync()</code> on disposal, returning focus
+            to whichever element was active before the trap opened.
+        </li>
+        <li>
+            Combine with a visible modal container that carries
+            <code>role="dialog"</code>, <code>aria-modal="true"</code>, and
+            <code>aria-labelledby</code> pointing to the dialog title.
+        </li>
+        <li>
+            The component does not render its own <kbd>Escape</kbd> handler —
+            add a <code>@@onkeydown</code> on the overlay container to close on escape.
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool _trapVisible;
+
+    private void OpenTrap()  => _trapVisible = true;
+    private void CloseTrap() => _trapVisible = false;
+}
