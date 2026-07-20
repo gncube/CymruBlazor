@@ -1,0 +1,138 @@
+@layer base;
+
+/*
+ * CymruBlazor Base Typography
+ *
+ * tokens/typography.css only declares custom properties - nothing in the
+ * bundle previously applied them to real elements, so headings, body text,
+ * links and lists all rendered in the browser default styles.
+ *
+ * This file is the missing "application" layer: it consumes the semantic
+ * typography tokens and sets sensible, accessible defaults for every
+ * consuming application. Components remain free to override locally via
+ * CSS isolation.
+ */
+
+/* ==========================================================================
+   Document defaults
+   ========================================================================== */
+
+html {
+  font-family: var(--cymru-font-family);
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--cymru-font-family);
+  font-size: var(--cymru-font-size-body);
+  font-weight: var(--cymru-font-weight-regular);
+  line-height: var(--cymru-line-height-body);
+  color: var(--cymru-color-text);
+  background-color: var(--cymru-color-background);
+}
+
+/* ==========================================================================
+   Headings
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--cymru-font-family);
+  font-weight: var(--cymru-font-weight-bold);
+  line-height: var(--cymru-line-height-heading);
+  letter-spacing: var(--cymru-letter-spacing-tight);
+  color: var(--cymru-color-text);
+  margin-block: 0 var(--cymru-space-3);
+}
+
+h1 {
+  font-size: var(--cymru-font-size-heading-1);
+}
+
+h2 {
+  font-size: var(--cymru-font-size-heading-2);
+}
+
+h3 {
+  font-size: var(--cymru-font-size-heading-3);
+}
+
+h4 {
+  font-size: var(--cymru-font-size-heading-4);
+}
+
+h5 {
+  font-size: var(--cymru-font-size-heading-5);
+}
+
+h6 {
+  font-size: var(--cymru-font-size-heading-6);
+}
+
+/* ==========================================================================
+   Body text
+   ========================================================================== */
+
+p {
+  margin-block: 0 var(--cymru-space-3);
+}
+
+small,
+.cymru-text-caption {
+  font-size: var(--cymru-font-size-caption);
+}
+
+strong,
+b {
+  font-weight: var(--cymru-font-weight-semibold);
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+a {
+  color: var(--cymru-color-link);
+  text-decoration-thickness: max(1px, 0.0625rem);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--cymru-color-link-hover);
+}
+
+a:visited {
+  color: var(--cymru-color-link-visited);
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+ul,
+ol {
+  margin-block: 0 var(--cymru-space-3);
+  padding-inline-start: var(--cymru-space-4);
+}
+
+li {
+  line-height: var(--cymru-line-height-body);
+}
+
+/* ==========================================================================
+   Code
+   ========================================================================== */
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--cymru-font-family-monospace);
+  font-size: 0.95em;
+}

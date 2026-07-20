@@ -65,6 +65,22 @@
 }
 
 /* ==========================================================================
+   1a. App shell layout (MainLayout.razor)
+   ========================================================================== */
+
+/*
+ * MainLayout wraps <CySidebar> and <main class="cb-demo-main"> in a
+ * horizontal <CyStack>. The sidebar sizes itself via cy-sidebar--md;
+ * the main column must be told to take up the remaining space.
+ */
+
+.cb-demo-main {
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: var(--cymru-space-4);
+}
+
+/* ==========================================================================
    2. Loading Progress (PWA splash)
    ========================================================================== */
 

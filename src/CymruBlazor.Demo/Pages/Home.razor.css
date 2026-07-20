@@ -38,6 +38,22 @@
     line-height: 1.6;
 }
 
+/*
+ * The shared .cb-demo-btn--secondary style (defined in demo.css) is tuned
+ * for light backgrounds: primary-blue text on a transparent fill. Reused
+ * unmodified inside the hero it renders blue-on-blue and is effectively
+ * invisible. Scope an inverse treatment to the hero only, mirroring the
+ * existing .cb-demo-btn--ghost pattern used right next to it.
+ */
+.cb-home__hero .cb-demo-btn--secondary {
+    border-color: var(--cymru-color-text-inverse);
+    color: var(--cymru-color-text-inverse);
+}
+
+.cb-home__hero .cb-demo-btn--secondary:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
 /* ── Feature grid ── */
 .cb-home__features {
     display: grid;

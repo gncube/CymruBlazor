@@ -6,7 +6,7 @@
     position: sticky;
     top: 0;
     z-index: var(--cymru-z-sticky);
-    border-bottom: 3px solid var(--cymru-color-primary-hover);
+    border-bottom: 3px solid var(--cymru-color-accent);
 }
 
 .cb-header__inner {

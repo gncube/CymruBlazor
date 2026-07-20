@@ -1,9 +1,8 @@
 /* ── DemoFooter ───────────────────────────────────────────────────────────── */
 
 .cb-footer {
-    background-color: var(--cymru-color-surface-alt);
-    border-top: 1px solid var(--cymru-color-border);
-    color: var(--cymru-color-text-muted);
+    background-color: var(--cymru-color-accent);
+    color: var(--cymru-color-accent-text);
     font-size: var(--cymru-font-size-sm);
 }
 
@@ -26,12 +25,13 @@
 
 .cb-footer__name {
     font-weight: 700;
-    color: var(--cymru-color-text);
+    color: var(--cymru-color-accent-text);
     font-size: var(--cymru-font-size-md);
 }
 
 .cb-footer__tagline {
-    color: var(--cymru-color-text-muted);
+    color: var(--cymru-color-accent-text);
+    opacity: 0.75;
     font-size: var(--cymru-font-size-xs);
 }
 
@@ -50,18 +50,18 @@
 }
 
 .cb-footer__link {
-    color: var(--cymru-color-link);
+    color: var(--cymru-color-accent-text);
     text-decoration: underline;
     text-underline-offset: 2px;
     font-size: var(--cymru-font-size-sm);
 }
 
 .cb-footer__link:hover {
-    color: var(--cymru-color-link-hover);
+    text-decoration-thickness: 2px;
 }
 
 .cb-footer__link:visited {
-    color: var(--cymru-color-link-visited);
+    color: var(--cymru-color-accent-text);
 }
 
 .cb-footer__link:focus-visible {
@@ -75,6 +75,7 @@
     margin: 0;
     margin-inline-start: auto;
     font-size: var(--cymru-font-size-xs);
-    color: var(--cymru-color-text-muted);
+    color: var(--cymru-color-accent-text);
+    opacity: 0.75;
     white-space: nowrap;
 }
