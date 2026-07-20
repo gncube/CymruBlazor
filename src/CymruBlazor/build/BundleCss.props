@@ -13,8 +13,9 @@
         <CymruCss Include="wwwroot\css\tokens\elevation.css" />
         <CymruCss Include="wwwroot\css\tokens\breakpoints.css" />
 
-        <!-- Base layer: Normalization and accessibility -->
+        <!-- Base layer: Normalization, accessibility and typography -->
         <CymruCss Include="wwwroot\css\base\accessibility.css" />
+        <CymruCss Include="wwwroot\css\base\typography.css" />
 
         <!-- Themes layer: Theme-specific variable overrides -->
         <CymruCss Include="wwwroot\css\themes\default.css" />
@@ -32,6 +33,7 @@
         <CymruCss Include="wwwroot\css\utilities\spacing.css" />
         <CymruCss Include="wwwroot\css\utilities\display.css" />
         <CymruCss Include="wwwroot\css\utilities\visibility.css" />
+        <CymruCss Include="wwwroot\css\utilities\screen-reader.css" />
 
         <!-- Overrides layer: Last-resort utility overrides (use sparingly) -->
         <CymruCss Include="wwwroot\css\overrides\*.css" />

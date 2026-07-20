@@ -4,7 +4,7 @@ using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 
-public partial class CyCluster : LayoutComponentBase
+public partial class CyCluster : CyLayoutComponentBase
 {
     [Parameter]
     public ComponentSize Gap { get; set; } = ComponentSize.Medium;

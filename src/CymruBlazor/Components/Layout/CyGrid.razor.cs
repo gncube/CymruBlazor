@@ -7,7 +7,7 @@ namespace CymruBlazor.Components.Layout;
 /// <summary>
 /// Provides a CSS Grid layout.
 /// </summary>
-public partial class CyGrid : LayoutComponentBase
+public partial class CyGrid : CyLayoutComponentBase
 {
     [Parameter]
     public GridColumns Columns { get; set; } = GridColumns.Auto;

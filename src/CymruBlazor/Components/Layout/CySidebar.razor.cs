@@ -7,7 +7,7 @@ namespace CymruBlazor.Components.Layout;
 /// <summary>
 /// Provides a collapsible, responsive sidebar layout component.
 /// </summary>
-public partial class CySidebar : LayoutComponentBase
+public partial class CySidebar : CyLayoutComponentBase
 {
     [Parameter]
     public SidebarPosition Position { get; set; } = SidebarPosition.Left;

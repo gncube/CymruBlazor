@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using CymruBlazor.Demo;
+using CymruBlazor.Extensions;
+using CymruBlazor.Accessibility.Focus;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -12,5 +14,8 @@ builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 });
+
+builder.Services.AddCymruBlazor();
+builder.Services.AddScoped<IFocusManager, FocusManager>();
 
 await builder.Build().RunAsync();

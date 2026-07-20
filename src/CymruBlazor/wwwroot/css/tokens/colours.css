@@ -18,6 +18,9 @@
   --cymru-blue-500: #41b6e6;
   --cymru-blue-100: #d8efff;
 
+  /* NHS Wales Navy (DHCW header/footer accent) */
+  --cymru-navy-900: #1b365d;
+
   /* NHS Greys */
   --cymru-grey-900: #212b32;
   --cymru-grey-700: #425563;
@@ -55,6 +58,12 @@
   --cymru-color-primary-subtle: var(--cymru-blue-100);
 
   --cymru-color-secondary: var(--cymru-purple-700);
+
+  /* Accent - the darker navy DHCW pairs with NHS Wales blue for headers,
+     footers, and other "structural" chrome (site header/footer, not
+     in-page content) */
+  --cymru-color-accent: var(--cymru-navy-900);
+  --cymru-color-accent-text: var(--cymru-white);
 
   /* Surface */
 

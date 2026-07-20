@@ -1,0 +1,97 @@
+/* ── Home page ────────────────────────────────────────────────────────────── */
+
+/* ── Hero ── */
+.cb-home__hero {
+    background: linear-gradient(
+        135deg,
+        var(--cymru-color-primary)       0%,
+        var(--cymru-color-primary-hover) 100%
+    );
+    color: var(--cymru-color-text-inverse);
+    padding-block: var(--cymru-space-8) var(--cymru-space-7);
+}
+
+.cb-home__badge {
+    display: inline-block;
+    padding: var(--cymru-space-1) var(--cymru-space-2);
+    background: rgba(255,255,255,0.18);
+    border-radius: var(--cymru-radius-sm);
+    font-size: var(--cymru-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.cb-home__title {
+    font-size: clamp(2.5rem, 4vw + 1rem, 4.5rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.cb-home__subtitle {
+    font-size: var(--cymru-font-size-lg);
+    margin: 0;
+    max-width: 52ch;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/*
+ * The shared .cb-demo-btn--secondary style (defined in demo.css) is tuned
+ * for light backgrounds: primary-blue text on a transparent fill. Reused
+ * unmodified inside the hero it renders blue-on-blue and is effectively
+ * invisible. Scope an inverse treatment to the hero only, mirroring the
+ * existing .cb-demo-btn--ghost pattern used right next to it.
+ */
+.cb-home__hero .cb-demo-btn--secondary {
+    border-color: var(--cymru-color-text-inverse);
+    color: var(--cymru-color-text-inverse);
+}
+
+.cb-home__hero .cb-demo-btn--secondary:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Feature grid ── */
+.cb-home__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--cymru-space-4);
+    padding-block: var(--cymru-space-6);
+}
+
+.cb-home__feature {
+    padding: var(--cymru-space-4);
+    border: 1px solid var(--cymru-color-border);
+    border-radius: var(--cymru-radius-md);
+    background: var(--cymru-color-surface);
+}
+
+.cb-home__feature-icon {
+    font-size: 2rem;
+    margin-block-end: var(--cymru-space-2);
+    line-height: 1;
+}
+
+.cb-home__feature-title {
+    font-size: var(--cymru-font-size-lg);
+    font-weight: 700;
+    margin: 0 0 var(--cymru-space-2) 0;
+    color: var(--cymru-color-text);
+}
+
+.cb-home__feature-body {
+    margin: 0;
+    color: var(--cymru-color-text-muted);
+    font-size: var(--cymru-font-size-sm);
+    line-height: 1.6;
+}
+
+/* ── Quick start ── */
+.cb-home__quick-start {
+    padding-block: var(--cymru-space-5);
+    border-top: 1px solid var(--cymru-color-border);
+    margin-block-end: var(--cymru-space-6);
+}

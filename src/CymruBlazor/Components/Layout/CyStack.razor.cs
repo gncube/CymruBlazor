@@ -7,7 +7,7 @@ namespace CymruBlazor.Components.Layout;
 /// <summary>
 /// Provides a flexbox stack layout.
 /// </summary>
-public partial class CyStack : LayoutComponentBase
+public partial class CyStack : CyLayoutComponentBase
 {
     [Parameter]
     public Orientation Orientation { get; set; }

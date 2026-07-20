@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace CymruBlazor.Components.Layout;
 
-public partial class CyCenter : LayoutComponentBase
+public partial class CyCenter : CyLayoutComponentBase
 {
     [Parameter]
     public bool Horizontal { get; set; } = true;

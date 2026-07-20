@@ -1,0 +1,345 @@
+/*
+ * demo.css — CymruBlazor Reference Application
+ *
+ * Contains ONLY Demo-specific styling.
+ * No component CSS is duplicated here.
+ * All colours reference semantic design tokens from cymrublazor.css.
+ *
+ * Sections:
+ *   1. Blazor error UI
+ *   2. Loading progress
+ *   3. Demo page typography helpers
+ *   4. Code blocks
+ *   5. Example card / preview pane
+ *   6. API table
+ */
+
+/* ==========================================================================
+   1. Blazor Error UI
+   ========================================================================== */
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: var(--cymru-color-warning-background, lightyellow);
+    border-top: 2px solid var(--cymru-color-warning, #ffeb3b);
+    bottom: 0;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: var(--cymru-space-2, 0.5rem) var(--cymru-space-4, 1.5rem);
+    position: fixed;
+    width: 100%;
+    z-index: var(--cymru-z-toast, 1080);
+    color: var(--cymru-color-text, #212b32);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: var(--cymru-space-3, 1rem);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+#blazor-error-ui .dismiss:hover {
+    opacity: 1;
+}
+
+.blazor-error-boundary {
+    padding: var(--cymru-space-3, 1rem) var(--cymru-space-3, 1rem)
+             var(--cymru-space-3, 1rem) 3.7rem;
+    background-color: var(--cymru-color-danger-background, #fde8e6);
+    color: var(--cymru-color-danger, #d5281b);
+    border-inline-start: 4px solid var(--cymru-color-danger, #d5281b);
+    border-radius: var(--cymru-radius-sm, 4px);
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   1a. App shell layout (MainLayout.razor)
+   ========================================================================== */
+
+/*
+ * MainLayout wraps <CySidebar> and <main class="cb-demo-main"> in a
+ * horizontal <CyStack>. The sidebar sizes itself via cy-sidebar--md;
+ * the main column must be told to take up the remaining space.
+ */
+
+.cb-demo-main {
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: var(--cymru-space-4);
+}
+
+/* ==========================================================================
+   2. Loading Progress (PWA splash)
+   ========================================================================== */
+
+.loading-progress {
+    position: absolute;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    inset: 20vh 0 auto 0;
+    margin: 0 auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: var(--cymru-grey-100, #f0f4f5);
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: var(--cymru-color-primary, #005eb8);
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: 700;
+    color: var(--cymru-color-text-muted, #425563);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+.loading-progress-text::after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
+
+/* ==========================================================================
+   3. Demo page typography helpers
+   ========================================================================== */
+
+.cb-page-header {
+    margin-block-end: var(--cymru-space-5);
+    padding-block-end: var(--cymru-space-4);
+    border-bottom: 1px solid var(--cymru-color-border);
+}
+
+.cb-page-title {
+    font-size: var(--cymru-font-size-3xl, 2.25rem);
+    font-weight: 700;
+    color: var(--cymru-color-text);
+    margin: 0 0 var(--cymru-space-2) 0;
+    line-height: 1.2;
+}
+
+.cb-page-description {
+    font-size: var(--cymru-font-size-lg, 1.25rem);
+    color: var(--cymru-color-text-muted);
+    margin: 0;
+    max-width: 70ch;
+    line-height: 1.5;
+}
+
+.cb-section {
+    margin-block-end: var(--cymru-space-6);
+}
+
+.cb-section-title {
+    font-size: var(--cymru-font-size-xl, 1.5rem);
+    font-weight: 700;
+    color: var(--cymru-color-text);
+    margin: 0 0 var(--cymru-space-3) 0;
+}
+
+.cb-section-description {
+    color: var(--cymru-color-text-muted);
+    margin: 0 0 var(--cymru-space-3) 0;
+    max-width: 70ch;
+}
+
+/* ==========================================================================
+   4. Code blocks
+   ========================================================================== */
+
+code,
+kbd,
+samp {
+    font-family: var(--cymru-font-family-monospace,
+                     "Cascadia Code", "Consolas", "Courier New", monospace);
+    font-size: 0.9em;
+    color: var(--cymru-color-danger, #d5281b);
+}
+
+pre {
+    background-color: var(--cymru-grey-900, #212b32);
+    color: var(--cymru-grey-100, #f0f4f5);
+    padding: var(--cymru-space-4, 1.5rem);
+    border-radius: var(--cymru-radius-md, 6px);
+    overflow-x: auto;
+    font-family: var(--cymru-font-family-monospace,
+                     "Cascadia Code", "Consolas", "Courier New", monospace);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    line-height: 1.6;
+    margin-block: var(--cymru-space-3);
+}
+
+pre code {
+    color: inherit;
+    font-size: inherit;
+    background: none;
+    padding: 0;
+}
+
+/* ==========================================================================
+   5. Example card / preview pane
+   ========================================================================== */
+
+.cb-example {
+    border: 1px solid var(--cymru-color-border);
+    border-radius: var(--cymru-radius-md, 6px);
+    overflow: hidden;
+    margin-block-end: var(--cymru-space-4);
+}
+
+.cb-example__label {
+    display: block;
+    font-size: var(--cymru-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cymru-color-text-muted);
+    background-color: var(--cymru-color-surface-alt);
+    border-bottom: 1px solid var(--cymru-color-border);
+    padding: var(--cymru-space-2) var(--cymru-space-3);
+}
+
+.cb-example__preview {
+    padding: var(--cymru-space-5);
+    background-color: var(--cymru-color-surface);
+}
+
+.cb-example__code {
+    border-top: 1px solid var(--cymru-color-border);
+    margin: 0;
+    border-radius: 0;
+}
+
+/* ==========================================================================
+   6. API prop table
+   ========================================================================== */
+
+.cb-api-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--cymru-font-size-sm);
+    margin-block-end: var(--cymru-space-4);
+}
+
+.cb-api-table th {
+    text-align: left;
+    padding: var(--cymru-space-2) var(--cymru-space-3);
+    background-color: var(--cymru-color-surface-alt);
+    border-bottom: 2px solid var(--cymru-color-border-strong);
+    font-weight: 700;
+    color: var(--cymru-color-text);
+    white-space: nowrap;
+}
+
+.cb-api-table td {
+    padding: var(--cymru-space-2) var(--cymru-space-3);
+    border-bottom: 1px solid var(--cymru-color-border);
+    vertical-align: top;
+    color: var(--cymru-color-text);
+}
+
+.cb-api-table tr:last-child td {
+    border-bottom: none;
+}
+
+.cb-api-table__name {
+    font-family: var(--cymru-font-family-monospace, monospace);
+    color: var(--cymru-color-primary);
+    font-weight: 600;
+}
+
+.cb-api-table__type {
+    font-family: var(--cymru-font-family-monospace, monospace);
+    color: var(--cymru-color-text-muted);
+    font-size: 0.9em;
+}
+
+.cb-api-table__default {
+    font-family: var(--cymru-font-family-monospace, monospace);
+    color: var(--cymru-color-text-muted);
+    font-size: 0.9em;
+}
+
+/* ==========================================================================
+   7. Demo button utility (used on documentation pages for interactive examples)
+   ========================================================================== */
+
+.cb-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cymru-space-1);
+    padding: var(--cymru-space-2) var(--cymru-space-3);
+    background-color: var(--cymru-color-primary);
+    color: var(--cymru-color-text-inverse);
+    border: 2px solid transparent;
+    border-radius: var(--cymru-radius-sm);
+    font-size: var(--cymru-font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    white-space: nowrap;
+}
+
+.cb-demo-btn:hover {
+    background-color: var(--cymru-color-primary-hover);
+}
+
+.cb-demo-btn:focus-visible {
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+    outline-offset: var(--cymru-focus-offset);
+}
+
+/* Secondary */
+.cb-demo-btn--secondary {
+    background-color: transparent;
+    border-color: var(--cymru-color-primary);
+    color: var(--cymru-color-primary);
+}
+
+.cb-demo-btn--secondary:hover {
+    background-color: var(--cymru-color-primary-subtle);
+}
+
+/* Ghost */
+.cb-demo-btn--ghost {
+    background-color: transparent;
+    border-color: rgba(255,255,255,0.4);
+    color: var(--cymru-color-text-inverse);
+}
+
+.cb-demo-btn--ghost:hover {
+    background-color: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.7);
+}
+
+/* Warning */
+.cb-demo-btn--warning {
+    background-color: var(--cymru-color-danger);
+    border-color: transparent;
+    color: var(--cymru-color-text-inverse);
+}
+
+.cb-demo-btn--warning:hover {
+    background-color: #b02516;
+}

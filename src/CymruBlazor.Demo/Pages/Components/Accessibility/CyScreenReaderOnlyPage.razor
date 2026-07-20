@@ -1,0 +1,188 @@
+@page "/accessibility/screen-reader-only"
+@namespace CymruBlazor.Demo.Pages.Components.Accessibility
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyScreenReaderOnly</h1>
+    <p class="cb-page-description">
+        Renders content that is visually hidden but present in the accessibility
+        tree. Use to provide supplementary context for screen reader users without
+        affecting the visual layout.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Icon button label</h2>
+    <p class="cb-section-description">
+        The most common use case. A visible icon communicates meaning to sighted
+        users; <code>CyScreenReaderOnly</code> provides the accessible label for
+        screen reader users. The icon carries <code>aria-hidden="true"</code> to
+        prevent double-reading.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview — focus the button to hear its label</span>
+        <div class="cb-example__preview">
+            <button type="button"
+                    style="display:inline-flex;align-items:center;gap:var(--cymru-space-1);
+                           padding:var(--cymru-space-2);
+                           border:1px solid var(--cymru-color-border);
+                           border-radius:var(--cymru-radius-sm);
+                           background:var(--cymru-color-surface);
+                           cursor:pointer">
+                <svg width="16" height="16" viewBox="0 0 16 16"
+                     aria-hidden="true" focusable="false"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                          d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 1a6 6 0 1 0 0
+                             12A6 6 0 0 0 8 2zM7 5h2v5H7zm0 6h2v2H7z"/>
+                </svg>
+                <CyScreenReaderOnly>More information about this field</CyScreenReaderOnly>
+            </button>
+        </div>
+        <pre class="cb-example__code"><code>&lt;button type="button"&gt;
+    &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+    &lt;CyScreenReaderOnly&gt;
+        More information about this field
+    &lt;/CyScreenReaderOnly&gt;
+&lt;/button&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Table column context</h2>
+    <p class="cb-section-description">
+        When a table column header is clear from visual context but ambiguous
+        when read in isolation, add hidden context for AT users.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <table style="border-collapse:collapse;width:100%;font-size:var(--cymru-font-size-sm)">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;padding:var(--cymru-space-2);
+                                   border-bottom:2px solid var(--cymru-color-border)">
+                            Patient
+                        </th>
+                        <th style="text-align:left;padding:var(--cymru-space-2);
+                                   border-bottom:2px solid var(--cymru-color-border)">
+                            DOB
+                            <CyScreenReaderOnly> (date of birth)</CyScreenReaderOnly>
+                        </th>
+                        <th style="text-align:right;padding:var(--cymru-space-2);
+                                   border-bottom:2px solid var(--cymru-color-border)">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding:var(--cymru-space-2);border-bottom:1px solid var(--cymru-color-border)">
+                            Morgan Jones
+                        </td>
+                        <td style="padding:var(--cymru-space-2);border-bottom:1px solid var(--cymru-color-border)">
+                            15/03/1990
+                        </td>
+                        <td style="padding:var(--cymru-space-2);border-bottom:1px solid var(--cymru-color-border);
+                                   text-align:right">
+                            <button type="button"
+                                    style="background:none;border:none;cursor:pointer;
+                                           color:var(--cymru-color-primary);text-decoration:underline">
+                                Edit
+                                <CyScreenReaderOnly>Morgan Jones</CyScreenReaderOnly>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <pre class="cb-example__code"><code>&lt;th&gt;
+    DOB
+    &lt;CyScreenReaderOnly&gt; (date of birth)&lt;/CyScreenReaderOnly&gt;
+&lt;/th&gt;
+
+&lt;!-- Disambiguate repeated "Edit" links --&gt;
+&lt;button&gt;
+    Edit
+    &lt;CyScreenReaderOnly&gt;Morgan Jones&lt;/CyScreenReaderOnly&gt;
+&lt;/button&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Implementation</h2>
+    <p class="cb-section-description">
+        <code>CyScreenReaderOnly</code> applies the <code>.sr-only</code>
+        utility class, which uses the standard clip technique to hide content
+        visually while keeping it in the accessibility tree.
+        <strong>Do not use <code>display: none</code> or
+        <code>visibility: hidden</code></strong> — those remove the element
+        from the accessibility tree entirely.
+    </p>
+    <pre><code>/* utilities/screen-reader.css */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="CyScreenReaderOnly parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">ChildContent</td>
+                <td class="cb-api-table__type">RenderFragment</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The text or markup to expose to screen readers only</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Class</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Additional CSS classes. The <code>sr-only</code> class is always applied first.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">When not to use</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;
+               padding-inline-start:var(--cymru-space-4)">
+        <li>
+            <strong>Do not hide important content.</strong> Content in
+            <code>CyScreenReaderOnly</code> must be meaningful when read aloud
+            without any surrounding visual context. If sighted users would need
+            to see it, it should be visible.
+        </li>
+        <li>
+            <strong>Do not duplicate existing labels.</strong> If the element
+            already has an <code>aria-label</code> or is referenced by
+            <code>aria-labelledby</code>, adding <code>CyScreenReaderOnly</code>
+            creates redundant announcements.
+        </li>
+        <li>
+            <strong>Do not use for decorative content.</strong> Apply
+            <code>aria-hidden="true"</code> to decorative icons and images
+            instead of wrapping them in <code>CyScreenReaderOnly</code>.
+        </li>
+    </ul>
+</div>

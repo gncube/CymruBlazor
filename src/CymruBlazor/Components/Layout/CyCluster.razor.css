@@ -1,3 +1,8 @@
-:host {
-    display: contents;
-}
+/*
+ * Blazor CSS isolation does not support the :host pseudo-class - see
+ * CyStack.razor.css for the full explanation. CyCluster's actual layout is
+ * provided by the global "cy-cluster" rules in wwwroot/css/layout/grid.css.
+ *
+ * This file is intentionally empty; it exists as a placeholder for future
+ * cluster-specific overrides that genuinely need CSS isolation.
+ */
