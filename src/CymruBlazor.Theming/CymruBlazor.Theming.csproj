@@ -6,6 +6,11 @@
     <LangVersion>preview</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTrimmable>true</IsTrimmable>
+
+    <!-- Not shipped in the first NuGet release - internal to the Demo app
+         for now. Remove once this project gets its own release-readiness
+         pass (NuGet metadata, README, docs). -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -15,5 +15,12 @@
     <!-- SourceLink applies to all packable projects -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Versioning: MinVer derives the package/assembly version from git
+         tags shaped like v0.1.0-preview.1 (see release.yml). This is the
+         single source of truth for version numbers - do not hardcode
+         Version/AssemblyVersion/FileVersion in any project. -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
   </PropertyGroup>
 </Project>
