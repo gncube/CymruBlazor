@@ -1,0 +1,59 @@
+@inherits CyLayoutComponentBase
+
+@if (Href is not null)
+{
+    <a
+        href="@Href"
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        @attributes="AdditionalAttributes">
+
+        @if (Header is not null)
+        {
+            <div class="cy-card__header">
+                @Header
+            </div>
+        }
+
+        <div class="cy-card__body">
+            @ChildContent
+        </div>
+
+        @if (Footer is not null)
+        {
+            <div class="cy-card__footer">
+                @Footer
+            </div>
+        }
+
+    </a>
+}
+else
+{
+    <div
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        @attributes="AdditionalAttributes">
+
+        @if (Header is not null)
+        {
+            <div class="cy-card__header">
+                @Header
+            </div>
+        }
+
+        <div class="cy-card__body">
+            @ChildContent
+        </div>
+
+        @if (Footer is not null)
+        {
+            <div class="cy-card__footer">
+                @Footer
+            </div>
+        }
+
+    </div>
+}

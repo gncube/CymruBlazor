@@ -10,6 +10,16 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+### Added (Phase 1+2 of the next release - see plan/plan-next-release-components.md)
+
+- `IThemeService` is now registered in DI (`AddCymruBlazor()`) - previously implemented but never resolvable.
+- `ThemeService` gained optional JS interop: `localStorage` persistence and live OS `prefers-color-scheme` detection, via `wwwroot/js/theme.js`. Fully backward compatible - the parameterless constructor path is unchanged.
+- `CyThemeProvider` - new component; applies the active theme via a `data-theme` wrapper and re-renders on theme change.
+- `CyTypography` - NHS Wales typography scale (`H1`-`H6`, `Body`, `BodyLarge`, `BodySmall`, `Caption`), with an `As` override to decouple visual style from semantic heading level.
+- `CyCard` - content container with optional header/footer and whole-card-link (`Href`) support.
+- `CyAlert` - status/alert banner with severity-driven ARIA role (`alert` vs `status`) and optional dismiss button.
+- Removed `wwwroot/js/theme-service.js` - pre-existing, unreferenced scaffolding superseded by the newly-wired `theme.js` + `ThemeService` interop.
+
 ## [0.1.0-preview.1] - Pending
 
 Initial pre-release. This is a **preview**, not a feature-complete 1.0 -

@@ -53,12 +53,20 @@
 @import "layout/containers.css" layer(layout);
 @import "layout/grid.css" layer(layout);
 
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+@import "components/theming.css" layer(components);
+@import "components/typography.css" layer(components);
+@import "components/cards.css" layer(components);
+@import "components/alerts.css" layer(components);
+
 /*
  * Future imports
  *
- * utilities/*.css
- * themes/*.css
- * components/*.css
+ * components/forms.css
+ * components/navigation.css
  */
 
 /* ==========================================================================
