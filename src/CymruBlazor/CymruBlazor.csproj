@@ -7,10 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
 
-    <!-- Assembly identity (GitVersion patches these at build time) -->
-    <AssemblyVersion>0.0.0</AssemblyVersion>
-    <FileVersion>0.0.0</FileVersion>
-    <InformationalVersion>0.0.0</InformationalVersion>
+    <!-- Assembly identity is derived entirely from git tags by MinVer
+         (see PackageReference below + MinVerTagPrefix in Directory.Build.props).
+         Do not hardcode AssemblyVersion/FileVersion/InformationalVersion here -
+         doing so overrides MinVer's computed values. -->
 
     <!-- NuGet metadata -->
     <PackageId>CymruBlazor</PackageId>
@@ -28,7 +28,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>blazor;nhs;nhswales;design-system;components;accessibility;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>icon.png</PackageIcon>
+    <!-- No PackageIcon yet - add back once real artwork exists at
+         src/CymruBlazor/icon.png (128x128+ PNG, <1MB), together with a
+         corresponding <None Include="icon.png" Pack="true" PackagePath="\" />
+         entry below. A PackageIcon pointing at a file that isn't actually
+         packed fails `dotnet pack` with NU5046. -->
 
     <!-- Source link and symbols -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -53,7 +57,6 @@
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <None Include="icon.png" Pack="true" PackagePath="\" Condition="Exists('icon.png')" />
   </ItemGroup>
 
   <!-- SourceLink (GitHub) -->

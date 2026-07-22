@@ -1,0 +1,74 @@
+name: Publish Demo
+
+# Deploys the Demo Blazor WebAssembly app to GitHub Pages as the project's
+# living documentation site (see PRD.md section 7, "Documentation Strategy").
+#
+# Runs after a successful push to main, and can also be triggered manually.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publish Demo (Release)
+        run: >
+          dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj
+          -c Release
+          -o ./demo-publish
+
+      - name: Rewrite base href for GitHub Pages project site
+        # GitHub Pages serves this repo at /<repo-name>/, but the Demo app
+        # is built assuming it's hosted at the domain root ("/"). Rewrite
+        # the <base> tag so relative asset/API/CSS references resolve
+        # correctly once deployed.
+        run: |
+          sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' \
+            ./demo-publish/wwwroot/index.html
+
+      - name: Add SPA fallback + disable Jekyll processing
+        run: |
+          cp ./demo-publish/wwwroot/index.html ./demo-publish/wwwroot/404.html
+          touch ./demo-publish/wwwroot/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./demo-publish/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
