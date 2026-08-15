@@ -1,0 +1,237 @@
+@page "/accessibility/live-region"
+@namespace CymruBlazor.Demo.Pages.Components.Accessibility
+@using CymruBlazor.Accessibility.Notifications
+@inject IMediator Mediator
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyLiveRegion</h1>
+    <p class="cb-page-description">
+        Announces dynamic content changes to screen readers without moving
+        keyboard focus. Place one instance in your shell layout — then publish
+        <code>LiveRegionAnnouncement</code> via Mediator from anywhere in the
+        application to trigger an announcement.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">How it works</h2>
+
+    <p class="cb-section-description">
+        <code>CyLiveRegion</code> subscribes to the Mediator pipeline and
+        handles <code>LiveRegionAnnouncement</code> notifications. It renders
+        as a visually hidden <code>&lt;div&gt;</code> with
+        <code>aria-live</code> set to match the announcement's politeness level.
+        Screen readers monitor the element and announce its text content when
+        it changes.
+    </p>
+
+    <pre><code>// Register once in your layout (e.g. MainLayout.razor)
+&lt;CyLiveRegion /&gt;
+
+// Publish from any component or service
+await Mediator.Publish(
+    new LiveRegionAnnouncement("Record saved", LiveRegionPoliteness.Polite));</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Live demo</h2>
+
+    <p class="cb-section-description">
+        The shell layout already hosts a <code>CyLiveRegion</code>. Click the
+        buttons below to publish announcements — a screen reader will announce
+        each message at the appropriate politeness level.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+
+        <div class="cb-example__preview">
+            <CyStack Orientation="Orientation.Horizontal"
+                     Gap="ComponentSize.Small"
+                     AlignItems="AlignItems.Center"
+                     Wrap="true">
+
+                <button class="cb-demo-btn"
+                        @onclick="AnnouncePolite">
+                    Polite announcement
+                </button>
+
+                <button class="cb-demo-btn cb-demo-btn--warning"
+                        @onclick="AnnounceAssertive">
+                    Assertive announcement
+                </button>
+
+                <button class="cb-demo-btn cb-demo-btn--secondary"
+                        @onclick="RepeatAnnouncement">
+                    Repeat last message
+                </button>
+
+            </CyStack>
+
+            @if (!string.IsNullOrWhiteSpace(_lastMessage))
+            {
+                <p style="margin-block-start:var(--cymru-space-4);
+                          font-size:var(--cymru-font-size-sm);
+                          color:var(--cymru-color-text-muted)">
+                    Last published:
+                    <em>"@_lastMessage"</em>
+                    with politeness
+                    <strong>@_lastPoliteness</strong>
+                </p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Politeness levels</h2>
+
+    <table class="cb-api-table" aria-label="Politeness level descriptions">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>aria-live</th>
+                <th>When to use</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Polite</td>
+                <td class="cb-api-table__type">polite</td>
+                <td>
+                    Non-urgent updates — status messages, success confirmations,
+                    counts. Announced at the next pause in speech.
+                </td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Assertive</td>
+                <td class="cb-api-table__type">assertive</td>
+                <td>
+                    Urgent alerts — session expiry, critical errors.
+                    Interrupts current speech immediately.
+                    Use sparingly.
+                </td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Off</td>
+                <td class="cb-api-table__type">off</td>
+                <td>
+                    Temporarily silences announcements.
+                    Rarely needed — prefer not publishing over using Off.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Message deduplication</h2>
+
+    <p class="cb-section-description">
+        Screen readers do not re-announce identical text that is set
+        consecutively — the DOM change must be observed.
+        <code>CyLiveRegion</code> detects when the incoming message matches the
+        current text, briefly clears the region, then sets the new value to
+        force a re-announcement.
+        The "Repeat last message" button above demonstrates this behaviour.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+
+    <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+        CyLiveRegion parameters
+    </h3>
+
+    <table class="cb-api-table" aria-label="CyLiveRegion parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Politeness</td>
+                <td class="cb-api-table__type">LiveRegionPoliteness</td>
+                <td class="cb-api-table__default">Polite</td>
+                <td>Initial aria-live level. Overridden per announcement.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">AriaAtomic</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>When true the whole region is read, not just changed nodes.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">AriaRelevant</td>
+                <td class="cb-api-table__type">string</td>
+                <td class="cb-api-table__default">"additions text"</td>
+                <td>Controls which change types trigger announcements.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+        LiveRegionAnnouncement record
+    </h3>
+
+    <table class="cb-api-table" aria-label="LiveRegionAnnouncement properties">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Message</td>
+                <td class="cb-api-table__type">string</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The text to announce. Required.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Politeness</td>
+                <td class="cb-api-table__type">LiveRegionPoliteness</td>
+                <td class="cb-api-table__default">Polite</td>
+                <td>Overrides the region's default politeness for this announcement.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@code
+{
+    private string _lastMessage = string.Empty;
+    private LiveRegionPoliteness _lastPoliteness = LiveRegionPoliteness.Polite;
+
+    private Task AnnouncePolite()
+        => Announce("Record saved successfully.", LiveRegionPoliteness.Polite);
+
+    private Task AnnounceAssertive()
+        => Announce("Session will expire in 2 minutes.", LiveRegionPoliteness.Assertive);
+
+    private Task RepeatAnnouncement()
+        => Announce(_lastMessage, LiveRegionPoliteness.Polite);
+
+    private async Task Announce(string message, LiveRegionPoliteness politeness)
+    {
+        _lastMessage = message;
+        _lastPoliteness = politeness;
+
+        await Mediator.Publish(new LiveRegionAnnouncement(message, politeness));
+    }
+}

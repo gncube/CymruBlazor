@@ -1,0 +1,39 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Enums
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="@ComputedRole"
+    @attributes="AdditionalAttributes">
+
+    <div class="cy-alert__content">
+
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <CyTypography Variant="TypographyVariant.H6" Class="cy-alert__title">
+                @Title
+            </CyTypography>
+        }
+
+        <div class="cy-alert__message">
+            @ChildContent
+        </div>
+
+    </div>
+
+    @if (Dismissible)
+    {
+        <button
+            type="button"
+            class="cy-alert__dismiss"
+            aria-label="Dismiss"
+            @onclick="HandleDismissAsync">
+
+            <span aria-hidden="true">&times;</span>
+
+        </button>
+    }
+
+</div>

@@ -1,0 +1,86 @@
+@layer base;
+
+/*
+ * CymruBlazor Theme
+ *
+ * Default (NHS Wales / Light)
+ *
+ * This is the default theme and intentionally mirrors the semantic
+ * values defined in colours.css.
+ *
+ * Keeping this file explicit makes it easy to diff themes and allows
+ * additional semantic tokens to be introduced later without changing
+ * component CSS.
+ */
+
+:root,
+[data-theme="light"] {
+  /* ==========================================================================
+       Brand
+       ========================================================================== */
+
+  --cymru-color-primary: var(--cymru-blue-800);
+  --cymru-color-primary-hover: var(--cymru-blue-900);
+  --cymru-color-primary-subtle: var(--cymru-blue-100);
+
+  --cymru-color-secondary: var(--cymru-navy-900);
+  --cymru-color-brand-accent: var(--cymru-cyan-700);
+
+  --cymru-color-accent: var(--cymru-navy-900);
+  --cymru-color-accent-text: var(--cymru-white);
+
+  /* ==========================================================================
+       Surfaces
+       ========================================================================== */
+
+  --cymru-color-background: var(--cymru-grey-100);
+  --cymru-color-surface: var(--cymru-white);
+  --cymru-color-surface-alt: var(--cymru-blue-50);
+  --cymru-color-surface-accent: var(--cymru-cyan-100);
+
+  /* ==========================================================================
+       Borders
+       ========================================================================== */
+
+  --cymru-color-border: var(--cymru-grey-200);
+  --cymru-color-border-strong: var(--cymru-grey-600);
+
+  /* ==========================================================================
+       Typography
+       ========================================================================== */
+
+  --cymru-color-text: var(--cymru-grey-900);
+  --cymru-color-text-muted: var(--cymru-grey-600);
+  --cymru-color-text-inverse: var(--cymru-white);
+
+  /* ==========================================================================
+       Links
+       ========================================================================== */
+
+  --cymru-color-link: var(--cymru-info-blue-700);
+  --cymru-color-link-hover: var(--cymru-navy-900);
+  --cymru-color-link-visited: var(--cymru-blue-600);
+
+  /* ==========================================================================
+       Status
+       ========================================================================== */
+
+  --cymru-color-success: var(--cymru-green-600);
+  --cymru-color-success-background: var(--cymru-green-100);
+
+  --cymru-color-warning: var(--cymru-yellow-500);
+  --cymru-color-warning-background: var(--cymru-yellow-100);
+
+  --cymru-color-danger: var(--cymru-red-600);
+  --cymru-color-danger-background: var(--cymru-red-100);
+
+  --cymru-color-info: var(--cymru-info-blue-700);
+  --cymru-color-info-background: var(--cymru-info-blue-100);
+
+  /* ==========================================================================
+       Focus
+       ========================================================================== */
+
+  --cymru-color-focus: var(--cymru-focus-yellow);
+  --cymru-color-focus-outline: var(--cymru-focus-yellow);
+}

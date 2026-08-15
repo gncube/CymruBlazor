@@ -1,0 +1,21 @@
+@inherits CyLayoutComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+@using CymruBlazor.Components.Content
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="alert"
+    @attributes="AdditionalAttributes">
+
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <CyTypography Variant="TypographyVariant.H4" Class="cy-validation-summary__title">
+            @Title
+        </CyTypography>
+    }
+
+    <ValidationSummary />
+
+</div>

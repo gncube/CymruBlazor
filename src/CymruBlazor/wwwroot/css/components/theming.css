@@ -1,0 +1,19 @@
+@layer components;
+
+/*
+ * CymruBlazor Theming - CyThemeProvider
+ *
+ * <CyThemeProvider> renders a wrapper <div data-theme="..."> so the
+ * [data-theme="dark"] / [data-theme="high-contrast"] selectors in
+ * wwwroot/css/themes/*.css have something to attach to. Consumers
+ * typically wrap their entire application in it, so the wrapper must not
+ * introduce an extra box in the layout flow (this would otherwise break
+ * height:100vh flex/grid app shells with an unexpected block-level
+ * ancestor). display: contents removes the box while keeping the
+ * data-theme attribute (and therefore the theme) applied to its
+ * descendants via normal CSS selector matching.
+ */
+
+.cy-theme-provider {
+  display: contents;
+}

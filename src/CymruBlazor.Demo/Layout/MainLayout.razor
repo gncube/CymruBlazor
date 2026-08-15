@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+<CyContainer Size="ContainerSize.Fluid" RemovePadding="true">
+
+    <header>
+
+        <DemoHeader />
+
+    </header>
+
+    <CyStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" Gap="ComponentSize.Medium">
+
+        <CySidebar Width="SidebarWidth.Medium" aria-label="Documentation navigation">
+
+            <DemoSidebar />
+
+        </CySidebar>
+
+        <main id="main-content" class="cb-demo-main" tabindex="-1">
+
+            @Body
+
+        </main>
+
+    </CyStack>
+
+    <footer>
+
+        <DemoFooter />
+
+    </footer>
+
+    <CyLiveRegion />
+
+</CyContainer>

@@ -1,0 +1,78 @@
+@layer layout;
+
+/*
+ * CymruBlazor Layout - Container
+ *
+ * Backs the <CyContainer> component (Components/Layout/CyContainer.razor),
+ * whose BaseCssClass is "cy-container". Previous versions of this file
+ * targeted a "cymru-container" naming convention that no component ever
+ * emitted, so containers rendered with zero layout styling.
+ */
+
+.cy-container {
+  width: 100%;
+
+  margin-inline: auto;
+
+  padding-inline: var(--cymru-gutter-mobile);
+
+  box-sizing: border-box;
+}
+
+.cy-container--sm {
+  max-width: var(--cymru-container-sm);
+}
+
+.cy-container--md {
+  max-width: var(--cymru-container-md);
+}
+
+.cy-container--lg {
+  max-width: var(--cymru-container-lg);
+}
+
+.cy-container--xl {
+  max-width: var(--cymru-container-xl);
+}
+
+.cy-container--fluid {
+  max-width: none;
+}
+
+.cy-container--no-padding {
+  padding-inline: 0;
+}
+
+/*
+ * Responsive gutters
+ */
+
+@media (min-width: 48rem) {
+  .cy-container {
+    padding-inline: var(--cymru-gutter-tablet);
+  }
+
+  .cy-container--no-padding {
+    padding-inline: 0;
+  }
+}
+
+@media (min-width: 64rem) {
+  .cy-container {
+    padding-inline: var(--cymru-gutter-desktop);
+  }
+
+  .cy-container--no-padding {
+    padding-inline: 0;
+  }
+}
+
+@media (min-width: 90rem) {
+  .cy-container {
+    padding-inline: var(--cymru-gutter-xlarge);
+  }
+
+  .cy-container--no-padding {
+    padding-inline: 0;
+  }
+}

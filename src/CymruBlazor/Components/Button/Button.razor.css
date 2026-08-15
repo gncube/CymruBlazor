@@ -1,0 +1,36 @@
+.cymru-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* WCAG 2.2 SC 2.5.8 - 44x44px minimum touch target. */
+  min-height: var(--cymru-touch-target-min);
+
+  background: var(--cymru-color-primary);
+  color: var(--cymru-color-surface);
+  padding: var(--cymru-spacing-component-sm) var(--cymru-spacing-component-md);
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  font-family: var(--cymru-font-family);
+  font-size: var(--cymru-font-size-md);
+
+  /* sr.elevation.button - press affordance, GDS-aligned directional
+     bottom shadow. Disappears on :active to simulate a keypress. */
+  box-shadow: var(--cymru-shadow-button);
+
+  cursor: pointer;
+}
+
+.cymru-btn:hover {
+  background: var(--cymru-color-primary-hover);
+}
+
+.cymru-btn:active {
+  box-shadow: none;
+  transform: translateY(2px);
+}
+
+.cymru-btn:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}

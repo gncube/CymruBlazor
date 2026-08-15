@@ -1,0 +1,19 @@
+@inherits CyLayoutComponentBase
+
+<footer id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    @if (ChildContent is not null)
+    {
+        <div class="cy-footer__links">
+            @ChildContent
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Copyright))
+    {
+        <p class="cy-footer__copyright">
+            @Copyright
+        </p>
+    }
+
+</footer>

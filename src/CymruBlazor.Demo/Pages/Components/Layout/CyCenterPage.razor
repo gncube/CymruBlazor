@@ -1,0 +1,149 @@
+@page "/layouts/center"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyCenter</h1>
+    <p class="cb-page-description">
+        Centers child content horizontally and/or vertically using flexbox.
+        Optionally expands to fill the full available height of its parent.
+        Useful for splash screens, empty states, and hero sections.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Horizontal and vertical (default)</h2>
+    <p class="cb-section-description">
+        Both axes are enabled by default. The component renders as a
+        <code>&lt;div&gt;</code> with <code>display: flex</code>,
+        <code>justify-content: center</code>, and
+        <code>align-items: center</code>.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyCenter FullHeight="false"
+                      Style="height:160px;background:var(--cymru-color-surface-alt);
+                             border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
+                <div style="padding:var(--cymru-space-4);background:var(--cymru-color-primary);
+                            color:var(--cymru-color-text-inverse);border-radius:var(--cymru-radius-sm)">
+                    Centered content
+                </div>
+            </CyCenter>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyCenter&gt;
+    &lt;div&gt;Centered content&lt;/div&gt;
+&lt;/CyCenter&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Horizontal only</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyCenter Vertical="false"
+                      Style="height:100px;background:var(--cymru-color-surface-alt);
+                             border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
+                <div style="padding:var(--cymru-space-2) var(--cymru-space-6);
+                            background:var(--cymru-color-primary);
+                            color:var(--cymru-color-text-inverse);border-radius:var(--cymru-radius-sm)">
+                    Horizontally centered
+                </div>
+            </CyCenter>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyCenter Vertical="false"&gt;
+    ...
+&lt;/CyCenter&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Full height empty state</h2>
+    <p class="cb-section-description">
+        <code>FullHeight="true"</code> sets <code>min-height: 100%</code>
+        so the component fills its parent. Use this for empty state panels or
+        loading screens.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview"
+             style="height:200px;background:var(--cymru-color-surface-alt);
+                    border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
+            <CyCenter FullHeight="true">
+                <CyStack Orientation="Orientation.Vertical"
+                         Gap="ComponentSize.Small"
+                         AlignItems="AlignItems.Center">
+                    <span style="font-size:2rem" aria-hidden="true">📋</span>
+                    <strong>No records found</strong>
+                    <span style="color:var(--cymru-color-text-muted);font-size:var(--cymru-font-size-sm)">
+                        Adjust your filters and try again.
+                    </span>
+                </CyStack>
+            </CyCenter>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyCenter FullHeight="true"&gt;
+    &lt;CyStack Orientation="Orientation.Vertical"
+             Gap="ComponentSize.Small"
+             AlignItems="AlignItems.Center"&gt;
+        &lt;span aria-hidden="true"&gt;📋&lt;/span&gt;
+        &lt;strong&gt;No records found&lt;/strong&gt;
+        &lt;span&gt;Adjust your filters and try again.&lt;/span&gt;
+    &lt;/CyStack&gt;
+&lt;/CyCenter&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="CyCenter parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Horizontal</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Applies <code>justify-content: center</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Vertical</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Applies <code>align-items: center</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">FullHeight</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>Sets <code>min-height: 100%</code> on the root element</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ChildContent</td>
+                <td class="cb-api-table__type">RenderFragment</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The content to center</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Class</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Additional CSS classes</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Style</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Additional inline styles (e.g. explicit height)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

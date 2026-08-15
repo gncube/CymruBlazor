@@ -1,0 +1,28 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+
+<section id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    <div class="cy-hero-banner__content">
+
+        <CyTypography Variant="TypographyVariant.H1" Class="cy-hero-banner__title">
+            @Title
+        </CyTypography>
+
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <CyTypography Variant="TypographyVariant.BodyLarge" Class="cy-hero-banner__subtitle">
+                @Subtitle
+            </CyTypography>
+        }
+
+        @if (ChildContent is not null)
+        {
+            <div class="cy-hero-banner__actions">
+                @ChildContent
+            </div>
+        }
+
+    </div>
+
+</section>

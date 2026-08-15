@@ -1,0 +1,135 @@
+@page "/getting-started"
+@namespace CymruBlazor.Demo.Pages.GettingStarted
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Getting Started</h1>
+    <p class="cb-page-description">
+        CymruBlazor is an open-source Blazor component library implementing the
+        NHS Wales Design System. Add it to any Blazor WebAssembly or Blazor Server
+        project in three steps.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">1. Install the NuGet package</h2>
+    <p class="cb-section-description">
+        Add the core package to your Blazor project.
+    </p>
+
+    <pre><code>dotnet add package CymruBlazor</code></pre>
+
+    <p class="cb-section-description">
+        Optionally add the icon and theming packages:
+    </p>
+
+    <pre><code>dotnet add package CymruBlazor.Icons
+dotnet add package CymruBlazor.Theming</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">2. Reference the stylesheet</h2>
+
+    <p class="cb-section-description">
+        Add one link element to your <code>wwwroot/index.html</code>
+        (Blazor WASM) or <code>_Host.cshtml</code> / <code>App.razor</code>
+        (Blazor Server). This is the only CSS file you need to reference.
+    </p>
+
+    <pre><code>&lt;link rel="stylesheet"
+      href="_content/CymruBlazor/css/cymrublazor.css" /&gt;</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">3. Register services</h2>
+
+    <p class="cb-section-description">
+        Call <code>AddCymruBlazor()</code> in your <code>Program.cs</code>.
+        This registers the component ID generator and the Mediator pipeline
+        used by live region announcements.
+    </p>
+
+    <pre><code>builder.Services.AddCymruBlazor();</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">4. Add global usings (optional)</h2>
+
+    <p class="cb-section-description">
+        Add these to your <code>_Imports.razor</code> to avoid repeating
+        <code>&#64;using</code> directives on every page.
+    </p>
+
+    <pre><code>&#64;using CymruBlazor.Components.Layout
+&#64;using CymruBlazor.Components.Accessibility
+&#64;using CymruBlazor.Enums
+&#64;using CymruBlazor.Accessibility.Notifications
+&#64;using Mediator</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">5. Use your first component</h2>
+
+    <p class="cb-section-description">
+        Layout primitives compose to build any NHS Wales-aligned page structure.
+    </p>
+
+    <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+    &lt;CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium"&gt;
+        &lt;h1&gt;Hello, NHS Wales&lt;/h1&gt;
+        &lt;p&gt;Built with CymruBlazor.&lt;/p&gt;
+    &lt;/CyStack&gt;
+&lt;/CyContainer&gt;</code></pre>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Live preview</span>
+
+        <div class="cb-example__preview">
+            <CyContainer Size="ContainerSize.Large">
+                <CyStack Orientation="Orientation.Vertical"
+                         Gap="ComponentSize.Medium">
+                    <h1 style="margin:0;font-size:var(--cymru-font-size-2xl)">
+                        Hello, NHS Wales
+                    </h1>
+
+                    <p style="margin:0;color:var(--cymru-color-text-muted)">
+                        Built with CymruBlazor.
+                    </p>
+                </CyStack>
+            </CyContainer>
+        </div>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Requirements</h2>
+
+    <table class="cb-api-table" aria-label="Prerequisites">
+        <thead>
+            <tr>
+                <th>Dependency</th>
+                <th>Version</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">.NET SDK</td>
+                <td class="cb-api-table__type">10.0+</td>
+                <td>Required for all Blazor projects</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Mediator.SourceGenerator</td>
+                <td class="cb-api-table__type">3.0.2+</td>
+                <td>Source-generated pipeline — included transitively</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Blazor WebAssembly or Server</td>
+                <td class="cb-api-table__type">10.0+</td>
+                <td>Both hosting models supported</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

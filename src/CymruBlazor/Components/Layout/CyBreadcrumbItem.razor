@@ -1,0 +1,14 @@
+@inherits CyLayoutComponentBase
+
+<li id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    @if (Href is not null)
+    {
+        <a href="@Href" class="cy-breadcrumb__link">@Text</a>
+    }
+    else
+    {
+        <span class="cy-breadcrumb__current" aria-current="page">@Text</span>
+    }
+
+</li>

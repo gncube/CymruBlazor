@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Dashboard/Dashboard.csproj" />
+    <Project Path="samples/HealthcarePortal/HealthcarePortal.csproj" />
+    <Project Path="samples/StarterApp/StarterApp.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/CymruBlazor.Demo/CymruBlazor.Demo.csproj" />
+    <Project Path="src/CymruBlazor.Icons/CymruBlazor.Icons.csproj" />
+    <Project Path="src/CymruBlazor.Theming/CymruBlazor.Theming.csproj" />
+    <Project Path="src/CymruBlazor/CymruBlazor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CymruBlazor.AccessibilityTests/CymruBlazor.AccessibilityTests.csproj" />
+    <Project Path="tests/CymruBlazor.ApprovalTests/CymruBlazor.ApprovalTests.csproj" />
+    <Project Path="tests/CymruBlazor.Tests/CymruBlazor.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/CymruBlazor.CssBundler/CymruBlazor.CssBundler.csproj" />
+  </Folder>
+</Solution>

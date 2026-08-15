@@ -1,0 +1,44 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+
+<header id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    @if (Breadcrumb is not null)
+    {
+        <div class="cy-page-header__breadcrumb">
+            @Breadcrumb
+        </div>
+    }
+
+    <CyStack
+        Orientation="Orientation.Horizontal"
+        JustifyContent="JustifyContent.SpaceBetween"
+        AlignItems="AlignItems.Start"
+        Gap="ComponentSize.Medium"
+        Class="cy-page-header__row">
+
+        <div class="cy-page-header__heading">
+
+            <CyTypography Variant="TypographyVariant.H1">
+                @Title
+            </CyTypography>
+
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <CyTypography Variant="TypographyVariant.BodyLarge" Class="cy-page-header__subtitle">
+                    @Subtitle
+                </CyTypography>
+            }
+
+        </div>
+
+        @if (Actions is not null)
+        {
+            <div class="cy-page-header__actions">
+                @Actions
+            </div>
+        }
+
+    </CyStack>
+
+</header>

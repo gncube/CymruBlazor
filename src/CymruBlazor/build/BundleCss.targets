@@ -1,0 +1,17 @@
+<Project>
+    <!-- MSBuild Target for CymruBlazor CSS Bundling -->
+    <!-- Automatically bundles all CSS files into a single output stylesheet -->
+    <!-- Runs during Build and Publish phases -->
+
+    <Target Name="BundleCymruCss" BeforeTargets="AssignTargetPaths">
+        <Message Text="CymruBlazor: Bundling CSS stylesheets..." Importance="high" />
+
+        <Exec
+            Command="dotnet run --project tools\CymruBlazor.CssBundler\CymruBlazor.CssBundler.csproj -- src\CymruBlazor\wwwroot\css\cymrublazor.css @(CymruCss)"
+            WorkingDirectory="$(SolutionDir ?? $(MSBuildProjectDirectory)\..\..)"
+            ContinueOnError="false" />
+
+        <Message Text="CymruBlazor: CSS bundling complete." Importance="high" />
+    </Target>
+
+</Project>

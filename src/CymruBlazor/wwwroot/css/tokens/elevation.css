@@ -1,0 +1,151 @@
+@layer tokens;
+
+/*
+ * CymruBlazor Design Tokens - Elevation
+ *
+ * This file defines:
+ *   1. Border widths
+ *   2. Border radius
+ *   3. Shadows (Elevation)
+ *   4. Z-Index
+ *
+ * Components should consume semantic tokens wherever possible.
+ */
+
+:root {
+  /* ==========================================================================
+       Border Widths
+       ========================================================================== */
+
+  --cymru-border-width-none: 0;
+  --cymru-border-width-thin: 1px;
+  --cymru-border-width-medium: 2px;
+  --cymru-border-width-thick: 3px;
+
+  /* ==========================================================================
+       Border Radius
+       ========================================================================== */
+
+  --cymru-radius-none: 0;
+
+  --cymru-radius-xs: 0.125rem; /* 2px */
+  --cymru-radius-sm: 0.25rem; /* 4px */
+  --cymru-radius-md: 0.5rem; /* 8px */
+  --cymru-radius-lg: 0.75rem; /* 12px */
+  --cymru-radius-xl: 1rem; /* 16px */
+  --cymru-radius-pill: 9999px;
+  --cymru-radius-circle: 50%;
+
+  /* ==========================================================================
+       Shadows
+       ========================================================================== */
+
+  /*
+   * Sourced from the DHCW "Single Record Design System" Figma file
+   * (Foundations > Elevation & Shadow). Two structural corrections from
+   * the previous version of this file:
+   *
+   *  1. Shadow colour is navy-900 (#1B294A), not generic black - "reads
+   *     as a tinted shadow on white surfaces; warmer and more on-brand
+   *     than generic grey-black, and less harsh on clinical displays"
+   *     (source rationale).
+   *  2. The design system defines exactly THREE role-named shadow
+   *     tokens - not a generic xs/sm/md/lg/xl scale. "Shadow is reserved
+   *     for elements that genuinely float above the page. Borders and
+   *     surface colours handle structural hierarchy everywhere else."
+   *     GDS/NHS England use shadow in one place only (button press
+   *     affordance); this design system extends that deliberately and
+   *     minimally to three uses, each with exactly one named job. Do not
+   *     stack elevation tokens, and do not use shadow decoratively - if
+   *     its purpose can't be explained in one sentence, use a border
+   *     instead. Focus rings are never shadow-based - see
+   *     --cymru-color-focus-outline.
+   */
+
+  /* sr.elevation.button - press affordance on primary/outline/warning/
+     destructive buttons. Directional (bottom-only), GDS-aligned at 2px.
+     Ghost buttons and disabled buttons of any variant use none. */
+  --cymru-shadow-button: 0 2px 0 var(--cymru-navy-900);
+
+  /* sr.elevation.raised - cards and panels: a gentle lift off the page.
+     Use only when a border alone is insufficient to separate a surface
+     (e.g. a card on a similarly-coloured background). */
+  --cymru-shadow-raised: 0 1px 4px rgb(27 41 74 / 0.12);
+
+  /* sr.elevation.overlay - modals, drawers, dropdown menus, tooltips:
+     all floating layers above the page. Pair with a scrim where content
+     behind should be obscured. */
+  --cymru-shadow-overlay: 0 4px 16px rgb(27 41 74 / 0.18);
+
+  --cymru-shadow-none: none;
+
+  /*
+   * Legacy generic scale, retained for existing consumers that haven't
+   * migrated to the three named tokens above, retinted to navy-900 for
+   * visual consistency rather than left as generic black. xs/sm map onto
+   * "raised", lg/xl extrapolate beyond "overlay" for the rare case a
+   * deeper layer is genuinely needed - prefer the named tokens over
+   * these directly in new component CSS.
+   */
+
+  --cymru-shadow-xs: 0 1px 2px rgb(27 41 74 / 0.08);
+  --cymru-shadow-sm: var(--cymru-shadow-raised);
+  --cymru-shadow-md: 0 2px 8px rgb(27 41 74 / 0.15);
+  --cymru-shadow-lg: var(--cymru-shadow-overlay);
+  --cymru-shadow-xl: 0 8px 24px rgb(27 41 74 / 0.22);
+
+  /* ==========================================================================
+       Semantic Elevation
+       ========================================================================== */
+
+  --cymru-elevation-surface: var(--cymru-shadow-none);
+
+  --cymru-elevation-card: var(--cymru-shadow-sm);
+
+  --cymru-elevation-dropdown: var(--cymru-shadow-md);
+
+  --cymru-elevation-popover: var(--cymru-shadow-lg);
+
+  --cymru-elevation-dialog: var(--cymru-shadow-xl);
+
+  /* ==========================================================================
+       Semantic Border Radius
+       ========================================================================== */
+
+  --cymru-radius-control: var(--cymru-radius-sm);
+
+  --cymru-radius-card: var(--cymru-radius-md);
+
+  --cymru-radius-dialog: var(--cymru-radius-lg);
+
+  --cymru-radius-badge: var(--cymru-radius-pill);
+
+  /* ==========================================================================
+       Semantic Border Width
+       ========================================================================== */
+
+  --cymru-border-width-control: var(--cymru-border-width-thin);
+
+  --cymru-border-width-focus: var(--cymru-border-width-medium);
+
+  --cymru-border-width-divider: var(--cymru-border-width-thin);
+
+  /* ==========================================================================
+       Z-Index Scale
+       ========================================================================== */
+
+  /*
+     * Components should always consume semantic z-index
+     * tokens instead of numeric values.
+     */
+
+  --cymru-z-base: 0;
+  --cymru-z-dropdown: 1000;
+  --cymru-z-sticky: 1020;
+  --cymru-z-fixed: 1030;
+  --cymru-z-overlay: 1040;
+  --cymru-z-modal: 1050;
+  --cymru-z-popover: 1060;
+  --cymru-z-tooltip: 1070;
+  --cymru-z-toast: 1080;
+}

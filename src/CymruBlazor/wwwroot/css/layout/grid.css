@@ -1,0 +1,279 @@
+@layer layout;
+
+/*
+ * CymruBlazor Layout - Stack, Cluster, Grid, Sidebar & Centre primitives
+ *
+ * Every class in this file is generated directly by CssBuilder inside the
+ * matching component's *.razor.cs. Keep these two files in sync:
+ *
+ *   CyStack   -> cy-stack, cy-stack--horizontal|vertical, cy-stack--wrap,
+ *                cy-gap-{size}, cy-align-{align}, cy-justify-{justify}
+ *   CyCluster -> cy-cluster, cy-cluster--wrap,
+ *                cy-gap-{size}, cy-align-{align}, cy-justify-{justify}
+ *   CyGrid    -> cy-grid, cy-grid--cols-{n|auto}, cy-gap-{size},
+ *                cy-grid--dense, cy-grid--auto-rows
+ *   CySidebar -> cy-sidebar, cy-sidebar--left|right, cy-sidebar--sm|md|lg,
+ *                cy-sidebar--collapsed
+ *   CyCenter  -> cy-center, cy-center--horizontal|vertical,
+ *                cy-center--full-height
+ *
+ * {size} values come from ComponentSize/GridGap and are the enum name
+ * lower-cased (e.g. ExtraSmall -> extrasmall).
+ */
+
+/* ==========================================================================
+   Shared gap / align / justify utilities
+   (consumed by cy-stack and cy-cluster)
+   ========================================================================== */
+
+.cy-gap-none,
+.cy-gap-unspecified {
+  gap: 0;
+}
+
+.cy-gap-extrasmall {
+  gap: var(--cymru-layout-gap-xs);
+}
+
+.cy-gap-small {
+  gap: var(--cymru-layout-gap-sm);
+}
+
+.cy-gap-medium {
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cy-gap-large {
+  gap: var(--cymru-layout-gap-lg);
+}
+
+.cy-gap-extralarge {
+  gap: var(--cymru-layout-gap-xl);
+}
+
+.cy-align-stretch {
+  align-items: stretch;
+}
+
+.cy-align-start {
+  align-items: flex-start;
+}
+
+.cy-align-center {
+  align-items: center;
+}
+
+.cy-align-end {
+  align-items: flex-end;
+}
+
+.cy-align-baseline {
+  align-items: baseline;
+}
+
+.cy-justify-start {
+  justify-content: flex-start;
+}
+
+.cy-justify-center {
+  justify-content: center;
+}
+
+.cy-justify-end {
+  justify-content: flex-end;
+}
+
+.cy-justify-spacebetween {
+  justify-content: space-between;
+}
+
+.cy-justify-spacearound {
+  justify-content: space-around;
+}
+
+.cy-justify-spaceevenly {
+  justify-content: space-evenly;
+}
+
+/* ==========================================================================
+   Stack
+   ========================================================================== */
+
+.cy-stack {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cy-stack--horizontal {
+  flex-direction: row;
+}
+
+.cy-stack--vertical {
+  flex-direction: column;
+}
+
+.cy-stack--wrap {
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Cluster
+   ========================================================================== */
+
+.cy-cluster {
+  display: flex;
+
+  flex-wrap: nowrap;
+
+  align-items: center;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cy-cluster--wrap {
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Grid
+   ========================================================================== */
+
+.cy-grid {
+  display: grid;
+
+  gap: var(--cymru-layout-gap-md);
+}
+
+.cy-grid--cols-auto {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.cy-grid--cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.cy-grid--cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cy-grid--cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cy-grid--cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cy-grid--cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.cy-grid--cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.cy-grid--cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.cy-grid--dense {
+  grid-auto-flow: dense;
+}
+
+.cy-grid--auto-rows {
+  grid-auto-rows: 1fr;
+}
+
+@media (max-width: 47.99rem) {
+  .cy-grid--cols-2,
+  .cy-grid--cols-3,
+  .cy-grid--cols-4,
+  .cy-grid--cols-5,
+  .cy-grid--cols-6,
+  .cy-grid--cols-12 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  .cy-grid--cols-3,
+  .cy-grid--cols-4,
+  .cy-grid--cols-5,
+  .cy-grid--cols-6,
+  .cy-grid--cols-12 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+
+/*
+ * <CySidebar> renders an <aside>. It is designed to sit as a flex item
+ * alongside <main> inside a horizontal <CyStack> (see MainLayout.razor),
+ * so it is sized with flex-basis rather than assuming a CSS Grid parent.
+ */
+
+.cy-sidebar {
+  flex: 0 0 auto;
+
+  box-sizing: border-box;
+
+  border-inline-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+
+  background-color: var(--cymru-color-surface);
+}
+
+.cy-sidebar--right {
+  border-inline-end: 0;
+  border-inline-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  order: 1;
+}
+
+.cy-sidebar--sm {
+  flex-basis: 14rem;
+  width: 14rem;
+}
+
+.cy-sidebar--md {
+  flex-basis: 18rem;
+  width: 18rem;
+}
+
+.cy-sidebar--lg {
+  flex-basis: 22rem;
+  width: 22rem;
+}
+
+.cy-sidebar--collapsed {
+  flex-basis: 0;
+  width: 0;
+  overflow: hidden;
+  border-width: 0;
+}
+
+@media (max-width: 63.99rem) {
+  .cy-sidebar {
+    flex-basis: 100%;
+    width: 100%;
+    border-inline-end: 0;
+    border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  }
+
+  .cy-sidebar--right {
+    border-inline-start: 0;
+    border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  }
+}
+
+/*
+ * Note: <CyCenter> ("cy-center") is intentionally NOT duplicated here.
+ * Unlike the other layout primitives, CyCenter.razor.css already defines
+ * its rules correctly using real class selectors (not the unsupported
+ * :host selector - see the note below), so Blazor's CSS isolation scopes
+ * it correctly on its own.
+ */

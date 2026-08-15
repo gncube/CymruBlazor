@@ -1,0 +1,15 @@
+@layer components;
+
+/*
+ * CymruBlazor Content - CyIcon
+ *
+ * Icons inherit colour from their surrounding text via stroke="currentColor"
+ * (set directly on the <svg> element in CyIcon.razor, matching Lucide's
+ * own default) - no colour classes needed here.
+ */
+
+.cy-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}

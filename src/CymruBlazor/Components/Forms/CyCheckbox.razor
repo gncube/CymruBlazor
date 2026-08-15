@@ -1,0 +1,40 @@
+@inherits CyFormFieldComponentBase<bool>
+
+<div class="@BuildFieldCssClass("cy-field cy-field--checkbox")">
+
+    <div class="cy-checkbox">
+
+        <input
+            id="@FieldId"
+            type="checkbox"
+            class="cy-checkbox__input"
+            @bind="CurrentValue"
+            aria-required="@Required"
+            aria-invalid="@HasValidationError"
+            aria-describedby="@ComputedAriaDescribedBy"
+            disabled="@Disabled"
+            @attributes="AdditionalAttributes" />
+
+        <label for="@FieldId" class="cy-checkbox__label">
+            @Label
+            @if (Required)
+            {
+                <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+            }
+        </label>
+
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+        </p>
+    }
+
+</div>

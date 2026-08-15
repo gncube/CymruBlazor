@@ -1,0 +1,137 @@
+/* ── DemoHeader ───────────────────────────────────────────────────────────── */
+
+.cb-header {
+    background-color: var(--cymru-color-primary);
+    color: var(--cymru-color-text-inverse);
+    position: sticky;
+    top: 0;
+    z-index: var(--cymru-z-sticky);
+    border-bottom: 3px solid var(--cymru-color-accent);
+}
+
+.cb-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--cymru-space-4);
+    padding-inline: var(--cymru-space-6);
+    padding-block: var(--cymru-space-2);
+    max-width: 100%;
+}
+
+/* ── Logo ── */
+.cb-header__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cymru-space-2);
+    text-decoration: none;
+    color: var(--cymru-color-text-inverse);
+    flex-shrink: 0;
+}
+
+.cb-header__logo:focus-visible {
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+    outline-offset: var(--cymru-focus-offset);
+    border-radius: var(--cymru-radius-sm);
+}
+
+.cb-header__logo-mark {
+    color: var(--cymru-color-text-inverse);
+    flex-shrink: 0;
+}
+
+.cb-header__logo-text {
+    font-size: var(--cymru-font-size-lg);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+}
+
+/* ── Primary nav ── */
+.cb-header__nav {
+    flex: 1;
+    margin-inline-start: var(--cymru-space-6);
+}
+
+.cb-header__nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--cymru-space-1);
+}
+
+.cb-header__nav-link {
+    display: inline-block;
+    padding: var(--cymru-space-1) var(--cymru-space-2);
+    color: var(--cymru-color-text-inverse);
+    text-decoration: none;
+    font-size: var(--cymru-font-size-sm);
+    font-weight: 500;
+    border-radius: var(--cymru-radius-sm);
+    opacity: 0.85;
+    transition: opacity 150ms ease, background-color 150ms ease;
+}
+
+.cb-header__nav-link:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.cb-header__nav-link:focus-visible {
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+    outline-offset: var(--cymru-focus-offset);
+    opacity: 1;
+}
+
+.cb-header__nav-link--active {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.18);
+    font-weight: 700;
+}
+
+/* ── Actions ── */
+.cb-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--cymru-space-2);
+    margin-inline-start: auto;
+}
+
+.cb-header__github-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--cymru-color-text-inverse);
+    opacity: 0.85;
+    transition: opacity 150ms ease;
+    border-radius: var(--cymru-radius-sm);
+    padding: var(--cymru-space-1);
+}
+
+.cb-header__github-link:hover { opacity: 1; }
+
+.cb-header__github-link:focus-visible {
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
+    outline-offset: var(--cymru-focus-offset);
+    opacity: 1;
+}
+
+/* ── Skip link override (positioned in header) ── */
+.cb-skip-link {
+    position: absolute;
+    left: var(--cymru-space-4);
+    top: -100%;
+    z-index: var(--cymru-z-toast);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
+    background: var(--cymru-color-focus);
+    color: var(--cymru-color-focus-text);
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: var(--cymru-radius-sm);
+    transition: top 150ms ease;
+}
+
+.cb-skip-link:focus-visible {
+    top: var(--cymru-space-2);
+    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+    outline-offset: 2px;
+}

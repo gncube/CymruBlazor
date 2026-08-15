@@ -1,0 +1,38 @@
+@inherits CyFormFieldComponentBase<string>
+
+<div class="@BuildFieldCssClass("cy-field")">
+
+    <label for="@FieldId" class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </label>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <input
+        @attributes="AdditionalAttributes"
+        id="@FieldId"
+        type="@Type"
+        class="cy-textbox"
+        placeholder="@Placeholder"
+        maxlength="@MaxLength"
+        @bind="CurrentValueAsString"
+        aria-required="@(Required ? "true" : "false")"
+        aria-invalid="@(HasValidationError ? "true" : "false")"
+        aria-describedby="@ComputedAriaDescribedBy"
+        disabled="@Disabled" />
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+        </p>
+    }
+
+</div>

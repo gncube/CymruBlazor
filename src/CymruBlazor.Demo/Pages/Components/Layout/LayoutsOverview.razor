@@ -1,0 +1,101 @@
+@page "/layouts"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Layout Components</h1>
+    <p class="cb-page-description">
+        CymruBlazor provides six layout primitives that compose to build any
+        NHS Wales page structure. They emit no visual styling of their own —
+        they arrange their children using CSS Flexbox and Grid, consuming only
+        the shared spacing and breakpoint tokens.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Primitives</h2>
+    <table class="cb-api-table" aria-label="Layout component summary">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Element</th>
+                <th>Primary use</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="/layouts/container" class="cb-api-table__name">CyContainer</a></td>
+                <td class="cb-api-table__type">&lt;div&gt;</td>
+                <td>Max-width wrapper — constrains content to a readable line length</td>
+            </tr>
+            <tr>
+                <td><a href="/layouts/stack" class="cb-api-table__name">CyStack</a></td>
+                <td class="cb-api-table__type">&lt;div&gt;</td>
+                <td>Single-axis flexbox flow (vertical or horizontal) with consistent gap</td>
+            </tr>
+            <tr>
+                <td><a href="/layouts/grid" class="cb-api-table__name">CyGrid</a></td>
+                <td class="cb-api-table__type">&lt;div&gt;</td>
+                <td>Multi-column CSS Grid with named column counts</td>
+            </tr>
+            <tr>
+                <td><a href="/layouts/cluster" class="cb-api-table__name">CyCluster</a></td>
+                <td class="cb-api-table__type">&lt;div&gt;</td>
+                <td>Wrapping flex row — tags, button groups, badge lists</td>
+            </tr>
+            <tr>
+                <td><a href="/layouts/sidebar" class="cb-api-table__name">CySidebar</a></td>
+                <td class="cb-api-table__type">&lt;aside&gt;</td>
+                <td>Collapsible, sticky side navigation panel</td>
+            </tr>
+            <tr>
+                <td><a href="/layouts/center" class="cb-api-table__name">CyCenter</a></td>
+                <td class="cb-api-table__type">&lt;div&gt;</td>
+                <td>Horizontal and/or vertical centring via flexbox</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Composition example</h2>
+    <p class="cb-section-description">
+        Layout components nest freely. This example reproduces the standard
+        NHS Wales two-column article layout.
+    </p>
+    <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+    &lt;CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Large"&gt;
+
+        &lt;CySidebar Width="SidebarWidth.Small"&gt;
+            &lt;!-- Page navigation --&gt;
+        &lt;/CySidebar&gt;
+
+        &lt;CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium"&gt;
+            &lt;!-- Main content --&gt;
+        &lt;/CyStack&gt;
+
+    &lt;/CyStack&gt;
+&lt;/CyContainer&gt;</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>No visual styling.</strong> Layout components apply only structural CSS
+            (display, gap, width). Colours, borders, and shadows belong to content components.
+        </li>
+        <li>
+            <strong>Semantic HTML.</strong> <code>CySidebar</code> renders <code>&lt;aside&gt;</code>
+            for correct landmark semantics. All others render <code>&lt;div&gt;</code>.
+        </li>
+        <li>
+            <strong>Token-aligned spacing.</strong> All gap and padding values consume
+            <code>--cymru-space-*</code> tokens — never hard-coded pixel values.
+        </li>
+        <li>
+            <strong>Override via <code>Class</code> and <code>Style</code>.</strong>
+            Every component exposes <code>Class</code> for additional CSS classes
+            and <code>Style</code> for inline overrides when needed.
+        </li>
+    </ul>
+</div>

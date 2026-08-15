@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <!-- Target -->
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+
+    <!-- Assembly identity is derived entirely from git tags by MinVer
+         (see PackageReference below + MinVerTagPrefix in Directory.Build.props).
+         Do not hardcode AssemblyVersion/FileVersion/InformationalVersion here -
+         doing so overrides MinVer's computed values. -->
+
+    <!-- NuGet metadata -->
+    <PackageId>CymruBlazor</PackageId>
+    <Title>CymruBlazor</Title>
+    <Description>
+      An open-source Blazor component library implementing the NHS Wales Design System.
+      Provides accessible, enterprise-grade components aligned with WCAG 2.2 AA.
+    </Description>
+    <Authors>CymruBlazor Contributors</Authors>
+    <Company>Digital Health and Care Wales Community</Company>
+    <Copyright>Copyright © 2025 CymruBlazor Contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/gncube/CymruBlazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/gncube/CymruBlazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>blazor;nhs;nhswales;design-system;components;accessibility;wcag</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- No PackageIcon yet - add back once real artwork exists at
+         src/CymruBlazor/icon.png (128x128+ PNG, <1MB), together with a
+         corresponding <None Include="icon.png" Pack="true" PackagePath="\" />
+         entry below. A PackageIcon pointing at a file that isn't actually
+         packed fails `dotnet pack` with NU5046. -->
+
+    <!-- Source link and symbols -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- XML docs -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CymruBlazor.xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+
+    <!-- Trimming / AOT -->
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <!-- Warnings as errors in CI -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- No FrameworkReference required for this library project -->
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- SourceLink (GitHub) -->
+  <ItemGroup>
+    <PackageReference Include="Mediator.Abstractions" />
+    <PackageReference Include="Mediator.SourceGenerator">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.JSInterop" />
+  </ItemGroup>
+
+</Project>

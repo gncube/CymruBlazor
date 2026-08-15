@@ -1,0 +1,133 @@
+@layer tokens;
+
+/*
+ * CymruBlazor Design Tokens - Spacing
+ *
+ * Sourced from the DHCW "Single Record Design System" Figma file
+ * (Foundations > Spacing Tokens): a 4px base-unit, 13-step scale.
+ *
+ * IMPORTANT naming correction from the previous version of this file:
+ * Figma's primitive token NAME directly encodes the multiplier of the
+ * 4px base unit - space.6 = 6 x 4px = 24px, space.12 = 12 x 4px = 48px,
+ * and so on. The previous version of this file used a compact
+ * sequential index (space-1..space-9) instead, where e.g. space-3 meant
+ * "the third step" (16px) rather than "3 x 4px" (12px). Every consumer
+ * across the codebase has been renamed to match this file - see
+ * CONTRIBUTING.md's note on keeping generated classes and their backing
+ * CSS in sync; the same discipline applies to token names.
+ *
+ * Components should consume semantic spacing tokens (spacing.component.*,
+ * spacing.form.*, spacing.layout.*) wherever a specific one exists for
+ * the situation - see Tier 2 below - and fall back to the primitive
+ * scale directly only when no semantic token fits.
+ */
+
+:root {
+  /* ==========================================================================
+       Tier 1 - Primitive Scale (13 steps, 0-96px)
+       ========================================================================== */
+
+  --cymru-space-0: 0; /* Explicit zero - removing default spacing */
+  --cymru-space-1: 0.25rem; /* 4px - icon padding, micro gaps */
+  --cymru-space-2: 0.5rem; /* 8px - tight component internals */
+  --cymru-space-3: 0.75rem; /* 12px - compact form elements */
+  --cymru-space-4: 1rem; /* 16px - default internal padding */
+  --cymru-space-5: 1.25rem; /* 20px */
+  --cymru-space-6: 1.5rem; /* 24px - section spacing within panels */
+  --cymru-space-8: 2rem; /* 32px - component separation */
+  --cymru-space-10: 2.5rem; /* 40px */
+  --cymru-space-12: 3rem; /* 48px - section breaks */
+  --cymru-space-16: 4rem; /* 64px - major layout sections */
+  --cymru-space-20: 5rem; /* 80px - page-level vertical rhythm */
+  --cymru-space-24: 6rem; /* 96px */
+
+  /* ==========================================================================
+       Tier 2 - Semantic Tokens: spacing.component.*
+       Inside UI components: buttons, badges, cards, inputs.
+       ========================================================================== */
+
+  --cymru-spacing-component-xs: var(--cymru-space-1); /* 4px - icon-to-text gap, badge/chip padding */
+  --cymru-spacing-component-sm: var(--cymru-space-2); /* 8px - button vertical padding, tag padding */
+  --cymru-spacing-component-md: var(--cymru-space-4); /* 16px - button horizontal padding, standard field padding */
+  --cymru-spacing-component-lg: var(--cymru-space-6); /* 24px - card internal padding */
+  --cymru-spacing-component-xl: var(--cymru-space-8); /* 32px - spacious card/panel padding */
+
+  /* ==========================================================================
+       Tier 2 - Semantic Tokens: spacing.form.*
+       Vertical rhythm of form fields.
+       ========================================================================== */
+
+  --cymru-spacing-form-label-gap: var(--cymru-space-2); /* 8px - label text to input box */
+  --cymru-spacing-form-hint-gap: var(--cymru-space-1); /* 4px - input box to hint text */
+  --cymru-spacing-form-error-gap: var(--cymru-space-1); /* 4px - input box to error message */
+  --cymru-spacing-form-field-gap: var(--cymru-space-6); /* 24px - between complete fields */
+  --cymru-spacing-form-group-gap: var(--cymru-space-8); /* 32px - between field groups/fieldsets */
+
+  /* ==========================================================================
+       Tier 2 - Semantic Tokens: spacing.layout.*
+       Between panels, sections, and page-level containers.
+       ========================================================================== */
+
+  --cymru-spacing-layout-xs: var(--cymru-space-4); /* 16px - within the same card/panel; mobile column gutters */
+  --cymru-spacing-layout-sm: var(--cymru-space-6); /* 24px - side-by-side cards/panels; tablet gutters */
+  --cymru-spacing-layout-md: var(--cymru-space-8); /* 32px - major content blocks; desktop gutters */
+  --cymru-spacing-layout-section: var(--cymru-space-12); /* 48px - between distinct page sections */
+  --cymru-spacing-layout-page: var(--cymru-space-16); /* 64px - page outer top/bottom padding */
+
+  /* ==========================================================================
+       Accessibility - Touch Target Sizing
+       WCAG 2.2 SC 2.5.8 (AA): every interactive element needs a minimum
+       44x44px hit target. Not on the 4px scale exactly (44 = 11 x 4), so
+       expressed as its own token rather than reusing a space.N alias.
+       ========================================================================== */
+
+  --cymru-touch-target-min: 2.75rem; /* 44px */
+
+  /* ==========================================================================
+       Legacy aliases - kept so existing component-padding/margin/layout-gap
+       references (predating the semantic layer above) keep working with
+       the corrected primitive values.
+       ========================================================================== */
+
+  --cymru-padding-xs: var(--cymru-space-1);
+  --cymru-padding-sm: var(--cymru-space-2);
+  --cymru-padding-md: var(--cymru-space-4);
+  --cymru-padding-lg: var(--cymru-space-6);
+  --cymru-padding-xl: var(--cymru-space-8);
+
+  --cymru-margin-xs: var(--cymru-space-1);
+  --cymru-margin-sm: var(--cymru-space-2);
+  --cymru-margin-md: var(--cymru-space-4);
+  --cymru-margin-lg: var(--cymru-space-6);
+  --cymru-margin-xl: var(--cymru-space-8);
+
+  --cymru-layout-gap-xs: var(--cymru-space-1);
+  --cymru-layout-gap-sm: var(--cymru-space-2);
+  --cymru-layout-gap-md: var(--cymru-space-4);
+  --cymru-layout-gap-lg: var(--cymru-space-6);
+  --cymru-layout-gap-xl: var(--cymru-space-8);
+
+  --cymru-container-padding-inline: var(--cymru-space-4);
+  --cymru-container-padding-block: var(--cymru-space-6);
+
+  --cymru-section-spacing: var(--cymru-space-12);
+
+  --cymru-control-padding-inline: var(--cymru-space-4);
+  --cymru-control-padding-block: var(--cymru-space-2);
+
+  --cymru-control-gap: var(--cymru-space-2);
+
+  --cymru-card-padding: var(--cymru-space-6);
+  --cymru-card-gap: var(--cymru-space-4);
+
+  --cymru-button-padding-inline: var(--cymru-space-4);
+  --cymru-button-padding-block: var(--cymru-space-2);
+
+  --cymru-button-gap: var(--cymru-space-2);
+
+  --cymru-list-gap: var(--cymru-space-2);
+
+  --cymru-dialog-padding: var(--cymru-space-8);
+
+  --cymru-focus-offset: 2px;
+}
