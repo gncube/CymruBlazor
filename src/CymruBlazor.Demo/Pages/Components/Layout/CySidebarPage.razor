@@ -21,16 +21,16 @@
         <span class="cb-example__label">Preview</span>
 
         <div class="cb-example__preview">
-            <div style="display:flex;gap:var(--cymru-space-3);height:180px;overflow:hidden;
+            <div style="display:flex;gap:var(--cymru-space-4);height:180px;overflow:hidden;
                         border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
                 <CySidebar Width="SidebarWidth.Small">
-                    <div style="padding:var(--cymru-space-3);font-size:var(--cymru-font-size-sm);
+                    <div style="padding:var(--cymru-space-4);font-size:var(--cymru-font-size-sm);
                                 color:var(--cymru-color-text-muted)">
                         Sidebar content
                     </div>
                 </CySidebar>
 
-                <div style="flex:1;padding:var(--cymru-space-3);
+                <div style="flex:1;padding:var(--cymru-space-4);
                             font-size:var(--cymru-font-size-sm);
                             color:var(--cymru-color-text-muted)">
                     Main content area
@@ -58,7 +58,7 @@
 
         <div class="cb-example__preview">
 
-            <div style="margin-block-end:var(--cymru-space-3)">
+            <div style="margin-block-end:var(--cymru-space-4)">
                 <button class="cb-demo-btn"
                         @onclick="ToggleSidebar">
                     @(_collapsed ? "Expand sidebar" : "Collapse sidebar")
@@ -73,7 +73,7 @@
                            @bind-Collapsed="_collapsed"
                            Width="SidebarWidth.Small">
 
-                    <div style="padding:var(--cymru-space-3);
+                    <div style="padding:var(--cymru-space-4);
                                 font-size:var(--cymru-font-size-sm);
                                 color:var(--cymru-color-text-muted);
                                 white-space:nowrap">
@@ -82,7 +82,7 @@
 
                 </CySidebar>
 
-                <div style="flex:1;padding:var(--cymru-space-3);
+                <div style="flex:1;padding:var(--cymru-space-4);
                             font-size:var(--cymru-font-size-sm);
                             color:var(--cymru-color-text-muted)">
                     Collapsed:
@@ -131,7 +131,7 @@
                         border:1px solid var(--cymru-color-border);
                         border-radius:var(--cymru-radius-md)">
 
-                <div style="flex:1;padding:var(--cymru-space-3);
+                <div style="flex:1;padding:var(--cymru-space-4);
                             font-size:var(--cymru-font-size-sm);
                             color:var(--cymru-color-text-muted)">
                     Main content
@@ -140,7 +140,7 @@
                 <CySidebar Position="SidebarPosition.Right"
                            Width="SidebarWidth.Small">
 
-                    <div style="padding:var(--cymru-space-3);
+                    <div style="padding:var(--cymru-space-4);
                                 font-size:var(--cymru-font-size-sm);
                                 color:var(--cymru-color-text-muted);
                                 white-space:nowrap">
@@ -173,7 +173,7 @@
 
     <ul style="color:var(--cymru-color-text);
                line-height:1.75;
-               padding-inline-start:var(--cymru-space-4)">
+               padding-inline-start:var(--cymru-space-6)">
 
         <li>
             Renders as <code>&lt;aside&gt;</code> — a complementary landmark.

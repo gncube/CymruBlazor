@@ -10,9 +10,10 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--cymru-space-3) var(--cymru-space-5);
-    padding-inline: var(--cymru-space-4);
-    padding-block: var(--cymru-space-3);
+    justify-content: space-between;
+    gap: var(--cymru-space-4) var(--cymru-space-8);
+    padding-inline: var(--cymru-space-6);
+    padding-block: var(--cymru-space-5);
     max-width: 100%;
 }
 
@@ -46,7 +47,7 @@
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--cymru-space-1) var(--cymru-space-3);
+    gap: var(--cymru-space-1) var(--cymru-space-4);
 }
 
 .cb-footer__link {
@@ -73,7 +74,6 @@
 /* ── Copyright ── */
 .cb-footer__copy {
     margin: 0;
-    margin-inline-start: auto;
     font-size: var(--cymru-font-size-xs);
     color: var(--cymru-color-accent-text);
     opacity: 0.75;

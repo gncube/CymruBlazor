@@ -25,21 +25,26 @@
   text-decoration: none;
 }
 
+/*
+ * The design system defines exactly one shadow role for cards -
+ * sr.elevation.raised ("gentle lift... use only when a border alone is
+ * insufficient"). There is no legitimate deeper card shadow: the next
+ * step up, sr.elevation.overlay, is reserved for floating layers (modals,
+ * drawers, tooltips) sitting in a genuinely separate layer above the
+ * page - using it for a merely-emphasised card would misrepresent that
+ * layering to the user. Medium/Large therefore intentionally resolve to
+ * the same value as Small, not a deeper one.
+ */
+
 .cy-card--elevation-none,
 .cy-card--elevation-unspecified {
   box-shadow: var(--cymru-shadow-none);
 }
 
-.cy-card--elevation-small {
-  box-shadow: var(--cymru-shadow-sm);
-}
-
-.cy-card--elevation-medium {
-  box-shadow: var(--cymru-shadow-md);
-}
-
+.cy-card--elevation-small,
+.cy-card--elevation-medium,
 .cy-card--elevation-large {
-  box-shadow: var(--cymru-shadow-lg);
+  box-shadow: var(--cymru-shadow-raised);
 }
 
 /*
@@ -57,7 +62,7 @@
 
 .cy-card--interactive:hover {
   border-color: var(--cymru-color-border-strong);
-  box-shadow: var(--cymru-shadow-md);
+  box-shadow: var(--cymru-shadow-raised);
 }
 
 .cy-card--interactive:focus-visible {
@@ -66,14 +71,14 @@
 }
 
 .cy-card__header {
-  padding: var(--cymru-space-3) var(--cymru-space-4) 0;
+  padding: var(--cymru-space-4) var(--cymru-space-6) 0;
 }
 
 .cy-card__body {
-  padding: var(--cymru-space-4);
+  padding: var(--cymru-space-6);
   flex: 1 1 auto;
 }
 
 .cy-card__footer {
-  padding: 0 var(--cymru-space-4) var(--cymru-space-4);
+  padding: 0 var(--cymru-space-6) var(--cymru-space-6);
 }

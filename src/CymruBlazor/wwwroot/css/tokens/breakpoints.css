@@ -1,49 +1,112 @@
 @layer tokens;
 
 /*
- * CymruBlazor Design Tokens - Breakpoints
+ * CymruBlazor Design Tokens - Breakpoints & Grid
  *
- * IMPORTANT
- * ---------
- * CSS custom properties cannot currently be used inside @media queries.
+ * Sourced from the DHCW "Single Record Design System" Figma file
+ * (Foundations > Grid & Layout System): 5 breakpoints, 3 grid
+ * configurations (mobile/tablet fluid, desktop fixed-margin), plus an
+ * EPR-application content-zone adjustment for the 248px navigation
+ * sidebar.
  *
- * These tokens exist to:
+ * Corrections from the previous version of this file:
+ *  - The previous 4-tier scale (mobile 480 / tablet 768 / desktop 1024 /
+ *    wide 1440) is replaced with the documented 5-tier scale below - it
+ *    was missing the "Large" (1280px) tier entirely, and "mobile" was
+ *    set to 480px rather than the documented 0-767px range.
+ *  - "CSS custom properties cannot be used inside @media queries" (the
+ *    previous version of this comment) is only true for using var()
+ *    inside a media *condition* (`@media (min-width: var(--x))` genuinely
+ *    doesn't work) - it does NOT mean a custom property's *value* can't
+ *    be redefined inside a @media block, which is valid, common CSS and
+ *    is exactly how tokens/typography.css implements its desktop/mobile
+ *    heading-size switch. Media query *conditions* below still use
+ *    literal values, for that genuine reason.
  *
- *  - Document the official responsive breakpoints
- *  - Support JavaScript interop
- *  - Support container queries
- *  - Provide consistent layout calculations
- *
- * Media queries should continue to use literal values.
+ * Platform guidance (from the source): Blazor web targets Desktop and
+ * Tablet only - the EPR sidebar reduces content width, so design against
+ * the content zone, not the full frame. .NET MAUI is adaptive across
+ * phone/tablet/desktop.
  */
 
 :root {
   /* ==========================================================================
-       Responsive Breakpoints
+       Grid Breakpoints (5 tiers + one wide/dual-screen tier)
        ========================================================================== */
 
-  --cymru-breakpoint-mobile: 30rem; /* 480px */
+  --cymru-breakpoint-mobile-max: 47.9375rem; /* 767px */
+  --cymru-breakpoint-tablet-min: 48rem; /* 768px */
+  --cymru-breakpoint-tablet-max: 63.9375rem; /* 1023px */
+  --cymru-breakpoint-desktop-min: 64rem; /* 1024px */
+  --cymru-breakpoint-desktop-max: 79.9375rem; /* 1279px */
+  --cymru-breakpoint-large-min: 80rem; /* 1280px */
+  --cymru-breakpoint-large-max: 89.9375rem; /* 1439px */
+  --cymru-breakpoint-xlarge-min: 90rem; /* 1440px */
+  --cymru-breakpoint-2xl-min: 96rem; /* 1536px - ultra-wide/dual-screen */
+
+  /* Kept for existing consumers using the old, simpler names - aliased
+     onto the corrected scale above. "desktop" here means "tablet and up"
+     (48rem/768px), matching the source's own Blazor typography guidance
+     (see tokens/typography.css) - use the more specific tokens above for
+     anything grid/column-related, where desktop genuinely starts at
+     1024px, one tier later. */
+  --cymru-breakpoint-mobile: 48rem; /* 768px */
   --cymru-breakpoint-tablet: 48rem; /* 768px */
   --cymru-breakpoint-desktop: 64rem; /* 1024px */
   --cymru-breakpoint-wide: 90rem; /* 1440px */
 
   /* ==========================================================================
-       Maximum Container Widths
+       Grid Configuration per Breakpoint
        ========================================================================== */
 
-  --cymru-container-sm: 30rem;
-  --cymru-container-md: 48rem;
-  --cymru-container-lg: 64rem;
-  --cymru-container-xl: 80rem;
-  --cymru-container-2xl: 90rem;
+  --cymru-grid-columns-mobile: 4;
+  --cymru-grid-columns-tablet: 8;
+  --cymru-grid-columns-desktop: 12; /* unchanged through Large/XLarge/2xl */
+
+  --cymru-gutter-mobile: var(--cymru-space-4); /* 16px */
+  --cymru-gutter-tablet: var(--cymru-space-6); /* 24px */
+  --cymru-gutter-desktop: var(--cymru-space-6); /* 24px, through Large */
+  --cymru-gutter-xlarge: var(--cymru-space-8); /* 32px, from XLarge (1440px) */
+
+  --cymru-margin-mobile: var(--cymru-space-4); /* 16px */
+  --cymru-margin-tablet: var(--cymru-space-8); /* 32px */
+  --cymru-margin-desktop: var(--cymru-space-10); /* 40px, at 1024px */
+  --cymru-margin-large: var(--cymru-space-16); /* 64px, at 1280px */
+  --cymru-margin-xlarge: var(--cymru-space-20); /* 80px, at 1440px */
 
   /* ==========================================================================
-       Responsive Gutters
+       EPR Application Grid - content zone when the 248px navigation
+       sidebar is visible. Design against the content zone, not the full
+       frame width.
        ========================================================================== */
 
-  --cymru-gutter-mobile: var(--cymru-space-3);
-  --cymru-gutter-tablet: var(--cymru-space-4);
-  --cymru-gutter-desktop: var(--cymru-space-5);
+  --cymru-epr-sidebar-width: 15.5rem; /* 248px */
+
+  /* ==========================================================================
+       Maximum Content Widths
+       ========================================================================== */
+
+  --cymru-max-width-body-text: 45rem; /* 720px - long-form content/prose */
+  --cymru-max-width-form: 35rem; /* 560px - single-column forms */
+  --cymru-max-width-page: 87.5rem; /* 1400px - page container */
+
+  /* ==========================================================================
+       Maximum Container Widths (CyContainer)
+       ========================================================================== */
+
+  /*
+   * CyContainer's Size enum (Small/Medium/Large/ExtraLarge) is a general
+   * layout primitive, not tied to a specific content type the way the
+   * source's named max-widths are - reinterpreted here as a reasonable
+   * progression through those named widths rather than left on the
+   * previous, purely breakpoint-derived scale (480/768/1024/1280/1440).
+   */
+
+  --cymru-container-sm: var(--cymru-max-width-form); /* 560px */
+  --cymru-container-md: var(--cymru-max-width-body-text); /* 720px */
+  --cymru-container-lg: var(--cymru-breakpoint-desktop-min); /* 1024px */
+  --cymru-container-xl: var(--cymru-max-width-page); /* 1400px */
+  --cymru-container-2xl: var(--cymru-breakpoint-2xl-min); /* 1536px */
 
   /* ==========================================================================
        Reading Width

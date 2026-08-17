@@ -23,5 +23,7 @@ public enum TypographyVariant
 
     BodySmall = 8,
 
-    Caption = 9
+    Caption = 9,
+
+    Label = 10
 }

@@ -66,3 +66,13 @@
     padding-inline: 0;
   }
 }
+
+@media (min-width: 90rem) {
+  .cy-container {
+    padding-inline: var(--cymru-gutter-xlarge);
+  }
+
+  .cy-container--no-padding {
+    padding-inline: 0;
+  }
+}

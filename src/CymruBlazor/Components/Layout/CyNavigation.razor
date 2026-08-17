@@ -1,0 +1,44 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Accessibility
+
+<nav id="@Id" class="@CssClass" style="@CssStyle" aria-label="Main" @attributes="AdditionalAttributes">
+
+    <div class="cy-navigation__bar">
+
+        @if (Brand is not null)
+        {
+            <div class="cy-navigation__brand">
+                @Brand
+            </div>
+        }
+
+        <button
+            type="button"
+            class="cy-navigation__toggle"
+            aria-expanded="@(IsMobileMenuOpen ? "true" : "false")"
+            aria-controls="@MenuId"
+            @onclick="ToggleMobileMenu">
+
+            <span class="u-sr-only">@(IsMobileMenuOpen ? "Close menu" : "Open menu")</span>
+            <span class="cy-navigation__toggle-icon" aria-hidden="true"></span>
+
+        </button>
+
+    </div>
+
+    @if (IsMobileMenuOpen)
+    {
+        <FocusTrap Enabled="true" AutoFocus="true" RestoreFocus="true">
+            <ul id="@MenuId" class="@MenuCssClass">
+                @ChildContent
+            </ul>
+        </FocusTrap>
+    }
+    else
+    {
+        <ul id="@MenuId" class="@MenuCssClass">
+            @ChildContent
+        </ul>
+    }
+
+</nav>

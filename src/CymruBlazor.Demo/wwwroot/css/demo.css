@@ -27,7 +27,7 @@
     box-sizing: border-box;
     display: none;
     left: 0;
-    padding: var(--cymru-space-2, 0.5rem) var(--cymru-space-4, 1.5rem);
+    padding: var(--cymru-space-2, 0.5rem) var(--cymru-space-6, 1.5rem);
     position: fixed;
     width: 100%;
     z-index: var(--cymru-z-toast, 1080);
@@ -38,7 +38,7 @@
 #blazor-error-ui .dismiss {
     cursor: pointer;
     position: absolute;
-    right: var(--cymru-space-3, 1rem);
+    right: var(--cymru-space-4, 1rem);
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.25rem;
@@ -51,8 +51,8 @@
 }
 
 .blazor-error-boundary {
-    padding: var(--cymru-space-3, 1rem) var(--cymru-space-3, 1rem)
-             var(--cymru-space-3, 1rem) 3.7rem;
+    padding: var(--cymru-space-4, 1rem) var(--cymru-space-4, 1rem)
+             var(--cymru-space-4, 1rem) 3.7rem;
     background-color: var(--cymru-color-danger-background, #fde8e6);
     color: var(--cymru-color-danger, #d5281b);
     border-inline-start: 4px solid var(--cymru-color-danger, #d5281b);
@@ -77,7 +77,7 @@
 .cb-demo-main {
     flex: 1 1 0%;
     min-width: 0;
-    padding: var(--cymru-space-4);
+    padding: var(--cymru-space-6);
 }
 
 /* ==========================================================================
@@ -102,7 +102,7 @@
 }
 
 .loading-progress circle:last-child {
-    stroke: var(--cymru-color-primary, #005eb8);
+    stroke: var(--cymru-color-primary, #325083);
     stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
     transition: stroke-dasharray 0.05s ease-in-out;
 }
@@ -125,8 +125,8 @@
    ========================================================================== */
 
 .cb-page-header {
-    margin-block-end: var(--cymru-space-5);
-    padding-block-end: var(--cymru-space-4);
+    margin-block-end: var(--cymru-space-8);
+    padding-block-end: var(--cymru-space-6);
     border-bottom: 1px solid var(--cymru-color-border);
 }
 
@@ -147,19 +147,19 @@
 }
 
 .cb-section {
-    margin-block-end: var(--cymru-space-6);
+    margin-block-end: var(--cymru-space-12);
 }
 
 .cb-section-title {
     font-size: var(--cymru-font-size-xl, 1.5rem);
     font-weight: 700;
     color: var(--cymru-color-text);
-    margin: 0 0 var(--cymru-space-3) 0;
+    margin: 0 0 var(--cymru-space-4) 0;
 }
 
 .cb-section-description {
     color: var(--cymru-color-text-muted);
-    margin: 0 0 var(--cymru-space-3) 0;
+    margin: 0 0 var(--cymru-space-4) 0;
     max-width: 70ch;
 }
 
@@ -179,14 +179,14 @@ samp {
 pre {
     background-color: var(--cymru-grey-900, #212b32);
     color: var(--cymru-grey-100, #f0f4f5);
-    padding: var(--cymru-space-4, 1.5rem);
+    padding: var(--cymru-space-6, 1.5rem);
     border-radius: var(--cymru-radius-md, 6px);
     overflow-x: auto;
     font-family: var(--cymru-font-family-monospace,
                      "Cascadia Code", "Consolas", "Courier New", monospace);
     font-size: var(--cymru-font-size-sm, 0.875rem);
     line-height: 1.6;
-    margin-block: var(--cymru-space-3);
+    margin-block: var(--cymru-space-4);
 }
 
 pre code {
@@ -204,7 +204,7 @@ pre code {
     border: 1px solid var(--cymru-color-border);
     border-radius: var(--cymru-radius-md, 6px);
     overflow: hidden;
-    margin-block-end: var(--cymru-space-4);
+    margin-block-end: var(--cymru-space-6);
 }
 
 .cb-example__label {
@@ -216,11 +216,11 @@ pre code {
     color: var(--cymru-color-text-muted);
     background-color: var(--cymru-color-surface-alt);
     border-bottom: 1px solid var(--cymru-color-border);
-    padding: var(--cymru-space-2) var(--cymru-space-3);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
 }
 
 .cb-example__preview {
-    padding: var(--cymru-space-5);
+    padding: var(--cymru-space-8);
     background-color: var(--cymru-color-surface);
 }
 
@@ -238,12 +238,12 @@ pre code {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--cymru-font-size-sm);
-    margin-block-end: var(--cymru-space-4);
+    margin-block-end: var(--cymru-space-6);
 }
 
 .cb-api-table th {
     text-align: left;
-    padding: var(--cymru-space-2) var(--cymru-space-3);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
     background-color: var(--cymru-color-surface-alt);
     border-bottom: 2px solid var(--cymru-color-border-strong);
     font-weight: 700;
@@ -252,7 +252,7 @@ pre code {
 }
 
 .cb-api-table td {
-    padding: var(--cymru-space-2) var(--cymru-space-3);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
     border-bottom: 1px solid var(--cymru-color-border);
     vertical-align: top;
     color: var(--cymru-color-text);
@@ -288,7 +288,7 @@ pre code {
     display: inline-flex;
     align-items: center;
     gap: var(--cymru-space-1);
-    padding: var(--cymru-space-2) var(--cymru-space-3);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
     background-color: var(--cymru-color-primary);
     color: var(--cymru-color-text-inverse);
     border: 2px solid transparent;

@@ -10,7 +10,17 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
-### Added (Phase 1+2 of the next release - see plan/plan-next-release-components.md)
+### Added (Phase 3+4 of the next release - see plan/plan-next-release-components.md)
+
+- `CyFormFieldComponentBase<TValue>` (built on `InputBase<TValue>`), `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary`.
+- `CySkipLink`, `CyBreadcrumb`/`CyBreadcrumbItem`, `CyPageHeader`, `CyNavigation`/`CyNavigationItem` (with mobile menu + `FocusTrap` integration), `CyHeroBanner`, `CyFooter`.
+- `IFocusManager` is now registered in `AddCymruBlazor()` - previously only ever registered manually by consuming apps; `CyNavigation`'s mobile menu depends on it transitively via `FocusTrap`.
+
+### Fixed
+
+- `CyScreenReaderOnly` rendered CSS class `"sr-only"`, but the stylesheet only ever defined `.u-sr-only` - the component has been visually non-functional (not actually hiding its content) since `0.1.0-preview.1`. Corrected to `u-sr-only`.
+
+### Added (Phase 1+2, previously listed)
 
 - `IThemeService` is now registered in DI (`AddCymruBlazor()`) - previously implemented but never resolvable.
 - `ThemeService` gained optional JS interop: `localStorage` persistence and live OS `prefers-color-scheme` detection, via `wwwroot/js/theme.js`. Fully backward compatible - the parameterless constructor path is unchanged.

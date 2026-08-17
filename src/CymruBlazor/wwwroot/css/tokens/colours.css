@@ -3,8 +3,14 @@
 /*
  * CymruBlazor Design Tokens - Colours
  *
- * Primitive colour tokens are based on the NHS design language.
- * Components must consume semantic tokens only.
+ * Sourced from the DHCW "Single Record Design System" Figma file
+ * (Foundations > Colour Tokens), which is itself the authoritative source
+ * for NHS Wales digital product colour going forward - not generic NHS
+ * England blue (#005eb8), which this file previously (incorrectly) used
+ * as the brand primary.
+ *
+ * Primitive colour tokens hold raw values. Components must consume
+ * semantic tokens only - see the second half of this file.
  */
 
 /* ==========================================================================
@@ -12,38 +18,67 @@
    ========================================================================== */
 
 :root {
-  /* NHS Blues */
-  --cymru-blue-900: #003087;
-  --cymru-blue-700: #005eb8;
-  --cymru-blue-500: #41b6e6;
-  --cymru-blue-100: #d8efff;
+  /* Blue - NHS Wales Blue, primary brand */
+  --cymru-blue-900: #1e3050;
+  --cymru-blue-800: #325083; /* brand primary */
+  --cymru-blue-700: #3d6199;
+  --cymru-blue-600: #4c72ae;
+  --cymru-blue-500: #5c6991;
+  --cymru-blue-400: #828dac;
+  --cymru-blue-300: #aab1c6;
+  --cymru-blue-200: #d4d8e2;
+  --cymru-blue-100: #eceef3;
+  --cymru-blue-50: #f4f5f8;
 
-  /* NHS Wales Navy (DHCW header/footer accent) */
-  --cymru-navy-900: #1b365d;
+  /* Cyan - DHCW Blue, secondary/accent brand */
+  --cymru-cyan-900: #0a6a84;
+  --cymru-cyan-800: #0d8bad;
+  --cymru-cyan-700: #12a3c9; /* brand secondary */
+  --cymru-cyan-600: #71accd;
+  --cymru-cyan-500: #8dc0da;
+  --cymru-cyan-400: #afd4e5;
+  --cymru-cyan-300: #d6eaf2;
+  --cymru-cyan-100: #ebf5fa;
+  --cymru-cyan-50: #f4fafc;
 
-  /* NHS Greys */
-  --cymru-grey-900: #212b32;
-  --cymru-grey-700: #425563;
-  --cymru-grey-500: #768692;
-  --cymru-grey-300: #aeb7bd;
-  --cymru-grey-100: #f0f4f5;
+  /* Navy - DHCW Navy, structural chrome (header/footer accent) */
+  --cymru-navy-900: #1b294a;
+  --cymru-navy-700: #464c64;
+  --cymru-navy-500: #707488;
+  --cymru-navy-300: #9ea1af;
+  --cymru-navy-100: #cdcfd6;
+
+  /* Neutral - UI grey palette */
+  --cymru-grey-900: #212b32; /* primary text */
+  --cymru-grey-800: #2c3a44; /* strong text */
+  --cymru-grey-700: #3b4e5b; /* heading on grey */
+  --cymru-grey-600: #4c6272; /* secondary text */
+  --cymru-grey-500: #768692; /* placeholder */
+  --cymru-grey-400: #aeb7bd; /* border / divider */
+  --cymru-grey-300: #c6cdd1; /* subtle divider */
+  --cymru-grey-200: #d8dde0; /* border default */
+  --cymru-grey-100: #f0f4f5; /* surface default */
+  --cymru-grey-50: #f7fafa; /* lightest wash */
   --cymru-white: #ffffff;
 
-  /* Semantic Status Palette */
-  --cymru-green-700: #007f3b;
-  --cymru-green-100: #d6f2de;
+  /* Status - clinical and UI status colours */
+  --cymru-red-600: #d5281b; /* critical */
+  --cymru-red-100: #fcdbd9; /* critical surface */
 
-  --cymru-yellow-500: #ffeb3b;
-  --cymru-yellow-100: #fff8d6;
+  --cymru-green-600: #007f3b; /* success */
+  --cymru-green-100: #d9efe5; /* success surface */
 
-  --cymru-red-700: #d5281b;
-  --cymru-red-100: #fde8e6;
+  --cymru-yellow-500: #f8ca4d; /* warning - distinct from focus ring */
+  --cymru-yellow-100: #fdf6dc; /* warning surface */
 
-  --cymru-orange-700: #f47738;
-  --cymru-orange-100: #fff1e8;
+  /* Info blue is its own family, deliberately separate from the Blue
+     brand scale above - reusing brand blue for "info" status previously
+     made brand and status colours indistinguishable. */
+  --cymru-info-blue-700: #005aa8;
+  --cymru-info-blue-100: #d6e8f5;
 
-  --cymru-purple-700: #4c2c92;
-  --cymru-purple-100: #ede7f6;
+  /* Focus ring - visually distinct from warning yellow */
+  --cymru-focus-yellow: #ffeb3b;
 }
 
 /* ==========================================================================
@@ -53,60 +88,81 @@
 :root {
   /* Brand */
 
-  --cymru-color-primary: var(--cymru-blue-700);
+  --cymru-color-primary: var(--cymru-blue-800);
   --cymru-color-primary-hover: var(--cymru-blue-900);
   --cymru-color-primary-subtle: var(--cymru-blue-100);
 
-  --cymru-color-secondary: var(--cymru-purple-700);
+  /* sr.color.interactive.secondary */
+  --cymru-color-secondary: var(--cymru-navy-900);
+
+  /* sr.color.brand.accent - decorative ONLY (borders, icon strokes, chart
+     accents, tab indicators). Per the design system: never use as a
+     filled surface requiring white text - that's what
+     --cymru-color-accent (below) is for. */
+  --cymru-color-brand-accent: var(--cymru-cyan-700);
 
   /* Accent - the darker navy DHCW pairs with NHS Wales blue for headers,
      footers, and other "structural" chrome (site header/footer, not
-     in-page content) */
+     in-page content). This is sr.color.interactive.secondary's value,
+     not sr.color.brand.accent - see the distinction above. */
   --cymru-color-accent: var(--cymru-navy-900);
   --cymru-color-accent-text: var(--cymru-white);
 
   /* Surface */
 
-  --cymru-color-background: var(--cymru-white);
+  /* sr.color.surface.background - the page sits on pale grey; cards/
+     panels are white and visually float above it. Previously both were
+     white here, losing that layering entirely. */
+  --cymru-color-background: var(--cymru-grey-100);
   --cymru-color-surface: var(--cymru-white);
-  --cymru-color-surface-alt: var(--cymru-grey-100);
+
+  /* sr.color.surface.subtle */
+  --cymru-color-surface-alt: var(--cymru-blue-50);
+
+  /* sr.color.surface.accent - accent/highlight backgrounds */
+  --cymru-color-surface-accent: var(--cymru-cyan-100);
 
   /* Borders */
 
-  --cymru-color-border: var(--cymru-grey-300);
-  --cymru-color-border-strong: var(--cymru-grey-700);
+  --cymru-color-border: var(--cymru-grey-200);
+  --cymru-color-border-strong: var(--cymru-grey-600);
 
   /* Typography */
 
   --cymru-color-text: var(--cymru-grey-900);
-  --cymru-color-text-muted: var(--cymru-grey-700);
+  --cymru-color-text-muted: var(--cymru-grey-600);
   --cymru-color-text-inverse: var(--cymru-white);
 
-  /* Links */
+  /* Links - sr.color.interactive.link is its own info-blue family,
+     deliberately distinct from the brand Blue scale used for buttons/nav. */
 
-  --cymru-color-link: var(--cymru-blue-700);
-  --cymru-color-link-hover: var(--cymru-blue-900);
-  --cymru-color-link-visited: var(--cymru-purple-700);
+  --cymru-color-link: var(--cymru-info-blue-700);
+  --cymru-color-link-hover: var(--cymru-navy-900);
+  /* No visited-link token is defined in the source design system - kept
+     as a reasonable substitute, distinguishable from the primary link
+     colour, in the absence of an authoritative value. */
+  --cymru-color-link-visited: var(--cymru-blue-600);
 
   /* Status */
 
-  --cymru-color-success: var(--cymru-green-700);
+  --cymru-color-success: var(--cymru-green-600);
   --cymru-color-success-background: var(--cymru-green-100);
 
   --cymru-color-warning: var(--cymru-yellow-500);
   --cymru-color-warning-background: var(--cymru-yellow-100);
 
-  --cymru-color-danger: var(--cymru-red-700);
+  --cymru-color-danger: var(--cymru-red-600);
   --cymru-color-danger-background: var(--cymru-red-100);
 
-  --cymru-color-info: var(--cymru-blue-700);
-  --cymru-color-info-background: var(--cymru-blue-100);
+  --cymru-color-info: var(--cymru-info-blue-700);
+  --cymru-color-info-background: var(--cymru-info-blue-100);
 
-  /* Focus */
+  /* Focus - sr.color.border.focus. Previously (incorrectly) grey-900,
+     a leftover guess from before the semantic tokens were available. */
 
-  --cymru-color-focus: #ffdd00;
+  --cymru-color-focus: var(--cymru-focus-yellow);
   --cymru-color-focus-text: var(--cymru-grey-900);
-  --cymru-color-focus-outline: var(--cymru-grey-900);
+  --cymru-color-focus-outline: var(--cymru-focus-yellow);
 
   /* Disabled */
 

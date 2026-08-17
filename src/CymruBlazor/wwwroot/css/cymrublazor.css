@@ -61,13 +61,9 @@
 @import "components/typography.css" layer(components);
 @import "components/cards.css" layer(components);
 @import "components/alerts.css" layer(components);
-
-/*
- * Future imports
- *
- * components/forms.css
- * components/navigation.css
- */
+@import "components/forms.css" layer(components);
+@import "components/navigation.css" layer(components);
+@import "components/icons.css" layer(components);
 
 /* ==========================================================================
    Utilities

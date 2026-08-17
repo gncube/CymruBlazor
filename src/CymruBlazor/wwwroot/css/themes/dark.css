@@ -5,73 +5,103 @@
  *
  * Dark Theme
  *
- * Only semantic tokens are overridden.
+ * Sourced from the DHCW "Single Record Design System" Figma file's own
+ * documented Dark mode token values (Tier 2 - Semantic > Dark Mode),
+ * designed for clinical environments with reduced ambient light. All
+ * pairs are documented as meeting WCAG 2.2 AA, most AAA. This replaces
+ * an earlier hand-picked dark palette that predated access to those
+ * values.
+ *
+ * Only tokens that actually differ from the light theme are overridden
+ * here - anything not listed inherits the :root/light value, which is
+ * correct where the source explicitly says a token is "unchanged"
+ * between modes (e.g. warning, border.focus, brand.accent).
+ *
+ * Two source ambiguities, resolved as noted:
+ *  - sr.color.surface.small-cards (dark) is labelled "navy-900" but its
+ *    swatch hex (#0A6A84) actually matches the cyan-900 primitive
+ *    defined elsewhere in the same source. Treated as a labelling typo -
+ *    the hex/primitive value is used, not the label.
+ *  - sr.color.status.info (dark)'s usage note says "matches light mode"
+ *    but its swatch is cyan-300 (#D6EAF2), not light mode's info-blue-700.
+ *    The swatch value is treated as authoritative.
+ *  - No dark-mode value is documented for link-hover or the solid
+ *    "accent" chrome background (header/footer) used by
+ *    --cymru-color-accent - both are inferred (marked below) rather than
+ *    guessed from an authoritative source.
  */
 
 [data-theme="dark"] {
   color-scheme: dark;
 
   /* ==========================================================================
+       Brand
+       ========================================================================== */
+
+  --cymru-color-primary: var(--cymru-cyan-900);
+  --cymru-color-primary-hover: var(--cymru-cyan-800);
+
+  --cymru-color-secondary: var(--cymru-blue-300);
+
+  /* Inferred: no explicit dark-mode value is documented for the solid
+     chrome background (header/footer). Kept as navy-900 rather than
+     following interactive.secondary's dark value (blue-300, a light
+     muted blue) literally - that value reads fine for small interactive
+     elements but would break the white accent-text contrast this token
+     pairs with for full chrome bands. */
+  --cymru-color-accent: var(--cymru-navy-900);
+
+  /* ==========================================================================
        Surfaces
        ========================================================================== */
 
-  --cymru-color-background: #121212;
-  --cymru-color-surface: #1e1e1e;
-  --cymru-color-surface-alt: #2b2b2b;
+  --cymru-color-background: var(--cymru-grey-900);
+  --cymru-color-surface: var(--cymru-blue-900);
+  --cymru-color-surface-alt: var(--cymru-navy-700);
+  --cymru-color-surface-accent: var(--cymru-blue-900);
 
   /* ==========================================================================
        Borders
        ========================================================================== */
 
-  --cymru-color-border: #4a4a4a;
-  --cymru-color-border-strong: #6b6b6b;
+  --cymru-color-border: var(--cymru-navy-500);
+  --cymru-color-border-strong: var(--cymru-navy-300);
 
   /* ==========================================================================
        Typography
        ========================================================================== */
 
-  --cymru-color-text: #f8f9fa;
-  --cymru-color-text-muted: #d2d6db;
-  --cymru-color-text-inverse: #121212;
-
-  /* ==========================================================================
-       Brand
-       ========================================================================== */
-
-  --cymru-color-primary: #66c2ff;
-  --cymru-color-primary-hover: #8dd3ff;
-  --cymru-color-primary-subtle: #143b59;
-
-  --cymru-color-secondary: #b497ff;
+  --cymru-color-text: var(--cymru-white);
+  --cymru-color-text-muted: var(--cymru-grey-200);
+  --cymru-color-text-inverse: var(--cymru-grey-900);
 
   /* ==========================================================================
        Links
        ========================================================================== */
 
-  --cymru-color-link: #66c2ff;
-  --cymru-color-link-hover: #9fdcff;
-  --cymru-color-link-visited: #c5b3ff;
+  --cymru-color-link: var(--cymru-cyan-400);
+  /* Inferred - no dark-mode hover value is documented. */
+  --cymru-color-link-hover: var(--cymru-cyan-300);
 
   /* ==========================================================================
        Status
        ========================================================================== */
 
-  --cymru-color-success: #56d364;
-  --cymru-color-success-background: #17391d;
+  --cymru-color-success: var(--cymru-green-100);
+  --cymru-color-success-background: var(--cymru-navy-900);
 
-  --cymru-color-warning: #ffd866;
-  --cymru-color-warning-background: #4b3d08;
+  --cymru-color-warning-background: var(--cymru-navy-700);
 
-  --cymru-color-danger: #ff7b72;
-  --cymru-color-danger-background: #4f1d1d;
+  --cymru-color-danger: var(--cymru-red-100);
+  --cymru-color-danger-background: var(--cymru-blue-900);
 
-  --cymru-color-info: #66c2ff;
-  --cymru-color-info-background: #143b59;
+  --cymru-color-info: var(--cymru-cyan-300);
+  --cymru-color-info-background: var(--cymru-navy-900);
 
   /* ==========================================================================
        Focus
        ========================================================================== */
 
-  --cymru-color-focus: #ffd54f;
-  --cymru-color-focus-outline: #ffffff;
+  /* Unchanged - the design system notes NHS/GDS focus yellow is highly
+     visible on both light and dark. */
 }

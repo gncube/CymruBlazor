@@ -1,14 +1,14 @@
 /* ── DemoSidebar ──────────────────────────────────────────────────────────── */
 
 .cb-sidebar-nav {
-    padding-block: var(--cymru-space-4);
-    padding-inline: var(--cymru-space-3);
+    padding-block: var(--cymru-space-6);
+    padding-inline: var(--cymru-space-4);
     height: 100%;
     overflow-y: auto;
 }
 
 .cb-sidebar-nav__section {
-    margin-block-end: var(--cymru-space-4);
+    margin-block-end: var(--cymru-space-6);
 }
 
 .cb-sidebar-nav__heading {

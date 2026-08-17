@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
@@ -24,6 +25,12 @@ public static class ServiceCollectionExtensions
         // automatically where one is available (WASM and interactive
         // Server render modes both register it).
         services.AddScoped<IThemeService, ThemeService>();
+
+        // Register focus management - used by FocusTrap, and transitively
+        // by CyNavigation's mobile menu. Previously only ever registered
+        // manually by consuming apps (e.g. the Demo app); any component
+        // using FocusTrap would throw at resolution time without it.
+        services.AddScoped<IFocusManager, FocusManager>();
 
         // Register the source-generated Mediator context pipeline
         services.AddMediator(options =>

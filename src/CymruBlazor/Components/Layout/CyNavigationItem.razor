@@ -1,0 +1,10 @@
+@inherits CyLayoutComponentBase
+@using Microsoft.AspNetCore.Components.Routing
+
+<li id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    <NavLink href="@Href" class="cy-navigation__link" ActiveClass="cy-navigation__link--active" Match="NavLinkMatch.Prefix">
+        @Text
+    </NavLink>
+
+</li>

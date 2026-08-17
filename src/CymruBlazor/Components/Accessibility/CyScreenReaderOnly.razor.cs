@@ -17,7 +17,7 @@ public partial class CyScreenReaderOnly : CyComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    protected override string BaseCssClass => "sr-only";
+    protected override string BaseCssClass => "u-sr-only";
 
     protected override string BuildCssClass() =>
         CssBuilder.Empty

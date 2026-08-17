@@ -63,6 +63,7 @@ public sealed class CyTypography : CyLayoutComponentBase
             TypographyVariant.H5 => "h5",
             TypographyVariant.H6 => "h6",
             TypographyVariant.Caption => "span",
+            TypographyVariant.Label => "span",
             _ => "p"
         };
     }

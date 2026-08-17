@@ -150,7 +150,7 @@ hr {
   border: 0;
   border-top: var(--cymru-border-width-thin) solid var(--cymru-color-border);
 
-  margin-block: var(--cymru-space-4);
+  margin-block: var(--cymru-space-6);
 }
 
 /* ==========================================================================

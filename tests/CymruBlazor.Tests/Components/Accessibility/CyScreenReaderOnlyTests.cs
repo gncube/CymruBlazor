@@ -17,7 +17,7 @@ public sealed class CyScreenReaderOnlyTests : TestContextBase
 
         // Assert
         var element = cut.Find("div");
-        element.ClassList.ShouldContain("sr-only");
+        element.ClassList.ShouldContain("u-sr-only");
         element.TextContent.ShouldBe("Hidden Accessibility Instruction");
     }
 
@@ -30,7 +30,7 @@ public sealed class CyScreenReaderOnlyTests : TestContextBase
 
         // Assert
         var element = cut.Find("div");
-        element.ClassList.ShouldContain("sr-only");
+        element.ClassList.ShouldContain("u-sr-only");
         element.ClassList.ShouldContain("custom-helper-class");
     }
 

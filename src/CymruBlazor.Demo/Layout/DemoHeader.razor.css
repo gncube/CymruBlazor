@@ -12,8 +12,8 @@
 .cb-header__inner {
     display: flex;
     align-items: center;
-    gap: var(--cymru-space-3);
-    padding-inline: var(--cymru-space-4);
+    gap: var(--cymru-space-4);
+    padding-inline: var(--cymru-space-6);
     padding-block: var(--cymru-space-2);
     max-width: 100%;
 }
@@ -49,7 +49,7 @@
 /* ── Primary nav ── */
 .cb-header__nav {
     flex: 1;
-    margin-inline-start: var(--cymru-space-4);
+    margin-inline-start: var(--cymru-space-6);
 }
 
 .cb-header__nav-list {
@@ -68,25 +68,25 @@
     font-size: var(--cymru-font-size-sm);
     font-weight: 500;
     border-radius: var(--cymru-radius-sm);
-    opacity: 0.85;
-    transition: opacity 150ms ease, background-color 150ms ease;
+    /* Full-opacity white on navy ≈ 10:1 contrast; opacity < 1 reduces effective ratio */
+    transition: background-color 150ms ease;
 }
 
 .cb-header__nav-link:hover {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: rgba(255, 255, 255, 0.15);
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .cb-header__nav-link:focus-visible {
     outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
     outline-offset: var(--cymru-focus-offset);
-    opacity: 1;
 }
 
 .cb-header__nav-link--active {
-    opacity: 1;
     background-color: rgba(255, 255, 255, 0.18);
     font-weight: 700;
+    text-decoration: none;
 }
 
 /* ── Actions ── */
@@ -118,10 +118,10 @@
 /* ── Skip link override (positioned in header) ── */
 .cb-skip-link {
     position: absolute;
-    left: var(--cymru-space-3);
+    left: var(--cymru-space-4);
     top: -100%;
     z-index: var(--cymru-z-toast);
-    padding: var(--cymru-space-2) var(--cymru-space-3);
+    padding: var(--cymru-space-2) var(--cymru-space-4);
     background: var(--cymru-color-focus);
     color: var(--cymru-color-focus-text);
     font-weight: 700;

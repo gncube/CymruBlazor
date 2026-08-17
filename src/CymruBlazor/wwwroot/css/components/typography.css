@@ -8,48 +8,55 @@
  * identical to the equivalent bare element regardless of which tag
  * As="..." actually renders (see CyTypography.cs for why the tag can
  * differ from the variant).
+ *
+ * H1-H6 map to the design system's heading-xl/l/m/s/xs/xs tiers (see
+ * tokens/typography.css for the mapping rationale - H5 and H6 are both
+ * the xs tier, since the source design system only defines 5 heading
+ * sizes). BodyLarge is a CymruBlazor-specific addition, not part of the
+ * design system's 9 core semantic tokens (heading-xl/l/m/s/xs, body-m/s,
+ * label, caption).
  */
 
 .cy-typography--h1 {
   font-size: var(--cymru-font-size-heading-1);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-1);
 }
 
 .cy-typography--h2 {
   font-size: var(--cymru-font-size-heading-2);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-2);
 }
 
 .cy-typography--h3 {
   font-size: var(--cymru-font-size-heading-3);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-3);
 }
 
 .cy-typography--h4 {
   font-size: var(--cymru-font-size-heading-4);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-4);
 }
 
 .cy-typography--h5 {
   font-size: var(--cymru-font-size-heading-5);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-5);
 }
 
 .cy-typography--h6 {
   font-size: var(--cymru-font-size-heading-6);
   font-weight: var(--cymru-font-weight-bold);
-  line-height: var(--cymru-line-height-heading);
+  line-height: var(--cymru-line-height-heading-6);
 }
 
 .cy-typography--body {
   font-size: var(--cymru-font-size-body);
   font-weight: var(--cymru-font-weight-regular);
-  line-height: var(--cymru-line-height-body);
+  line-height: var(--cymru-line-height-body-size);
 }
 
 .cy-typography--bodylarge {
@@ -58,13 +65,21 @@
 }
 
 .cy-typography--bodysmall {
-  font-size: var(--cymru-font-size-sm);
-  line-height: var(--cymru-line-height-body);
+  font-size: var(--cymru-font-size-body-small);
+  line-height: var(--cymru-line-height-body-small);
 }
 
 .cy-typography--caption {
   display: inline-block;
   font-size: var(--cymru-font-size-caption);
-  line-height: var(--cymru-line-height-body);
+  line-height: var(--cymru-line-height-caption);
+  letter-spacing: var(--cymru-letter-spacing-caption);
   color: var(--cymru-color-text-muted);
+}
+
+.cy-typography--label {
+  font-size: var(--cymru-font-size-label);
+  font-weight: var(--cymru-font-weight-medium);
+  line-height: var(--cymru-line-height-label);
+  letter-spacing: var(--cymru-letter-spacing-label);
 }

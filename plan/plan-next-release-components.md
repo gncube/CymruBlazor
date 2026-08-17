@@ -568,7 +568,107 @@ Confirmed decisions: **`Cy*` naming**, **`1.0.0` target with the a11y-test gap c
   be verified by running the Demo app in a browser, not by a headless
   `dotnet build`.
 
-## 13. Next Step
+## 14. Implementation Summary - Phase 3+4 (this pass)
 
-Run `dotnet restore && dotnet build CymruBlazor.slnx -c Release && dotnet test CymruBlazor.slnx -c Release` in a real environment. Once Phase 1+2 is green, continue with Phase 3 (Forms: `CyFormFieldComponentBase<TValue>`, `CyTextBox`, `CySelect`, `CyCheckbox`, `CyValidationSummary`) and Phase 4 (Layout chrome), per the build order in section 2.
+### Phase 3 - Forms
+
+- `CyFormFieldComponentBase<TValue> : InputBase<TValue>` built as planned.
+  Uses Blazor's native `@bind` directly on inherited `CurrentValue`/
+  `CurrentValueAsString` in each concrete component's markup rather than
+  manually wiring `value`+`@onchange` - discovered mid-implementation that
+  this is both simpler and lower-risk than the originally-sketched manual
+  approach, since it's the same mechanism the framework itself uses.
+- `CyCheckbox` mirrors the framework's own `InputCheckbox` (binds
+  `CurrentValue` directly via `@bind` on `checked`; `TryParseValueFromString`
+  is correctly unreachable).
+- `CySelect<TValue>` uses `BindConverter.TryConvertTo<TValue>`, matching
+  `InputSelect<TValue>`.
+- Added `[MaybeNullWhen(false)]` to every `TryParseValueFromString`
+  override to exactly match `InputBase`'s abstract signature - otherwise
+  `TreatWarningsAsErrors` (active in CI) would likely fail the build on a
+  nullable-mismatch warning.
+- `CyValidationSummary` wraps the framework's own `ValidationSummary`
+  rather than reimplementing it. Deliberately does **not** pass a `class`
+  attribute to the wrapped component (uncertain how it merges with the
+  component's own literal `class="validation-errors"` internally) -
+  targets the framework's default `.validation-errors`/`.validation-message`
+  classes from CSS instead, which avoids that uncertainty entirely.
+- A `FormFieldTestContext` fixture centralizes `EditContext` test setup;
+  `CyTextBoxTests` includes a real `ValidationMessageStore` integration
+  test - the first test in this codebase exercising `EditContext`
+  validation end-to-end.
+
+### Phase 4 - Layout chrome
+
+- `CySkipLink` reuses the existing `.u-sr-only-focusable` utility class.
+  **While wiring this up, found that `CyScreenReaderOnly` (shipped in
+  0.1.0-preview.1) renders class `"sr-only"`, which was never defined
+  anywhere - only `.u-sr-only` exists.** That component has been silently
+  non-functional since its first release. Fixed the component and its two
+  existing tests. Flagging this the same way as the `theme-service.js`
+  discovery in Phase 1 - another instance of "verify what's actually
+  wired up, not just what looks complete."
+- `CyBreadcrumb`/`CyBreadcrumbItem`, `CyPageHeader` built as planned,
+  composing `CyStack`/`CyTypography` rather than introducing new
+  primitives.
+- `CyNavigationItem` composes the framework's own `NavLink` for
+  active-route detection rather than reimplementing it (as the original
+  plan suggested) - lower risk, less code, and it's a component most
+  Blazor developers already know.
+- `CyNavigation`'s mobile menu only mounts `<FocusTrap>` when actually
+  open (conditional, not always-wrapping) - `FocusTrap` always renders its
+  own wrapper `<div>` regardless of its `Enabled` parameter, which would
+  otherwise add an unstyled extra box into the desktop layout at all
+  times, repeating the exact class of bug fixed in the CSS-bundle pass
+  before this release cycle even started.
+- Dropped the originally-planned `MobileBreakpoint` parameter on
+  `CyNavigation` - CSS `@media` queries cannot read custom properties in
+  their condition, so a genuinely-configurable per-instance breakpoint
+  isn't achievable without generating a `<style>` block per instance
+  (real scope creep for marginal value). Hardcoded to the existing 64rem
+  desktop breakpoint token instead, consistent with the rest of the
+  library, rather than shipping a parameter that looks configurable but
+  silently does nothing.
+- `CyHeroBanner`'s dark-background variants add a `cy-hero-banner--inverse`
+  class that rescopes `--cymru-color-text`/`--cymru-color-link` for
+  descendant content, so consumer-authored buttons/links in `ChildContent`
+  are legible by default - directly informed by the hero-button-contrast
+  bug found and fixed in the previous release.
+- `IFocusManager` registered in `AddCymruBlazor()` - `CyNavigation` is the
+  first library component with a transitive runtime dependency on it, and
+  it was previously only ever registered manually in the Demo app.
+- `navigation.css` covers all six components in one file (breadcrumb,
+  page header, navigation, hero banner, footer, skip link) - all tokens
+  used were verified against `tokens/*.css` before writing.
+- Full bUnit coverage for all eight new components, including a
+  `CyNavigationTests` suite that exercises the `CyNavigation`+`FocusTrap`
+  integration (open/close the mobile menu, assert `aria-expanded` and the
+  open-state CSS class) using the same `Mock<IFocusManager>` pattern as
+  the existing `FocusTrapTests`.
+
+### What's not verified (needs the real build/test checkpoint)
+
+Same caveat as every previous phase - nothing here has been compiled.
+Highest-risk items to check first if `dotnet test` fails:
+
+- `CyNavigationItem`'s use of the framework's `NavLink` component and
+  bUnit's automatic `FakeNavigationManager` registration.
+- `CyTextBox`/`CySelect`/`CyCheckbox`'s use of `@bind` directly against
+  inherited `InputBase<TValue>` protected members inside markup.
+- The `[MaybeNullWhen(false)]` attribute placement on all three
+  `TryParseValueFromString` overrides.
+- `CyNavigation`'s conditional `FocusTrap` mounting and the
+  `Mock<IFocusManager>` setup in `CyNavigationTests`.
+
+## 15. Release Readiness
+
+With Phase 4 complete, this release now covers the PRD's full v1 component
+scope (section 6). Per section 8's decision, `1.0.0` is the target -
+**contingent on the `ApprovalTests`/`AccessibilityTests` gap finally being
+closed**, which has been carried as open work since the very first release
+plan and has not been addressed in this pass (still needs a real
+.NET/Playwright environment to author safely - see that section for why).
+Recommend treating that as the next, final piece of work before tagging
+`v1.0.0`, rather than adding further components.
+
 

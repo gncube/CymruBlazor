@@ -30,6 +30,7 @@ public sealed class CyTypographyTests : TestContextBase
     [InlineData(TypographyVariant.H5, "h5")]
     [InlineData(TypographyVariant.H6, "h6")]
     [InlineData(TypographyVariant.Caption, "span")]
+    [InlineData(TypographyVariant.Label, "span")]
     [InlineData(TypographyVariant.Body, "p")]
     [InlineData(TypographyVariant.BodyLarge, "p")]
     [InlineData(TypographyVariant.BodySmall, "p")]

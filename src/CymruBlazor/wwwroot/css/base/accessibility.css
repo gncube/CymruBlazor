@@ -62,13 +62,13 @@
 .cymru-skip-link {
   position: absolute;
 
-  left: var(--cymru-space-3);
+  left: var(--cymru-space-4);
 
-  top: calc(-1 * var(--cymru-space-8));
+  top: calc(-1 * var(--cymru-space-20));
 
   z-index: var(--cymru-z-toast);
 
-  padding: var(--cymru-space-2) var(--cymru-space-3);
+  padding: var(--cymru-space-2) var(--cymru-space-4);
 
   background: var(--cymru-color-focus);
 
@@ -82,7 +82,7 @@
 }
 
 .cymru-skip-link:focus-visible {
-  top: var(--cymru-space-3);
+  top: var(--cymru-space-4);
 }
 
 /* ==========================================================================

@@ -3,14 +3,28 @@
 /*
  * CymruBlazor Design Tokens - Typography
  *
- * Typography tokens are organised into:
- *   1. Font families
- *   2. Font weights
- *   3. Fluid font sizes
- *   4. Line heights
- *   5. Letter spacing
+ * Sourced from the DHCW "Single Record Design System" Figma file
+ * (Foundations > Typography). Two structural corrections from the
+ * previous version of this file:
  *
- * Components should consume semantic typography tokens only.
+ *  1. Font family is Roboto, not "Segoe UI" - Frutiger is excluded on
+ *     Single Record products for licensing reasons, and Roboto (not
+ *     Segoe UI) is the documented system fallback choice.
+ *  2. Heading sizes are DISCRETE desktop (>=1024px) / mobile (<768px)
+ *     pairs, not fluid clamp() interpolation. Implemented below via a
+ *     @media block that redefines the custom properties at the 768px
+ *     breakpoint - redefining a custom property's VALUE inside @media is
+ *     valid CSS (unlike using var() inside a media *condition*, which
+ *     genuinely isn't supported - see the note this corrects in
+ *     breakpoints.css).
+ *
+ * The Figma source defines 5 heading tiers (xl/l/m/s/xs). CymruBlazor's
+ * existing TypographyVariant enum and CyTypography component expose 6
+ * (H1-H6), to avoid a breaking rename across the enum/component/tests
+ * shipped in the previous release. H5 and H6 both map to the xs tier
+ * (16px) - Figma's scale doesn't go smaller than that for headings - so
+ * they render visually identical, differentiated only by the semantic
+ * tag `CyTypography.As` produces.
  */
 
 :root {
@@ -18,7 +32,7 @@
        Font Families
        ========================================================================== */
 
-  --cymru-font-family-base: "Segoe UI", Arial, Helvetica, sans-serif;
+  --cymru-font-family-base: "Roboto", Arial, Helvetica, sans-serif;
 
   --cymru-font-family-monospace:
     "Cascadia Code", "Consolas", "Courier New", monospace;
@@ -27,52 +41,86 @@
        Font Weights
        ========================================================================== */
 
+  /*
+   * Only three weights are defined in the design system: Regular 400,
+   * Medium 500, Bold 700. "Semibold" is not a distinct design-system
+   * weight - it's kept as an alias to Bold so existing consumers
+   * (strong/b, card and alert titles) don't need individual updates,
+   * while the actual weight VALUE used everywhere stays within the
+   * three sanctioned steps.
+   */
+
   --cymru-font-weight-regular: 400;
   --cymru-font-weight-medium: 500;
-  --cymru-font-weight-semibold: 600;
+  --cymru-font-weight-semibold: 700;
   --cymru-font-weight-bold: 700;
 
   /* ==========================================================================
-       Fluid Font Sizes
+       Primitive Size Scale (Tier 1) - 11 steps, px converted to rem @ 16px
        ========================================================================== */
 
-  /*
-     * Uses clamp(minimum, preferred, maximum)
-     * ensuring smooth scaling without media queries.
-     */
+  --cymru-font-size-scale-64: 4rem; /* 64px */
+  --cymru-font-size-scale-48: 3rem; /* 48px */
+  --cymru-font-size-scale-36: 2.25rem; /* 36px */
+  --cymru-font-size-scale-32: 2rem; /* 32px */
+  --cymru-font-size-scale-27: 1.6875rem; /* 27px */
+  --cymru-font-size-scale-26: 1.625rem; /* 26px */
+  --cymru-font-size-scale-22: 1.375rem; /* 22px */
+  --cymru-font-size-scale-19: 1.1875rem; /* 19px */
+  --cymru-font-size-scale-16: 1rem; /* 16px */
+  --cymru-font-size-scale-14: 0.875rem; /* 14px */
+  --cymru-font-size-scale-12: 0.75rem; /* 12px */
 
-  --cymru-font-size-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.875rem);
-  --cymru-font-size-sm: clamp(0.875rem, 0.84rem + 0.18vw, 1rem);
-  --cymru-font-size-md: clamp(1rem, 0.96rem + 0.22vw, 1.125rem);
-  --cymru-font-size-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
-  --cymru-font-size-xl: clamp(1.375rem, 1.2rem + 0.55vw, 1.75rem);
-  --cymru-font-size-2xl: clamp(1.75rem, 1.45rem + 0.85vw, 2.25rem);
-  --cymru-font-size-3xl: clamp(2.25rem, 1.9rem + 1.2vw, 3rem);
+  /* Kept for existing consumers that reference the old xs/sm/md/lg/xl/2xl/3xl
+     scale names directly (e.g. component CSS written before this token
+     correction) - aliased onto the corrected Tier 1 values above rather
+     than left with the old, incorrect fluid clamp() sizes. */
+  --cymru-font-size-xs: var(--cymru-font-size-scale-12);
+  --cymru-font-size-sm: var(--cymru-font-size-scale-14);
+  --cymru-font-size-md: var(--cymru-font-size-scale-16);
+  --cymru-font-size-lg: var(--cymru-font-size-scale-19);
+  --cymru-font-size-xl: var(--cymru-font-size-scale-22);
+  --cymru-font-size-2xl: var(--cymru-font-size-scale-27);
+  --cymru-font-size-3xl: var(--cymru-font-size-scale-36);
 
   /* ==========================================================================
-       Semantic Typography
+       Semantic Typography (Tier 2) - mobile values (<768px, the default)
        ========================================================================== */
 
-  --cymru-font-size-body: var(--cymru-font-size-md);
+  --cymru-font-size-heading-1: var(--cymru-font-size-scale-32); /* heading-xl */
+  --cymru-line-height-heading-1: 1.21875; /* 39/32 */
 
-  --cymru-font-size-caption: var(--cymru-font-size-xs);
+  --cymru-font-size-heading-2: var(--cymru-font-size-scale-27); /* heading-l */
+  --cymru-line-height-heading-2: 1.22222; /* 33/27 */
 
-  --cymru-font-size-label: var(--cymru-font-size-sm);
+  --cymru-font-size-heading-3: var(--cymru-font-size-scale-22); /* heading-m */
+  --cymru-line-height-heading-3: 1.31818; /* 29/22 */
 
-  --cymru-font-size-heading-6: var(--cymru-font-size-md);
+  --cymru-font-size-heading-4: var(--cymru-font-size-scale-19); /* heading-s */
+  --cymru-line-height-heading-4: 1.42105; /* 27/19 */
 
-  --cymru-font-size-heading-5: var(--cymru-font-size-lg);
+  --cymru-font-size-heading-5: var(--cymru-font-size-scale-16); /* heading-xs */
+  --cymru-line-height-heading-5: 1.5; /* 24/16 */
 
-  --cymru-font-size-heading-4: var(--cymru-font-size-xl);
+  --cymru-font-size-heading-6: var(--cymru-font-size-scale-16); /* heading-xs */
+  --cymru-line-height-heading-6: 1.5; /* 24/16 */
 
-  --cymru-font-size-heading-3: var(--cymru-font-size-2xl);
+  /* Body/label/caption do not vary between desktop and mobile. */
 
-  --cymru-font-size-heading-2: var(--cymru-font-size-3xl);
+  --cymru-font-size-body: var(--cymru-font-size-scale-16); /* body-m */
+  --cymru-line-height-body-size: 1.5; /* 24/16 */
 
-  --cymru-font-size-heading-1: clamp(2.5rem, 2rem + 1.5vw, 4rem);
+  --cymru-font-size-body-small: var(--cymru-font-size-scale-14); /* body-s */
+  --cymru-line-height-body-small: 1.71429; /* 24/14 */
+
+  --cymru-font-size-label: var(--cymru-font-size-scale-14);
+  --cymru-line-height-label: 1.42857; /* 20/14 */
+
+  --cymru-font-size-caption: var(--cymru-font-size-scale-12);
+  --cymru-line-height-caption: 1.33333; /* 16/12 */
 
   /* ==========================================================================
-       Line Heights
+       Line Heights (generic, non-typography-scale uses)
        ========================================================================== */
 
   --cymru-line-height-tight: 1.2;
@@ -88,6 +136,11 @@
   --cymru-letter-spacing-normal: 0;
   --cymru-letter-spacing-wide: 0.02em;
 
+  /* Design-system-specific values, given in px (not em) in the source. */
+  --cymru-letter-spacing-default: 0;
+  --cymru-letter-spacing-label: 0.7px;
+  --cymru-letter-spacing-caption: 0.24px;
+
   /* ==========================================================================
        Default Typography
        ========================================================================== */
@@ -99,4 +152,31 @@
   --cymru-font-weight: var(--cymru-font-weight-regular);
 
   --cymru-line-height: var(--cymru-line-height-body);
+}
+
+/* ==========================================================================
+   Desktop heading overrides (>=768px - per the design system's own
+   documented Blazor guidance: "@media (min-width: 768px) { apply desktop
+   tokens }". This is deliberately NOT the same 1024px used by
+   breakpoints.css's *grid* desktop tier - typography switches to the
+   desktop scale a tier earlier (at tablet width) than the column/gutter
+   grid does.)
+   ========================================================================== */
+
+@media (min-width: 48rem) {
+  :root {
+    --cymru-font-size-heading-1: var(--cymru-font-size-scale-48); /* heading-xl */
+    --cymru-line-height-heading-1: 1.125; /* 54/48 */
+
+    --cymru-font-size-heading-2: var(--cymru-font-size-scale-36); /* heading-l */
+    --cymru-line-height-heading-2: 1.16667; /* 42/36 */
+
+    --cymru-font-size-heading-3: var(--cymru-font-size-scale-26); /* heading-m */
+    --cymru-line-height-heading-3: 1.23077; /* 32/26 */
+
+    --cymru-font-size-heading-4: var(--cymru-font-size-scale-22); /* heading-s */
+    --cymru-line-height-heading-4: 1.36364; /* 30/22 */
+
+    /* heading-xs (heading-5/6) is unchanged at desktop widths. */
+  }
 }
