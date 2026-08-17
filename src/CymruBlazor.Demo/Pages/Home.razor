@@ -1,5 +1,6 @@
 @page "/"
 @namespace CymruBlazor.Demo.Pages
+@inject IJSRuntime JS
 
 <div class="cb-home">
 
@@ -28,13 +29,6 @@
                     <a href="/layouts" class="cb-demo-btn cb-demo-btn--secondary">
                         Browse components
                     </a>
-                    <a href="https://github.com/gncube/CymruBlazor"
-                       class="cb-demo-btn cb-demo-btn--ghost"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        GitHub
-                        <span class="sr-only">(opens in new tab)</span>
-                    </a>
                 </CyStack>
 
             </CyStack>
@@ -56,13 +50,48 @@
 
         <div class="cb-home__quick-start">
             <h2 class="cb-section-title">Quick start</h2>
-            <pre><code>dotnet add package CymruBlazor</code></pre>
-            <pre><code>&lt;link rel="stylesheet"
+            <div class="cb-home__steps">
+
+                <div class="cb-home__step">
+                    <div class="cb-home__step-header">
+                        <span class="cb-home__step-label">Step 1 — Install</span>
+                        <button class="cb-home__copy-btn" type="button"
+                                aria-label="Copy install command"
+                                @onclick="() => CopyAsync(_snippetInstall)">
+                            Copy
+                        </button>
+                    </div>
+                    <pre class="cb-home__step-code"><code>dotnet add package CymruBlazor</code></pre>
+                </div>
+
+                <div class="cb-home__step">
+                    <div class="cb-home__step-header">
+                        <span class="cb-home__step-label">Step 2 — Add CSS</span>
+                        <button class="cb-home__copy-btn" type="button"
+                                aria-label="Copy CSS link tag"
+                                @onclick="() => CopyAsync(_snippetCss)">
+                            Copy
+                        </button>
+                    </div>
+                    <pre class="cb-home__step-code"><code>&lt;link rel="stylesheet"
       href="_content/CymruBlazor/css/cymrublazor.css" /&gt;</code></pre>
-            <pre><code>// Program.cs
+                </div>
+
+                <div class="cb-home__step">
+                    <div class="cb-home__step-header">
+                        <span class="cb-home__step-label">Step 3 — Register services</span>
+                        <button class="cb-home__copy-btn" type="button"
+                                aria-label="Copy service registration"
+                                @onclick="() => CopyAsync(_snippetServices)">
+                            Copy
+                        </button>
+                    </div>
+                    <pre class="cb-home__step-code"><code>// Program.cs
 builder.Services.AddCymruBlazor();</code></pre>
-            <a href="/getting-started"
-               style="display:inline-block;margin-block-start:var(--cymru-space-4)">
+                </div>
+
+            </div>
+            <a href="/getting-started" class="cb-home__guide-link">
                 Full installation guide →
             </a>
         </div>
@@ -72,6 +101,13 @@ builder.Services.AddCymruBlazor();</code></pre>
 </div>
 
 @code {
+    private const string _snippetInstall = "dotnet add package CymruBlazor";
+    private const string _snippetCss = "<link rel=\"stylesheet\" href=\"_content/CymruBlazor/css/cymrublazor.css\" />";
+    private const string _snippetServices = "builder.Services.AddCymruBlazor();";
+
+    private ValueTask CopyAsync(string text) =>
+        JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+
     private sealed record Feature(string Icon, string Title, string Body);
 
     private static readonly Feature[] _features =
