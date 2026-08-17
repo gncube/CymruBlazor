@@ -28,6 +28,9 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Install GitVersion
+        run: dotnet tool install --global GitVersion.Tool
+
       - name: Restore
         run: dotnet restore CymruBlazor.slnx
 
