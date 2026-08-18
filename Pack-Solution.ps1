@@ -8,6 +8,7 @@ param(
     "samples",
     "src",
     "tests",
+    "tools",
     ".editorconfig",
     ".gitignore",
     "CHANGELOG.md",
