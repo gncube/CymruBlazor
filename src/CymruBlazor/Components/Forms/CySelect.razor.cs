@@ -12,7 +12,7 @@ namespace CymruBlazor.Components.Forms;
 /// already familiar with, and avoids this library imposing a specific
 /// item-shape/display-text convention in its first release.
 /// </summary>
-public partial class CySelect<TValue> : CyFormFieldComponentBase<TValue>
+public partial class CySelect<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] TValue> : CyFormFieldComponentBase<TValue>
 {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -21,7 +21,7 @@ public partial class CySelect<TValue> : CyFormFieldComponentBase<TValue>
     protected override bool TryParseValueFromString(
         string? value,
         [MaybeNullWhen(false)] out TValue result,
-        out string? validationErrorMessage)
+        [NotNullWhen(false)] out string? validationErrorMessage)
     {
         if (BindConverter.TryConvertTo<TValue>(value, CultureInfo.CurrentCulture, out var parsedValue))
         {

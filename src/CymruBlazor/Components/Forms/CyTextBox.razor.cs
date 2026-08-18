@@ -31,7 +31,7 @@ public partial class CyTextBox : CyFormFieldComponentBase<string>
     protected override bool TryParseValueFromString(
         string? value,
         [MaybeNullWhen(false)] out string result,
-        out string? validationErrorMessage)
+        [NotNullWhen(false)] out string? validationErrorMessage)
     {
         result = value ?? string.Empty;
         validationErrorMessage = null;

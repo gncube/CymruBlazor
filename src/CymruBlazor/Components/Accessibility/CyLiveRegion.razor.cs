@@ -65,5 +65,6 @@ public partial class CyLiveRegion : CyComponentBase, INotificationHandler<LiveRe
     public void Dispose()
     {
         // Lifetime managed transparently by the container framework
+        GC.SuppressFinalize(this);
     }
 }

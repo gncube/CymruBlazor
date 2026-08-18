@@ -16,13 +16,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-class CssBundler
+sealed class CssBundler
 {
+    private static readonly string[] LineSplitSeparators = { "\r\n", "\r", "\n" };
+
     static int Main(string[] args)
     {
         if (args.Length < 2)
@@ -86,7 +89,7 @@ class CssBundler
 
             // Skip @layer declarations since we have the global one
             // But preserve everything else
-            var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var lines = content.Split(LineSplitSeparators, StringSplitOptions.None);
             var processedLines = new List<string>();
 
             foreach (var line in lines)
@@ -98,7 +101,7 @@ class CssBundler
                     continue;
 
                 // Skip individual @layer declarations (we only want the global one)
-                if (trimmed.StartsWith("@layer"))
+                if (trimmed.StartsWith("@layer", StringComparison.Ordinal))
                     continue;
 
                 processedLines.Add(line);
@@ -108,7 +111,7 @@ class CssBundler
             {
                 // Add file boundary comment for debugging
                 output.AppendLine($"/* ============================================ */");
-                output.AppendLine($"/* {Path.GetFileName(inputFile)} */");
+                output.AppendLine(CultureInfo.InvariantCulture, $"/* {Path.GetFileName(inputFile)} */");
                 output.AppendLine($"/* ============================================ */");
                 output.AppendLine();
 

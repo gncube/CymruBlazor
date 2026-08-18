@@ -80,5 +80,6 @@ public partial class CyThemeProvider : CyLayoutComponentBase, IDisposable
     public void Dispose()
     {
         ThemeService.ThemeChanged -= OnThemeChanged;
+        GC.SuppressFinalize(this);
     }
 }

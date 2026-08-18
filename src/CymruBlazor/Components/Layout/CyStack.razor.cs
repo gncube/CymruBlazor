@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
@@ -7,6 +8,12 @@ namespace CymruBlazor.Components.Layout;
 /// <summary>
 /// Provides a flexbox stack layout.
 /// </summary>
+[SuppressMessage(
+    "Naming",
+    "CA1711:Identifiers should not have incorrect suffix",
+    Justification = "'Stack' is the established name for this flexbox layout primitive " +
+        "in UI component libraries (MudBlazor, Fluent UI Blazor). It is not intended to " +
+        "resemble System.Collections.Stack, so the collection-naming convention does not apply.")]
 public partial class CyStack : CyLayoutComponentBase
 {
     [Parameter]

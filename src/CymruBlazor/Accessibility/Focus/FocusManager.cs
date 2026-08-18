@@ -5,7 +5,7 @@ namespace CymruBlazor.Accessibility.Focus;
 /// <summary>
 /// Default implementation of IFocusManager.
 /// </summary>
-public sealed class FocusManager(
+public sealed partial class FocusManager(
     ILogger<FocusManager> logger)
     : IFocusManager
 {
@@ -18,9 +18,7 @@ public sealed class FocusManager(
 
         ArgumentException.ThrowIfNullOrWhiteSpace(elementId);
 
-        logger.LogDebug(
-            "Focus requested for element '{ElementId}'.",
-            elementId);
+        LogFocusRequestedForElement(elementId);
 
         return Task.FromResult(new FocusResult(true));
     }
@@ -30,9 +28,7 @@ public sealed class FocusManager(
         FocusOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        logger.LogDebug(
-            "Focus requested for target '{Target}'.",
-            target);
+        LogFocusRequestedForTarget(target);
 
         return Task.FromResult(new FocusResult(true));
     }
@@ -40,8 +36,21 @@ public sealed class FocusManager(
     public Task<FocusResult> RestoreFocusAsync(
         CancellationToken cancellationToken = default)
     {
-        logger.LogDebug("Restore previous focus requested.");
+        LogRestorePreviousFocusRequested();
 
         return Task.FromResult(new FocusResult(true));
     }
+
+    // Source-generated logging (CA1848/CA1873): the compiler emits
+    // IsEnabled-guarded, allocation-free logging methods, avoiding the
+    // params object?[] boxing and eager argument evaluation of the
+    // LoggerExtensions.LogDebug(...) extension method calls this replaces.
+    [LoggerMessage(EventId = 1, Level = LogLevel.Debug, Message = "Focus requested for element '{ElementId}'.")]
+    private partial void LogFocusRequestedForElement(string elementId);
+
+    [LoggerMessage(EventId = 2, Level = LogLevel.Debug, Message = "Focus requested for target '{Target}'.")]
+    private partial void LogFocusRequestedForTarget(FocusTarget target);
+
+    [LoggerMessage(EventId = 3, Level = LogLevel.Debug, Message = "Restore previous focus requested.")]
+    private partial void LogRestorePreviousFocusRequested();
 }

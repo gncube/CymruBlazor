@@ -19,7 +19,7 @@ public partial class CyCheckbox : CyFormFieldComponentBase<bool>
     protected override bool TryParseValueFromString(
         string? value,
         [MaybeNullWhen(false)] out bool result,
-        out string? validationErrorMessage)
+        [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotSupportedException(
             $"{nameof(CyCheckbox)} binds directly to its boolean value and does not parse a string representation.");

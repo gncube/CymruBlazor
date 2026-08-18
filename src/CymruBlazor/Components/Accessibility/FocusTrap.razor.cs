@@ -39,6 +39,8 @@ public partial class FocusTrap : CyComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
+
         if (!RestoreFocus)
         {
             return;

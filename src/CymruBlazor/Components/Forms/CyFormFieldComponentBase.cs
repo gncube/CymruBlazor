@@ -23,8 +23,6 @@ namespace CymruBlazor.Components.Forms;
 /// </summary>
 public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>
 {
-    private string _id = string.Empty;
-
     [Inject]
     private IComponentIdGenerator ComponentIdGenerator { get; set; } = default!;
 
@@ -71,14 +69,14 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>
 
     /// <summary>
     /// Gets or sets the HTML id of the input element. If not supplied, a
-    /// deterministic id is generated on first use.
+    /// deterministic id is generated on first access (see
+    /// <see cref="EnsureId"/>) and cached back into this property - kept
+    /// as a plain auto property (rather than a custom get/set pair) so
+    /// Blazor's parameter-assignment reflection sees ordinary property
+    /// semantics, per BL0007.
     /// </summary>
     [Parameter]
-    public string Id
-    {
-        get => EnsureId();
-        set => _id = value;
-    }
+    public string? Id { get; set; }
 
     /// <summary>
     /// Same value as <see cref="Id"/> - exists as a clearer name at
@@ -145,11 +143,11 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>
 
     private string EnsureId()
     {
-        if (string.IsNullOrWhiteSpace(_id))
+        if (string.IsNullOrWhiteSpace(Id))
         {
-            _id = ComponentIdGenerator.Create("cy-field");
+            Id = ComponentIdGenerator.Create("cy-field");
         }
 
-        return _id;
+        return Id;
     }
 }
