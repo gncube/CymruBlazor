@@ -10,7 +10,7 @@ public sealed class ComponentIdGeneratorTests
     public void Create_WithNullPrefix_ReturnsDefaultPrefixWithUniqueId()
     {
         // Arrange
-        IComponentIdGenerator generator = new ComponentIdGenerator();
+        var generator = new ComponentIdGenerator();
 
         // Act
         var firstId = generator.Create(null);
@@ -26,7 +26,7 @@ public sealed class ComponentIdGeneratorTests
     public void Create_WithValidPrefix_ReturnsSanitizedPrefixWithId()
     {
         // Arrange
-        IComponentIdGenerator generator = new ComponentIdGenerator();
+        var generator = new ComponentIdGenerator();
 
         // Act
         var result = generator.Create("Test_Prefix!123");
