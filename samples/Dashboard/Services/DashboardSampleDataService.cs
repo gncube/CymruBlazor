@@ -1,5 +1,4 @@
-using CymruBlazor.Components.Content;
-using CymruBlazor.Components.Status;
+using CymruBlazor.Enums;
 using CymruBlazor.Icons;
 using CymruBlazor.Samples.Dashboard.Models;
 
@@ -14,36 +13,36 @@ public sealed class DashboardSampleDataService
 {
     public IReadOnlyList<KpiMetric> GetKpiMetrics() =>
     [
-        new("Today's Appointments", "128", CymruIconName.UserPlus, CymruSeverity.Info, CymruTrend.Up, "+8 vs yesterday"),
-        new("Referrals Received", "34", CymruIconName.FileText, CymruSeverity.Success, CymruTrend.Up, "+12% vs last week"),
-        new("Watchlist Patients", "6", CymruIconName.Watchlist, CymruSeverity.Warning, CymruTrend.Flat, "No change"),
-        new("Pending DALs", "11", CymruIconName.ArrowUpDown, CymruSeverity.Critical, CymruTrend.Down, "-3 vs yesterday")
+        new("Today's Appointments", "128", CymruIconName.UserPlus, ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
+        new("Referrals Received", "34", CymruIconName.FileText, ComponentColour.Success, Trend.Up, "+12% vs last week"),
+        new("Watchlist Patients", "6", CymruIconName.Watchlist, ComponentColour.Warning, Trend.Flat, "No change"),
+        new("Pending DALs", "11", CymruIconName.ArrowUpDown, ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
     ];
 
     public IReadOnlyList<AppointmentSummary> GetTodaysAppointments() =>
     [
-        new("J.E.", "09:00", "Dr. A. Rhys", "Follow-up", "Checked in", CymruSeverity.Success),
-        new("M.K.", "09:20", "Dr. S. Owen", "New patient", "Waiting", CymruSeverity.Info),
-        new("R.T.", "09:40", "Dr. A. Rhys", "Follow-up", "Delayed", CymruSeverity.Warning),
-        new("L.P.", "10:00", "Dr. C. Bevan", "Review", "Waiting", CymruSeverity.Info),
-        new("D.H.", "10:20", "Dr. S. Owen", "New patient", "Cancelled", CymruSeverity.Critical),
-        new("N.W.", "10:40", "Dr. C. Bevan", "Follow-up", "Checked in", CymruSeverity.Success)
+        new("J.E.", "09:00", "Dr. A. Rhys", "Follow-up", "Checked in", ComponentColour.Success),
+        new("M.K.", "09:20", "Dr. S. Owen", "New patient", "Waiting", ComponentColour.Info),
+        new("R.T.", "09:40", "Dr. A. Rhys", "Follow-up", "Delayed", ComponentColour.Warning),
+        new("L.P.", "10:00", "Dr. C. Bevan", "Review", "Waiting", ComponentColour.Info),
+        new("D.H.", "10:20", "Dr. S. Owen", "New patient", "Cancelled", ComponentColour.Danger),
+        new("N.W.", "10:40", "Dr. C. Bevan", "Follow-up", "Checked in", ComponentColour.Success)
     ];
 
     public IReadOnlyList<OccupancyArea> GetWardOccupancy() =>
     [
-        new("Medical Ward A", 42, 48, CymruSeverity.Warning),
-        new("Surgical Ward B", 30, 40, CymruSeverity.Info),
-        new("Paediatric Ward", 12, 24, CymruSeverity.Success),
-        new("Critical Care", 18, 20, CymruSeverity.Critical)
+        new("Medical Ward A", 42, 48, ComponentColour.Warning),
+        new("Surgical Ward B", 30, 40, ComponentColour.Info),
+        new("Paediatric Ward", 12, 24, ComponentColour.Success),
+        new("Critical Care", 18, 20, ComponentColour.Danger)
     ];
 
     public IReadOnlyList<WaitingListSpecialty> GetWaitingList() =>
     [
-        new("Orthopaedics", 214, 18, CySeverity.Critical),
-        new("Cardiology", 132, 4, CymruSeverity.Warning),
-        new("Dermatology", 87, 0, CymruSeverity.Success),
-        new("Ophthalmology", 156, 9, CymruSeverity.Warning),
-        new("ENT", 64, 1, CymruSeverity.Success)
+        new("Orthopaedics", 214, 18, ComponentColour.Danger),
+        new("Cardiology", 132, 4, ComponentColour.Warning),
+        new("Dermatology", 87, 0, ComponentColour.Success),
+        new("Ophthalmology", 156, 9, ComponentColour.Warning),
+        new("ENT", 64, 1, ComponentColour.Success)
     ];
 }

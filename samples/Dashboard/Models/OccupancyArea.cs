@@ -1,4 +1,4 @@
-using CymruBlazor.Components.Status;
+using CymruBlazor.Enums;
 
 namespace CymruBlazor.Samples.Dashboard.Models;
 
@@ -7,4 +7,4 @@ public sealed record OccupancyArea(
     string WardName,
     int OccupiedBeds,
     int TotalBeds,
-    CymruSeverity Severity);
+    ComponentColour Severity);

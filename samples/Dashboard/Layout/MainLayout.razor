@@ -2,51 +2,44 @@
 @inject ThemeService Theme
 
 <CymruThemeProvider>
-    <CymruSkipLink TargetId="#main-content" />
+    <CySkipLink TargetId="main-content" />
+
+    <CyNavigation Class="app-shell__nav">
+        <Brand>
+            <CymruIcon Name="CymruIconName.Stethoscope" Size="24" />
+            <span>Bwrdd Iechyd Demo</span>
+        </Brand>
+        <ChildContent>
+            @foreach (var item in _navItems)
+            {
+                <CyNavigationItem Text="@item.Text" Href="@item.Href" />
+            }
+        </ChildContent>
+    </CyNavigation>
 
     <div class="app-shell">
-        <aside class="app-shell__sidebar">
-            <div class="app-shell__brand">
-                <CymruIcon Name="CymruIconName.Stethoscope" Size="24" />
-                <span>Bwrdd Iechyd Demo</span>
-            </div>
+        <header class="app-shell__topbar">
+            <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="() => Theme.CycleTheme()">
+                <CymruIcon Name="@ThemeIcon" Size="18" />
+                @ThemeLabel
+            </button>
+        </header>
 
-            <CymruNavigation AriaLabel="Primary" Items="_navItems" />
-
-            <div class="app-shell__theme-toggle">
-                <CymruButton Variant="CymruButtonVariant.Ghost"
-                             Icon="@ThemeIcon"
-                             OnClick="@(() => Theme.CycleTheme())">
-                    @ThemeLabel
-                </CymruButton>
-            </div>
-        </aside>
-
-        <div>
-            <header class="app-shell__topbar">
-                <div class="app-shell__brand">
-                    <CymruIcon Name="CymruIconName.Stethoscope" Size="22" />
-                    <span>Bwrdd Iechyd Demo</span>
-                </div>
-                <CymruButton Variant="CymruButtonVariant.Ghost" Icon="CymruIconName.Menu" TypeAttribute="button">
-                    Menu
-                </CymruButton>
-            </header>
-
-            <main id="main-content" class="app-shell__main" tabindex="-1">
-                @Body
-            </main>
-        </div>
+        <main id="main-content" class="app-shell__main" tabindex="-1">
+            @Body
+        </main>
     </div>
 </CymruThemeProvider>
 
 @code {
-    private readonly CymruNavigationItem[] _navItems =
+    private sealed record NavItem(string Text, string Href);
+
+    private static readonly NavItem[] _navItems =
     [
-        new("Dashboard", "/", CymruIconName.Activity),
-        new("Appointments", "/appointments", CymruIconName.UserPlus),
-        new("Wards", "/wards", CymruIconName.Bed),
-        new("Reports", "/reports", CymruIconName.FileText)
+        new("Dashboard", "/"),
+        new("Appointments", "/appointments"),
+        new("Wards", "/wards"),
+        new("Reports", "/reports")
     ];
 
     private CymruIconName ThemeIcon => Theme.Theme switch

@@ -1,5 +1,4 @@
-using CymruBlazor.Components.Content;
-using CymruBlazor.Components.Status;
+using CymruBlazor.Enums;
 using CymruBlazor.Icons;
 
 namespace CymruBlazor.Samples.Dashboard.Models;
@@ -9,6 +8,6 @@ public sealed record KpiMetric(
     string Label,
     string Value,
     CymruIconName Icon,
-    CymruSeverity Severity,
-    CymruTrend Trend,
+    ComponentColour Severity,
+    Trend Trend,
     string DeltaText);

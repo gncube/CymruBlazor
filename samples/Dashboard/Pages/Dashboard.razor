@@ -3,41 +3,45 @@
 
 <PageTitle>Ward Dashboard</PageTitle>
 
-<CymruPageHeader Title="Ward Dashboard" Description="Overview for Wednesday, 19 August 2026">
+<CyPageHeader Title="Ward Dashboard" Subtitle="Overview for Wednesday, 19 August 2026">
     <Actions>
-        <CymruButton Variant="CymruButtonVariant.Secondary" TrailingIcon="CymruIconName.ChevronDown">
-            Customize Dashboard
-        </CymruButton>
+        <Button>
+            Customize Dashboard <CymruIcon Name="CymruIconName.ChevronDown" Size="16" />
+        </Button>
     </Actions>
-</CymruPageHeader>
+</CyPageHeader>
 
-<CymruAlert Severity="CymruSeverity.Critical" Title="Critical Care is near capacity" CssClass="dashboard-alert">
+<CyAlert Severity="ComponentColour.Danger" Title="Critical Care is near capacity" Class="dashboard-alert">
     Critical Care is at 90% occupancy (18 / 20 beds). Review escalation plan if admissions continue.
-</CymruAlert>
+</CyAlert>
 
-<div class="dashboard-kpi-grid">
+<CyGrid Columns="GridColumns.Four" Gap="GridGap.Medium" Class="dashboard-kpi-grid">
     @foreach (var metric in _kpis)
     {
-        <CymruStatCard Label="@metric.Label"
-                        Value="@metric.Value"
-                        Icon="metric.Icon"
-                        Severity="metric.Severity"
-                        Trend="metric.Trend"
-                        DeltaText="@metric.DeltaText" />
+        <CyCard Class="dashboard-kpi-card">
+            <div class="dashboard-kpi-card__header">
+                <CymruIcon Name="metric.Icon" Size="20" />
+                <span>@metric.Label</span>
+            </div>
+            <p class="dashboard-kpi-card__value">@metric.Value</p>
+            <p class="dashboard-kpi-card__delta dashboard-kpi-card__delta--@metric.Severity.ToString().ToLowerInvariant()">
+                @TrendGlyph(metric.Trend) @metric.DeltaText
+            </p>
+        </CyCard>
     }
-</div>
+</CyGrid>
 
-<div class="dashboard-widget-grid">
+<CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium" Class="dashboard-widget-grid">
     <AppointmentsWidget Appointments="_appointments" />
     <OccupancyWidget Areas="_occupancy" />
     <WaitingListWidget Specialties="_waitingList" />
-</div>
+</CyGrid>
 
 <nav class="dashboard-quick-actions" aria-label="Quick actions">
-    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.UserPlus">Book Appointment</CymruButton>
-    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.FileText">New Referral</CymruButton>
-    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.Bed">Ward Round</CymruButton>
-    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.Plus">Add Note</CymruButton>
+    <Button><CymruIcon Name="CymruIconName.UserPlus" Size="16" /> Book Appointment</Button>
+    <Button><CymruIcon Name="CymruIconName.FileText" Size="16" /> New Referral</Button>
+    <Button><CymruIcon Name="CymruIconName.Bed" Size="16" /> Ward Round</Button>
+    <Button><CymruIcon Name="CymruIconName.Plus" Size="16" /> Add Note</Button>
 </nav>
 
 @code {
@@ -53,4 +57,11 @@
         _occupancy = Data.GetWardOccupancy();
         _waitingList = Data.GetWaitingList();
     }
+
+    private static string TrendGlyph(Models.Trend trend) => trend switch
+    {
+        Models.Trend.Up => "▲",
+        Models.Trend.Down => "▼",
+        _ => "▬"
+    };
 }
