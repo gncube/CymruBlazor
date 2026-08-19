@@ -13,10 +13,10 @@ public sealed class DashboardSampleDataService
 {
     public IReadOnlyList<KpiMetric> GetKpiMetrics() =>
     [
-        new("Today's Appointments", "128", CymruIconName.UserPlus, ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
-        new("Referrals Received", "34", CymruIconName.FileText, ComponentColour.Success, Trend.Up, "+12% vs last week"),
-        new("Watchlist Patients", "6", CymruIconName.Watchlist, ComponentColour.Warning, Trend.Flat, "No change"),
-        new("Pending DALs", "11", CymruIconName.ArrowUpDown, ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
+        new("Today's Appointments", "128", CyIconName.UserPlus, ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
+        new("Referrals Received", "34", CyIconName.FileText, ComponentColour.Success, Trend.Up, "+12% vs last week"),
+        new("Watchlist Patients", "6", CyIconName.Watchlist, ComponentColour.Warning, Trend.Flat, "No change"),
+        new("Pending DALs", "11", CyIconName.ArrowUpDown, ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
     ];
 
     public IReadOnlyList<AppointmentSummary> GetTodaysAppointments() =>

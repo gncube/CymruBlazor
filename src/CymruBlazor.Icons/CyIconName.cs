@@ -5,7 +5,7 @@ namespace CymruBlazor.Icons;
 /// icon library (see Spec.md §11 — a dedicated CymruBlazor.Icons package is future work).
 /// Consuming apps can render their own SVGs directly where a glyph isn't listed here.
 /// </summary>
-public enum CymruIconName
+public enum CyIconName
 {
     ChevronDown,
     Info,

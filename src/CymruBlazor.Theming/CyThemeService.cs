@@ -1,20 +1,20 @@
 namespace CymruBlazor.Theming;
 
 /// <summary>
-/// Holds the current <see cref="CymruTheme"/> for a CymruBlazor application and notifies
+/// Holds the current <see cref="CyTheme"/> for a CymruBlazor application and notifies
 /// subscribers when it changes. Register as a scoped (Blazor Web App) or singleton
-/// (Blazor WebAssembly) service; <see cref="CymruThemeProvider"/> renders the result.
+/// (Blazor WebAssembly) service; <see cref="CyThemeProvider"/> renders the result.
 /// </summary>
-public sealed class ThemeService
+public sealed class CyThemeService
 {
-    /// <summary>The active theme. Defaults to <see cref="CymruTheme.System"/>.</summary>
-    public CymruTheme Theme { get; private set; } = CymruTheme.System;
+    /// <summary>The active theme. Defaults to <see cref="CyTheme.System"/>.</summary>
+    public CyTheme Theme { get; private set; } = CyTheme.System;
 
     /// <summary>Raised whenever <see cref="Theme"/> changes.</summary>
     public event Action? Changed;
 
     /// <summary>Sets the active theme and notifies subscribers.</summary>
-    public void SetTheme(CymruTheme theme)
+    public void SetTheme(CyTheme theme)
     {
         if (Theme == theme)
         {
@@ -30,9 +30,9 @@ public sealed class ThemeService
     {
         SetTheme(Theme switch
         {
-            CymruTheme.System => CymruTheme.Light,
-            CymruTheme.Light => CymruTheme.Dark,
-            _ => CymruTheme.System
+            CyTheme.System => CyTheme.Light,
+            CyTheme.Light => CyTheme.Dark,
+            _ => CyTheme.System
         });
     }
 }

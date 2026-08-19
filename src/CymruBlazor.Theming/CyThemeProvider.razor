@@ -1,6 +1,6 @@
 @namespace CymruBlazor.Theming
 @implements IDisposable
-@inject ThemeService Theme
+@inject CyThemeService Theme
 
 <CascadingValue Value="Theme" IsFixed="true">
     <div class="cy-root" data-cy-theme="@ThemeAttribute">
@@ -15,8 +15,8 @@
 
     private string ThemeAttribute => Theme.Theme switch
     {
-        CymruTheme.Light => "light",
-        CymruTheme.Dark => "dark",
+        CyTheme.Light => "light",
+        CyTheme.Dark => "dark",
         _ => "system"
     };
 

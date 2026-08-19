@@ -20,7 +20,6 @@ builder.Services.AddMsalAuthentication(options =>
 builder.Services.AddCymruBlazor();
 builder.Services.AddScoped<IFocusManager, FocusManager>();
 builder.Services.AddSingleton<DashboardSampleDataService>();
-// Fully qualified: CymruBlazor.Theming also exposes an AddCymruBlazor() extension, which would be ambiguous with the one above.
-builder.Services.AddScoped<CymruBlazor.Theming.ThemeService>();
+builder.Services.AddScoped<CymruBlazor.Theming.CyThemeService>();
 
 await builder.Build().RunAsync();

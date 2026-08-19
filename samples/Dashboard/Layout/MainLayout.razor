@@ -1,12 +1,12 @@
 @inherits LayoutComponentBase
-@inject ThemeService Theme
+@inject CyThemeService Theme
 
-<CymruThemeProvider>
+<CyThemeProvider>
     <CySkipLink TargetId="main-content" />
 
     <CyNavigation Class="app-shell__nav">
         <Brand>
-            <CymruIcon Name="CymruIconName.Stethoscope" Size="24" />
+            <CyIcon Name="CyIconName.Stethoscope" Size="24" />
             <span>Bwrdd Iechyd Demo</span>
         </Brand>
         <ChildContent>
@@ -20,7 +20,7 @@
     <div class="app-shell">
         <header class="app-shell__topbar">
             <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="() => Theme.CycleTheme()">
-                <CymruIcon Name="@ThemeIcon" Size="18" />
+                <CyIcon Name="@ThemeIcon" Size="18" />
                 @ThemeLabel
             </button>
         </header>
@@ -29,7 +29,7 @@
             @Body
         </main>
     </div>
-</CymruThemeProvider>
+</CyThemeProvider>
 
 @code {
     private sealed record NavItem(string Text, string Href);
@@ -42,17 +42,17 @@
         new("Reports", "/reports")
     ];
 
-    private CymruIconName ThemeIcon => Theme.Theme switch
+    private CyIconName ThemeIcon => Theme.Theme switch
     {
-        CymruTheme.Dark => CymruIconName.Moon,
-        CymruTheme.Light => CymruIconName.Sun,
-        _ => CymruIconName.Sun
+        CyTheme.Dark => CyIconName.Moon,
+        CyTheme.Light => CyIconName.Sun,
+        _ => CyIconName.Sun
     };
 
     private string ThemeLabel => Theme.Theme switch
     {
-        CymruTheme.Dark => "Dark theme",
-        CymruTheme.Light => "Light theme",
+        CyTheme.Dark => "Dark theme",
+        CyTheme.Light => "Light theme",
         _ => "System theme"
     };
 }

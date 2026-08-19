@@ -7,7 +7,7 @@ namespace CymruBlazor.Samples.Dashboard.Models;
 public sealed record KpiMetric(
     string Label,
     string Value,
-    CymruIconName Icon,
+    CyIconName Icon,
     ComponentColour Severity,
     Trend Trend,
     string DeltaText);

@@ -3,7 +3,7 @@ namespace CymruBlazor.Theming;
 /// <summary>
 /// The colour scheme a CymruBlazor application is rendered in.
 /// </summary>
-public enum CymruTheme
+public enum CyTheme
 {
     /// <summary>Follows the user's operating system / browser preference.</summary>
     System,

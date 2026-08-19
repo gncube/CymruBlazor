@@ -19,12 +19,12 @@ namespace CymruBlazor.Components.Content;
 public partial class CyIcon : CyLayoutComponentBase
 {
     /// <summary>
-    /// The icon name, e.g. "search", "patient", "critical". See
-    /// <see cref="IconRegistry.AllNames"/> for the full list.
+    /// The icon name, e.g. Sun, Moon, UserPlus. See <see cref="CyIconName"/>
+    /// for the complete list.
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public string Name { get; set; } = string.Empty;
+    public CyIconName Name { get; set; } = CyIconName.Sun;
 
     /// <summary>
     /// Width/height in pixels. Defaults to 24, the design system's
@@ -43,7 +43,7 @@ public partial class CyIcon : CyLayoutComponentBase
 
     protected override string BaseCssClass => "cy-icon";
 
-    private string IconMarkup => IconRegistry.GetMarkup(Name);
+    private string IconMarkup => IconRegistry.GetMarkup(Name.ToString());
 
     private string? AriaRole => string.IsNullOrWhiteSpace(Label) ? null : "img";
 
@@ -53,10 +53,11 @@ public partial class CyIcon : CyLayoutComponentBase
     {
         base.ValidateParameters();
 
-        if (!IconRegistry.Exists(Name))
+        var iconName = Name.ToString();
+        if (!IconRegistry.Exists(iconName))
         {
             throw new ArgumentException(
-                $"Unknown icon name '{Name}'. See {nameof(IconRegistry)}.{nameof(IconRegistry.AllNames)} for the full list of available icons.",
+                $"Unknown icon name '{iconName}'. See {nameof(IconRegistry)}.{nameof(IconRegistry.AllNames)} for the full list of available icons.",
                 nameof(Name));
         }
     }
