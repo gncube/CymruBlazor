@@ -1,0 +1,26 @@
+@namespace CymruBlazor.Theming
+@implements IDisposable
+@inject ThemeService Theme
+
+<CascadingValue Value="Theme" IsFixed="true">
+    <div class="cy-root" data-cy-theme="@ThemeAttribute">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    /// <summary>The application content. All CymruBlazor components must render beneath this provider.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ThemeAttribute => Theme.Theme switch
+    {
+        CymruTheme.Light => "light",
+        CymruTheme.Dark => "dark",
+        _ => "system"
+    };
+
+    protected override void OnInitialized() => Theme.Changed += StateHasChanged;
+
+    public void Dispose() => Theme.Changed -= StateHasChanged;
+}
