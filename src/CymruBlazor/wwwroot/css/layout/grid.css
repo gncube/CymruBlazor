@@ -119,6 +119,22 @@
   flex-wrap: wrap;
 }
 
+/*
+ * Opt-in utility: collapses a horizontal cy-stack to a vertical column
+ * below the tablet/desktop breakpoint (matches the .cy-sidebar breakpoint
+ * below). Deliberately NOT applied to .cy-stack--horizontal by default -
+ * many horizontal stacks (button rows, toolbars) are meant to wrap in
+ * place rather than stack vertically, so this is opt-in via the Class
+ * parameter (e.g. <CyStack Class="cy-stack--collapse-tablet">) on the
+ * specific instances that need it, such as a sidebar+main-content layout.
+ * See MainLayout.razor for the canonical usage.
+ */
+@media (max-width: 63.99rem) {
+  .cy-stack--collapse-tablet.cy-stack--horizontal {
+    flex-direction: column;
+  }
+}
+
 /* ==========================================================================
    Cluster
    ========================================================================== */
