@@ -1,0 +1,56 @@
+@page "/"
+@inject DashboardSampleDataService Data
+
+<PageTitle>Ward Dashboard</PageTitle>
+
+<CymruPageHeader Title="Ward Dashboard" Description="Overview for Wednesday, 19 August 2026">
+    <Actions>
+        <CymruButton Variant="CymruButtonVariant.Secondary" TrailingIcon="CymruIconName.ChevronDown">
+            Customize Dashboard
+        </CymruButton>
+    </Actions>
+</CymruPageHeader>
+
+<CymruAlert Severity="CymruSeverity.Critical" Title="Critical Care is near capacity" CssClass="dashboard-alert">
+    Critical Care is at 90% occupancy (18 / 20 beds). Review escalation plan if admissions continue.
+</CymruAlert>
+
+<div class="dashboard-kpi-grid">
+    @foreach (var metric in _kpis)
+    {
+        <CymruStatCard Label="@metric.Label"
+                        Value="@metric.Value"
+                        Icon="metric.Icon"
+                        Severity="metric.Severity"
+                        Trend="metric.Trend"
+                        DeltaText="@metric.DeltaText" />
+    }
+</div>
+
+<div class="dashboard-widget-grid">
+    <AppointmentsWidget Appointments="_appointments" />
+    <OccupancyWidget Areas="_occupancy" />
+    <WaitingListWidget Specialties="_waitingList" />
+</div>
+
+<nav class="dashboard-quick-actions" aria-label="Quick actions">
+    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.UserPlus">Book Appointment</CymruButton>
+    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.FileText">New Referral</CymruButton>
+    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.Bed">Ward Round</CymruButton>
+    <CymruButton Variant="CymruButtonVariant.Secondary" Icon="CymruIconName.Plus">Add Note</CymruButton>
+</nav>
+
+@code {
+    private IReadOnlyList<Models.KpiMetric> _kpis = [];
+    private IReadOnlyList<Models.AppointmentSummary> _appointments = [];
+    private IReadOnlyList<Models.OccupancyArea> _occupancy = [];
+    private IReadOnlyList<Models.WaitingListSpecialty> _waitingList = [];
+
+    protected override void OnInitialized()
+    {
+        _kpis = Data.GetKpiMetrics();
+        _appointments = Data.GetTodaysAppointments();
+        _occupancy = Data.GetWardOccupancy();
+        _waitingList = Data.GetWaitingList();
+    }
+}

@@ -1,0 +1,20 @@
+@namespace CymruBlazor.Samples.Dashboard.Components
+
+<CymruCard Title="Ward Occupancy" AriaLabel="Ward occupancy">
+    <div class="dashboard-occupancy-list">
+        @foreach (var area in Areas)
+        {
+            <CymruProgressBar Label="@area.WardName"
+                               Value="area.OccupiedBeds"
+                               Max="area.TotalBeds"
+                               ValueText="@($"{area.OccupiedBeds} / {area.TotalBeds} beds")"
+                               Severity="area.Severity" />
+        }
+    </div>
+</CymruCard>
+
+@code {
+    /// <summary>Occupancy figures for each ward.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Models.OccupancyArea> Areas { get; set; } = [];
+}

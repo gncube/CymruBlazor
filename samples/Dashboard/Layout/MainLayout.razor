@@ -1,4 +1,65 @@
-﻿@inherits LayoutComponentBase
-<LoginDisplay />
+@inherits LayoutComponentBase
+@inject ThemeService Theme
 
-@Body
+<CymruThemeProvider>
+    <CymruSkipLink TargetId="#main-content" />
+
+    <div class="app-shell">
+        <aside class="app-shell__sidebar">
+            <div class="app-shell__brand">
+                <CymruIcon Name="CymruIconName.Stethoscope" Size="24" />
+                <span>Bwrdd Iechyd Demo</span>
+            </div>
+
+            <CymruNavigation AriaLabel="Primary" Items="_navItems" />
+
+            <div class="app-shell__theme-toggle">
+                <CymruButton Variant="CymruButtonVariant.Ghost"
+                             Icon="@ThemeIcon"
+                             OnClick="@(() => Theme.CycleTheme())">
+                    @ThemeLabel
+                </CymruButton>
+            </div>
+        </aside>
+
+        <div>
+            <header class="app-shell__topbar">
+                <div class="app-shell__brand">
+                    <CymruIcon Name="CymruIconName.Stethoscope" Size="22" />
+                    <span>Bwrdd Iechyd Demo</span>
+                </div>
+                <CymruButton Variant="CymruButtonVariant.Ghost" Icon="CymruIconName.Menu" TypeAttribute="button">
+                    Menu
+                </CymruButton>
+            </header>
+
+            <main id="main-content" class="app-shell__main" tabindex="-1">
+                @Body
+            </main>
+        </div>
+    </div>
+</CymruThemeProvider>
+
+@code {
+    private readonly CymruNavigationItem[] _navItems =
+    [
+        new("Dashboard", "/", CymruIconName.Activity),
+        new("Appointments", "/appointments", CymruIconName.UserPlus),
+        new("Wards", "/wards", CymruIconName.Bed),
+        new("Reports", "/reports", CymruIconName.FileText)
+    ];
+
+    private CymruIconName ThemeIcon => Theme.Theme switch
+    {
+        CymruTheme.Dark => CymruIconName.Moon,
+        CymruTheme.Light => CymruIconName.Sun,
+        _ => CymruIconName.Sun
+    };
+
+    private string ThemeLabel => Theme.Theme switch
+    {
+        CymruTheme.Dark => "Dark theme",
+        CymruTheme.Light => "Light theme",
+        _ => "System theme"
+    };
+}
