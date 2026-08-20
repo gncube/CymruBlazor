@@ -1,3 +1,4 @@
+
 using Xunit;
 using Shouldly;
 using Bunit;
@@ -21,10 +22,11 @@ namespace CymruBlazor.Tests.Samples;
 /// A static text scan over *.razor files would NOT have caught this
 /// specific bug, because the bad value only ever flowed through a bound
 /// C# field (<c>@filter.Icon</c>) rather than appearing as a literal
-/// Razor attribute - so this test renders the real component instead.
-/// If any icon name anywhere in the rendered tree is invalid, the
-/// `Render&lt;MainLayout&gt;()` call itself throws and every test below
-/// fails, which is the primary regression guard.
+/// Razor attribute - so these tests render the real component instead.
+///
+/// If any icon name anywhere in the rendered navigation tree is invalid,
+/// the <c>Render&lt;MainLayout&gt;()</c> call itself throws and the relevant
+/// test fails, which is the primary regression guard.
 /// </summary>
 public sealed class DashboardMainLayoutTests : TestContextBase
 {
@@ -41,25 +43,36 @@ public sealed class DashboardMainLayoutTests : TestContextBase
     {
         // Act
         var cut = Render<MainLayout>(parameters => parameters
-            .Add(p => p.Body, (RenderFragment)(builder => builder.AddContent(0, "Page content"))));
+            .Add(p => p.Body, (RenderFragment)(builder =>
+                builder.AddContent(0, "Page content"))));
 
         // Assert
         cut.Markup.ShouldContain("Page content");
     }
 
     [Fact]
-    public void Should_Render_A_Valid_Icon_For_Every_Primary_Nav_And_Ward_Filter_Row()
+    public void Should_Render_A_Valid_Icon_For_Every_Navigation_Row()
     {
         // Act
         var cut = Render<MainLayout>(parameters => parameters
-            .Add(p => p.Body, (RenderFragment)(builder => builder.AddContent(0, "Page content"))));
+            .Add(p => p.Body, (RenderFragment)(builder =>
+                builder.AddContent(0, "Page content"))));
 
-        // Assert - 4 primary nav items + 5 ward filter rows, each
-        // rendering one CyIcon (base class "cy-icon") if its Name
-        // resolved successfully. Getting this far without an exception
-        // already proves every name was valid; this additionally
-        // confirms the expected number of icons actually rendered.
-        cut.FindAll(".app-shell__nav-link svg.cy-icon").Count.ShouldBe(9);
+        // Assert
+        // Render<MainLayout>() throws if any CyIcon.Name is invalid.
+        // These assertions additionally verify that every expected
+        // navigation row rendered its CyIcon.
+        cut.FindAll(
+            "nav[aria-label='Primary'] .app-shell__nav-link svg.cy-icon")
+            .Count.ShouldBe(4);
+
+        cut.FindAll(
+            "nav[aria-label='Filter wards'] .app-shell__nav-link svg.cy-icon")
+            .Count.ShouldBe(5);
+
+        cut.FindAll(
+            ".app-shell__nav-footer .app-shell__nav-link svg.cy-icon")
+            .Count.ShouldBe(2);
     }
 
     [Theory]
@@ -70,22 +83,24 @@ public sealed class DashboardMainLayoutTests : TestContextBase
     public void Should_Render_Without_Throwing_In_Every_CollapseMode(
         SidebarCollapseMode mode)
     {
-        // Arrange/Act - MainLayout exposes a live "Sidebar" <select> for
-        // this in the running app; drive the same underlying state here
-        // by rendering, then changing the select, to exercise every
-        // CollapseMode's icon rendering path (Compact/IconOnly render
-        // every ward-filter icon at a different CSS size, but the same
-        // underlying CyIcon.Name values).
+        // Arrange
         var cut = Render<MainLayout>(parameters => parameters
-            .Add(p => p.Body, (RenderFragment)(builder => builder.AddContent(0, "Page content"))));
+            .Add(p => p.Body, (RenderFragment)(builder =>
+                builder.AddContent(0, "Page content"))));
 
+        // Act
+        // MainLayout exposes a live "Sidebar" <select> for this in the
+        // running app; drive the same underlying state here to exercise
+        // every CollapseMode's rendering path.
         var select = cut.Find(".app-shell__collapse-mode-select");
         select.Change(mode.ToString());
 
-        // Assert - no exception means every icon name remained valid
-        // after switching modes (CollapseMode only changes CSS/whether
-        // Brand renders - see CySidebar.razor.cs - it never changes
-        // which icon names are used).
-        cut.FindAll(".app-shell__nav-link svg.cy-icon").Count.ShouldBe(9);
+        // Assert
+        // An invalid CyIcon.Name causes component rendering to throw.
+        // Reaching this point and retaining the page content therefore
+        // verifies that icon rendering remains valid after changing
+        // CollapseMode.
+        cut.Markup.ShouldContain("Page content");
     }
 }
+

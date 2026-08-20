@@ -18,11 +18,9 @@
 <CyGrid Columns="GridColumns.Four" Gap="GridGap.Medium" Class="dashboard-kpi-grid">
     @foreach (var metric in _kpis)
     {
-        <CyCard Class="dashboard-kpi-card">
-            <div class="dashboard-kpi-card__header">
-                <CyIcon Name="@metric.Icon" Size="20" />
-                <span>@metric.Label</span>
-            </div>
+        <CyCard Class="@($"dashboard-kpi-card dashboard-kpi-card--{metric.Severity.ToString().ToLowerInvariant()}")">
+            <CyIcon Name="@metric.Icon" Size="20" Class="dashboard-kpi-card__icon" />
+            <div class="dashboard-kpi-card__header">@metric.Label</div>
             <p class="dashboard-kpi-card__value">@metric.Value</p>
             <p class="dashboard-kpi-card__delta dashboard-kpi-card__delta--@metric.Severity.ToString().ToLowerInvariant()">
                 @TrendGlyph(metric.Trend) @metric.DeltaText

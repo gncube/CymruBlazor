@@ -133,13 +133,6 @@ code {
     color: var(--cymru-color-text);
 }
 
-.app-shell__theme-toggle {
-    background: transparent;
-    color: var(--cymru-color-primary);
-    box-shadow: none;
-    gap: var(--cymru-space-2);
-}
-
 .app-shell__body {
     display: flex;
     flex: 1;

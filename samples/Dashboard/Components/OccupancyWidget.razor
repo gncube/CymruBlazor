@@ -2,7 +2,12 @@
 
 <CyCard aria-label="Ward occupancy">
     <Header>
-        <CyTypography Variant="TypographyVariant.H2">Ward Occupancy</CyTypography>
+        <span class="dashboard-card__header-title">
+            <CyTypography Variant="TypographyVariant.H2">Ward Occupancy</CyTypography>
+            <span class="dashboard-info-tip" tabindex="0" aria-label="Occupied beds out of total available beds, updated in real time.">
+                <CyIcon Name="info" Size="14" />
+            </span>
+        </span>
     </Header>
     <ChildContent>
         <div class="dashboard-occupancy-list">
