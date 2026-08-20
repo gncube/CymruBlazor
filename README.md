@@ -4,7 +4,6 @@ An open-source Blazor component library implementing the NHS Wales Design System
 
 [![NuGet](https://img.shields.io/nuget/v/CymruBlazor.svg)](https://www.nuget.org/packages/CymruBlazor/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/CymruBlazor.svg)](https://www.nuget.org/packages/CymruBlazor/)
-[![Build](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml/badge.svg)](https://github.com/gncube/CymruBlazor/actions)
 [![CI](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml/badge.svg)](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
