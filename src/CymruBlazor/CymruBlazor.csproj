@@ -68,7 +68,7 @@
     <!-- CI quality gates -->
     <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">
       true
-    </TreatWarningsAsErrors
+    </TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Package README -->
