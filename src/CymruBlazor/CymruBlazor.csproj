@@ -66,16 +66,14 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
 
     <!-- CI quality gates -->
-    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">
-      true
-    </TreatWarningsAsErrors>
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Package README -->
   <ItemGroup>
     <None Include="..\..\README.md"
-          Pack="true"
-          PackagePath="\" />
+      Pack="true"
+      PackagePath="\" />
   </ItemGroup>
 
   <!-- Build-time tooling -->
@@ -90,10 +88,10 @@
     </PackageReference>
 
     <PackageReference Include="Microsoft.SourceLink.GitHub"
-                      PrivateAssets="all" />
+      PrivateAssets="all" />
 
     <PackageReference Include="MinVer"
-                      PrivateAssets="all" />
+      PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Runtime dependencies -->
