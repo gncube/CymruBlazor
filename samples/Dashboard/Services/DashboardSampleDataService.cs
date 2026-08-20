@@ -10,7 +10,7 @@ namespace CymruBlazor.Samples.Dashboard.Services;
 /// </summary>
 public sealed class DashboardSampleDataService
 {
-    public IReadOnlyList<KpiMetric> GetKpiMetrics() =>
+    public static IReadOnlyList<KpiMetric> GetKpiMetrics() =>
     [
         new("Today's Appointments", "128", "appointment", ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
         new("Referrals Received", "34", "file-text", ComponentColour.Success, Trend.Up, "+12% vs last week"),
@@ -18,7 +18,7 @@ public sealed class DashboardSampleDataService
         new("Pending DALs", "11", "clipboard-list", ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
     ];
 
-    public IReadOnlyList<AppointmentSummary> GetTodaysAppointments() =>
+    public static IReadOnlyList<AppointmentSummary> GetTodaysAppointments() =>
     [
         new("J.E.", "09:00", "Dr. A. Rhys", "Follow-up", "Checked in", ComponentColour.Success),
         new("M.K.", "09:20", "Dr. S. Owen", "New patient", "Waiting", ComponentColour.Info),
@@ -28,7 +28,7 @@ public sealed class DashboardSampleDataService
         new("N.W.", "10:40", "Dr. C. Bevan", "Follow-up", "Checked in", ComponentColour.Success)
     ];
 
-    public IReadOnlyList<OccupancyArea> GetWardOccupancy() =>
+    public static IReadOnlyList<OccupancyArea> GetWardOccupancy() =>
     [
         new("Medical Ward A", 42, 48, ComponentColour.Warning),
         new("Surgical Ward B", 30, 40, ComponentColour.Info),
@@ -36,7 +36,7 @@ public sealed class DashboardSampleDataService
         new("Critical Care", 18, 20, ComponentColour.Danger)
     ];
 
-    public IReadOnlyList<WaitingListSpecialty> GetWaitingList() =>
+    public static IReadOnlyList<WaitingListSpecialty> GetWaitingList() =>
     [
         new("Orthopaedics", 214, 18, ComponentColour.Danger),
         new("Cardiology", 132, 4, ComponentColour.Warning),

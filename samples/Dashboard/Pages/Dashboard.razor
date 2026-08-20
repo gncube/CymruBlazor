@@ -52,10 +52,10 @@
 
     protected override void OnInitialized()
     {
-        _kpis = Data.GetKpiMetrics();
-        _appointments = Data.GetTodaysAppointments();
-        _occupancy = Data.GetWardOccupancy();
-        _waitingList = Data.GetWaitingList();
+        _kpis = DashboardSampleDataService.GetKpiMetrics();
+        _appointments = DashboardSampleDataService.GetTodaysAppointments();
+        _occupancy = DashboardSampleDataService.GetWardOccupancy();
+        _waitingList = DashboardSampleDataService.GetWaitingList();
     }
 
     private static string TrendGlyph(Models.Trend trend) => trend switch
