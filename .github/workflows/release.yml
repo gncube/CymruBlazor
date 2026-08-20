@@ -1,8 +1,14 @@
 name: Release
 
-# Triggered by pushing a tag shaped like v0.1.0-preview.1, v1.2.3, etc.
-# MinVer (configured in Directory.Build.props with MinVerTagPrefix "v")
-# derives the NuGet package version directly from this tag.
+# Triggered by pushing a Git tag shaped like:
+#
+#   v0.1.0-preview.1
+#   v1.2.3
+#   v2.0.0-rc.1
+#
+# MinVer derives the NuGet/package/assembly version directly from
+# the Git tag. The Git tag is the single source of truth for versioning.
+
 on:
   push:
     tags:
@@ -16,24 +22,41 @@ env:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
+    name: Build, Test, Pack and Publish
     runs-on: ubuntu-latest
 
+    # This environment should be configured in GitHub and referenced
+    # by the NuGet Trusted Publishing policy.
+    environment:
+      name: release
+
     steps:
+      # ------------------------------------------------------------------
+      # Source
+      # ------------------------------------------------------------------
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Required so MinVer can see the complete tag/history information.
           fetch-depth: 0
+
+      # ------------------------------------------------------------------
+      # .NET
+      # ------------------------------------------------------------------
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
 
-      - name: Install GitVersion
-        run: dotnet tool install --global GitVersion.Tool
+      # ------------------------------------------------------------------
+      # Restore / Build / Test
+      # ------------------------------------------------------------------
 
       - name: Restore
         run: dotnet restore CymruBlazor.slnx
@@ -44,42 +67,213 @@ jobs:
       - name: Test
         run: dotnet test CymruBlazor.slnx -c Release --no-build
 
+      # ------------------------------------------------------------------
+      # Package
+      # ------------------------------------------------------------------
+
       - name: Pack
         run: >
-          dotnet pack src/CymruBlazor/CymruBlazor.csproj -c Release
+          dotnet pack
+          src/CymruBlazor/CymruBlazor.csproj
+          -c Release
           --no-build
           -o ./artifacts
 
-      - name: Verify exactly one package was produced
+      # ------------------------------------------------------------------
+      # Validate generated package
+      # ------------------------------------------------------------------
+
+      - name: Verify package contents
+        shell: bash
         run: |
-          count=$(find ./artifacts -maxdepth 1 -name '*.nupkg' | wc -l)
-          echo "Found $count .nupkg file(s)"
-          if [ "$count" -ne 1 ]; then
-            echo "::error::Expected exactly 1 .nupkg in ./artifacts, found $count. Check IsPackable settings across the solution."
+          set -euo pipefail
+
+          nupkg_count=$(find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            -name '*.nupkg' \
+            | wc -l)
+
+          snupkg_count=$(find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            -name '*.snupkg' \
+            | wc -l)
+
+          echo "Found ${nupkg_count} .nupkg file(s)"
+          echo "Found ${snupkg_count} .snupkg file(s)"
+
+          if [ "$nupkg_count" -ne 1 ]; then
+            echo "::error::Expected exactly 1 .nupkg, found ${nupkg_count}."
             exit 1
           fi
 
-      - name: Push to NuGet
+          if [ "$snupkg_count" -ne 1 ]; then
+            echo "::error::Expected exactly 1 .snupkg, found ${snupkg_count}."
+            exit 1
+          fi
+
+          echo "Generated packages:"
+          find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            \( -name '*.nupkg' -o -name '*.snupkg' \) \
+            -print
+
+      # ------------------------------------------------------------------
+      # Version consistency
+      #
+      # The Git tag is:
+      #
+      #   v1.2.3
+      #
+      # The package must therefore be:
+      #
+      #   CymruBlazor.1.2.3.nupkg
+      #
+      # This protects the release pipeline from accidentally publishing
+      # a package whose MinVer-derived version does not match the tag.
+      # ------------------------------------------------------------------
+
+      - name: Verify package version matches Git tag
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${GITHUB_REF_NAME}"
+          expected_version="${tag#v}"
+
+          package=$(find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            -name '*.nupkg' \
+            ! -name '*.snupkg' \
+            -print -quit)
+
+          if [ -z "$package" ]; then
+            echo "::error::No NuGet package was found."
+            exit 1
+          fi
+
+          package_name=$(basename "$package")
+
+          expected_package="CymruBlazor.${expected_version}.nupkg"
+
+          echo "Git tag:          ${tag}"
+          echo "Expected version: ${expected_version}"
+          echo "Package:          ${package_name}"
+          echo "Expected package: ${expected_package}"
+
+          if [ "$package_name" != "$expected_package" ]; then
+            echo "::error::Package version does not match the Git tag."
+            echo "::error::Expected: ${expected_package}"
+            echo "::error::Actual:   ${package_name}"
+            exit 1
+          fi
+
+          echo "Package version matches Git tag: ${expected_version}"
+
+      # ------------------------------------------------------------------
+      # Documentation / debug artefacts
+      #
+      # XML documentation is generated by GenerateDocumentationFile.
+      #
+      # PDB/source information is already represented through:
+      #
+      #   - IncludeSymbols
+      #   - SymbolPackageFormat=snupkg
+      #   - SourceLink
+      #   - EmbedUntrackedSources
+      #
+      # We attach the PDB as an additional GitHub Release artefact for
+      # consumers who want the raw symbols without extracting the snupkg.
+      # ------------------------------------------------------------------
+
+      - name: Collect release artefacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package=$(find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            -name '*.nupkg' \
+            ! -name '*.snupkg' \
+            -print -quit)
+
+          if [ -z "$package" ]; then
+            echo "::error::NuGet package not found."
+            exit 1
+          fi
+
+          package_name=$(basename "$package" .nupkg)
+
+          xml="src/CymruBlazor/bin/Release/net10.0/CymruBlazor.xml"
+          pdb="src/CymruBlazor/bin/Release/net10.0/CymruBlazor.pdb"
+
+          if [ -f "$xml" ]; then
+            cp "$xml" "./artifacts/${package_name}.xml"
+            echo "Added XML documentation."
+          else
+            echo "::warning::XML documentation was not found at ${xml}."
+          fi
+
+          if [ -f "$pdb" ]; then
+            cp "$pdb" "./artifacts/${package_name}.pdb"
+            echo "Added PDB symbols."
+          else
+            echo "::warning::PDB was not found at ${pdb}."
+          fi
+
+          echo "Release artefacts:"
+          find ./artifacts \
+            -maxdepth 1 \
+            -type f \
+            -printf '%f\n' \
+            | sort
+
+      # ------------------------------------------------------------------
+      # NuGet Trusted Publishing
+      #
+      # This uses GitHub OIDC to obtain a short-lived NuGet credential.
+      # No long-lived NuGet API key is stored in GitHub.
+      # ------------------------------------------------------------------
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # ------------------------------------------------------------------
+      # NuGet publication
+      # ------------------------------------------------------------------
+
+      - name: Push NuGet package
         run: >
           dotnet nuget push "./artifacts/*.nupkg"
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
       - name: Push symbol package
         run: >
           dotnet nuget push "./artifacts/*.snupkg"
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
+
+      # ------------------------------------------------------------------
+      # GitHub Release
+      # ------------------------------------------------------------------
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          # Pre-release tags (e.g. v0.1.0-preview.1) are flagged as such
-          # automatically on GitHub.
           prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             ./artifacts/*.nupkg
             ./artifacts/*.snupkg
+            ./artifacts/*.xml
+            ./artifacts/*.pdb
