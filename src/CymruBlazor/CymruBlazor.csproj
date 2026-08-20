@@ -7,10 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
 
-    <!-- Assembly identity is derived entirely from git tags by MinVer
-         (see PackageReference below + MinVerTagPrefix in Directory.Build.props).
-         Do not hardcode AssemblyVersion/FileVersion/InformationalVersion here -
-         doing so overrides MinVer's computed values. -->
+    <!-- Packaging -->
+    <IsPackable>true</IsPackable>
 
     <!-- NuGet metadata -->
     <PackageId>CymruBlazor</PackageId>
@@ -19,57 +17,86 @@
       An open-source Blazor component library implementing the NHS Wales Design System.
       Provides accessible, enterprise-grade components aligned with WCAG 2.2 AA.
     </Description>
+
     <Authors>CymruBlazor Contributors</Authors>
     <Company>Digital Health and Care Wales Community</Company>
     <Copyright>Copyright © 2025 CymruBlazor Contributors</Copyright>
+
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
     <PackageProjectUrl>https://github.com/gncube/CymruBlazor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/gncube/CymruBlazor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>blazor;nhs;nhswales;design-system;components;accessibility;wcag</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <!-- No PackageIcon yet - add back once real artwork exists at
-         src/CymruBlazor/icon.png (128x128+ PNG, <1MB), together with a
-         corresponding <None Include="icon.png" Pack="true" PackagePath="\" />
-         entry below. A PackageIcon pointing at a file that isn't actually
-         packed fails `dotnet pack` with NU5046. -->
 
-    <!-- Source link and symbols -->
+    <PackageTags>
+      blazor;
+      nhs;
+      nhswales;
+      design-system;
+      components;
+      accessibility;
+      wcag
+    </PackageTags>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!--
+      PackageIcon intentionally omitted until real artwork exists.
+    -->
+
+    <!--
+      MinVer supplies PackageVersion, AssemblyVersion, FileVersion
+      and InformationalVersion from the Git tag.
+    -->
+
+    <!-- SourceLink and symbols -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-    <!-- XML docs -->
+    <!-- XML documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CymruBlazor.xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
 
     <!-- Trimming / AOT -->
     <IsTrimmable>true</IsTrimmable>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
 
-    <!-- Warnings as errors in CI -->
-    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+    <!-- CI quality gates -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">
+      true
+    </TreatWarningsAsErrors
   </PropertyGroup>
 
-  <!-- No FrameworkReference required for this library project -->
-
+  <!-- Package README -->
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md"
+          Pack="true"
+          PackagePath="\" />
   </ItemGroup>
 
-  <!-- SourceLink (GitHub) -->
+  <!-- Build-time tooling -->
   <ItemGroup>
     <PackageReference Include="Mediator.Abstractions" />
+
     <PackageReference Include="Mediator.SourceGenerator">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets>
+        runtime; build; native; contentfiles; analyzers; buildtransitive
+      </IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
-    <PackageReference Include="MinVer" PrivateAssets="all" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub"
+                      PrivateAssets="all" />
+
+    <PackageReference Include="MinVer"
+                      PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- Runtime dependencies -->
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.JSInterop" />
