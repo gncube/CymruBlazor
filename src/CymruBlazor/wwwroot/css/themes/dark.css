@@ -31,7 +31,33 @@
  *    guessed from an authoritative source.
  */
 
-[data-theme="dark"] {
+/*
+ * The `body:has(...)` alternate selector below is not redundant with
+ * `[data-theme="dark"]` - it's the fix for a real bug (see CyThemeProvider
+ * doc comments and components/theming.css). CyThemeProvider renders a
+ * `display: contents` wrapper *inside* <body> so it never adds an extra
+ * layout box, which means the [data-theme="dark"] attribute itself only
+ * ever lands on a descendant of <body>, never on <body> (or <html>)
+ * directly. CSS custom properties still inherit fine *into* that
+ * subtree (headings/typography correctly used the dark palette), but
+ * two things silently kept using the light value because they're
+ * resolved at the <body> box itself, which sits outside the attribute's
+ * reach:
+ *   1. `body { background-color / color: var(--cymru-color-*) }` in
+ *      base/typography.css - the page background/default text colour
+ *      never actually switched, even though components deeper in the
+ *      tree looked themed.
+ *   2. Any `color: inherit` / `currentColor` usage (e.g. CyCard's
+ *      `color: inherit`) - these copy the ancestor's *computed* colour
+ *      rather than re-resolving var(--cymru-color-text), so they froze
+ *      at <body>'s light-mode black and rendered as near-invisible dark
+ *      text on dark surfaces.
+ * `body:has(.cy-theme-provider[data-theme="dark"])` lets <body> itself
+ * react to a data-theme attribute set on a descendant, fixing both
+ * issues at the source with no JavaScript required.
+ */
+[data-theme="dark"],
+body:has(.cy-theme-provider[data-theme="dark"]) {
   color-scheme: dark;
 
   /* ==========================================================================

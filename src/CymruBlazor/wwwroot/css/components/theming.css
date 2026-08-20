@@ -12,6 +12,17 @@
  * ancestor). display: contents removes the box while keeping the
  * data-theme attribute (and therefore the theme) applied to its
  * descendants via normal CSS selector matching.
+ *
+ * Because this wrapper never generates a box, <body> itself sits
+ * *outside* the data-theme attribute's reach - it's an ancestor of the
+ * wrapper, not a descendant. wwwroot/css/themes/dark.css and
+ * high-contrast.css compensate with an additional
+ * `body:has(.cy-theme-provider[data-theme="..."])` selector so <body>'s
+ * own background/text colour (set in base/typography.css) - and
+ * anything using `color: inherit`/`currentColor` - still switches
+ * correctly. See the comment at the top of themes/dark.css for the full
+ * explanation; keep that selector in sync with any future theme added
+ * here.
  */
 
 .cy-theme-provider {

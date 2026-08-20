@@ -8,7 +8,11 @@
  * Optimised for maximum readability.
  */
 
-[data-theme="high-contrast"] {
+/* See the matching comment in themes/dark.css - CyThemeProvider's wrapper
+   is `display: contents` inside <body>, so <body> itself needs its own
+   selector to react to the attribute; see also components/theming.css. */
+[data-theme="high-contrast"],
+body:has(.cy-theme-provider[data-theme="high-contrast"]) {
   color-scheme: dark;
 
   --cymru-color-background: #000000;

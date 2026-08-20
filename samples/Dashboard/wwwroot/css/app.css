@@ -100,6 +100,7 @@ code {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: var(--cymru-space-4);
     padding: var(--cymru-space-4) var(--cymru-space-6);
 }
@@ -147,7 +148,26 @@ code {
 
 .app-shell__main {
     flex: 1;
+    min-width: 0;
     padding: 0 var(--cymru-space-6) var(--cymru-space-12);
+}
+
+/*
+ * Below the tablet breakpoint, CySidebar's own responsive rule
+ * (wwwroot/css/layout/grid.css, ".cy-sidebar" @media max-width: 63.99rem)
+ * makes the sidebar report `width: 100%` - it's designed to become a
+ * full-width block that *stacks above* the content, not to share a row
+ * with it. ".app-shell__body" is a plain flex row here (not a <CyStack>,
+ * which is what the equivalent ".cy-stack--collapse-tablet" utility in
+ * grid.css is meant to be applied to - see that file's comments), so
+ * without this it never switches to a column, leaving a 100%-wide
+ * sidebar and a squeezed-to-nothing <main> side by side. Same
+ * breakpoint as CySidebar's, so both switch together.
+ */
+@media (max-width: 63.99rem) {
+    .app-shell__body {
+        flex-direction: column;
+    }
 }
 
 /*
