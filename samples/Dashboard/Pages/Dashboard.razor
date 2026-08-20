@@ -6,7 +6,7 @@
 <CyPageHeader Title="Ward Dashboard" Subtitle="Overview for Wednesday, 19 August 2026">
     <Actions>
         <Button>
-            Customize Dashboard <CyIcon Name="CyIconName.ChevronDown" Size="16" />
+            Customize Dashboard <CyIcon Name="chevron-down" Size="16" />
         </Button>
     </Actions>
 </CyPageHeader>
@@ -20,7 +20,7 @@
     {
         <CyCard Class="dashboard-kpi-card">
             <div class="dashboard-kpi-card__header">
-                <CyIcon Name="metric.Icon" Size="20" />
+                <CyIcon Name="@metric.Icon" Size="20" />
                 <span>@metric.Label</span>
             </div>
             <p class="dashboard-kpi-card__value">@metric.Value</p>
@@ -38,10 +38,10 @@
 </CyGrid>
 
 <nav class="dashboard-quick-actions" aria-label="Quick actions">
-    <Button><CyIcon Name="CyIconName.UserPlus" Size="16" /> Book Appointment</Button>
-    <Button><CyIcon Name="CyIconName.FileText" Size="16" /> New Referral</Button>
-    <Button><CyIcon Name="CyIconName.Bed" Size="16" /> Ward Round</Button>
-    <Button><CyIcon Name="CyIconName.Plus" Size="16" /> Add Note</Button>
+    <Button><CyIcon Name="appointment" Size="16" /> Book Appointment</Button>
+    <Button><CyIcon Name="file-text" Size="16" /> New Referral</Button>
+    <Button><CyIcon Name="ward-round" Size="16" /> Ward Round</Button>
+    <Button><CyIcon Name="notebook-pen" Size="16" /> Add Note</Button>
 </nav>
 
 @code {

@@ -1,4 +1,3 @@
-using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Extensions;
 using CymruBlazor.Samples.Dashboard.Services;
 using CymruBlazor.Samples.Dashboard;
@@ -18,8 +17,6 @@ builder.Services.AddMsalAuthentication(options =>
 });
 
 builder.Services.AddCymruBlazor();
-builder.Services.AddScoped<IFocusManager, FocusManager>();
 builder.Services.AddSingleton<DashboardSampleDataService>();
-builder.Services.AddScoped<CymruBlazor.Theming.CyThemeService>();
 
 await builder.Build().RunAsync();

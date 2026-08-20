@@ -1,5 +1,4 @@
 using CymruBlazor.Enums;
-using CymruBlazor.Icons;
 using CymruBlazor.Samples.Dashboard.Models;
 
 namespace CymruBlazor.Samples.Dashboard.Services;
@@ -13,10 +12,10 @@ public sealed class DashboardSampleDataService
 {
     public IReadOnlyList<KpiMetric> GetKpiMetrics() =>
     [
-        new("Today's Appointments", "128", CyIconName.UserPlus, ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
-        new("Referrals Received", "34", CyIconName.FileText, ComponentColour.Success, Trend.Up, "+12% vs last week"),
-        new("Watchlist Patients", "6", CyIconName.Watchlist, ComponentColour.Warning, Trend.Flat, "No change"),
-        new("Pending DALs", "11", CyIconName.ArrowUpDown, ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
+        new("Today's Appointments", "128", "appointment", ComponentColour.Info, Trend.Up, "+8 vs yesterday"),
+        new("Referrals Received", "34", "file-text", ComponentColour.Success, Trend.Up, "+12% vs last week"),
+        new("Watchlist Patients", "6", "flagged", ComponentColour.Warning, Trend.Flat, "No change"),
+        new("Pending DALs", "11", "clipboard-list", ComponentColour.Danger, Trend.Down, "-3 vs yesterday")
     ];
 
     public IReadOnlyList<AppointmentSummary> GetTodaysAppointments() =>

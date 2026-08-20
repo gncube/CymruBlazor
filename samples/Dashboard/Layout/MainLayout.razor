@@ -1,12 +1,13 @@
 @inherits LayoutComponentBase
-@inject CyThemeService Theme
+@implements IDisposable
+@inject IThemeService Theme
 
 <CyThemeProvider>
     <CySkipLink TargetId="main-content" />
 
     <CyNavigation Class="app-shell__nav">
         <Brand>
-            <CyIcon Name="CyIconName.Stethoscope" Size="24" />
+            <CyIcon Name="hospital" Size="24" />
             <span>Bwrdd Iechyd Demo</span>
         </Brand>
         <ChildContent>
@@ -19,8 +20,8 @@
 
     <div class="app-shell">
         <header class="app-shell__topbar">
-            <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="() => Theme.CycleTheme()">
-                <CyIcon Name="@ThemeIcon" Size="18" />
+            <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="ToggleThemeAsync">
+                <CyIcon Name="settings" Size="18" />
                 @ThemeLabel
             </button>
         </header>
@@ -42,17 +43,19 @@
         new("Reports", "/reports")
     ];
 
-    private CyIconName ThemeIcon => Theme.Theme switch
-    {
-        CyTheme.Dark => CyIconName.Moon,
-        CyTheme.Light => CyIconName.Sun,
-        _ => CyIconName.Sun
-    };
+    protected override void OnInitialized() => Theme.ThemeChanged += OnThemeChanged;
 
-    private string ThemeLabel => Theme.Theme switch
+    private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e) => InvokeAsync(StateHasChanged);
+
+    private string ThemeLabel => Theme.CurrentTheme.Mode switch
     {
-        CyTheme.Dark => "Dark theme",
-        CyTheme.Light => "Light theme",
+        ThemeMode.Dark => "Dark theme",
+        ThemeMode.Light => "Light theme",
+        ThemeMode.HighContrast => "High contrast theme",
         _ => "System theme"
     };
+
+    public void Dispose() => Theme.ThemeChanged -= OnThemeChanged;
 }
