@@ -1,3 +1,4 @@
+
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject IThemeService Theme
@@ -5,47 +6,127 @@
 <CyThemeProvider>
     <CySkipLink TargetId="main-content" />
 
-    <CyNavigation Class="app-shell__nav">
-        <Brand>
-            <CyIcon Name="hospital" Size="24" />
-            <span>Bwrdd Iechyd Demo</span>
-        </Brand>
-        <ChildContent>
-            @foreach (var item in _navItems)
-            {
-                <CyNavigationItem Text="@item.Text" Href="@item.Href" />
-            }
-        </ChildContent>
-    </CyNavigation>
-
     <div class="app-shell">
         <header class="app-shell__topbar">
-            <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="ToggleThemeAsync">
-                <CyIcon Name="settings" Size="18" />
-                @ThemeLabel
-            </button>
+            <span class="app-shell__topbar-title">Dashboard</span>
+
+            <div class="app-shell__topbar-actions">
+                <label class="app-shell__collapse-mode-label">
+                    Sidebar
+                    <select class="app-shell__collapse-mode-select" @bind="_collapseMode">
+                        <option value="@SidebarCollapseMode.Compact">Compact (icon + label)</option>
+                        <option value="@SidebarCollapseMode.IconOnly">Icon only</option>
+                        <option value="@SidebarCollapseMode.Disabled">Disabled (always expanded)</option>
+                        <option value="@SidebarCollapseMode.Hidden">Hidden (fully collapsible)</option>
+                    </select>
+                </label>
+
+                <CyLanguageToggle @bind-CurrentLanguage="_language" />
+
+                <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="ToggleThemeAsync">
+                    <CyIcon Name="settings" Size="18" />
+                    @ThemeLabel
+                </button>
+            </div>
         </header>
 
-        <main id="main-content" class="app-shell__main" tabindex="-1">
-            @Body
-        </main>
+        <div class="app-shell__body">
+            <CySidebar @ref="_navSidebar"
+                       @bind-Collapsed="_navCollapsed"
+                       CollapseMode="_collapseMode"
+                       Width="SidebarWidth.Small"
+                       Class="app-shell__nav-sidebar">
+
+                <Brand>
+                    <CyBrandLogo LogoPath="/images/logo-dhcw-light.svg"
+                                 DarkLogoPath="/images/logo-dhcw-dark.svg"
+                                 Href="/"
+                                 Text="DHCW"
+                                 AriaLabel="DHCW dashboard"
+                                 Variant="BrandLogoVariant.Full"
+                                 Size="ComponentSize.Small" />
+                </Brand>
+
+                <ChildContent>
+                    <div class="app-shell__nav-sidebar-toggle-row">
+                        <button type="button"
+                                class="cymru-btn app-shell__sidebar-toggle"
+                                aria-expanded="@(!_navCollapsed)"
+                                aria-label="@(_navCollapsed ? "Expand navigation" : "Collapse navigation")"
+                                @onclick="ToggleNavSidebar">
+                            <CyIcon Name="@(_navCollapsed ? "chevron-right" : "chevron-left")" Size="16" />
+                        </button>
+                    </div>
+
+                    <span class="cy-sidebar__heading">Home</span>
+                    <nav class="app-shell__nav-list" aria-label="Primary">
+                        @foreach (var item in _navItems)
+                        {
+                            <a href="@item.Href" class="cy-sidebar__item app-shell__nav-link" title="@item.Text">
+                                <CyIcon Name="@item.Icon" Size="20" />
+                                <span class="cy-sidebar__label">@item.Text</span>
+                            </a>
+                        }
+                    </nav>
+
+                    <span class="cy-sidebar__heading">Wards</span>
+                    <nav class="app-shell__nav-list" aria-label="Filter wards">
+                        @foreach (var filter in _wardFilters)
+                        {
+                            <a href="#" class="cy-sidebar__item app-shell__nav-link" title="@filter.Text">
+                                <CyIcon Name="@filter.Icon" Size="20" />
+                                <span class="cy-sidebar__label">@filter.Text</span>
+                            </a>
+                        }
+                    </nav>
+                </ChildContent>
+            </CySidebar>
+
+            <main id="main-content" class="app-shell__main" tabindex="-1">
+                @Body
+            </main>
+        </div>
     </div>
 </CyThemeProvider>
 
 @code {
-    private sealed record NavItem(string Text, string Href);
+    private sealed record NavItem(string Text, string Href, string Icon);
+
+    private sealed record WardFilter(string Text, string Icon);
 
     private static readonly NavItem[] _navItems =
     [
-        new("Dashboard", "/"),
-        new("Appointments", "/appointments"),
-        new("Wards", "/wards"),
-        new("Reports", "/reports")
+        new("Dashboard", "/", "dashboard"),
+        new("Appointments", "/appointments", "appointment"),
+        new("Wards", "/wards", "ward"),
+        new("Reports", "/reports", "chart")
     ];
+
+    private static readonly WardFilter[] _wardFilters =
+    [
+        new("All wards", "dashboard"),
+        new("Critical Care", "critical"),
+        new("Medical", "pill"),
+        new("Surgical", "syringe"),
+        new("Paediatrics", "carer")
+    ];
+
+    private CySidebar? _navSidebar;
+    private bool _navCollapsed;
+    private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
+    private AppLanguage _language = AppLanguage.English;
 
     protected override void OnInitialized() => Theme.ThemeChanged += OnThemeChanged;
 
     private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
+
+    private async Task ToggleNavSidebar()
+    {
+        if (_navSidebar is not null)
+        {
+            await _navSidebar.ToggleAsync();
+        }
+    }
 
     private void OnThemeChanged(object? sender, ThemeChangedEventArgs e) => InvokeAsync(StateHasChanged);
 
@@ -59,3 +140,4 @@
 
     public void Dispose() => Theme.ThemeChanged -= OnThemeChanged;
 }
+

@@ -13,7 +13,9 @@
  *   CyGrid    -> cy-grid, cy-grid--cols-{n|auto}, cy-gap-{size},
  *                cy-grid--dense, cy-grid--auto-rows
  *   CySidebar -> cy-sidebar, cy-sidebar--left|right, cy-sidebar--sm|md|lg,
- *                cy-sidebar--collapsed
+ *                cy-sidebar--compact|icon-only|collapsed, cy-sidebar__brand
+ *                (conventions: cy-sidebar__item, cy-sidebar__label,
+ *                cy-sidebar__heading - see the Sidebar section below)
  *   CyCenter  -> cy-center, cy-center--horizontal|vertical,
  *                cy-center--full-height
  *
@@ -271,6 +273,95 @@
   overflow: hidden;
   border-width: 0;
 }
+
+/*
+ * CySidebar.Brand - optional lockup (e.g. <CyBrandLogo />) at the top
+ * of the sidebar. Only ever rendered while expanded (see
+ * CySidebar.razor.cs) - no CSS-based hiding is needed for the
+ * collapsed states, this rule just styles it while visible.
+ */
+.cy-sidebar__brand {
+  padding: var(--cymru-space-4);
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+/*
+ * CollapseMode.Compact - collapses to a narrow rail that keeps a short
+ * label stacked beneath each item's icon (reference design: the
+ * "Dashboard / Patient Search / Referrals ..." rail with visible
+ * labels). Consumers opt each nav row into the icon-over-label layout
+ * via class "cy-sidebar__item", and each row's text via
+ * "cy-sidebar__label" - both are plain conventions, not components.
+ */
+.cy-sidebar--compact {
+  flex-basis: 6.5rem;
+  width: 6.5rem;
+  overflow: hidden;
+}
+
+.cy-sidebar--compact .cy-sidebar__item {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cymru-space-1);
+  text-align: center;
+  padding: var(--cymru-space-2);
+}
+
+.cy-sidebar--compact .cy-sidebar__label {
+  font-size: var(--cymru-font-size-xs);
+  white-space: normal;
+  line-height: var(--cymru-line-height-tight, 1.2);
+}
+
+/*
+ * CollapseMode.IconOnly - the narrowest rail: icons only, no labels, no
+ * brand lockup (reference design: the bare icon-column rail). Labels
+ * are hidden visually (not removed / not aria-hidden) so screen reader
+ * users are unaffected.
+ */
+.cy-sidebar--icon-only {
+  flex-basis: 3.5rem;
+  width: 3.5rem;
+  overflow: hidden;
+}
+
+.cy-sidebar--icon-only .cy-sidebar__item {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cymru-space-2);
+}
+
+/*
+ * Shared "visually hidden, still in the accessible tree" treatment for
+ * cy-sidebar__label (IconOnly) and cy-sidebar__heading (Compact and
+ * IconOnly both hide group headings - the reference design shows no
+ * section headings once the sidebar has collapsed to either rail).
+ */
+.cy-sidebar--icon-only .cy-sidebar__label,
+.cy-sidebar--compact .cy-sidebar__heading,
+.cy-sidebar--icon-only .cy-sidebar__heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * CollapseMode.Disabled - the sidebar can never collapse, so no
+ * additional width/overflow rule is needed here; CySidebar simply never
+ * applies --collapsed/--compact/--icon-only while in this mode (see
+ * CySidebar.razor.cs, EffectiveCollapsed). data-collapse-mode="disabled"
+ * remains available as a styling/testing hook for consumers who want to
+ * visually distinguish a non-collapsible sidebar (e.g. hide a toggle
+ * trigger entirely rather than rendering one that does nothing).
+ */
 
 @media (max-width: 63.99rem) {
   .cy-sidebar {

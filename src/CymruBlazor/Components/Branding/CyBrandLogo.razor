@@ -1,0 +1,74 @@
+@inherits CyLayoutComponentBase
+
+@if (Href is not null)
+{
+    <a id="@Id"
+       class="@CssClass"
+       style="@CssStyle"
+       href="@Href"
+       aria-label="@ComputedAriaLabel"
+       @attributes="AdditionalAttributes">
+
+        @RenderContent()
+
+    </a>
+}
+else
+{
+    <span id="@Id"
+          class="@CssClass"
+          style="@CssStyle"
+          role="img"
+          aria-label="@ComputedAriaLabel"
+          @attributes="AdditionalAttributes">
+
+        @RenderContent()
+
+    </span>
+}
+
+@code
+{
+    private RenderFragment RenderContent() => @<text>
+        @if (LogoPath is not null)
+        {
+            <img src="@LogoPath"
+                 alt=""
+                 class="cy-brand-logo__asset cy-brand-logo__asset--light" />
+
+            @if (DarkLogoPath is not null)
+            {
+                <img src="@DarkLogoPath"
+                     alt=""
+                     class="cy-brand-logo__asset cy-brand-logo__asset--dark" />
+            }
+        }
+        else
+        {
+            @RenderLockup()
+        }
+    </text>;
+
+    private RenderFragment RenderLockup() => @<text>
+        @if (ShowMark)
+        {
+            <svg class="cy-brand-logo__mark"
+                 viewBox="0 0 32 32"
+                 aria-hidden="true"
+                 focusable="false"
+                 xmlns="http://www.w3.org/2000/svg">
+                <rect width="32"
+                      height="32"
+                      rx="7"
+                      class="cy-brand-logo__mark-bg" />
+                <path d="M6 21 L12 11 L16 17 L20 9 L26 21 Z"
+                      class="cy-brand-logo__mark-fg" />
+            </svg>
+        }
+
+        @if (ShowWordmark)
+        {
+            <span class="cy-brand-logo__wordmark">@Text</span>
+        }
+    </text>;
+}

@@ -4,7 +4,15 @@
     id="@Id"
     class="@CssClass"
     style="@CssStyle"
+    data-collapse-mode="@CollapseModeAttribute"
     @attributes="AdditionalAttributes">
+
+    @if (Brand is not null && !EffectiveCollapsed)
+    {
+        <div class="cy-sidebar__brand">
+            @Brand
+        </div>
+    }
 
     @ChildContent
 

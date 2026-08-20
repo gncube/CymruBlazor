@@ -17,5 +17,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CymruBlazor\CymruBlazor.csproj" />
+    <!--
+      Referenced so DashboardMainLayoutTests can bUnit-render the real
+      samples/Dashboard MainLayout.razor - this is what actually catches
+      bugs like the "clinical"/"clinical-actions" invalid CyIcon.Name
+      regression (see plans/icon-bug-fix.md), since that value only ever
+      appeared inside a bound C# field (@filter.Icon), not as a literal
+      Razor attribute - a static text scan over *.razor files would not
+      have caught it, only rendering the component actually does.
+    -->
+    <ProjectReference Include="..\..\samples\Dashboard\Dashboard.csproj" />
   </ItemGroup>
 </Project>

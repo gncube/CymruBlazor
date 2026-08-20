@@ -64,6 +64,7 @@
 @import "components/forms.css" layer(components);
 @import "components/navigation.css" layer(components);
 @import "components/icons.css" layer(components);
+@import "components/branding.css" layer(components);
 
 /* ==========================================================================
    Utilities

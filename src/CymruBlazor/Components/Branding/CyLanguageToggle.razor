@@ -1,0 +1,21 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+
+<button type="button"
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        disabled="@Disabled"
+        lang="@TargetLanguageTag"
+        aria-label="@ComputedAriaLabel"
+        @onclick="HandleClickAsync"
+        @attributes="AdditionalAttributes">
+
+    @if (ShowIcon)
+    {
+        <CyIcon Name="language" Size="16" Class="cy-language-toggle__icon" />
+    }
+
+    <span aria-hidden="true">@TargetLanguageLabel</span>
+
+</button>
