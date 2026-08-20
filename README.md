@@ -2,16 +2,20 @@
 
 An open-source Blazor component library implementing the NHS Wales Design System.
 
-[![NuGet](https://img.shields.io/nuget/v/CymruBlazor)](https://www.nuget.org/packages/CymruBlazor)
+[![NuGet](https://img.shields.io/nuget/v/CymruBlazor.svg)](https://www.nuget.org/packages/CymruBlazor/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/CymruBlazor.svg)](https://www.nuget.org/packages/CymruBlazor/)
 [![Build](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml/badge.svg)](https://github.com/gncube/CymruBlazor/actions)
+[![CI](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml/badge.svg)](https://github.com/gncube/CymruBlazor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Status: pre-release.** The first published version is `0.1.0-preview.1`,
-> covering layout primitives, accessibility utilities, a minimal `Button`,
-> and the NHS Wales design-token/CSS foundation. Content components
-> (`Card`, `Alert`, `Typography`) and most form controls are not
-> implemented yet - see [`CHANGELOG.md`](CHANGELOG.md) for exactly what's
-> in this release and [`PRD.md`](PRD.md) for the full v1 target scope.
+> **Status:** Pre-release
+>
+> CymruBlazor is currently under active development. The API and
+> component set may change between preview releases.
+>
+> The current published package version is shown by the NuGet badge
+> above. See [CHANGELOG.md](CHANGELOG.md) for release history and
+> [PRD.md](PRD.md) for the planned v1 scope.
 
 ## Getting Started
 
