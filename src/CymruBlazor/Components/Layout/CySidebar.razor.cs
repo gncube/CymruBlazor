@@ -33,7 +33,7 @@ public partial class CySidebar : CyLayoutComponentBase
 
     /// <summary>
     /// Optional brand lockup (e.g. <c>&lt;CyBrandLogo /&gt;</c>) rendered
-    /// at the top of the sidebar, above <see cref="ChildContent"/>/the
+    /// at the top of the sidebar, above <c>ChildContent</c>/the
     /// rest of the sidebar's markup. Only rendered while the sidebar is
     /// fully expanded (<see cref="EffectiveCollapsed"/> is
     /// <see langword="false"/>) - once collapsed, in any
