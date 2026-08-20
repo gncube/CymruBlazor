@@ -1,4 +1,61 @@
-﻿@inherits LayoutComponentBase
-<LoginDisplay />
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject IThemeService Theme
 
-@Body
+<CyThemeProvider>
+    <CySkipLink TargetId="main-content" />
+
+    <CyNavigation Class="app-shell__nav">
+        <Brand>
+            <CyIcon Name="hospital" Size="24" />
+            <span>Bwrdd Iechyd Demo</span>
+        </Brand>
+        <ChildContent>
+            @foreach (var item in _navItems)
+            {
+                <CyNavigationItem Text="@item.Text" Href="@item.Href" />
+            }
+        </ChildContent>
+    </CyNavigation>
+
+    <div class="app-shell">
+        <header class="app-shell__topbar">
+            <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="ToggleThemeAsync">
+                <CyIcon Name="settings" Size="18" />
+                @ThemeLabel
+            </button>
+        </header>
+
+        <main id="main-content" class="app-shell__main" tabindex="-1">
+            @Body
+        </main>
+    </div>
+</CyThemeProvider>
+
+@code {
+    private sealed record NavItem(string Text, string Href);
+
+    private static readonly NavItem[] _navItems =
+    [
+        new("Dashboard", "/"),
+        new("Appointments", "/appointments"),
+        new("Wards", "/wards"),
+        new("Reports", "/reports")
+    ];
+
+    protected override void OnInitialized() => Theme.ThemeChanged += OnThemeChanged;
+
+    private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e) => InvokeAsync(StateHasChanged);
+
+    private string ThemeLabel => Theme.CurrentTheme.Mode switch
+    {
+        ThemeMode.Dark => "Dark theme",
+        ThemeMode.Light => "Light theme",
+        ThemeMode.HighContrast => "High contrast theme",
+        _ => "System theme"
+    };
+
+    public void Dispose() => Theme.ThemeChanged -= OnThemeChanged;
+}

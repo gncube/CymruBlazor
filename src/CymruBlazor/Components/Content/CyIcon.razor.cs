@@ -19,8 +19,10 @@ namespace CymruBlazor.Components.Content;
 public partial class CyIcon : CyLayoutComponentBase
 {
     /// <summary>
-    /// The icon name, e.g. "search", "patient", "critical". See
-    /// <see cref="IconRegistry.AllNames"/> for the full list.
+    /// The icon name, e.g. "search", "patient", "waiting-list". See
+    /// <see cref="IconRegistry.AllNames"/> for the complete, registry-backed list -
+    /// there is no fixed enum, since the registry is the source of truth and grows
+    /// independently of this component.
     /// </summary>
     [Parameter]
     [EditorRequired]
@@ -61,3 +63,4 @@ public partial class CyIcon : CyLayoutComponentBase
         }
     }
 }
+

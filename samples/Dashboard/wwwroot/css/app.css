@@ -87,3 +87,196 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* Dashboard sample - composed from CymruBlazor tokens; not part of the library. */
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-shell__topbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--cymru-space-4) var(--cymru-space-6);
+}
+
+.app-shell__theme-toggle {
+    background: transparent;
+    color: var(--cymru-color-primary);
+    box-shadow: none;
+    gap: var(--cymru-space-2);
+}
+
+.app-shell__main {
+    flex: 1;
+    padding: 0 var(--cymru-space-6) var(--cymru-space-12);
+}
+
+.dashboard-alert {
+    margin-block: var(--cymru-space-6);
+}
+
+.dashboard-kpi-grid {
+    margin-block-end: var(--cymru-space-8);
+}
+
+.dashboard-kpi-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cymru-space-2);
+}
+
+.dashboard-kpi-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--cymru-space-2);
+    color: var(--cymru-color-primary);
+}
+
+.dashboard-kpi-card__value {
+    font-size: var(--cymru-font-size-xl, 2rem);
+    font-weight: 600;
+    margin: 0;
+}
+
+.dashboard-kpi-card__delta {
+    margin: 0;
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.dashboard-widget-grid {
+    margin-block-end: var(--cymru-space-8);
+}
+
+.dashboard-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cymru-space-4);
+    margin-block-end: var(--cymru-space-4);
+}
+
+.dashboard-empty-state {
+    color: var(--cymru-color-neutral, currentColor);
+}
+
+.dashboard-appointment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cymru-space-3);
+}
+
+.dashboard-appointment-list__row {
+    display: flex;
+    align-items: center;
+    gap: var(--cymru-space-4);
+}
+
+.dashboard-appointment-list__time {
+    font-weight: 600;
+    min-width: 3.5rem;
+}
+
+.dashboard-appointment-list__patient {
+    flex: 1;
+}
+
+.dashboard-appointment-list__clinician {
+    display: block;
+    color: var(--cymru-color-neutral, currentColor);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.dashboard-status {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--cymru-spacing-component-xs) var(--cymru-spacing-component-sm);
+    border-radius: var(--cymru-radius-pill);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dashboard-status--success {
+    background: var(--cymru-color-success-background);
+    color: var(--cymru-color-success);
+}
+
+.dashboard-status--warning {
+    background: var(--cymru-color-warning-background);
+    color: var(--cymru-color-warning);
+}
+
+.dashboard-status--danger {
+    background: var(--cymru-color-danger-background);
+    color: var(--cymru-color-danger);
+}
+
+.dashboard-status--info {
+    background: var(--cymru-color-info-background);
+    color: var(--cymru-color-info);
+}
+
+.dashboard-occupancy-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cymru-space-4);
+}
+
+.dashboard-progress__label {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    margin-block-end: var(--cymru-space-1);
+}
+
+.dashboard-progress__track {
+    height: var(--cymru-space-2);
+    border-radius: var(--cymru-radius-pill);
+    background: var(--cymru-color-surface, #eee);
+    overflow: hidden;
+}
+
+.dashboard-progress__fill {
+    height: 100%;
+    border-radius: var(--cymru-radius-pill);
+}
+
+.dashboard-progress__fill--success {
+    background: var(--cymru-color-success);
+}
+
+.dashboard-progress__fill--warning {
+    background: var(--cymru-color-warning);
+}
+
+.dashboard-progress__fill--danger {
+    background: var(--cymru-color-danger);
+}
+
+.dashboard-progress__fill--info {
+    background: var(--cymru-color-info);
+}
+
+.dashboard-waiting-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-waiting-table th,
+.dashboard-waiting-table td {
+    text-align: start;
+    padding: var(--cymru-space-2) var(--cymru-space-3);
+    border-bottom: 1px solid var(--cymru-color-surface, #eee);
+}
+
+.dashboard-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cymru-space-3);
+}

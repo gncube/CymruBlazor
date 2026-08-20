@@ -1,0 +1,67 @@
+@page "/"
+@inject DashboardSampleDataService Data
+
+<PageTitle>Ward Dashboard</PageTitle>
+
+<CyPageHeader Title="Ward Dashboard" Subtitle="Overview for Wednesday, 19 August 2026">
+    <Actions>
+        <Button>
+            Customize Dashboard <CyIcon Name="chevron-down" Size="16" />
+        </Button>
+    </Actions>
+</CyPageHeader>
+
+<CyAlert Severity="ComponentColour.Danger" Title="Critical Care is near capacity" Class="dashboard-alert">
+    Critical Care is at 90% occupancy (18 / 20 beds). Review escalation plan if admissions continue.
+</CyAlert>
+
+<CyGrid Columns="GridColumns.Four" Gap="GridGap.Medium" Class="dashboard-kpi-grid">
+    @foreach (var metric in _kpis)
+    {
+        <CyCard Class="dashboard-kpi-card">
+            <div class="dashboard-kpi-card__header">
+                <CyIcon Name="@metric.Icon" Size="20" />
+                <span>@metric.Label</span>
+            </div>
+            <p class="dashboard-kpi-card__value">@metric.Value</p>
+            <p class="dashboard-kpi-card__delta dashboard-kpi-card__delta--@metric.Severity.ToString().ToLowerInvariant()">
+                @TrendGlyph(metric.Trend) @metric.DeltaText
+            </p>
+        </CyCard>
+    }
+</CyGrid>
+
+<CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium" Class="dashboard-widget-grid">
+    <AppointmentsWidget Appointments="_appointments" />
+    <OccupancyWidget Areas="_occupancy" />
+    <WaitingListWidget Specialties="_waitingList" />
+</CyGrid>
+
+<nav class="dashboard-quick-actions" aria-label="Quick actions">
+    <Button><CyIcon Name="appointment" Size="16" /> Book Appointment</Button>
+    <Button><CyIcon Name="file-text" Size="16" /> New Referral</Button>
+    <Button><CyIcon Name="ward-round" Size="16" /> Ward Round</Button>
+    <Button><CyIcon Name="notebook-pen" Size="16" /> Add Note</Button>
+</nav>
+
+@code {
+    private IReadOnlyList<Models.KpiMetric> _kpis = [];
+    private IReadOnlyList<Models.AppointmentSummary> _appointments = [];
+    private IReadOnlyList<Models.OccupancyArea> _occupancy = [];
+    private IReadOnlyList<Models.WaitingListSpecialty> _waitingList = [];
+
+    protected override void OnInitialized()
+    {
+        _kpis = Data.GetKpiMetrics();
+        _appointments = Data.GetTodaysAppointments();
+        _occupancy = Data.GetWardOccupancy();
+        _waitingList = Data.GetWaitingList();
+    }
+
+    private static string TrendGlyph(Models.Trend trend) => trend switch
+    {
+        Models.Trend.Up => "▲",
+        Models.Trend.Down => "▼",
+        _ => "▬"
+    };
+}

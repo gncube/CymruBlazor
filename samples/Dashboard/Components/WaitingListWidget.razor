@@ -1,0 +1,46 @@
+@namespace CymruBlazor.Samples.Dashboard.Components
+
+<CyCard aria-label="Waiting list by specialty">
+    <Header>
+        <CyTypography Variant="TypographyVariant.H2">Waiting List by Specialty</CyTypography>
+    </Header>
+    <ChildContent>
+        <table class="dashboard-waiting-table">
+            <caption class="u-sr-only">Number of patients waiting and breach risk per specialty</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Specialty</th>
+                    <th scope="col">Waiting</th>
+                    <th scope="col">Breach risk</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var specialty in Specialties)
+                {
+                    <tr>
+                        <th scope="row">@specialty.Name</th>
+                        <td>@specialty.PatientsWaiting</td>
+                        <td>
+                            @if (specialty.BreachRiskCount > 0)
+                            {
+                                <span class="dashboard-status dashboard-status--@specialty.Severity.ToString().ToLowerInvariant()">
+                                    @(specialty.BreachRiskCount) at risk
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="dashboard-status dashboard-status--success">None</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </ChildContent>
+</CyCard>
+
+@code {
+    /// <summary>Per-specialty waiting list figures.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Models.WaitingListSpecialty> Specialties { get; set; } = [];
+}

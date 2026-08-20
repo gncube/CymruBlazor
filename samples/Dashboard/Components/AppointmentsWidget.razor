@@ -1,0 +1,40 @@
+@namespace CymruBlazor.Samples.Dashboard.Components
+
+<CyCard aria-label="Today's appointments">
+    <Header>
+        <div class="dashboard-card__header">
+            <CyTypography Variant="TypographyVariant.H2">Today's Appointments</CyTypography>
+            <Button>View all <CyIcon Name="forward" Size="16" /></Button>
+        </div>
+    </Header>
+    <ChildContent>
+        @if (Appointments.Count == 0)
+        {
+            <p class="dashboard-empty-state">No appointments scheduled for today.</p>
+        }
+        else
+        {
+            <ul class="dashboard-appointment-list">
+                @foreach (var appt in Appointments)
+                {
+                    <li class="dashboard-appointment-list__row">
+                        <span class="dashboard-appointment-list__time">@appt.Time</span>
+                        <span class="dashboard-appointment-list__patient">
+                            <strong>@appt.PatientInitials</strong> &middot; @appt.Type
+                            <span class="dashboard-appointment-list__clinician">@appt.Clinician</span>
+                        </span>
+                        <span class="dashboard-status dashboard-status--@appt.StatusSeverity.ToString().ToLowerInvariant()">
+                            @appt.StatusText
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </ChildContent>
+</CyCard>
+
+@code {
+    /// <summary>The appointments to display, most likely already sorted by time.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Models.AppointmentSummary> Appointments { get; set; } = [];
+}

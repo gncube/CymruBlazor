@@ -1,0 +1,31 @@
+@namespace CymruBlazor.Samples.Dashboard.Components
+
+<CyCard aria-label="Ward occupancy">
+    <Header>
+        <CyTypography Variant="TypographyVariant.H2">Ward Occupancy</CyTypography>
+    </Header>
+    <ChildContent>
+        <div class="dashboard-occupancy-list">
+            @foreach (var area in Areas)
+            {
+                <div class="dashboard-progress" role="group" aria-label="@area.WardName">
+                    <div class="dashboard-progress__label">
+                        <span>@area.WardName</span>
+                        <span>@area.OccupiedBeds / @area.TotalBeds beds</span>
+                    </div>
+                    <div class="dashboard-progress__track">
+                        <div class="dashboard-progress__fill dashboard-progress__fill--@area.Severity.ToString().ToLowerInvariant()"
+                             style="width: @(area.TotalBeds == 0 ? 0 : area.OccupiedBeds * 100 / area.TotalBeds)%">
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </ChildContent>
+</CyCard>
+
+@code {
+    /// <summary>Occupancy figures for each ward.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Models.OccupancyArea> Areas { get; set; } = [];
+}

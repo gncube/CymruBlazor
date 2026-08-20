@@ -26,8 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CymruBlazor\CymruBlazor.csproj" />
-    <ProjectReference Include="..\CymruBlazor.Icons\CymruBlazor.Icons.csproj" />
-    <ProjectReference Include="..\CymruBlazor.Theming\CymruBlazor.Theming.csproj" />
   </ItemGroup>
 
 </Project>

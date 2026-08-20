@@ -34,6 +34,25 @@ public sealed class CyStackTests : TestContextBase
     }
 
     [Fact]
+    public void Should_Apply_Passthrough_Class_Alongside_Orientation_Class()
+    {
+        // Act - the responsive "collapse to column below tablet" behaviour
+        // is opt-in via the existing Class passthrough (see
+        // css/layout/grid.css's .cy-stack--collapse-tablet utility), not a
+        // dedicated CyStack parameter, so this only needs to confirm the
+        // passthrough class survives alongside the orientation class it's
+        // meant to combine with.
+        var cut = Render<CyStack>(parameters => parameters
+            .Add(p => p.Orientation, Orientation.Horizontal)
+            .Add(p => p.Class, "cy-stack--collapse-tablet"));
+
+        // Assert
+        var classList = cut.Find("div").ClassList;
+        classList.ShouldContain("cy-stack--horizontal");
+        classList.ShouldContain("cy-stack--collapse-tablet");
+    }
+
+    [Fact]
     public void Should_Apply_Wrap_Class_When_Wrap_Is_True()
     {
         // Act
