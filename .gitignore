@@ -488,3 +488,10 @@ $RECYCLE.BIN/
 artifacts/
 GitVersion.yml.bak
 *.zip
+
+/docs/
+/plan/
+/plans/
+/.github/agents/
+/.github/prompts/
+/.github/skills/
