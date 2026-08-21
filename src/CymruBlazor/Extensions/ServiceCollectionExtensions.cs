@@ -26,6 +26,15 @@ public static class ServiceCollectionExtensions
         // Server render modes both register it).
         services.AddScoped<IThemeService, ThemeService>();
 
+        // Register the NuGet package version lookup used by CyFooter's
+        // ShowVersion parameter. Resolves an already-registered
+        // HttpClient (or none) via the service provider rather than
+        // AddHttpClient/IHttpClientFactory, so this stays a lightweight
+        // dependency for consuming apps that haven't opted into
+        // Microsoft.Extensions.Http.
+        services.AddScoped<IPackageVersionService>(
+            sp => new NuGetPackageVersionService(sp.GetService<HttpClient>()));
+
         // Register focus management - used by FocusTrap, and transitively
         // by CyNavigation's mobile menu. Previously only ever registered
         // manually by consuming apps (e.g. the Demo app); any component

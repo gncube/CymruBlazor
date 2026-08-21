@@ -33,6 +33,13 @@ Add the stylesheet to your `App.razor` or `_Host.cshtml`:
 
 See the [Demo application](src/CymruBlazor.Demo) and [documentation](docs/) for full usage.
 
+## Documentation
+
+The full component catalogue, with live previews and code samples, is
+published from the Demo application to GitHub Pages:
+
+**[gncube.github.io/CymruBlazor](https://gncube.github.io/CymruBlazor/)**
+
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.

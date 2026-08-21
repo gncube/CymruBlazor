@@ -2,11 +2,86 @@ using Xunit;
 using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Layout;
+using CymruBlazor.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CymruBlazor.Tests.Components.Layout;
 
 public sealed class CyFooterTests : TestContextBase
 {
+    [Fact]
+    public void Should_Render_Explicit_Version_Without_Calling_Service()
+    {
+        // Arrange - a service that would fail the test if it were called
+        Services.AddScoped<IPackageVersionService>(_ => new ThrowingPackageVersionService());
+
+        // Act
+        var cut = Render<CyFooter>(parameters => parameters
+            .Add(p => p.ShowVersion, true)
+            .Add(p => p.Version, "1.2.3"));
+
+        // Assert
+        cut.Find(".cy-footer__version").TextContent.ShouldContain("1.2.3");
+    }
+
+    [Fact]
+    public void Should_Render_Resolved_Version_When_ShowVersion_And_No_Explicit_Version()
+    {
+        // Arrange
+        Services.AddScoped<IPackageVersionService>(
+            _ => new StubPackageVersionService("2.0.0"));
+
+        // Act
+        var cut = Render<CyFooter>(parameters => parameters
+            .Add(p => p.ShowVersion, true));
+
+        // Assert
+        cut.Find(".cy-footer__version").TextContent.ShouldContain("2.0.0");
+    }
+
+    [Fact]
+    public void Should_Not_Render_Version_When_ShowVersion_False()
+    {
+        // Arrange
+        Services.AddScoped<IPackageVersionService>(
+            _ => new StubPackageVersionService("2.0.0"));
+
+        // Act
+        var cut = Render<CyFooter>();
+
+        // Assert
+        cut.FindAll(".cy-footer__version").Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void Should_Not_Render_Version_When_Service_Not_Registered()
+    {
+        // Act - no IPackageVersionService registered at all
+        var cut = Render<CyFooter>(parameters => parameters
+            .Add(p => p.ShowVersion, true));
+
+        // Assert
+        cut.FindAll(".cy-footer__version").Count.ShouldBe(0);
+    }
+
+    private sealed class StubPackageVersionService(string version) : IPackageVersionService
+    {
+        public Task<string?> GetLatestVersionAsync(
+            string packageId,
+            bool includePrerelease = false,
+            CancellationToken cancellationToken = default) => Task.FromResult<string?>(version);
+    }
+
+    private sealed class ThrowingPackageVersionService : IPackageVersionService
+    {
+        public Task<string?> GetLatestVersionAsync(
+            string packageId,
+            bool includePrerelease = false,
+            CancellationToken cancellationToken = default) =>
+            throw new InvalidOperationException(
+                "Should not be called when an explicit Version is supplied.");
+    }
+
     [Fact]
     public void Should_Render_Copyright_When_Provided()
     {

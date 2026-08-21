@@ -287,3 +287,9 @@
   margin: 0;
   opacity: 0.75;
 }
+
+.cy-footer__version {
+  margin: var(--cymru-space-2) 0 0;
+  opacity: 0.6;
+  font-size: var(--cymru-font-size-xs);
+}

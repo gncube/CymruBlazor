@@ -16,4 +16,11 @@
         </p>
     }
 
+    @if (ShowVersion && !string.IsNullOrWhiteSpace(DisplayVersion))
+    {
+        <p class="cy-footer__version">
+            v@(DisplayVersion)
+        </p>
+    }
+
 </footer>
