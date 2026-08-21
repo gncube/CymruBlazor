@@ -1,5 +1,6 @@
 @page "/layouts/sidebar"
 @namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Branding
 
 <div class="cb-page-header">
     <h1 class="cb-page-title">CySidebar</h1>
@@ -120,6 +121,129 @@
 </div>
 
 <div class="cb-section">
+    <h2 class="cb-section-title">Collapse modes</h2>
+    <p class="cb-section-description">
+        <code>CollapseMode</code> controls what the sidebar looks like
+        while <code>Collapsed</code> is <code>true</code> —
+        <code>Collapsed</code> itself remains the single on/off switch
+        (typically bound to a toggle button rendered inside
+        <code>Brand</code> or <code>ChildContent</code>).
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Compact — icon + short label (default)</span>
+        <div class="cb-example__preview">
+            <div style="display:flex;gap:0;height:120px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);
+                        border-radius:var(--cymru-radius-md)">
+                <CySidebar Width="SidebarWidth.Small"
+                           Collapsed="true"
+                           CollapseMode="SidebarCollapseMode.Compact">
+                    <div class="cy-sidebar__item">
+                        <span class="cy-sidebar__label">Home</span>
+                    </div>
+                </CySidebar>
+                <div style="flex:1;padding:var(--cymru-space-4);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Main content
+                </div>
+            </div>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CySidebar Collapsed="true"
+           CollapseMode="SidebarCollapseMode.Compact"&gt;
+    &lt;div class="cy-sidebar__item"&gt;
+        &lt;span class="cy-sidebar__label"&gt;Home&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/CySidebar&gt;</code></pre>
+    </div>
+
+    <div class="cb-example">
+        <span class="cb-example__label">IconOnly — narrowest rail</span>
+        <div class="cb-example__preview">
+            <div style="display:flex;gap:0;height:120px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);
+                        border-radius:var(--cymru-radius-md)">
+                <CySidebar Width="SidebarWidth.Small"
+                           Collapsed="true"
+                           CollapseMode="SidebarCollapseMode.IconOnly">
+                    <div class="cy-sidebar__item">
+                        <span class="cy-sidebar__label">Home</span>
+                    </div>
+                </CySidebar>
+                <div style="flex:1;padding:var(--cymru-space-4);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Labels stay in the accessible tree even though
+                    hidden visually.
+                </div>
+            </div>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CySidebar Collapsed="true"
+           CollapseMode="SidebarCollapseMode.IconOnly"&gt;
+    ...
+&lt;/CySidebar&gt;</code></pre>
+    </div>
+
+    <p class="cb-section-description">
+        <code>SidebarCollapseMode.Disabled</code> ignores
+        <code>Collapsed</code> entirely (always renders expanded,
+        <code>ToggleAsync()</code> becomes a no-op) — use it for a
+        permanent, structural navigation rail. <code>Hidden</code>
+        collapses to zero width with <code>overflow: hidden</code>,
+        the most extreme "fully hidden" state.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Brand lockup</h2>
+    <p class="cb-section-description">
+        The optional <code>Brand</code> render fragment — typically a
+        <code><a href="/branding/brand-logo">CyBrandLogo</a></code> —
+        renders above <code>ChildContent</code>. It only appears while
+        the sidebar is fully expanded; once collapsed, in any
+        <code>CollapseMode</code>, it is omitted entirely rather than
+        just visually hidden, matching the reference NHS Wales sidebar
+        design.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <div style="display:flex;gap:0;height:160px;overflow:hidden;
+                        border:1px solid var(--cymru-color-border);
+                        border-radius:var(--cymru-radius-md)">
+                <CySidebar Width="SidebarWidth.Small">
+                    <Brand>
+                        <CyBrandLogo Variant="BrandLogoVariant.Mark" Size="ComponentSize.Small" />
+                    </Brand>
+                    <ChildContent>
+                        <div class="cy-sidebar__item">
+                            <span class="cy-sidebar__label">Home</span>
+                        </div>
+                    </ChildContent>
+                </CySidebar>
+                <div style="flex:1;padding:var(--cymru-space-4);
+                            font-size:var(--cymru-font-size-sm);
+                            color:var(--cymru-color-text-muted)">
+                    Main content
+                </div>
+            </div>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CySidebar&gt;
+    &lt;Brand&gt;
+        &lt;CyBrandLogo Variant="BrandLogoVariant.Mark" /&gt;
+    &lt;/Brand&gt;
+    &lt;ChildContent&gt;
+        &lt;div class="cy-sidebar__item"&gt;
+            &lt;span class="cy-sidebar__label"&gt;Home&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/ChildContent&gt;
+&lt;/CySidebar&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
     <h2 class="cb-section-title">Position variants</h2>
 
     <div class="cb-example">
@@ -164,7 +288,60 @@
 <div class="cb-section">
     <h2 class="cb-section-title">API</h2>
 
-    <!-- API tables unchanged -->
+    <table class="cb-api-table" aria-label="CySidebar parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Position</td>
+                <td class="cb-api-table__type">SidebarPosition</td>
+                <td class="cb-api-table__default">Left</td>
+                <td>Which edge the sidebar docks to: <code>Left</code> or <code>Right</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Width</td>
+                <td class="cb-api-table__type">SidebarWidth</td>
+                <td class="cb-api-table__default">Medium</td>
+                <td>Expanded width: <code>Small</code>, <code>Medium</code>, or <code>Large</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Collapsed</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>Whether the sidebar is collapsed. Two-way bindable via <code>&#64;bind-Collapsed</code>, or toggle programmatically with <code>ToggleAsync()</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">CollapsedChanged</td>
+                <td class="cb-api-table__type">EventCallback&lt;bool&gt;</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Raised when <code>Collapsed</code> changes, including via <code>ToggleAsync()</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">CollapseMode</td>
+                <td class="cb-api-table__type">SidebarCollapseMode</td>
+                <td class="cb-api-table__default">Compact</td>
+                <td>Appearance used while collapsed: <code>Compact</code>, <code>IconOnly</code>, <code>Disabled</code>, or <code>Hidden</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Brand</td>
+                <td class="cb-api-table__type">RenderFragment?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Optional brand lockup rendered above <code>ChildContent</code>. Omitted entirely (not just hidden) while collapsed</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ChildContent</td>
+                <td class="cb-api-table__type">RenderFragment?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>The sidebar's navigation content</td>
+            </tr>
+        </tbody>
+    </table>
 
 </div>
 

@@ -1,0 +1,157 @@
+@page "/branding/language-toggle"
+@namespace CymruBlazor.Demo.Pages.Components.Branding
+@using CymruBlazor.Components.Branding
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyLanguageToggle</h1>
+    <p class="cb-page-description">
+        A bilingual English/Cymraeg language-switch control, following
+        the gov.wales convention: the visible label is always the
+        <em>other</em> language's own name — so it reads correctly to a
+        speaker of either language, without requiring them to already
+        understand the language they'd be switching away from.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Uncontrolled (default)</h2>
+    <p class="cb-section-description">
+        Left unbound, the toggle tracks its own state internally.
+        Starting language defaults to <code>AppLanguage.English</code>,
+        so the button first reads "Cymraeg".
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyLanguageToggle />
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyLanguageToggle /&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Controlled with two-way binding</h2>
+    <p class="cb-section-description">
+        Bind <code>&#64;bind-CurrentLanguage</code> to drive your own
+        application state (e.g. <code>CultureInfo</code>, resource
+        files, routing). CyLanguageToggle only renders the control and
+        raises the change — it does not apply the switch to page
+        content itself.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview">
+            <CyLanguageToggle @bind-CurrentLanguage="_currentLanguage" />
+            <p style="margin-block-start:var(--cymru-space-4);
+                      font-size:var(--cymru-font-size-sm);
+                      color:var(--cymru-color-text-muted)">
+                Current language: <strong>@_currentLanguage</strong>
+            </p>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyLanguageToggle &#64;bind-CurrentLanguage="_currentLanguage" /&gt;
+
+&#64;code {
+    private AppLanguage _currentLanguage = AppLanguage.English;
+}</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Without the icon</h2>
+    <p class="cb-section-description">
+        Set <code>ShowIcon="false"</code> for a text-only control.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyLanguageToggle ShowIcon="false" />
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyLanguageToggle ShowIcon="false" /&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Disabled</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyLanguageToggle Disabled="true" />
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyLanguageToggle Disabled="true" /&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="CyLanguageToggle parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">CurrentLanguage</td>
+                <td class="cb-api-table__type">AppLanguage</td>
+                <td class="cb-api-table__default">English</td>
+                <td>The language currently displayed by the host page. Two-way bindable via <code>&#64;bind-CurrentLanguage</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">CurrentLanguageChanged</td>
+                <td class="cb-api-table__type">EventCallback&lt;AppLanguage&gt;</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Raised with the new language when the control is activated</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ShowIcon</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Whether a language icon renders before the label</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Disabled</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>Disables the control</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-6)">
+        <li>
+            The visible label carries a <code>lang</code> attribute set
+            to the target language's own BCP 47 tag (<code>cy</code> or
+            <code>en</code>), so assistive technology and browsers
+            pronounce "Cymraeg"/"English" correctly rather than reading
+            it in the current page language.
+        </li>
+        <li>
+            <code>aria-label</code> spells out the action fully in the
+            target language (e.g. "Newid yr iaith i Gymraeg"), since the
+            short visible label alone doesn't convey what activating
+            the control does.
+        </li>
+        <li>
+            This component does not itself apply the language switch to
+            page content — pair it with your own routing/culture logic
+            via <code>CurrentLanguageChanged</code>.
+        </li>
+    </ul>
+</div>
+
+@code
+{
+    private AppLanguage _currentLanguage = AppLanguage.English;
+}

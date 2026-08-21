@@ -3,7 +3,12 @@
 <CyCard aria-label="Today's appointments">
     <Header>
         <div class="dashboard-card__header">
-            <CyTypography Variant="TypographyVariant.H2">Today's Appointments</CyTypography>
+            <span class="dashboard-card__header-title">
+                <CyTypography Variant="TypographyVariant.H2">Today's Appointments</CyTypography>
+                <span class="dashboard-info-tip" tabindex="0" aria-label="Appointments booked across all wards today, in chronological order.">
+                    <CyIcon Name="info" Size="14" />
+                </span>
+            </span>
             <Button>View all <CyIcon Name="forward" Size="16" /></Button>
         </div>
     </Header>
@@ -17,7 +22,7 @@
             <ul class="dashboard-appointment-list">
                 @foreach (var appt in Appointments)
                 {
-                    <li class="dashboard-appointment-list__row">
+                    <li class="dashboard-appointment-list__row dashboard-appointment-list__row--@appt.StatusSeverity.ToString().ToLowerInvariant()">
                         <span class="dashboard-appointment-list__time">@appt.Time</span>
                         <span class="dashboard-appointment-list__patient">
                             <strong>@appt.PatientInitials</strong> &middot; @appt.Type

@@ -1,0 +1,210 @@
+@page "/content/icons"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Icons
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Icons</h1>
+    <p class="cb-page-description">
+        <code>IconRegistry</code> is the static source of truth for
+        every icon SVG path in CymruBlazor, sourced directly from the
+        <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide Icons</a>
+        project (ISC licence) on a 24x24 grid with a 2px round stroke —
+        matching the design system's documented icon grid.
+        <code><a href="#cyicon">CyIcon</a></code> is the component that
+        consumes it; most consumers only ever need <code>CyIcon</code>
+        directly.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title" id="cyicon">CyIcon</h2>
+    <p class="cb-section-description">
+        Renders a single named icon. Icons are decorative by default
+        (paired with visible text) and hidden from assistive technology
+        accordingly — set <code>Label</code> only when the icon is the
+        <em>sole</em> conveyor of meaning, such as an icon-only button.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <div style="display:flex;gap:var(--cymru-space-6);align-items:center">
+                <CyIcon Name="search" />
+                <CyIcon Name="patient" />
+                <CyIcon Name="appointment" Size="32" />
+            </div>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyIcon Name="search" /&gt;
+&lt;CyIcon Name="patient" /&gt;
+&lt;CyIcon Name="appointment" Size="32" /&gt;</code></pre>
+    </div>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Icon-only button (needs a label)</span>
+        <div class="cb-example__preview">
+            <button class="cb-demo-btn" aria-label="Search" type="button">
+                <CyIcon Name="search" Label="Search" />
+            </button>
+        </div>
+        <pre class="cb-example__code"><code>&lt;button aria-label="Search"&gt;
+    &lt;CyIcon Name="search" Label="Search" /&gt;
+&lt;/button&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">CyIcon API</h2>
+    <table class="cb-api-table" aria-label="CyIcon parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Name</td>
+                <td class="cb-api-table__type">string</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Required. Icon name — see <code>IconRegistry.AllNames</code>, or the full list below</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Size</td>
+                <td class="cb-api-table__type">int</td>
+                <td class="cb-api-table__default">24</td>
+                <td>Width/height in pixels — 24 is the design system's native grid size</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Label</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>Accessible label. Leave unset for decorative icons paired with visible text</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">IconRegistry</h2>
+    <p class="cb-section-description">
+        The registry itself is a static class — use it directly only
+        when you need to work with icon names/markup programmatically
+        (for example, validating a user-configurable icon name, or
+        building your own icon picker). Domain grouping below
+        (<code>GetDomain</code>) was reconstructed from the design
+        system's Icon Preview page rather than the live Figma file —
+        names and path data are authoritative, but exact per-domain
+        membership should be spot-checked against the live source if it
+        matters for your use case.
+    </p>
+
+    <table class="cb-api-table" aria-label="IconRegistry members">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Signature</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">GetMarkup</td>
+                <td class="cb-api-table__type">static string GetMarkup(string name)</td>
+                <td>Inner SVG markup for the named icon. Throws <code>KeyNotFoundException</code> if the name isn't registered</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Exists</td>
+                <td class="cb-api-table__type">static bool Exists(string name)</td>
+                <td>Whether an icon with the given name is registered</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">GetDomain</td>
+                <td class="cb-api-table__type">static string? GetDomain(string name)</td>
+                <td>The documentation domain an icon belongs to (e.g. "clinical", "nav", "status"), or null</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">AllNames</td>
+                <td class="cb-api-table__type">static IReadOnlyCollection&lt;string&gt; AllNames</td>
+                <td>Every registered icon name</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">All icons (@IconRegistry.AllNames.Count)</h2>
+    <p class="cb-section-description">
+        Grouped by domain. Pass the name shown under each icon to
+        <code>CyIcon</code>'s <code>Name</code> parameter.
+    </p>
+
+    @foreach (var group in _iconsByDomain)
+    {
+        <div class="cb-example">
+            <span class="cb-example__label">@group.Domain</span>
+            <div class="cb-example__preview">
+                <div style="display:grid;
+                            grid-template-columns:repeat(auto-fill, minmax(96px, 1fr));
+                            gap:var(--cymru-space-4)">
+                    @foreach (var name in group.Names)
+                    {
+                        <div style="display:flex;flex-direction:column;align-items:center;
+                                    gap:var(--cymru-space-2);text-align:center">
+                            <CyIcon Name="@name" />
+                            <code style="font-size:var(--cymru-font-size-xs);
+                                         word-break:break-word">@name</code>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-6)">
+        <li>
+            By default, icons render with <code>aria-hidden="true"</code>
+            and no <code>role</code> — screen readers skip them
+            entirely, which is correct when visible adjacent text
+            already conveys the meaning.
+        </li>
+        <li>
+            Set <code>Label</code> only when the icon is the sole
+            conveyor of meaning (icon-only buttons/links). CyIcon then
+            switches to <code>role="img"</code> with
+            <code>aria-label</code> set from <code>Label</code>.
+        </li>
+        <li>
+            Don't set <code>Label</code> when visible text already sits
+            next to the icon — doing so causes the label to be
+            announced twice.
+        </li>
+    </ul>
+</div>
+
+@code
+{
+    private sealed record IconDomainGroup(string Domain, IReadOnlyList<string> Names);
+
+    private List<IconDomainGroup> _iconsByDomain = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _iconsByDomain = IconRegistry.AllNames
+            .GroupBy(name => IconRegistry.GetDomain(name) ?? "other")
+            .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(g => new IconDomainGroup(
+                g.Key,
+                g.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList()))
+            .ToList();
+    }
+}

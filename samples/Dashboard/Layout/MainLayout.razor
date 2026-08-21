@@ -23,9 +23,34 @@
 
                 <CyLanguageToggle @bind-CurrentLanguage="_language" />
 
-                <button type="button" class="cymru-btn app-shell__theme-toggle" @onclick="ToggleThemeAsync">
-                    <CyIcon Name="settings" Size="18" />
-                    @ThemeLabel
+                <button type="button"
+                        class="app-shell__theme-switch"
+                        role="switch"
+                        aria-checked="@(Theme.CurrentTheme.Mode == ThemeMode.Dark)"
+                        aria-label="@ThemeLabel"
+                        title="@ThemeLabel"
+                        @onclick="ToggleThemeAsync">
+                    <span class="app-shell__theme-switch-thumb">
+                        @if (Theme.CurrentTheme.Mode == ThemeMode.Dark)
+                        {
+                            <!-- Lucide "moon" - kept inline (not in IconRegistry) so this stays a self-contained sample control. -->
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <!-- Lucide "sun" -->
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4" />
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                            </svg>
+                        }
+                    </span>
+                </button>
+
+                <button type="button" class="app-shell__user-menu" aria-label="Account menu for Dr. A. Rhys" title="Dr. A. Rhys">
+                    AR
                 </button>
             </div>
         </header>
@@ -65,20 +90,50 @@
                             <a href="@item.Href" class="cy-sidebar__item app-shell__nav-link" title="@item.Text">
                                 <CyIcon Name="@item.Icon" Size="20" />
                                 <span class="cy-sidebar__label">@item.Text</span>
+                                @if (item.Badge is { } count)
+                                {
+                                    <span class="app-shell__nav-badge" aria-label="@($"{count} today")">@count</span>
+                                }
                             </a>
                         }
                     </nav>
 
-                    <span class="cy-sidebar__heading">Wards</span>
-                    <nav class="app-shell__nav-list" aria-label="Filter wards">
-                        @foreach (var filter in _wardFilters)
-                        {
-                            <a href="#" class="cy-sidebar__item app-shell__nav-link" title="@filter.Text">
-                                <CyIcon Name="@filter.Icon" Size="20" />
-                                <span class="cy-sidebar__label">@filter.Text</span>
-                            </a>
-                        }
-                    </nav>
+                    <button type="button"
+                            class="app-shell__nav-group-toggle"
+                            aria-expanded="@_wardsExpanded"
+                            @onclick="() => _wardsExpanded = !_wardsExpanded">
+                        Wards
+                        <span class="app-shell__nav-group-chevron @(_wardsExpanded ? "" : "app-shell__nav-group-chevron--collapsed")">
+                            <CyIcon Name="chevron-down" Size="14" />
+                        </span>
+                    </button>
+                    @if (_wardsExpanded)
+                    {
+                        <nav class="app-shell__nav-list" aria-label="Filter wards">
+                            @foreach (var filter in _wardFilters)
+                            {
+                                <a href="#" class="cy-sidebar__item app-shell__nav-link" title="@filter.Text">
+                                    <CyIcon Name="@filter.Icon" Size="20" />
+                                    <span class="cy-sidebar__label">@filter.Text</span>
+                                    @if (filter.Badge is { } count)
+                                    {
+                                        <span class="app-shell__nav-badge" aria-label="@($"{count} patients")">@count</span>
+                                    }
+                                </a>
+                            }
+                        </nav>
+                    }
+
+                    <div class="app-shell__nav-footer">
+                        <a href="/settings" class="cy-sidebar__item app-shell__nav-link" title="Settings">
+                            <CyIcon Name="settings" Size="20" />
+                            <span class="cy-sidebar__label">Settings</span>
+                        </a>
+                        <a href="/logout" class="cy-sidebar__item app-shell__nav-link" title="Log Out">
+                            <CyIcon Name="logout" Size="20" />
+                            <span class="cy-sidebar__label">Log Out</span>
+                        </a>
+                    </div>
                 </ChildContent>
             </CySidebar>
 
@@ -90,14 +145,14 @@
 </CyThemeProvider>
 
 @code {
-    private sealed record NavItem(string Text, string Href, string Icon);
+    private sealed record NavItem(string Text, string Href, string Icon, int? Badge = null);
 
-    private sealed record WardFilter(string Text, string Icon);
+    private sealed record WardFilter(string Text, string Icon, int? Badge = null);
 
     private static readonly NavItem[] _navItems =
     [
         new("Dashboard", "/", "dashboard"),
-        new("Appointments", "/appointments", "appointment"),
+        new("Appointments", "/appointments", "appointment", Badge: DashboardSampleDataService.GetTodaysAppointments().Count),
         new("Wards", "/wards", "ward"),
         new("Reports", "/reports", "chart")
     ];
@@ -105,14 +160,15 @@
     private static readonly WardFilter[] _wardFilters =
     [
         new("All wards", "dashboard"),
-        new("Critical Care", "critical"),
-        new("Medical", "pill"),
-        new("Surgical", "syringe"),
-        new("Paediatrics", "carer")
+        new("Critical Care", "critical", Badge: 18),
+        new("Medical", "pill", Badge: 42),
+        new("Surgical", "syringe", Badge: 30),
+        new("Paediatrics", "carer", Badge: 12)
     ];
 
     private CySidebar? _navSidebar;
     private bool _navCollapsed;
+    private bool _wardsExpanded = true;
     private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
     private AppLanguage _language = AppLanguage.English;
 
