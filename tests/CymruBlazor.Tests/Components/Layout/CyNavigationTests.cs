@@ -10,7 +10,7 @@ namespace CymruBlazor.Tests.Components.Layout;
 
 /// <summary>
 /// Covers <see cref="CyNavigation"/>'s mobile toggle behaviour and its
-/// integration with <see cref="CymruBlazor.Components.Accessibility.FocusTrap"/> -
+/// integration with <see cref="CymruBlazor.Components.Accessibility.CyFocusTrap"/> -
 /// the first test in this suite exercising two shipped components
 /// together rather than one in isolation.
 /// </summary>

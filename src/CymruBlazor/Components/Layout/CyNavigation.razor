@@ -28,11 +28,11 @@
 
     @if (IsMobileMenuOpen)
     {
-        <FocusTrap Enabled="true" AutoFocus="true" RestoreFocus="true">
+        <CyFocusTrap Enabled="true" AutoFocus="true" RestoreFocus="true">
             <ul id="@MenuId" class="@MenuCssClass">
                 @ChildContent
             </ul>
-        </FocusTrap>
+        </CyFocusTrap>
     }
     else
     {
