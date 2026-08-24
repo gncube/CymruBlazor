@@ -1,4 +1,4 @@
-.cymru-btn {
+.cy-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -21,16 +21,16 @@
   cursor: pointer;
 }
 
-.cymru-btn:hover {
+.cy-button:hover {
   background: var(--cymru-color-primary-hover);
 }
 
-.cymru-btn:active {
+.cy-button:active {
   box-shadow: none;
   transform: translateY(2px);
 }
 
-.cymru-btn:focus-visible {
+.cy-button:focus-visible {
   outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
   outline-offset: 2px;
 }
