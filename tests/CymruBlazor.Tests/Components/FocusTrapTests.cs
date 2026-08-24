@@ -11,7 +11,7 @@ using CymruBlazor.Components.Core;
 namespace CymruBlazor.Tests.Accessibility;
 
 /// <summary>
-/// Unit tests for the <see cref="FocusTrap"/> component using bUnit, Moq, and Shouldly.
+/// Unit tests for the <see cref="CyFocusTrap"/> component using bUnit, Moq, and Shouldly.
 /// </summary>
 public sealed class FocusTrapTests : BunitContext
 {
@@ -41,7 +41,7 @@ public sealed class FocusTrapTests : BunitContext
     public void Should_Render_Child_Content()
     {
         // Act
-        var cut = Render<FocusTrap>(p => p.AddChildContent("Hello"));
+        var cut = Render<CyFocusTrap>(p => p.AddChildContent("Hello"));
 
         // Assert[cite: 1]
         cut.Find("div").TextContent.ShouldBe("Hello");
@@ -51,7 +51,7 @@ public sealed class FocusTrapTests : BunitContext
     public void Should_Render_Css_Class()
     {
         // Act
-        var cut = Render<FocusTrap>();
+        var cut = Render<CyFocusTrap>();
 
         // Assert[cite: 1]
         var element = cut.Find("div");
@@ -62,7 +62,7 @@ public sealed class FocusTrapTests : BunitContext
     public void Should_Render_TabIndex()
     {
         // Act
-        var cut = Render<FocusTrap>();
+        var cut = Render<CyFocusTrap>();
 
         // Assert[cite: 1]
         var element = cut.Find("div");

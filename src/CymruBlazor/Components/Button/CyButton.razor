@@ -1,0 +1,12 @@
+<button class="cy-button">
+    @ChildContent
+</button>
+
+
+@code {
+    /// <summary>
+    /// Content to render inside the button.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

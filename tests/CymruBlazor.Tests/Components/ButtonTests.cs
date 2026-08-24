@@ -17,18 +17,18 @@ public sealed class ButtonTests : TestContextBase
     public void Should_Render_As_A_Button_Element_With_Base_Class()
     {
         // Act
-        var cut = Render<Button>();
+        var cut = Render<CyButton>();
 
         // Assert
         var element = cut.Find("button");
-        element.ClassList.ShouldContain("cymru-btn");
+        element.ClassList.ShouldContain("cy-button");
     }
 
     [Fact]
     public void Should_Render_ChildContent()
     {
         // Act
-        var cut = Render<Button>(parameters => parameters
+        var cut = Render<CyButton>(parameters => parameters
             .AddChildContent("Save changes"));
 
         // Assert
