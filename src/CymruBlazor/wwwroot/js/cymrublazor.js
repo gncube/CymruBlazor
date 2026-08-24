@@ -9,7 +9,7 @@
 // persistence/system-preference detection. Add it to index.html /
 // App.razor:
 //
-//   <script src="_content/CymruBlazor/js/theme.js"></script>
+//   <script src="_content/CymruBlazor/js/cymrublazor.js"></script>
 //
 window.cymruBlazorTheme = (() => {
   const STORAGE_KEY = "cymru-blazor-theme";
