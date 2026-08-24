@@ -1,13 +1,15 @@
 @page "/"
 @namespace CymruBlazor.Demo.Pages
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
 <CyHeroBanner Title="CymruBlazor"
               Subtitle="Accessible, composable Blazor components for Welsh NHS digital services."
               Background="HeroBackground.Primary">
     <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
-        <CyButton Variant="CyButtonVariant.Primary" Href="layouts/stack">Explore Components →</CyButton>
-        <CyButton Variant="CyButtonVariant.Secondary" Href="getting-started">Get Started</CyButton>
+        <a class="cb-demo-btn cb-demo-btn--primary" href="layouts/stack">Explore components →</a>
+        <a class="cb-demo-btn cb-demo-btn--secondary" href="getting-started">Get started</a>
     </div>
 </CyHeroBanner>
 
