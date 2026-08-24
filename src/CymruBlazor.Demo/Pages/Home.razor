@@ -1,140 +1,37 @@
 @page "/"
 @namespace CymruBlazor.Demo.Pages
-@inject IJSRuntime JS
+@using CymruBlazor.Components
+@using CymruBlazor.Demo.Shared
 
-<div class="cb-home">
-
-    <div class="cb-home__hero">
-        <CyContainer Size="ContainerSize.Large">
-            <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium" AlignItems="AlignItems.Start">
-
-                <div class="cb-home__badge">NHS Wales Design System</div>
-
-                <h1 class="cb-home__title">
-                    CymruBlazor
-                </h1>
-
-                <p class="cb-home__subtitle">
-                    An open-source Blazor component library implementing the
-                    NHS Wales Design System. Accessible, composable, and
-                    aligned with WCAG 2.2 AA.
-                </p>
-
-                <CyStack Orientation="Orientation.Horizontal"
-                         Gap="ComponentSize.Small"
-                         Wrap="true">
-                    <a href="/getting-started" class="cb-demo-btn">
-                        Get started
-                    </a>
-                    <a href="/layouts" class="cb-demo-btn cb-demo-btn--secondary">
-                        Browse components
-                    </a>
-                </CyStack>
-
-            </CyStack>
-        </CyContainer>
+<CyHeroBanner Title="CymruBlazor"
+              Subtitle="Accessible, composable Blazor components for Welsh NHS digital services."
+              Background="HeroBackground.Primary">
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+        <CyButton Variant="CyButtonVariant.Primary" Href="layouts/stack">Explore Components →</CyButton>
+        <CyButton Variant="CyButtonVariant.Secondary" Href="getting-started">Get Started</CyButton>
     </div>
+</CyHeroBanner>
 
-    <CyContainer Size="ContainerSize.Large">
-
-        <div class="cb-home__features">
-            @foreach (var f in _features)
-            {
-                <div class="cb-home__feature">
-                    <div class="cb-home__feature-icon" aria-hidden="true">@f.Icon</div>
-                    <h2 class="cb-home__feature-title">@f.Title</h2>
-                    <p class="cb-home__feature-body">@f.Body</p>
-                </div>
-            }
-        </div>
-
-        <div class="cb-home__quick-start">
-            <h2 class="cb-section-title">Quick start</h2>
-            <div class="cb-home__steps">
-
-                <div class="cb-home__step">
-                    <div class="cb-home__step-header">
-                        <span class="cb-home__step-label">Step 1 — Install</span>
-                        <button class="cb-home__copy-btn" type="button"
-                                aria-label="Copy install command"
-                                @onclick="() => CopyAsync(_snippetInstall)">
-                            Copy
-                        </button>
-                    </div>
-                    <pre class="cb-home__step-code"><code>dotnet add package CymruBlazor</code></pre>
-                </div>
-
-                <div class="cb-home__step">
-                    <div class="cb-home__step-header">
-                        <span class="cb-home__step-label">Step 2 — Add CSS</span>
-                        <button class="cb-home__copy-btn" type="button"
-                                aria-label="Copy CSS link tag"
-                                @onclick="() => CopyAsync(_snippetCss)">
-                            Copy
-                        </button>
-                    </div>
-                    <pre class="cb-home__step-code"><code>&lt;link rel="stylesheet"
-      href="_content/CymruBlazor/css/cymrublazor.css" /&gt;</code></pre>
-                </div>
-
-                <div class="cb-home__step">
-                    <div class="cb-home__step-header">
-                        <span class="cb-home__step-label">Step 3 — Register services</span>
-                        <button class="cb-home__copy-btn" type="button"
-                                aria-label="Copy service registration"
-                                @onclick="() => CopyAsync(_snippetServices)">
-                            Copy
-                        </button>
-                    </div>
-                    <pre class="cb-home__step-code"><code>// Program.cs
-builder.Services.AddCymruBlazor();</code></pre>
-                </div>
-
-            </div>
-            <a href="/getting-started" class="cb-home__guide-link">
-                Full installation guide →
-            </a>
-        </div>
-
-    </CyContainer>
-
+<div style="margin-top: 2rem;">
+    <CyCluster Gap="ComponentSize.Small" Justify="ClusterJustify.Center">
+        <span class="cb-badge">.NET 10</span>
+        <span class="cb-badge">Blazor WASM</span>
+        <span class="cb-badge">WCAG 2.2 AA</span>
+        <span class="cb-badge">MIT License</span>
+    </CyCluster>
 </div>
 
-@code {
-    private const string _snippetInstall = "dotnet add package CymruBlazor";
-    private const string _snippetCss = "<link rel=\"stylesheet\" href=\"_content/CymruBlazor/css/cymrublazor.css\" />";
-    private const string _snippetServices = "builder.Services.AddCymruBlazor();";
-
-    private ValueTask CopyAsync(string text) =>
-        JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
-
-    private sealed record Feature(string Icon, string Title, string Body);
-
-    private static readonly Feature[] _features =
-    [
-        new("♿", "WCAG 2.2 AA",
-            "Every component ships with axe-core automated tests and has been " +
-            "validated against keyboard navigation and screen reader requirements."),
-
-        new("🏴󠁷󠁬󠁳󠁿", "Welsh language",
-            "Full Cymraeg support via a localisation pipeline. Switch " +
-            "languages at runtime without a page reload."),
-
-        new("🎨", "Design Tokens",
-            "NHS Wales colour, typography, spacing, and elevation tokens " +
-            "exposed as CSS custom properties. Dark mode and high-contrast " +
-            "themes included."),
-
-        new("🧱", "Composable primitives",
-            "Layout components — CyStack, CyGrid, CySidebar, CyContainer, " +
-            "CyCluster, CyCenter — compose to build any page structure."),
-
-        new("⚡", "Mediator pipeline",
-            "Source-generated Mediator handles live region announcements and " +
-            "focus events without tight component coupling."),
-
-        new("🔬", "Tested",
-            "bUnit component tests, ApprovalTests snapshot tests, and " +
-            "Playwright axe-core accessibility tests ship with every component."),
-    ];
-}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 3rem;">
+    <CyCard>
+        <h3 style="margin-top:0;">♿ WCAG 2.2 AA</h3>
+        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Accessible composability built for high standards across NHS Wales services.</p>
+    </CyCard>
+    <CyCard>
+        <h3 style="margin-top:0;">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Bilingual First</h3>
+        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Native language support and toggling primitives for Welsh and English.</p>
+    </CyCard>
+    <CyCard>
+        <h3 style="margin-top:0;">🎨 Design Tokens</h3>
+        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Tokenized palettes and geometry adhering to Welsh NHS branding guidelines.</p>
+    </CyCard>
+</div>

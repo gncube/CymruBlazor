@@ -489,7 +489,6 @@ artifacts/
 GitVersion.yml.bak
 *.zip
 
-/docs/
 /plan/
 /plans/
 /.github/agents/
