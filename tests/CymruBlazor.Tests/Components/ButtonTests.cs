@@ -21,7 +21,7 @@ public sealed class ButtonTests : TestContextBase
 
         // Assert
         var element = cut.Find("button");
-        element.ClassList.ShouldContain("cymru-btn");
+        element.ClassList.ShouldContain("cy-button");
     }
 
     [Fact]
