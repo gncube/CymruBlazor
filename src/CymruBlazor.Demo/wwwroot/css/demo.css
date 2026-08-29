@@ -820,3 +820,71 @@ body {
   color: var(--docs-text-muted);
   font-size: 0.9rem;
 }
+
+/* ── Blazor WASM boilerplate ──────────────────────────────────────────────
+   Standard framework markup rendered by index.html (#blazor-error-ui,
+   .loading-progress/.loading-progress-text) - these CSS rules ship by
+   default in the SDK's project template, but this project's index.html
+   was heavily customised and this stylesheet never carried them over.
+   Without display:none here, #blazor-error-ui showed on every single
+   page load regardless of whether an error actually occurred, since a
+   plain <div> defaults to display:block.
+   ========================================================================== */
+
+#blazor-error-ui {
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
+}
+
+#blazor-error-ui .reload {
+  color: inherit;
+  text-decoration: underline;
+  margin-inline-start: 0.5rem;
+}
+
+.loading-progress {
+  position: relative;
+  display: block;
+  width: 8rem;
+  height: 8rem;
+  margin: 20vh auto 1rem;
+}
+
+.loading-progress circle {
+  fill: none;
+  stroke: var(--cymru-color-border, #e2e8f0);
+  stroke-width: 0.6rem;
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+  stroke: var(--cymru-color-primary, #325083);
+  stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+  transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+  position: absolute;
+  text-align: center;
+  font-weight: 600;
+  inset: calc(20vh + 3.7rem) 0 auto 0;
+}
+
+.loading-progress-text::after {
+  content: var(--blazor-load-percentage-text, "Loading");
+}
