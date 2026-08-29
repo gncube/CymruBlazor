@@ -1,0 +1,21 @@
+@namespace CymruBlazor.Demo.Shared
+
+<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+    @foreach (var item in Items)
+    {
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem; background: #ffffff; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <span style="font-weight: 700; color: #16a34a;">✓</span>
+            <div>
+                <strong style="font-size: 0.9rem;">@item.Criterion</strong>
+                <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #475569;">@item.Description</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<AccessibilityCriterion> Items { get; set; }
+
+    public sealed record AccessibilityCriterion(string Criterion, string Description);
+}

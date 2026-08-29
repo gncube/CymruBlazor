@@ -1,0 +1,30 @@
+@namespace CymruBlazor.Demo.Shared
+
+<table style="width:100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem;">
+    <thead>
+        <tr style="border-bottom: 2px solid #cbd5e1; text-align: left;">
+            <th style="padding: 0.5rem;">Parameter</th>
+            <th style="padding: 0.5rem;">Type</th>
+            <th style="padding: 0.5rem;">Default</th>
+            <th style="padding: 0.5rem;">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Parameters)
+        {
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 0.5rem; font-family: monospace; font-weight: 600; color: #0284c7;">@row.Name</td>
+                <td style="padding: 0.5rem; font-family: monospace; color: #64748b;">@row.Type</td>
+                <td style="padding: 0.5rem; font-family: monospace;">@(row.DefaultValue ?? "-")</td>
+                <td style="padding: 0.5rem;">@row.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<ApiParameterDoc> Parameters { get; set; }
+
+    public sealed record ApiParameterDoc(string Name, string Type, string? DefaultValue, string Description);
+}

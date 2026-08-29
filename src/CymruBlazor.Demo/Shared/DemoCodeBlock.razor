@@ -1,0 +1,31 @@
+@inject IJSRuntime JSRuntime
+
+<div class="cb-code-block">
+    <div class="cb-code-header">
+        <span>@(string.IsNullOrWhiteSpace(Language) ? "Code" : Language)</span>
+        <button class="cb-tab-btn" style="color:#94a3b8; padding:2px 8px; font-size:0.75rem;" @onclick="CopyToClipboardAsync">
+            @(_copied ? "Copied ✓" : "Copy")
+        </button>
+    </div>
+    <pre><code>@Code</code></pre>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Code { get; set; }
+
+    [Parameter]
+    public string Language { get; set; } = "razor";
+
+    private bool _copied;
+
+    private async Task CopyToClipboardAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", Code);
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+}

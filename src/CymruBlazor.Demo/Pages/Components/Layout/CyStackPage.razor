@@ -1,164 +1,117 @@
 @page "/layouts/stack"
 @namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">CyStack</h1>
-    <p class="cb-page-description">
-        Arranges child elements in a single-axis flexbox flow — vertical or
-        horizontal — with consistent gap from the shared spacing scale.
-        The most commonly used layout primitive.
-    </p>
+<CyPageHeader Title="CyStack" Subtitle="Flexbox-based directional layout primitive." />
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button"
+            role="tab"
+            aria-selected="@(_activeTab == Tab.Examples)"
+            class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">
+        Examples
+    </button>
+    <button type="button"
+            role="tab"
+            aria-selected="@(_activeTab == Tab.Api)"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Api">
+        API
+    </button>
+    <button type="button"
+            role="tab"
+            aria-selected="@(_activeTab == Tab.Accessibility)"
+            class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">
+        Accessibility
+    </button>
 </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Vertical (default)</h2>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium">
-                @foreach (var label in new[] { "First item", "Second item", "Third item" })
-                {
-                    <div style="padding:var(--cymru-space-2) var(--cymru-space-4);
-                                background:var(--cymru-color-surface-alt);
-                                border:1px solid var(--cymru-color-border);
-                                border-radius:var(--cymru-radius-sm);
-                                font-size:var(--cymru-font-size-sm)">
-                        @label
-                    </div>
-                }
-            </CyStack>
-        </div>
-        <pre class="cb-example__code"><code>&lt;CyStack Orientation="Orientation.Vertical"
-         Gap="ComponentSize.Medium"&gt;
-    &lt;div&gt;First item&lt;/div&gt;
-    &lt;div&gt;Second item&lt;/div&gt;
-    &lt;div&gt;Third item&lt;/div&gt;
-&lt;/CyStack&gt;</code></pre>
+@if (_activeTab == Tab.Examples)
+{
+    <div class="cb-workbench-preview">
+        <CyStack Orientation="_orientation" Gap="_gap">
+            <CyButton Variant="CyButtonVariant.Primary">Item 1</CyButton>
+            <CyButton Variant="CyButtonVariant.Secondary">Item 2</CyButton>
+            <CyButton Variant="CyButtonVariant.Primary">Item 3</CyButton>
+        </CyStack>
     </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Horizontal</h2>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyStack Orientation="Orientation.Horizontal"
-                     Gap="ComponentSize.Medium"
-                     AlignItems="AlignItems.Center">
-                @foreach (var label in new[] { "Alpha", "Beta", "Gamma" })
-                {
-                    <div style="padding:var(--cymru-space-2) var(--cymru-space-4);
-                                background:var(--cymru-color-primary-subtle);
-                                border:1px solid var(--cymru-color-primary);
-                                border-radius:var(--cymru-radius-sm);
-                                font-size:var(--cymru-font-size-sm);
-                                color:var(--cymru-color-primary)">
-                        @label
-                    </div>
-                }
-            </CyStack>
+    <div class="cb-playground-grid">
+        <div class="cb-playground-panel">
+            <h4 style="margin-top:0; margin-bottom: 1rem;">Properties</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                    <label for="stack-orientation-select" style="display:block; font-size: 0.85rem; font-weight:600; margin-bottom: 0.25rem;">
+                        Orientation
+                    </label>
+                    <select id="stack-orientation-select" @bind="_orientation" style="width:100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <option value="@Orientation.Horizontal">Horizontal</option>
+                        <option value="@Orientation.Vertical">Vertical</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="stack-gap-select" style="display:block; font-size: 0.85rem; font-weight:600; margin-bottom: 0.25rem;">
+                        Gap
+                    </label>
+                    <select id="stack-gap-select" @bind="_gap" style="width:100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <option value="@ComponentSize.Small">Small</option>
+                        <option value="@ComponentSize.Medium">Medium</option>
+                        <option value="@ComponentSize.Large">Large</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyStack Orientation="Orientation.Horizontal"
-         Gap="ComponentSize.Medium"
-         AlignItems="AlignItems.Center"&gt;
-    &lt;div&gt;Alpha&lt;/div&gt;
-    &lt;div&gt;Beta&lt;/div&gt;
-    &lt;div&gt;Gamma&lt;/div&gt;
-&lt;/CyStack&gt;</code></pre>
-    </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Gap scale</h2>
-    <p class="cb-section-description">
-        All gap values map to the shared 8-point spacing scale
-        via <code>--cymru-space-*</code> tokens.
-    </p>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview — all gap sizes</span>
-        <div class="cb-example__preview">
-            <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Large">
-                @foreach (var (size, label) in new[]
-                {
-                    (ComponentSize.ExtraSmall, "ExtraSmall — 4px"),
-                    (ComponentSize.Small,      "Small — 8px"),
-                    (ComponentSize.Medium,     "Medium — 16px"),
-                    (ComponentSize.Large,      "Large — 24px"),
-                    (ComponentSize.ExtraLarge, "ExtraLarge — 32px"),
-                })
-                {
-                    <div>
-                        <span style="font-size:var(--cymru-font-size-xs);
-                                     color:var(--cymru-color-text-muted);
-                                     display:block;margin-block-end:4px">
-                            @label
-                        </span>
-                        <CyStack Orientation="Orientation.Horizontal" Gap="@size">
-                            <div style="width:48px;height:32px;background:var(--cymru-color-primary);
-                                        border-radius:var(--cymru-radius-sm)"></div>
-                            <div style="width:48px;height:32px;background:var(--cymru-color-primary);
-                                        border-radius:var(--cymru-radius-sm)"></div>
-                            <div style="width:48px;height:32px;background:var(--cymru-color-primary);
-                                        border-radius:var(--cymru-radius-sm)"></div>
-                        </CyStack>
-                    </div>
-                }
-            </CyStack>
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
         </div>
     </div>
-</div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <DemoApiTable Parameters="_apiDocs" />
+}
+else
+{
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+}
 
-<div class="cb-section">
-    <h2 class="cb-section-title">API</h2>
-    <table class="cb-api-table" aria-label="CyStack parameters">
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Default</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">Orientation</td>
-                <td class="cb-api-table__type">Orientation</td>
-                <td class="cb-api-table__default">Vertical</td>
-                <td><code>Vertical</code> or <code>Horizontal</code> flex direction</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Gap</td>
-                <td class="cb-api-table__type">ComponentSize</td>
-                <td class="cb-api-table__default">Medium</td>
-                <td>Space between children from the 8-point grid</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">AlignItems</td>
-                <td class="cb-api-table__type">AlignItems</td>
-                <td class="cb-api-table__default">Default</td>
-                <td>Cross-axis alignment: <code>Start</code>, <code>Center</code>, <code>End</code>, <code>Stretch</code></td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">JustifyContent</td>
-                <td class="cb-api-table__type">JustifyContent</td>
-                <td class="cb-api-table__default">Default</td>
-                <td>Main-axis distribution of children</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Wrap</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">false</td>
-                <td>Allows children to wrap to new lines</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">ChildContent</td>
-                <td class="cb-api-table__type">RenderFragment</td>
-                <td class="cb-api-table__default">—</td>
-                <td>The stacked content</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+@code {
+    private enum Tab
+    {
+        Examples,
+        Api,
+        Accessibility
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private Orientation _orientation = Orientation.Horizontal;
+    private ComponentSize _gap = ComponentSize.Medium;
+
+    private string GeneratedCode =>
+        $"""
+        <CyStack Orientation="Orientation.{_orientation}" Gap="ComponentSize.{_gap}">
+            <CyButton Variant="CyButtonVariant.Primary">Item 1</CyButton>
+            <CyButton Variant="CyButtonVariant.Secondary">Item 2</CyButton>
+            <CyButton Variant="CyButtonVariant.Primary">Item 3</CyButton>
+        </CyStack>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Orientation", "Orientation", "Orientation.Vertical", "Defines the directional flow (Horizontal or Vertical)."),
+        new("Gap", "ComponentSize", "ComponentSize.Medium", "Spacing between stacked child elements."),
+        new("ChildContent", "RenderFragment", "null", "Child content elements to layout within the stack.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("DOM Order Alignment", "Visual flow strictly matches DOM order to maintain proper screen reader linearization."),
+        new("Semantic Passthrough", "Container acts as a neutral layout wrapper without interfering with list or landmark roles.")
+    ];
+}
