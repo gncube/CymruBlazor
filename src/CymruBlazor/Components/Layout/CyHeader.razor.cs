@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Enums;
+using CymruBlazor.Components.Branding;
 
 namespace CymruBlazor.Components.Layout;
 
