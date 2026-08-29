@@ -1,0 +1,104 @@
+@page "/content/alert"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyAlert" Subtitle="An inline status/alert banner.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" />
+            <CyBreadcrumbItem Text="CyAlert" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        @if (_visible)
+        {
+            <CyAlert Severity="_severity" Title="@_title" Dismissible="_dismissible" OnDismiss="() => _visible = false" Style="width:100%;">
+                Your appointment has been confirmed for Tuesday at 10:30am.
+            </CyAlert>
+        }
+        else
+        {
+            <button type="button" class="cb-demo-btn cb-demo-btn--secondary" @onclick="() => _visible = true">
+                Dismissed - show again
+            </button>
+        }
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Severity" @bind-Value="_severity" Options="_severityOptions" TValue="ComponentColour" />
+            <DemoPropertyTextInput Label="Title" @bind-Value="_title" />
+            <DemoPropertySwitch Label="Dismissible" @bind-Value="_dismissible" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _severity = ComponentColour.Info;
+    private string _title = "Appointment confirmed";
+    private bool _dismissible;
+    private bool _visible = true;
+
+    private readonly IReadOnlyList<ComponentColour> _severityOptions =
+    [
+        ComponentColour.Info, ComponentColour.Success, ComponentColour.Warning, ComponentColour.Danger
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyAlert Severity="ComponentColour.{_severity}" Title="{_title}"{(_dismissible ? "\n    Dismissible=\"true\" OnDismiss=\"HandleDismiss\"" : "")}>
+            Your appointment has been confirmed for Tuesday at 10:30am.
+        </CyAlert>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Severity", "ComponentColour", "ComponentColour.Info", "Must be Info, Success, Warning, or Danger. Drives both styling and the ARIA role."),
+        new("Title", "string?", "null", "Optional bold title above the message."),
+        new("Dismissible", "bool", "false", "Renders a dismiss button. The parent owns removing the alert from the DOM."),
+        new("OnDismiss", "EventCallback", "-", "Raised when the dismiss button is activated."),
+        new("ChildContent", "RenderFragment", "null", "The alert's message content.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Correct live-region role", "Warning/Danger render role=\"alert\" (assertive) since the user must not miss them; Info/Success render role=\"status\" (polite) so they don't interrupt."),
+        new("Colour is not the only signal", "Severity is also conveyed through the optional Title text, not colour alone.")
+    ];
+}

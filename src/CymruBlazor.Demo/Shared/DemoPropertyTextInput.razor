@@ -1,0 +1,33 @@
+@namespace CymruBlazor.Demo.Shared
+
+<div>
+    <label for="@_id" class="cb-property-label">@Label</label>
+    <input id="@_id"
+           class="cb-property-select"
+           type="text"
+           value="@Value"
+           @oninput="HandleInput" />
+</div>
+
+@code {
+    private readonly string _id = $"prop-{Guid.NewGuid():N}";
+
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private async Task HandleInput(ChangeEventArgs args)
+    {
+        var text = args.Value?.ToString() ?? string.Empty;
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(text);
+        }
+    }
+}

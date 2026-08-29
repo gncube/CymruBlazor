@@ -1,0 +1,104 @@
+@page "/layouts/grid"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyGrid" Subtitle="CSS grid layout with configurable columns and gap.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyGrid" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview">
+        <CyGrid Columns="_columns" Gap="_gap" Style="width:100%;">
+            @for (var i = 1; i <= 6; i++)
+            {
+                var n = i;
+                <div class="cb-demo-outline" style="padding: 1rem; text-align:center;">Cell @n</div>
+            }
+        </CyGrid>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Columns" @bind-Value="_columns" Options="_columnOptions" TValue="GridColumns" />
+            <DemoPropertySelect Label="Gap" @bind-Value="_gap" Options="_gapOptions" TValue="GridGap" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private GridColumns _columns = GridColumns.Three;
+    private GridGap _gap = GridGap.Medium;
+
+    private readonly IReadOnlyList<GridColumns> _columnOptions =
+    [
+        GridColumns.Auto, GridColumns.One, GridColumns.Two, GridColumns.Three,
+        GridColumns.Four, GridColumns.Five, GridColumns.Six, GridColumns.Twelve
+    ];
+
+    private readonly IReadOnlyList<GridGap> _gapOptions =
+    [
+        GridGap.None, GridGap.ExtraSmall, GridGap.Small, GridGap.Medium,
+        GridGap.Large, GridGap.ExtraLarge
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyGrid Columns="GridColumns.{_columns}" Gap="GridGap.{_gap}">
+            <div>Cell 1</div>
+            <div>Cell 2</div>
+            ...
+        </CyGrid>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Columns", "GridColumns", "GridColumns.Auto", "Fixed column count (One-Twelve), or Auto to size columns responsively."),
+        new("Gap", "GridGap", "GridGap.Medium", "Spacing between grid cells."),
+        new("Dense", "bool", "false", "Enables CSS grid dense packing to fill gaps left by irregular item sizes."),
+        new("AutoRows", "bool", "false", "Sizes rows automatically to their content instead of a fixed row height."),
+        new("ChildContent", "RenderFragment", "null", "Grid items.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("DOM order preserved", "Visual grid placement never reorders the underlying DOM, so tab order and screen reader order stay predictable."),
+        new("Reflow-friendly", "Auto columns reflow at narrow viewports instead of causing horizontal scrolling, supporting WCAG 2.2 SC 1.4.10 Reflow.")
+    ];
+}

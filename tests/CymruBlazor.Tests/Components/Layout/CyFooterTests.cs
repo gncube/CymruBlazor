@@ -2,6 +2,7 @@ using Xunit;
 using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Layout;
+using CymruBlazor.Enums;
 using CymruBlazor.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -113,5 +114,41 @@ public sealed class CyFooterTests : TestContextBase
         // Assert
         cut.FindAll(".cy-footer__links").Count.ShouldBe(0);
         cut.FindAll(".cy-footer__copyright").Count.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(ComponentColour.Primary, "cy-footer--primary")]
+    [InlineData(ComponentColour.Secondary, "cy-footer--secondary")]
+    [InlineData(ComponentColour.Surface, "cy-footer--surface")]
+    [InlineData(ComponentColour.Neutral, "cy-footer--neutral")]
+    public void Should_Apply_Background_Css_Class(ComponentColour background, string expectedClass)
+    {
+        // Act
+        var cut = Render<CyFooter>(parameters => parameters
+            .Add(p => p.Background, background));
+
+        // Assert
+        cut.Find(".cy-footer").ClassList.ShouldContain(expectedClass);
+    }
+
+    [Fact]
+    public void Should_Default_To_Primary_Background()
+    {
+        // Act
+        var cut = Render<CyFooter>();
+
+        // Assert
+        cut.Find(".cy-footer").ClassList.ShouldContain("cy-footer--primary");
+    }
+
+    [Fact]
+    public void Should_Reject_Unsupported_Background()
+    {
+        // Act
+        var act = () => Render<CyFooter>(parameters => parameters
+            .Add(p => p.Background, ComponentColour.Danger));
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>();
     }
 }

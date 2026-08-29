@@ -1,0 +1,135 @@
+@page "/forms/button"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyButton" Subtitle="Trigger actions and submit forms.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyButton" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)"
+            class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">
+        Examples
+    </button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Api">
+        API
+    </button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
+            class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">
+        Accessibility
+    </button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview">
+        <CyButton Variant="_variant" Size="_size" Disabled="_disabled" Loading="_loading">
+            Save changes
+        </CyButton>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Variant" @bind-Value="_variant" Options="_variantOptions" TValue="ComponentColour" />
+            <DemoPropertyToggleGroup Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+            <DemoPropertySwitch Label="Loading" @bind-Value="_loading" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Button/CyButton.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab
+    {
+        Examples,
+        Api,
+        Accessibility
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _variant = ComponentColour.Primary;
+    private ComponentSize _size = ComponentSize.Medium;
+    private bool _disabled;
+    private bool _loading;
+
+    private readonly IReadOnlyList<ComponentColour> _variantOptions =
+    [
+        ComponentColour.Primary,
+        ComponentColour.Secondary,
+        ComponentColour.Tertiary,
+        ComponentColour.Danger
+    ];
+
+    private readonly IReadOnlyList<ComponentSize> _sizeOptions =
+    [
+        ComponentSize.Small,
+        ComponentSize.Medium,
+        ComponentSize.Large
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyButton
+            Variant="ComponentColour.{_variant}"
+            Size="ComponentSize.{_size}"@(_disabled ? "\n    Disabled=\"true\"" : "")@(_loading ? "\n    Loading=\"true\"" : "")>
+            Save changes
+        </CyButton>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Variant", "ComponentColour", "ComponentColour.Primary", "Visual style: Primary, Secondary, Tertiary, or Danger."),
+        new("Size", "ComponentSize", "ComponentSize.Medium", "Button size: Small, Medium, or Large."),
+        new("Disabled", "bool", "false", "Disables interaction and removes the button from the tab sequence."),
+        new("Loading", "bool", "false", "Shows a spinner and disables interaction without changing the button's width."),
+        new("Href", "string?", "null", "When set (and not Disabled), renders as an <a> for navigation instead of a <button>."),
+        new("Type", "string", "\"button\"", "Native button type attribute, used when not rendering as a link."),
+        new("OnClick", "EventCallback<MouseEventArgs>", "-", "Raised on activation, unless Disabled or Loading."),
+        new("ChildContent", "RenderFragment", "null", "Content rendered inside the button.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Minimum touch target", "Meets WCAG 2.2 SC 2.5.8 with a 44x44px minimum touch target at every size."),
+        new("Keyboard operable", "Reachable via Tab and activatable with Enter/Space; removed from the tab sequence when Disabled."),
+        new("Loading state announced", "aria-busy is set while Loading so screen readers know the action is in progress."),
+        new("Focus visibility", "A visible focus outline is always present and meets contrast requirements.")
+    ];
+}

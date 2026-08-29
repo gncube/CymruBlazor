@@ -1,46 +1,30 @@
 @namespace CymruBlazor.Demo.Layout
+@using CymruBlazor.Components.Layout
 
-<div class="cb-footer">
-    <div class="cb-footer__inner">
-
-        <div class="cb-footer__brand">
-            <span class="cb-footer__name">CymruBlazor</span>
-            <span class="cb-footer__tagline">
-                NHS Wales Design System for Blazor
-            </span>
-        </div>
-
-        <nav class="cb-footer__nav" aria-label="Footer">
-            <ul class="cb-footer__nav-list" role="list">
-                <li>
-                    <a href="https://github.com/gncube/CymruBlazor"
-                       class="cb-footer__link"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        GitHub
-                        <span class="sr-only">(opens in new tab)</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/getting-started" class="cb-footer__link">
-                        Docs
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/gncube/CymruBlazor/blob/main/LICENSE"
-                       class="cb-footer__link"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        MIT Licence
-                        <span class="sr-only">(opens in new tab)</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <p class="cb-footer__copy">
-            &copy; @DateTime.UtcNow.Year CymruBlazor Contributors
-        </p>
-
+<CyFooter Copyright="@($"\u00a9 {DateTime.UtcNow.Year} CymruBlazor Contributors \u00b7 MIT License \u00b7 Built with Blazor WebAssembly")">
+    <div class="cb-footer-col">
+        <h3 class="cb-footer-col__heading">Documentation</h3>
+        <a href="/getting-started">Getting Started</a>
+        <a href="/forms/button">Components</a>
+        <a href="/accessibility/focus-trap">Accessibility</a>
+        <a href="/foundations/theme-provider">Theming</a>
     </div>
-</div>
+    <div class="cb-footer-col">
+        <h3 class="cb-footer-col__heading">Community</h3>
+        <a href="https://github.com/gncube/CymruBlazor" target="_blank" rel="noopener noreferrer">
+            GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+        <a href="https://github.com/gncube/CymruBlazor/issues" target="_blank" rel="noopener noreferrer">
+            Issues<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+        <a href="https://github.com/gncube/CymruBlazor/discussions" target="_blank" rel="noopener noreferrer">
+            Discussions<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    <div class="cb-footer-col">
+        <h3 class="cb-footer-col__heading">Packages</h3>
+        <a href="https://www.nuget.org/packages/CymruBlazor" target="_blank" rel="noopener noreferrer">
+            NuGet<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+</CyFooter>

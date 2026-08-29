@@ -1,0 +1,90 @@
+@page "/layouts/container"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyContainer" Subtitle="Constrains content to a maximum readable width.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyContainer" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview">
+        <CyContainer Size="_size" RemovePadding="_removePadding" Class="cb-demo-outline" Style="width:100%;">
+            <p style="margin:0; text-align:center; padding: 1rem;">Content constrained to @_size</p>
+        </CyContainer>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ContainerSize" />
+            <DemoPropertySwitch Label="RemovePadding" @bind-Value="_removePadding" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ContainerSize _size = ContainerSize.Large;
+    private bool _removePadding;
+
+    private readonly IReadOnlyList<ContainerSize> _sizeOptions =
+    [
+        ContainerSize.Small, ContainerSize.Medium, ContainerSize.Large,
+        ContainerSize.ExtraLarge, ContainerSize.Fluid
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyContainer Size="ContainerSize.{_size}"{(_removePadding ? " RemovePadding=\"true\"" : "")}>
+            ...
+        </CyContainer>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Size", "ContainerSize", "ContainerSize.Large", "Maximum width: Small, Medium, Large, ExtraLarge, or Fluid (100%)."),
+        new("RemovePadding", "bool", "false", "Removes the container's default inline padding."),
+        new("ChildContent", "RenderFragment", "null", "Content to constrain.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Neutral wrapper", "Renders a plain <div> with no interactive or landmark semantics of its own, so it never interferes with the page's structure."),
+        new("Readable line length", "Constraining width supports readable line lengths, which benefits users with cognitive and visual impairments.")
+    ];
+}

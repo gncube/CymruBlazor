@@ -1,0 +1,38 @@
+@namespace CymruBlazor.Demo.Shared
+@typeparam TValue
+
+<div>
+    <span class="cb-property-label">@Label</span>
+    <div class="cb-property-toggle-group" role="group" aria-label="@Label">
+        @foreach (var option in Options)
+        {
+            <button type="button"
+                    class="cb-property-toggle @(EqualityComparer<TValue>.Default.Equals(option, Value) ? "active" : "")"
+                    @onclick="() => SelectAsync(option)">
+                @option
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    [Parameter, EditorRequired]
+    public required TValue Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<TValue> Options { get; set; }
+
+    private async Task SelectAsync(TValue option)
+    {
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(option);
+        }
+    }
+}

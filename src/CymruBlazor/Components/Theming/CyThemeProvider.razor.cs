@@ -22,7 +22,7 @@ namespace CymruBlazor.Components.Theming;
 /// </code>
 ///
 /// Persistence and OS colour-scheme detection require
-/// <c>_content/CymruBlazor/js/theme.js</c> to be referenced by the host
+/// <c>_content/CymruBlazor/js/cymrublazor.js</c> to be referenced by the host
 /// page - without it, <see cref="IThemeService"/> still works for the
 /// current session, it just won't remember the choice across page loads.
 /// </summary>

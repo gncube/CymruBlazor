@@ -113,7 +113,7 @@
 <div class="cb-section">
     <h2 class="cb-section-title">Implementation</h2>
     <p class="cb-section-description">
-        <code>CyScreenReaderOnly</code> applies the <code>.sr-only</code>
+        <code>CyScreenReaderOnly</code> applies the <code>.u-sr-only</code>
         utility class, which uses the standard clip technique to hide content
         visually while keeping it in the accessibility tree.
         <strong>Do not use <code>display: none</code> or
@@ -121,7 +121,7 @@
         from the accessibility tree entirely.
     </p>
     <pre><code>/* utilities/screen-reader.css */
-.sr-only {
+.u-sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -157,7 +157,7 @@
                 <td class="cb-api-table__name">Class</td>
                 <td class="cb-api-table__type">string?</td>
                 <td class="cb-api-table__default">null</td>
-                <td>Additional CSS classes. The <code>sr-only</code> class is always applied first.</td>
+                <td>Additional CSS classes. The <code>u-sr-only</code> class is always applied first.</td>
             </tr>
         </tbody>
     </table>

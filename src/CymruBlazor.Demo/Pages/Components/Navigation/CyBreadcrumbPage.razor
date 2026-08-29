@@ -1,0 +1,76 @@
+@page "/navigation/breadcrumb"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+
+<CyPageHeader Title="CyBreadcrumb" Subtitle="A breadcrumb trail showing the current page's location in the site hierarchy.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyBreadcrumb" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Home" Href="/" />
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyStack" />
+        </CyBreadcrumb>
+    </div>
+
+    <span class="cb-panel-caption">Generated code</span>
+    <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private const string GeneratedCode =
+        """
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Home" Href="/" />
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyStack" />
+        </CyBreadcrumb>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("ChildContent (CyBreadcrumb)", "RenderFragment", "null", "One or more CyBreadcrumbItem entries."),
+        new("Text (CyBreadcrumbItem)", "string", "-", "The visible label for this trail entry."),
+        new("Href (CyBreadcrumbItem)", "string?", "null", "Link target. Leave unset for the current/last item.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Labelled navigation landmark", "The wrapping <nav> carries aria-label=\"Breadcrumb\" so assistive tech can jump straight to it."),
+        new("Current page marked", "The last item (no Href) renders aria-current=\"page\" instead of a link, so it's clear it isn't clickable.")
+    ];
+}

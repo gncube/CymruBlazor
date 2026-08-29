@@ -1,0 +1,113 @@
+@page "/navigation/footer"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+
+<CyPageHeader Title="CyFooter" Subtitle="Site footer with optional link groups, copyright, and version display.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyFooter" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; padding:0;">
+        <CyFooter Background="_background" Copyright="@_copyright" Style="width:100%;">
+            @foreach (var link in _links)
+            {
+                <a href="@link.Href">@link.Text</a>
+            }
+        </CyFooter>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Background" @bind-Value="_background" Options="_backgroundOptions" TValue="ComponentColour" />
+            <DemoPropertyTextInput Label="Copyright" @bind-Value="_copyright" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+
+    <p style="color: var(--docs-text-muted); font-size: 0.85rem; margin-top: 1.5rem;">
+        This demo site's own footer (<code>DemoHeader</code>'s sibling <code>DemoFooter</code>) uses exactly this
+        component - its four-column layout is just four <code>&lt;div&gt;</code> groups passed as
+        <code>ChildContent</code>, which <code>CyFooter</code>'s flex-wrap row lays out side by side for free.
+        <code>Background</code> defaults to <code>Primary</code> everywhere else in this demo; try
+        <code>Surface</code>/<code>Neutral</code> above to see the light-background, dark-text treatment meant
+        for footers that shouldn't stand out as strongly as the page header.
+    </p>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed record FooterLink(string Text, string Href);
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _background = ComponentColour.Primary;
+    private string _copyright = "© 2026 CymruBlazor · MIT License";
+
+    private readonly IReadOnlyList<FooterLink> _links =
+    [
+        new("GitHub", "https://github.com/gncube/CymruBlazor"),
+        new("NuGet", "https://www.nuget.org/packages/CymruBlazor")
+    ];
+
+    private readonly IReadOnlyList<ComponentColour> _backgroundOptions =
+    [
+        ComponentColour.Primary, ComponentColour.Secondary, ComponentColour.Surface, ComponentColour.Neutral
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyFooter Background="ComponentColour.{_background}" Copyright="{_copyright}">
+            <a href="https://github.com/gncube/CymruBlazor">GitHub</a>
+            <a href="https://www.nuget.org/packages/CymruBlazor">NuGet</a>
+        </CyFooter>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("ChildContent", "RenderFragment?", "null", "Link group content, rendered above the copyright line. Plain <a> tags are automatically readable against every Background value."),
+        new("Background", "ComponentColour", "Primary", "Must be Primary, Secondary, Surface, or Neutral. Surface/Neutral use dark text on a light background instead of light-on-dark."),
+        new("Copyright", "string?", "null", "Optional copyright line."),
+        new("ShowVersion", "bool", "false", "Renders a version line. When true and Version is unset, resolves the latest NuGet version for PackageId (an outbound HTTP call)."),
+        new("Version", "string?", "null", "Explicit version text; skips the NuGet lookup when set."),
+        new("PackageId", "string", "\"CymruBlazor\"", "Package id queried when ShowVersion is true and Version is unset."),
+        new("IncludePrerelease", "bool", "true", "Whether the automatic NuGet lookup may return a prerelease version.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Semantic landmark", "Renders as a real <footer> element, giving assistive tech a clear contentinfo landmark."),
+        new("No blocking network calls in the render path", "The optional NuGet version lookup happens asynchronously after first render, so it never blocks initial paint or interaction.")
+    ];
+}

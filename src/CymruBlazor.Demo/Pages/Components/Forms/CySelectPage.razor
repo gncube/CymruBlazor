@@ -1,0 +1,101 @@
+@page "/forms/select"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.Shared
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CySelect" Subtitle="A labelled dropdown selection field.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CySelect" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
+            <CySelect @bind-Value="_model.Clinic" Label="Preferred clinic" HintText="Choose your nearest health board" Required="_required" Disabled="_disabled" TValue="string">
+                <option value="">Select a clinic</option>
+                <option value="cardiff">Cardiff and Vale</option>
+                <option value="swansea">Swansea Bay</option>
+                <option value="betsi">Betsi Cadwaladr</option>
+            </CySelect>
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        public string? Clinic { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private bool _required;
+    private bool _disabled;
+
+    private string GeneratedCode =>
+        $"""
+        <CySelect @bind-Value="model.Clinic" Label="Preferred clinic" HintText="Choose your nearest health board"{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")}>
+            <option value="">Select a clinic</option>
+            <option value="cardiff">Cardiff and Vale</option>
+            <option value="swansea">Swansea Bay</option>
+        </CySelect>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The field's visible, programmatically-associated label."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
+        new("Required", "bool", "false", "Adds aria-required and a visual indicator."),
+        new("Disabled", "bool", "false", "Disables the field."),
+        new("ChildContent", "RenderFragment", "-", "The <option> elements, same as the framework's own InputSelect."),
+        new("Value", "TValue", "-", "The bound value; use @bind-Value.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Label always present", "Label is required on every CySelect, matching CyTextBox's approach."),
+        new("Native <select> semantics", "Renders a real <select>/<option> pair rather than a custom listbox widget, so keyboard and screen reader behaviour matches user expectations for free.")
+    ];
+}

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Enums;
 using CymruBlazor.Services;
 
 namespace CymruBlazor.Components.Layout;
@@ -34,6 +35,19 @@ public partial class CyFooter : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public string? Copyright { get; set; }
+
+    /// <summary>
+    /// Controls the footer's background colour. Must be
+    /// <see cref="ComponentColour.Primary"/> (the default - the
+    /// navy NHS Wales/DHCW header+footer colour pairing),
+    /// <see cref="ComponentColour.Secondary"/>,
+    /// <see cref="ComponentColour.Surface"/>, or
+    /// <see cref="ComponentColour.Neutral"/>. Surface and Neutral
+    /// render dark text instead of the light text the navy/secondary
+    /// backgrounds need.
+    /// </summary>
+    [Parameter]
+    public ComponentColour Background { get; set; } = ComponentColour.Primary;
 
     /// <summary>
     /// Explicit version text to display, e.g. <c>"1.2.0"</c>.
@@ -78,6 +92,32 @@ public partial class CyFooter : CyLayoutComponentBase
     public bool IncludePrerelease { get; set; } = true;
 
     protected override string BaseCssClass => "cy-footer";
+
+    protected override string BuildCssClass()
+    {
+        var backgroundSuffix = Background.ToString().ToLowerInvariant();
+
+        return CssBuilder.Empty
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .AddClass($"cy-footer--{backgroundSuffix}")
+            .Build();
+    }
+
+    protected override void ValidateParameters()
+    {
+        base.ValidateParameters();
+
+        if (Background is not (ComponentColour.Primary
+            or ComponentColour.Secondary
+            or ComponentColour.Surface
+            or ComponentColour.Neutral))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CyFooter)}.{nameof(Background)} must be Primary, Secondary, " +
+                $"Surface, or Neutral. Received '{Background}'.");
+        }
+    }
 
     /// <summary>
     /// The version text actually rendered: the explicit

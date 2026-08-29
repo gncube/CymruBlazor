@@ -1,169 +1,73 @@
 @namespace CymruBlazor.Demo.Layout
 
-<nav class="cb-sidebar-nav" aria-label="Documentation sections">
+<aside id="cb-mobile-sidebar" class="cb-shell-sidebar @(IsOpen ? "cb-shell-sidebar--open" : "")" aria-label="Documentation navigation">
+    <details class="cb-nav-group" open>
+        <summary>Getting Started</summary>
+        <NavLink class="cb-nav-item" href="getting-started" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="installation">Installation</NavLink>
+        <NavLink class="cb-nav-item" href="design-tokens">Design Tokens</NavLink>
+    </details>
 
-    <div class="cb-sidebar-nav__section">
-        <span class="cb-sidebar-nav__heading" id="nav-getting-started">
-            Getting Started
-        </span>
-        <ul class="cb-sidebar-nav__list"
-            role="list"
-            aria-labelledby="nav-getting-started">
-            <li>
-                <NavLink href="/getting-started"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active"
-                         Match="NavLinkMatch.All">
-                    Introduction
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/installation"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    Installation
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/design-tokens"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    Design Tokens
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+    <details class="cb-nav-group" open>
+        <summary>Foundations</summary>
+        <NavLink class="cb-nav-item" href="foundations/theme-provider">Theme Provider</NavLink>
+        <NavLink class="cb-nav-item" href="foundations/typography">Typography</NavLink>
+        <NavLink class="cb-nav-item" href="accessibility/focus-trap">Focus Trap</NavLink>
+    </details>
 
-    <div class="cb-sidebar-nav__section">
-        <span class="cb-sidebar-nav__heading" id="nav-layout">
-            Layout
-        </span>
-        <ul class="cb-sidebar-nav__list"
-            role="list"
-            aria-labelledby="nav-layout">
-            <li>
-                <NavLink href="/layouts"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active"
-                         Match="NavLinkMatch.All">
-                    Overview
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/container"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyContainer
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/stack"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyStack
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/grid"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyGrid
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/cluster"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyCluster
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/sidebar"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CySidebar
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/layouts/center"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyCenter
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+    <details class="cb-nav-group" open>
+        <summary>Layout</summary>
+        <NavLink class="cb-nav-item" href="layouts/container">Container</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/stack">Stack</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/grid">Grid</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/cluster">Cluster</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/sidebar">Sidebar</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/center">Center</NavLink>
+    </details>
 
-    <div class="cb-sidebar-nav__section">
-        <span class="cb-sidebar-nav__heading" id="nav-branding">
-            Branding
-        </span>
-        <ul class="cb-sidebar-nav__list"
-            role="list"
-            aria-labelledby="nav-branding">
-            <li>
-                <NavLink href="/branding/brand-logo"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyBrandLogo
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/branding/language-toggle"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyLanguageToggle
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+    <details class="cb-nav-group" open>
+        <summary>Forms</summary>
+        <NavLink class="cb-nav-item" href="forms/button">Button</NavLink>
+        <NavLink class="cb-nav-item" href="forms/textbox">TextBox</NavLink>
+        <NavLink class="cb-nav-item" href="forms/select">Select</NavLink>
+        <NavLink class="cb-nav-item" href="forms/checkbox">Checkbox</NavLink>
+        <NavLink class="cb-nav-item" href="forms/validation-summary">Validation Summary</NavLink>
+    </details>
 
-    <div class="cb-sidebar-nav__section">
-        <span class="cb-sidebar-nav__heading" id="nav-content">
-            Content
-        </span>
-        <ul class="cb-sidebar-nav__list"
-            role="list"
-            aria-labelledby="nav-content">
-            <li>
-                <NavLink href="/content/icons"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    Icons
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+    <details class="cb-nav-group">
+        <summary>Content</summary>
+        <NavLink class="cb-nav-item" href="content/alert">Alert</NavLink>
+        <NavLink class="cb-nav-item" href="content/card">Card</NavLink>
+        <NavLink class="cb-nav-item" href="content/icons">Icon</NavLink>
+    </details>
 
-    <div class="cb-sidebar-nav__section">
-        <span class="cb-sidebar-nav__heading" id="nav-accessibility">
-            Accessibility
-        </span>
-        <ul class="cb-sidebar-nav__list"
-            role="list"
-            aria-labelledby="nav-accessibility">
-            <li>
-                <NavLink href="/accessibility/focus-trap"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    FocusTrap
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/accessibility/live-region"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyLiveRegion
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="/accessibility/screen-reader-only"
-                         class="cb-sidebar-nav__link"
-                         ActiveClass="cb-sidebar-nav__link--active">
-                    CyScreenReaderOnly
-                </NavLink>
-            </li>
-        </ul>
-    </div>
+    <details class="cb-nav-group">
+        <summary>Branding</summary>
+        <NavLink class="cb-nav-item" href="branding/brand-logo">Brand Logo</NavLink>
+        <NavLink class="cb-nav-item" href="branding/language-toggle">Language Toggle</NavLink>
+    </details>
 
-</nav>
+    <details class="cb-nav-group">
+        <summary>Navigation</summary>
+        <NavLink class="cb-nav-item" href="navigation/breadcrumb">Breadcrumb</NavLink>
+        <NavLink class="cb-nav-item" href="navigation/header">Header</NavLink>
+        <NavLink class="cb-nav-item" href="navigation/navigation">Navigation</NavLink>
+        <NavLink class="cb-nav-item" href="navigation/page-header">Page Header</NavLink>
+        <NavLink class="cb-nav-item" href="navigation/skip-link">Skip Link</NavLink>
+        <NavLink class="cb-nav-item" href="navigation/footer">Footer</NavLink>
+    </details>
+
+    <details class="cb-nav-group">
+        <summary>Accessibility</summary>
+        <NavLink class="cb-nav-item" href="accessibility/focus-trap">Focus Trap</NavLink>
+        <NavLink class="cb-nav-item" href="accessibility/live-region">Live Region</NavLink>
+        <NavLink class="cb-nav-item" href="accessibility/screen-reader-only">Screen Reader Only</NavLink>
+    </details>
+</aside>
+
+@code {
+    /// <summary>Whether the sidebar is currently visible as a mobile off-canvas drawer.
+    /// Has no effect at desktop widths, where the sidebar is always visible.</summary>
+    [Parameter]
+    public bool IsOpen { get; set; }
+}

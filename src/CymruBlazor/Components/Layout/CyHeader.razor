@@ -1,0 +1,26 @@
+@inherits CyLayoutComponentBase
+
+<header id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    @if (Brand is not null)
+    {
+        <div class="cy-header__brand">
+            @Brand
+        </div>
+    }
+
+    @if (ChildContent is not null)
+    {
+        <div class="cy-header__content">
+            @ChildContent
+        </div>
+    }
+
+    @if (Actions is not null)
+    {
+        <div class="cy-header__actions">
+            @Actions
+        </div>
+    }
+
+</header>

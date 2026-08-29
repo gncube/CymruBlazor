@@ -1,81 +1,42 @@
-/* ── DemoFooter ───────────────────────────────────────────────────────────── */
+/* ── DemoFooter ───────────────────────────────────────────────────────────
+   CyFooter (library) supplies the <footer> chrome, background, copyright,
+   and .cy-footer__links flex row itself - each .cb-footer-col below is a
+   direct ChildContent child, so it becomes one flex item in that row,
+   giving the 4-column layout from the design spec without touching any
+   library CSS.
+   ========================================================================== */
 
-.cb-footer {
-    background-color: var(--cymru-color-accent);
-    color: var(--cymru-color-accent-text);
-    font-size: var(--cymru-font-size-sm);
-}
-
-.cb-footer__inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--cymru-space-4) var(--cymru-space-8);
-    padding-inline: var(--cymru-space-6);
-    padding-block: var(--cymru-space-5);
-    max-width: 100%;
-}
-
-/* ── Brand ── */
-.cb-footer__brand {
+.cb-footer-col {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0.4rem;
+    min-width: 10rem;
 }
 
-.cb-footer__name {
+.cb-footer-col__heading {
+    margin: 0 0 0.2rem;
+    font-size: var(--cymru-font-size-xs, 0.75rem);
     font-weight: 700;
-    color: var(--cymru-color-accent-text);
-    font-size: var(--cymru-font-size-md);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.7;
 }
 
-.cb-footer__tagline {
-    color: var(--cymru-color-accent-text);
-    opacity: 0.75;
-    font-size: var(--cymru-font-size-xs);
-}
-
-/* ── Nav ── */
-.cb-footer__nav {
-    flex: 1;
-}
-
-.cb-footer__nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cymru-space-1) var(--cymru-space-4);
-}
-
-.cb-footer__link {
-    color: var(--cymru-color-accent-text);
+.cb-footer-col a {
+    color: inherit;
     text-decoration: underline;
     text-underline-offset: 2px;
-    font-size: var(--cymru-font-size-sm);
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    opacity: 0.9;
 }
 
-.cb-footer__link:hover {
+.cb-footer-col a:hover {
+    opacity: 1;
     text-decoration-thickness: 2px;
 }
 
-.cb-footer__link:visited {
-    color: var(--cymru-color-accent-text);
-}
-
-.cb-footer__link:focus-visible {
-    outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus);
-    outline-offset: var(--cymru-focus-offset);
-    border-radius: var(--cymru-radius-sm);
-}
-
-/* ── Copyright ── */
-.cb-footer__copy {
-    margin: 0;
-    font-size: var(--cymru-font-size-xs);
-    color: var(--cymru-color-accent-text);
-    opacity: 0.75;
-    white-space: nowrap;
+.cb-footer-col a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 3px;
 }

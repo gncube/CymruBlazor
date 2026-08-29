@@ -1,0 +1,152 @@
+@namespace CymruBlazor.Demo.Shared
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@if (IsOpen)
+{
+    <div class="cb-search-backdrop" @onclick="Close">
+        <CyFocusTrap Enabled="true" AutoFocus="false" RestoreFocus="true">
+            <div class="cb-search-modal"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-label="Search documentation"
+                 @onclick:stopPropagation="true">
+
+                <div class="cb-search-modal__input-row">
+                    <CyIcon Name="search" Size="18" />
+                    <input id="cb-search-input"
+                           class="cb-search-modal__input"
+                           type="text"
+                           placeholder="Search components and docs..."
+                           autocomplete="off"
+                           value="@_query"
+                           @oninput="HandleInput"
+                           @onkeydown="HandleKeyDown" />
+                    <kbd class="cb-search-modal__esc">Esc</kbd>
+                </div>
+
+                @if (_results.Count > 0)
+                {
+                    <ul class="cb-search-modal__results" role="listbox" aria-label="Search results">
+                        @for (var i = 0; i < _results.Count; i++)
+                        {
+                            var index = i;
+                            var entry = _results[index];
+                            <li role="option" aria-selected="@(index == _selectedIndex ? "true" : "false")">
+                                <a class="cb-search-modal__result @(index == _selectedIndex ? "cb-search-modal__result--active" : "")"
+                                   href="@entry.Href"
+                                   @onclick="() => Navigate(entry.Href)"
+                                   @onclick:preventDefault="true"
+                                   @onmouseenter="() => _selectedIndex = index">
+                                    <span class="cb-search-modal__result-category">@entry.Category</span>
+                                    <span class="cb-search-modal__result-title">@entry.Title</span>
+                                    <span class="cb-search-modal__result-desc">@entry.Description</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else if (!string.IsNullOrWhiteSpace(_query))
+                {
+                    <p class="cb-search-modal__empty">No pages match "@_query".</p>
+                }
+                else
+                {
+                    <p class="cb-search-modal__hint">Type to search across every component and doc page.</p>
+                }
+
+            </div>
+        </CyFocusTrap>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private string _query = string.Empty;
+    private IReadOnlyList<DemoNavigationIndex.Entry> _results = [];
+    private int _selectedIndex;
+    private bool _wasOpen;
+    private bool _focusedSinceOpen;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen && !_wasOpen)
+        {
+            _query = string.Empty;
+            _results = [];
+            _selectedIndex = 0;
+        }
+
+        _wasOpen = IsOpen;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsOpen && !_focusedSinceOpen)
+        {
+            _focusedSinceOpen = true;
+            await JSRuntime.InvokeVoidAsync("cymruDemoSearch.focusElement", "cb-search-input");
+        }
+        else if (!IsOpen)
+        {
+            _focusedSinceOpen = false;
+        }
+    }
+
+    private void HandleInput(ChangeEventArgs args)
+    {
+        _query = args.Value?.ToString() ?? string.Empty;
+        _results = DemoNavigationIndex.Search(_query);
+        _selectedIndex = 0;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        switch (args.Key)
+        {
+            case "Escape":
+                await Close();
+                break;
+
+            case "ArrowDown":
+                if (_results.Count > 0)
+                {
+                    _selectedIndex = Math.Min(_selectedIndex + 1, _results.Count - 1);
+                }
+                break;
+
+            case "ArrowUp":
+                if (_results.Count > 0)
+                {
+                    _selectedIndex = Math.Max(_selectedIndex - 1, 0);
+                }
+                break;
+
+            case "Enter":
+                if (_results.Count > 0 && _selectedIndex < _results.Count)
+                {
+                    await Navigate(_results[_selectedIndex].Href);
+                }
+                break;
+        }
+    }
+
+    private async Task Navigate(string href)
+    {
+        await Close();
+        NavigationManager.NavigateTo(href);
+    }
+
+    private async Task Close()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}

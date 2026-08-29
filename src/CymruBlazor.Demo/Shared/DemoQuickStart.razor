@@ -1,0 +1,20 @@
+@namespace CymruBlazor.Demo.Shared
+
+<div class="cb-quickstart">
+    @for (var i = 0; i < Steps.Count; i++)
+    {
+        var step = Steps[i];
+        var index = i + 1;
+        <div class="cb-quickstart__step">
+            <h3 class="cb-quickstart__step-title">@index. @step.Title</h3>
+            <DemoCodeBlock Code="@step.Code" Language="@step.Language" />
+        </div>
+    }
+</div>
+
+@code {
+    public record Step(string Title, string Code, string Language = "bash");
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<Step> Steps { get; set; }
+}

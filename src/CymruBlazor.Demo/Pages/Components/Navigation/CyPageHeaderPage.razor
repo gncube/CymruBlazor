@@ -1,0 +1,87 @@
+@page "/navigation/page-header"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyPageHeader" Subtitle="A page-level heading region: title, subtitle, breadcrumb, and actions.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyPageHeader" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <CyPageHeader Title="Patient record" Subtitle="View and update demographic details." Style="width:100%;">
+            <Breadcrumb>
+                <CyBreadcrumb>
+                    <CyBreadcrumbItem Text="Patients" Href="#" />
+                    <CyBreadcrumbItem Text="Patient record" />
+                </CyBreadcrumb>
+            </Breadcrumb>
+            <Actions><CyButton Variant="ComponentColour.Secondary">Edit</CyButton></Actions>
+        </CyPageHeader>
+    </div>
+
+    <span class="cb-panel-caption">Generated code</span>
+    <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private const string GeneratedCode =
+        """
+        <CyPageHeader Title="Patient record" Subtitle="View and update demographic details.">
+            <Breadcrumb>
+                <CyBreadcrumb>
+                    <CyBreadcrumbItem Text="Patients" Href="/patients" />
+                    <CyBreadcrumbItem Text="Patient record" />
+                </CyBreadcrumb>
+            </Breadcrumb>
+            <Actions><CyButton Variant="ComponentColour.Secondary">Edit</CyButton></Actions>
+        </CyPageHeader>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Title", "string", "-", "The page heading text."),
+        new("Subtitle", "string?", "null", "Optional supporting text below the title."),
+        new("Breadcrumb", "RenderFragment?", "null", "Typically a CyBreadcrumb, rendered above the title."),
+        new("Actions", "RenderFragment?", "null", "Right-aligned content alongside the title, typically one or more buttons.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Real heading semantics", "Composes CyTypography for the title/subtitle rather than styled <div>s, so the page keeps a real heading in the accessibility tree."),
+        new("No new landmarks", "Introduces no additional landmark roles of its own - it composes CyStack and CyTypography rather than new layout primitives.")
+    ];
+}

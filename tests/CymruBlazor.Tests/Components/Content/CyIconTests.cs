@@ -99,9 +99,26 @@ public sealed class IconRegistryTests
     [InlineData("critical")]
     [InlineData("search")]
     [InlineData("appointment")]
+    [InlineData("moon")]
+    [InlineData("sun")]
     public void Should_Contain_Well_Known_Icons(string name)
     {
         IconRegistry.Exists(name).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Should_Have_A_Domain_For_Moon_And_Sun()
+    {
+        IconRegistry.GetDomain("moon").ShouldBe("ui");
+        IconRegistry.GetDomain("sun").ShouldBe("ui");
+    }
+
+    [Fact]
+    public void Moon_Markup_Should_Match_Verified_Lucide_Source()
+    {
+        // Verified byte-for-byte against lucide-static@1.34.0's moon.svg
+        IconRegistry.GetMarkup("moon").ShouldBe(
+            "<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\" />");
     }
 
     [Fact]

@@ -97,7 +97,7 @@ public sealed class ThemeService : IThemeService, IAsyncDisposable
     }
 
     /// <summary>
-    /// Invoked from JS (see wwwroot/js/theme.js, watchSystemPreference)
+    /// Invoked from JS (see wwwroot/js/cymrublazor.js, watchSystemPreference)
     /// when the OS colour-scheme preference changes live and the user
     /// hasn't set an explicit in-app preference of their own.
     /// </summary>

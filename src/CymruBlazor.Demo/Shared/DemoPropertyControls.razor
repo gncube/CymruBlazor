@@ -1,0 +1,13 @@
+@namespace CymruBlazor.Demo.Shared
+
+<div class="cb-playground-panel">
+    <h4 style="margin-top:0; margin-bottom: 1rem;">Properties</h4>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
