@@ -1,0 +1,106 @@
+@page "/foundations/theme-provider"
+@namespace CymruBlazor.Demo.Pages.Components.Foundations
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+@using CymruBlazor.Themes
+@inject IThemeService ThemeService
+
+<CyPageHeader Title="CyThemeProvider" Subtitle="Applies the active theme app-wide and enables runtime theme switching.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Foundations" />
+            <CyBreadcrumbItem Text="Theme Provider" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p style="color: var(--docs-text-muted);">
+        This entire site is already wrapped in a single <code>CyThemeProvider</code> (see <code>MainLayout.razor</code>).
+        The control below calls the real <code>IThemeService</code> - try it, and the whole page (not just this panel)
+        will re-theme.
+    </p>
+
+    <span class="cb-panel-caption">Try it</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div class="cb-property-toggle-group" role="group" aria-label="Theme">
+            @foreach (var mode in _modes)
+            {
+                <button type="button"
+                        class="cb-property-toggle @(ThemeService.CurrentTheme.Mode == mode ? "active" : "")"
+                        @onclick="async () => await ThemeService.SetThemeAsync(mode)">
+                    @mode
+                </button>
+            }
+        </div>
+    </div>
+
+    <span class="cb-panel-caption">Generated code</span>
+    <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly IReadOnlyList<ThemeMode> _modes =
+    [
+        ThemeMode.System, ThemeMode.Light, ThemeMode.Dark, ThemeMode.HighContrast
+    ];
+
+    private const string GeneratedCode =
+        """
+        // Program.cs
+        builder.Services.AddCymruBlazor();
+
+        // MainLayout.razor - wraps the whole app once
+        <CyThemeProvider>
+            <Router ...>...</Router>
+        </CyThemeProvider>
+
+        // Anywhere in the app
+        @inject IThemeService ThemeService
+        <button @onclick="() => ThemeService.SetThemeAsync(ThemeMode.Dark)">
+            Dark mode
+        </button>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("InitialTheme", "ThemeMode?", "null", "Forces a specific mode on first render, ahead of any persisted or OS-detected preference."),
+        new("SetThemeAsync(ThemeMode)", "ValueTask", "-", "IThemeService method: switches to System, Light, Dark, or HighContrast."),
+        new("ToggleDarkModeAsync()", "ValueTask", "-", "IThemeService method: convenience toggle between Light and Dark."),
+        new("CurrentTheme", "ThemeDefinition", "-", "IThemeService property: the theme currently applied.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Respects OS preference by default", "ThemeMode.System (the default) follows the user's OS-level light/dark/contrast preference rather than overriding it."),
+        new("High contrast mode is first-class", "HighContrast is a distinct, supported theme mode, not an afterthought bolted onto Dark."),
+        new("Graceful without JS interop", "Persistence and OS detection need cymrublazor.js referenced by the host page, but theme switching itself still works for the current session without it.")
+    ];
+}

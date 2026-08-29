@@ -1,0 +1,91 @@
+@page "/layouts/cluster"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyCluster" Subtitle="Wraps inline items with consistent spacing and alignment.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyCluster" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview">
+        <CyCluster Gap="_gap" JustifyContent="JustifyContent.Center" Style="width:100%;">
+            <span class="cb-badge">Tag one</span>
+            <span class="cb-badge">Tag two</span>
+            <span class="cb-badge">Tag three</span>
+        </CyCluster>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyToggleGroup Label="Gap" @bind-Value="_gap" Options="_gapOptions" TValue="ComponentSize" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentSize _gap = ComponentSize.Medium;
+
+    private readonly IReadOnlyList<ComponentSize> _gapOptions =
+    [
+        ComponentSize.Small, ComponentSize.Medium, ComponentSize.Large
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyCluster Gap="ComponentSize.{_gap}" JustifyContent="JustifyContent.Center">
+            <span>Tag one</span>
+            <span>Tag two</span>
+        </CyCluster>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Gap", "ComponentSize", "ComponentSize.Medium", "Spacing between cluster items."),
+        new("AlignItems", "AlignItems", "AlignItems.Center", "Cross-axis alignment of wrapped items."),
+        new("JustifyContent", "JustifyContent", "JustifyContent.Start", "Main-axis alignment of wrapped items."),
+        new("Wrap", "bool", "true", "Whether items wrap onto multiple lines when space runs out."),
+        new("ChildContent", "RenderFragment", "null", "Items to cluster.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Wraps without loss", "Wrap defaults to true, so content reflows onto new lines at narrow widths rather than being clipped or requiring horizontal scroll.")
+    ];
+}

@@ -2,37 +2,46 @@
 @namespace CymruBlazor.Demo.Pages
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
 @using CymruBlazor.Enums
 
 <CyHeroBanner Title="CymruBlazor"
               Subtitle="Accessible, composable Blazor components for Welsh NHS digital services."
               Background="HeroBackground.Primary">
-    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
-        <a class="cb-demo-btn cb-demo-btn--primary" href="layouts/stack">Explore components →</a>
+
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <span class="cb-badge cb-badge--pill">.NET 10 · Blazor WebAssembly · Accessible</span>
+    </div>
+
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a class="cb-demo-btn cb-demo-btn--primary" href="forms/button">Explore components →</a>
         <a class="cb-demo-btn cb-demo-btn--secondary" href="getting-started">Get started</a>
     </div>
-</CyHeroBanner>
 
-<div style="margin-top: 2rem;">
-    <CyCluster Gap="ComponentSize.Small" Justify="ClusterJustify.Center">
+    <CyCluster Gap="ComponentSize.Small" JustifyContent="JustifyContent.Center" Class="cb-tech-badges">
         <span class="cb-badge">.NET 10</span>
+        <span class="cb-badge">C#</span>
         <span class="cb-badge">Blazor WASM</span>
         <span class="cb-badge">WCAG 2.2 AA</span>
         <span class="cb-badge">MIT License</span>
     </CyCluster>
+
+</CyHeroBanner>
+
+<div class="cb-feature-grid">
+    @foreach (var feature in _features)
+    {
+        <CyCard>
+            <div class="cb-feature-icon" style="background: @feature.IconBackground;">
+                <CyIcon Name="@feature.Icon" Size="22" />
+            </div>
+            <h3 style="margin: 0.75rem 0 0.35rem;">@feature.Title</h3>
+            <p style="color: var(--docs-text-muted); font-size: 0.9rem; margin: 0;">@feature.Description</p>
+        </CyCard>
+    }
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 3rem;">
-    <CyCard>
-        <h3 style="margin-top:0;">♿ WCAG 2.2 AA</h3>
-        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Accessible composability built for high standards across NHS Wales services.</p>
-    </CyCard>
-    <CyCard>
-        <h3 style="margin-top:0;">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Bilingual First</h3>
-        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Native language support and toggling primitives for Welsh and English.</p>
-    </CyCard>
-    <CyCard>
-        <h3 style="margin-top:0;">🎨 Design Tokens</h3>
-        <p style="color: var(--docs-text-muted); font-size: 0.9rem;">Tokenized palettes and geometry adhering to Welsh NHS branding guidelines.</p>
-    </CyCard>
+<div style="margin-top: var(--docs-section-gap);">
+    <h2>Quick start</h2>
+    <DemoQuickStart Steps="_quickStartSteps" />
 </div>

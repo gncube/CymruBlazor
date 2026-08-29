@@ -1,0 +1,59 @@
+@namespace CymruBlazor.Demo.Shared
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+@if (_previous is not null || _next is not null)
+{
+    <nav class="cb-page-nav" aria-label="Page navigation">
+        @if (_previous is not null)
+        {
+            <a class="cb-page-nav__link cb-page-nav__link--prev" href="@_previous.Href">
+                <span class="cb-page-nav__direction">&larr; Previous</span>
+                <span class="cb-page-nav__title">@_previous.Category / @_previous.Title</span>
+            </a>
+        }
+        else
+        {
+            <span></span>
+        }
+
+        @if (_next is not null)
+        {
+            <a class="cb-page-nav__link cb-page-nav__link--next" href="@_next.Href">
+                <span class="cb-page-nav__direction">Next &rarr;</span>
+                <span class="cb-page-nav__title">@_next.Category / @_next.Title</span>
+            </a>
+        }
+    </nav>
+}
+
+@code {
+    private DemoNavigationIndex.Entry? _previous;
+    private DemoNavigationIndex.Entry? _next;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        Recalculate();
+    }
+
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        Recalculate();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Recalculate()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var index = DemoNavigationIndex.IndexOf(relativePath);
+
+        _previous = index > 0 ? DemoNavigationIndex.Pages[index - 1] : null;
+        _next = index >= 0 && index < DemoNavigationIndex.Pages.Count - 1 ? DemoNavigationIndex.Pages[index + 1] : null;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}

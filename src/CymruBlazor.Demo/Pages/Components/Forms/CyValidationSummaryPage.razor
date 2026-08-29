@@ -1,0 +1,117 @@
+@page "/forms/validation-summary"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<CyPageHeader Title="CyValidationSummary" Subtitle="A titled summary of an EditForm's current validation errors.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyValidationSummary" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; flex-direction: column; align-items: stretch; gap: 1rem;">
+        <EditForm EditContext="_editContext" OnSubmit="HandleSubmit" style="width: 100%; max-width: 26rem; display:flex; flex-direction:column; gap:1rem;">
+            <DataAnnotationsValidator />
+            <CyValidationSummary Title="@(string.IsNullOrEmpty(_title) ? null : _title)" />
+            <CyTextBox @bind-Value="_model.FullName" Label="Full name" Required="true" />
+            <CyTextBox @bind-Value="_model.Email" Label="Email address" Type="email" Required="true" />
+            <CyButton Type="submit">Submit</CyButton>
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Title" @bind-Value="_title" />
+            <p style="font-size: 0.8rem; color: var(--docs-text-muted); margin: -0.5rem 0 0;">
+                Pre-validated on load so you can see the summary immediately - fill in both fields and it clears.
+            </p>
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        [Required(ErrorMessage = "Enter your full name")]
+        public string? FullName { get; set; }
+
+        [Required(ErrorMessage = "Enter your email address")]
+        [EmailAddress(ErrorMessage = "Enter a valid email address")]
+        public string? Email { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private EditContext _editContext = default!;
+    private string _title = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(_model);
+        _editContext.Validate();
+    }
+
+    private void HandleSubmit()
+    {
+        _editContext.Validate();
+    }
+
+    private string GeneratedCode =>
+        $"""
+        <EditForm Model="model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <CyValidationSummary{(string.IsNullOrEmpty(_title) ? "" : $" Title=\"{_title}\"")} />
+            <CyTextBox @bind-Value="model.FullName" Label="Full name" Required="true" />
+            <CyButton Type="submit">Submit</CyButton>
+        </EditForm>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Title", "string?", "\"There is a problem\"", "Heading shown above the error list. Pass null or empty to omit it.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("role=\"alert\"", "The summary container uses role=\"alert\" so screen readers announce validation failures as soon as they appear, without requiring focus to move."),
+        new("Consistent gov.uk/NHS pattern", "Follows the standard NHS Wales/gov.uk 'error summary' convention that users are likely already familiar with from other government services.")
+    ];
+}

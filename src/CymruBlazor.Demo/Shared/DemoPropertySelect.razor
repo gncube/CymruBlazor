@@ -1,0 +1,39 @@
+@namespace CymruBlazor.Demo.Shared
+@typeparam TValue
+
+<div>
+    <label for="@_id" class="cb-property-label">@Label</label>
+    <select id="@_id" class="cb-property-select" value="@Value" @onchange="HandleChange">
+        @foreach (var option in Options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+</div>
+
+@code {
+    private readonly string _id = $"prop-{Guid.NewGuid():N}";
+
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    [Parameter, EditorRequired]
+    public required TValue Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<TValue> Options { get; set; }
+
+    private async Task HandleChange(ChangeEventArgs args)
+    {
+        var text = args.Value?.ToString();
+        var match = Options.FirstOrDefault(o => string.Equals(o?.ToString(), text, StringComparison.Ordinal));
+
+        if (match is not null && ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(match);
+        }
+    }
+}

@@ -5,25 +5,32 @@
 @using CymruBlazor.Demo.Shared
 @using CymruBlazor.Enums
 
-<CyPageHeader Title="CyStack" Subtitle="Flexbox-based directional layout primitive." />
+<CyPageHeader Title="CyStack" Subtitle="Flexbox-based directional layout primitive.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyStack" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
     <button type="button"
-            role="tab"
+            role="tab" id="tab-examples" aria-controls="panel-examples"
             aria-selected="@(_activeTab == Tab.Examples)"
             class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
             @onclick="() => _activeTab = Tab.Examples">
         Examples
     </button>
     <button type="button"
-            role="tab"
+            role="tab" id="tab-api" aria-controls="panel-api"
             aria-selected="@(_activeTab == Tab.Api)"
             class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")"
             @onclick="() => _activeTab = Tab.Api">
         API
     </button>
     <button type="button"
-            role="tab"
+            role="tab" id="tab-accessibility" aria-controls="panel-accessibility"
             aria-selected="@(_activeTab == Tab.Accessibility)"
             class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
             @onclick="() => _activeTab = Tab.Accessibility">
@@ -33,11 +40,13 @@
 
 @if (_activeTab == Tab.Examples)
 {
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
     <div class="cb-workbench-preview">
         <CyStack Orientation="_orientation" Gap="_gap">
-            <CyButton Variant="CyButtonVariant.Primary">Item 1</CyButton>
-            <CyButton Variant="CyButtonVariant.Secondary">Item 2</CyButton>
-            <CyButton Variant="CyButtonVariant.Primary">Item 3</CyButton>
+            <CyButton Variant="ComponentColour.Primary">Item 1</CyButton>
+            <CyButton Variant="ComponentColour.Secondary">Item 2</CyButton>
+            <CyButton Variant="ComponentColour.Primary">Item 3</CyButton>
         </CyStack>
     </div>
 
@@ -68,17 +77,23 @@
         </div>
 
         <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
             <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
         </div>
+    </div>
     </div>
 }
 else if (_activeTab == Tab.Api)
 {
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
     <DemoApiTable Parameters="_apiDocs" />
+    </div>
 }
 else
 {
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
     <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
 }
 
 @code {
@@ -96,9 +111,9 @@ else
     private string GeneratedCode =>
         $"""
         <CyStack Orientation="Orientation.{_orientation}" Gap="ComponentSize.{_gap}">
-            <CyButton Variant="CyButtonVariant.Primary">Item 1</CyButton>
-            <CyButton Variant="CyButtonVariant.Secondary">Item 2</CyButton>
-            <CyButton Variant="CyButtonVariant.Primary">Item 3</CyButton>
+            <CyButton Variant="ComponentColour.Primary">Item 1</CyButton>
+            <CyButton Variant="ComponentColour.Secondary">Item 2</CyButton>
+            <CyButton Variant="ComponentColour.Primary">Item 3</CyButton>
         </CyStack>
         """;
 

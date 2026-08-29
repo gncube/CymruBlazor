@@ -1,0 +1,141 @@
+@page "/navigation/header"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Branding
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyHeader" Subtitle="The page-level header chrome bar: brand, primary content, and trailing actions.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyHeader" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="padding:0;">
+            <CyHeader Background="_background" Sticky="false" Style="width:100%;">
+                <Brand><CyBrandLogo Size="ComponentSize.Small" Text="MyApp" /></Brand>
+                <ChildContent>
+                    <a href="#">Dashboard</a>
+                    <a href="#">Patients</a>
+                    <a href="#">Reports</a>
+                </ChildContent>
+                <Actions><CyButton Variant="ComponentColour.Secondary" Size="ComponentSize.Small">Sign out</CyButton></Actions>
+            </CyHeader>
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySelect Label="Background" @bind-Value="_background" Options="_backgroundOptions" TValue="ComponentColour" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+            </div>
+        </div>
+
+        <div style="margin-top: var(--docs-section-gap);">
+            <h3>This demo site's own header</h3>
+            <p class="cb-section-description">
+                The header at the top of every page in this demo (<code>DemoHeader.razor</code>) is a real
+                <code>CyHeader</code> - the hamburger and logo sit in <code>Brand</code>, the primary nav links in
+                <code>ChildContent</code>, and the search/theme-toggle buttons in <code>Actions</code>. It layers
+                its own demo-specific classes on top via <code>Class="cb-shell-header"</code> rather than replacing
+                CyHeader's own styling, and sets <code>Sticky="true"</code> so it stays visible while scrolling.
+            </p>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <h3>Composing with CyNavigation</h3>
+            <p class="cb-section-description">
+                CyHeader deliberately doesn't handle mobile nav collapse itself - that's <code>CyNavigation</code>'s
+                job. Put a CyNavigation inside ChildContent when you want a built-in collapsible menu instead of
+                rolling your own toggle (as this demo's own header does, to keep the mobile drawer's hamburger
+                controlling the sidebar rather than a second, separate menu):
+            </p>
+            <DemoCodeBlock Code="@ComposedExampleCode" Language="razor" />
+        </div>
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _background = ComponentColour.Primary;
+
+    private readonly IReadOnlyList<ComponentColour> _backgroundOptions =
+    [
+        ComponentColour.Primary, ComponentColour.Secondary, ComponentColour.Surface, ComponentColour.Neutral
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyHeader Background="ComponentColour.{_background}">
+            <Brand><CyBrandLogo Text="MyApp" /></Brand>
+            <ChildContent>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/patients">Patients</a>
+            </ChildContent>
+            <Actions><CyButton Variant="ComponentColour.Secondary">Sign out</CyButton></Actions>
+        </CyHeader>
+        """;
+
+    private const string ComposedExampleCode =
+        """
+        <CyHeader Sticky="true">
+            <Brand><CyBrandLogo /></Brand>
+            <ChildContent>
+                <CyNavigation>
+                    <CyNavigationItem Text="Dashboard" Href="/dashboard" />
+                    <CyNavigationItem Text="Patients" Href="/patients" />
+                </CyNavigation>
+            </ChildContent>
+            <Actions><CyButton Variant="ComponentColour.Secondary">Sign out</CyButton></Actions>
+        </CyHeader>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Brand", "RenderFragment?", "null", "Rendered first - typically a CyBrandLogo."),
+        new("ChildContent", "RenderFragment?", "null", "Primary bar content between Brand and Actions - plain links, or a CyNavigation for built-in mobile collapse."),
+        new("Actions", "RenderFragment?", "null", "Rendered last and pushed to the end of the bar - typically icon buttons (search, theme toggle, account menu)."),
+        new("Background", "ComponentColour", "Primary", "Must be Primary, Secondary, Surface, or Neutral. Matches CyFooter's Background convention, so a header+footer pair using the same value reads as one deliberate pairing."),
+        new("Sticky", "bool", "false", "When true, sticks to the top of the viewport while the page scrolls (position: sticky; top: 0).")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Semantic landmark", "Renders as a real <header> element, giving assistive tech a clear banner landmark."),
+        new("Readable links on every background", "Plain <a> children default to colour: inherit with an underline, staying readable against all four Background values without extra styling."),
+        new("Composes rather than duplicates", "Deliberately doesn't implement its own mobile nav toggle - composing CyNavigation for that avoids two different, possibly inconsistent collapse behaviours living in the same bar.")
+    ];
+}

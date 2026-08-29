@@ -10,11 +10,50 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+### Added (demo workbench redesign)
+
+- `CyHeader` - new component; the header-side counterpart to `CyFooter`
+  that was previously missing. `Brand`/`ChildContent`/`Actions` slots,
+  the same `Background` (`ComponentColour`) convention as `CyFooter` so
+  a matching header+footer pair reads as one deliberate pairing, and
+  an optional `Sticky` position. Deliberately does not implement its
+  own mobile nav collapse - compose a `CyNavigation` in `ChildContent`
+  for that.
+- `CyFooter.Background` (`ComponentColour`: `Primary`/`Secondary`/
+  `Surface`/`Neutral`) - previously hardcoded to the navy `Primary`
+  look. Default is unchanged. Plain `<a>` children now default to
+  `color: inherit` with an underline so links stay readable against
+  every background value.
+- `CyButton` extended from a `ChildContent`-only wrapper to a full
+  interactive component: `Variant` (`ComponentColour`), `Size`
+  (`ComponentSize`), `Disabled`, `Loading`, `Href` (renders as `<a>`
+  for navigation when set and not disabled), `Type`, `OnClick`.
+- `IconRegistry` gained `moon`/`sun` entries (verified byte-for-byte
+  against `lucide-static@1.34.0`) for theme-toggle UI.
+
 ### Added (Phase 3+4 of the next release - see plan/plan-next-release-components.md)
 
 - `CyFormFieldComponentBase<TValue>` (built on `InputBase<TValue>`), `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary`.
 - `CySkipLink`, `CyBreadcrumb`/`CyBreadcrumbItem`, `CyPageHeader`, `CyNavigation`/`CyNavigationItem` (with mobile menu + `FocusTrap` integration), `CyHeroBanner`, `CyFooter`.
 - `IFocusManager` is now registered in `AddCymruBlazor()` - previously only ever registered manually by consuming apps; `CyNavigation`'s mobile menu depends on it transitively via `FocusTrap`.
+
+### Fixed (demo workbench redesign)
+
+- `CyStack`/`CyGrid`/`CyCluster`'s `Gap` parameter had no visible
+  effect for any value except `Medium`: each component's base CSS
+  class (`.cy-stack`/`.cy-grid`/`.cy-cluster`) declared its own
+  hardcoded `gap: var(--cymru-layout-gap-md)`, which always won the
+  cascade tie against the `.cy-gap-{size}` modifier class also applied
+  to the same element (equal specificity, declared later in the same
+  file). Removed the redundant hardcoded declarations; the modifier
+  class already covers every value including `Medium`. Existing
+  `CyStackTests`/`CyGridTests` only assert the class name is applied,
+  not the resulting computed style, which is why this shipped
+  unnoticed - bUnit can't evaluate real CSS cascade resolution.
+- Doc comments in `ThemeService.cs` and `CyThemeProvider.razor.cs`
+  referenced a nonexistent `wwwroot/js/theme.js` - the actual file is
+  `cymrublazor.js`. No functional impact (the doc-comment path was
+  never used by code), but corrected for anyone copying it.
 
 ### Fixed
 

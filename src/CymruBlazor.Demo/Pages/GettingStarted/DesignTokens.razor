@@ -1,0 +1,91 @@
+@page "/design-tokens"
+@namespace CymruBlazor.Demo.Pages.GettingStarted
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Design Tokens</h1>
+    <p class="cb-page-description">
+        CymruBlazor's design tokens, sourced from the DHCW "Single Record Design System" Figma file.
+        Components consume these CSS custom properties directly - no build step or Sass required.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Colour</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem;">
+        @foreach (var swatch in _colours)
+        {
+            <div>
+                <div style="height: 3rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.08); background: @swatch.Hex;"></div>
+                <code style="font-size: 0.75rem; display:block; margin-top:0.35rem;">@swatch.Token</code>
+                <span style="font-size: 0.75rem; color: var(--docs-text-muted);">@swatch.Hex · @swatch.Usage</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Spacing</h2>
+    <p class="cb-section-description">A 4px base-unit scale. The token name encodes the multiplier: <code>--cymru-space-6</code> = 6 &times; 4px = 24px.</p>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        @foreach (var space in _spacing)
+        {
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <code style="width: 11rem; font-size: 0.8rem; flex-shrink:0;">@space.Token</code>
+                <div style="height: 1rem; background: var(--cymru-color-primary, #325083); width: @(space.Px)px;"></div>
+                <span style="font-size: 0.8rem; color: var(--docs-text-muted);">@(space.Px)px</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Typography</h2>
+    <p class="cb-section-description">Font family: Roboto (Frutiger is excluded on Single Record products for licensing reasons).</p>
+    <table class="cb-api-table" aria-label="Typography scale">
+        <thead><tr><th>TypographyVariant</th><th>Desktop size</th><th>Default tag</th></tr></thead>
+        <tbody>
+            <tr><td class="cb-api-table__name">H1</td><td>36px</td><td>h1</td></tr>
+            <tr><td class="cb-api-table__name">H2</td><td>28px</td><td>h2</td></tr>
+            <tr><td class="cb-api-table__name">H3</td><td>24px</td><td>h3</td></tr>
+            <tr><td class="cb-api-table__name">H4</td><td>20px</td><td>h4</td></tr>
+            <tr><td class="cb-api-table__name">H5 / H6</td><td>16px</td><td>h5 / h6</td></tr>
+            <tr><td class="cb-api-table__name">BodyLarge</td><td>18px</td><td>p</td></tr>
+            <tr><td class="cb-api-table__name">Body</td><td>16px</td><td>p</td></tr>
+            <tr><td class="cb-api-table__name">BodySmall</td><td>14px</td><td>p</td></tr>
+            <tr><td class="cb-api-table__name">Caption / Label</td><td>12px</td><td>span</td></tr>
+        </tbody>
+    </table>
+    <p style="font-size: 0.85rem; color: var(--docs-text-muted); margin-top: 0.5rem;">
+        See <a href="/foundations/typography">Typography</a> for live examples via <code>CyTypography</code>.
+    </p>
+</div>
+
+@code {
+    private sealed record ColourSwatch(string Token, string Hex, string Usage);
+    private sealed record SpacingStep(string Token, int Px);
+
+    private readonly IReadOnlyList<ColourSwatch> _colours =
+    [
+        new("--cymru-color-primary", "#325083", "Brand primary"),
+        new("--cymru-color-primary-hover", "#1e3050", "Primary hover state"),
+        new("--cymru-color-secondary", "#1b294a", "Secondary / navy"),
+        new("--cymru-color-danger", "#d5281b", "Critical / error"),
+        new("--cymru-cyan-700", "#12a3c9", "Brand secondary accent"),
+        new("--cymru-color-text", "#212b32", "Primary text"),
+        new("--cymru-color-text-muted", "#4c6272", "Secondary text"),
+        new("--cymru-color-border", "#d8dde0", "Default border"),
+        new("--cymru-color-surface", "#ffffff", "Default surface"),
+        new("--cymru-color-surface-alt", "#f4f5f8", "Alternate surface / wash")
+    ];
+
+    private readonly IReadOnlyList<SpacingStep> _spacing =
+    [
+        new("--cymru-space-1", 4),
+        new("--cymru-space-2", 8),
+        new("--cymru-space-4", 16),
+        new("--cymru-space-6", 24),
+        new("--cymru-space-8", 32),
+        new("--cymru-space-12", 48),
+        new("--cymru-space-16", 64)
+    ];
+}

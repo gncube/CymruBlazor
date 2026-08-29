@@ -1,12 +1,47 @@
-<button class="cy-button">
-    @ChildContent
-</button>
+@inherits CyInteractiveComponentBase
 
+@if (Href is not null && !Disabled)
+{
+    <a
+        href="@Href"
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        aria-label="@AriaLabel"
+        aria-labelledby="@AriaLabelledBy"
+        aria-describedby="@AriaDescribedBy"
+        tabindex="@ComputedTabIndex"
+        @attributes="AdditionalAttributes">
 
-@code {
-    /// <summary>
-    /// Content to render inside the button.
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+        @if (Loading)
+        {
+            <span class="cy-button__spinner" aria-hidden="true"></span>
+        }
+        <span class="cy-button__content">@ChildContent</span>
+
+    </a>
+}
+else
+{
+    <button
+        type="@Type"
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        disabled="@(Disabled || Loading)"
+        aria-label="@AriaLabel"
+        aria-labelledby="@AriaLabelledBy"
+        aria-describedby="@AriaDescribedBy"
+        aria-busy="@(Loading ? "true" : null)"
+        tabindex="@ComputedTabIndex"
+        @onclick="HandleClickAsync"
+        @attributes="AdditionalAttributes">
+
+        @if (Loading)
+        {
+            <span class="cy-button__spinner" aria-hidden="true"></span>
+        }
+        <span class="cy-button__content">@ChildContent</span>
+
+    </button>
 }

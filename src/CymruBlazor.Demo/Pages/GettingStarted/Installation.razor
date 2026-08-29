@@ -1,0 +1,65 @@
+@page "/installation"
+@namespace CymruBlazor.Demo.Pages.GettingStarted
+@using CymruBlazor.Demo.Shared
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Installation</h1>
+    <p class="cb-page-description">
+        A complete setup reference, including the pieces not covered by the
+        <a href="/getting-started">Getting Started</a> quick start: the stylesheet link,
+        the optional theme script, and service registration.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">1. Install the package</h2>
+    <DemoCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">2. Reference the stylesheet</h2>
+    <p class="cb-section-description">Add this to <code>wwwroot/index.html</code> (WASM) or <code>App.razor</code> (Server):</p>
+    <DemoCodeBlock Code="@_stylesheetCode" Language="html" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">3. Reference the theme script (optional)</h2>
+    <p class="cb-section-description">
+        Only needed if you want theme choice to persist across page loads and detect the OS colour-scheme
+        preference. Without it, <code>CyThemeProvider</code> still works for the current session.
+    </p>
+    <DemoCodeBlock Code="@_themeScriptCode" Language="html" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">4. Register the services</h2>
+    <DemoCodeBlock Code="@_programCsCode" Language="csharp" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">5. Wrap your app in CyThemeProvider</h2>
+    <p class="cb-section-description">Once, in <code>MainLayout.razor</code>:</p>
+    <DemoCodeBlock Code="@_mainLayoutCode" Language="razor" />
+</div>
+
+@code {
+    private const string _stylesheetCode =
+        """<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />""";
+
+    private const string _themeScriptCode =
+        """<script src="_content/CymruBlazor/js/cymrublazor.js"></script>""";
+
+    private const string _programCsCode =
+        """
+        builder.Services.AddCymruBlazor();
+        """;
+
+    private const string _mainLayoutCode =
+        """
+        <CyThemeProvider>
+            <Router AppAssembly="@typeof(App).Assembly">
+                ...
+            </Router>
+        </CyThemeProvider>
+        """;
+}

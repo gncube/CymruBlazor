@@ -2,215 +2,121 @@
 @namespace CymruBlazor.Demo.Pages.Components.Branding
 @using CymruBlazor.Components.Branding
 @using CymruBlazor.Enums
+@using CymruBlazor.Demo.Shared
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">CyBrandLogo</h1>
-    <p class="cb-page-description">
-        Renders a brand logo, either the built-in SVG mark/wordmark
-        lockup or a supplied image asset. Theme switching (light/dark)
-        is handled entirely through CSS using the ambient
-        <code>data-theme</code> attribute — no JavaScript interop or
-        <code>IThemeService</code> dependency is required.
-    </p>
+<CyPageHeader Title="CyBrandLogo" Subtitle="The built-in SVG mark/wordmark lockup, or a supplied image asset. Theme switching is CSS-only.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Branding" />
+            <CyBreadcrumbItem Text="CyBrandLogo" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Default lockup</h2>
-    <p class="cb-section-description">
-        With no <code>LogoPath</code> supplied, the built-in SVG mark
-        and wordmark are rendered using <code>Text</code> (defaults to
-        <code>CymruBlazor</code>).
-    </p>
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyBrandLogo />
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview">
+            <CyBrandLogo Variant="_variant" Size="_size" Text="@_text" Href="@(_asLink ? "/" : null)" />
         </div>
-        <pre class="cb-example__code"><code>&lt;CyBrandLogo /&gt;</code></pre>
-    </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Variants</h2>
-    <p class="cb-section-description">
-        <code>Variant</code> controls which parts of the built-in
-        lockup render — this has no effect when <code>LogoPath</code>
-        is supplied.
-    </p>
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertyToggleGroup Label="Variant" @bind-Value="_variant" Options="_variantOptions" TValue="BrandLogoVariant" />
+                <DemoPropertyToggleGroup Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
+                <DemoPropertyTextInput Label="Text" @bind-Value="_text" />
+                <DemoPropertySwitch Label="As a home link (Href)" @bind-Value="_asLink" />
+            </DemoPropertyControls>
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <div style="display:flex;gap:var(--cymru-space-8);flex-wrap:wrap;align-items:flex-end">
-                @foreach (var (variant, label) in new (BrandLogoVariant, string)[]
-                {
-                    (BrandLogoVariant.Full, "Full"),
-                    (BrandLogoVariant.Mark, "Mark"),
-                    (BrandLogoVariant.Wordmark, "Wordmark"),
-                    (BrandLogoVariant.Stacked, "Stacked"),
-                })
-                {
-                    <div>
-                        <span style="font-size:var(--cymru-font-size-xs);
-                                     color:var(--cymru-color-text-muted);
-                                     display:block;margin-block-end:var(--cymru-space-2)">
-                            @label
-                        </span>
-                        <CyBrandLogo Variant="@variant" />
-                    </div>
-                }
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
             </div>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyBrandLogo Variant="BrandLogoVariant.Mark" /&gt;
-&lt;CyBrandLogo Variant="BrandLogoVariant.Wordmark" /&gt;
-&lt;CyBrandLogo Variant="BrandLogoVariant.Stacked" /&gt;</code></pre>
-    </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Sizes</h2>
-    <p class="cb-section-description">
-        <code>Size</code> uses the shared component size scale. For
-        image-based logos, it caps the maximum height while preserving
-        the asset's intrinsic aspect ratio.
-    </p>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <div style="display:flex;gap:var(--cymru-space-6);align-items:flex-end;flex-wrap:wrap">
-                @foreach (var size in new[]
-                {
-                    ComponentSize.Small,
-                    ComponentSize.Medium,
-                    ComponentSize.Large,
-                    ComponentSize.ExtraLarge,
-                })
-                {
-                    <CyBrandLogo Size="@size" />
-                }
-            </div>
+        <div style="margin-top: var(--docs-section-gap);">
+            <h3>Image-based logo with a dark-theme asset</h3>
+            <p class="cb-section-description">
+                When <code>LogoPath</code> is supplied, it takes precedence over the built-in lockup (the Variant
+                control above has no effect). Supply <code>DarkLogoPath</code> too, and both are rendered with CSS
+                showing/hiding the correct one under <code>[data-theme="dark"]</code> - no theme-change JavaScript
+                is triggered, unlike the header's own theme toggle elsewhere in this demo.
+            </p>
+            <DemoCodeBlock Code="@ImageLogoExampleCode" Language="razor" />
         </div>
-        <pre class="cb-example__code"><code>&lt;CyBrandLogo Size="ComponentSize.Small" /&gt;
-&lt;CyBrandLogo Size="ComponentSize.Large" /&gt;
-&lt;CyBrandLogo Size="ComponentSize.ExtraLarge" /&gt;</code></pre>
+
     </div>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">As a home link</h2>
-    <p class="cb-section-description">
-        Set <code>Href</code> to render the entire logo as a single
-        anchor, typically pointing to the application's home route. The
-        accessible label then defaults to
-        <code>"&#123;Text&#125; home"</code> unless
-        <code>AriaLabel</code> is supplied explicitly.
-    </p>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyBrandLogo Href="/" Text="CymruBlazor" />
-        </div>
-        <pre class="cb-example__code"><code>&lt;CyBrandLogo Href="/" Text="CymruBlazor" /&gt;</code></pre>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
     </div>
-</div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Image-based logo with dark theme asset</h2>
-    <p class="cb-section-description">
-        When <code>LogoPath</code> is supplied, it takes precedence
-        over the built-in lockup. Supply <code>DarkLogoPath</code> as
-        well to swap assets under <code>[data-theme="dark"]</code> —
-        both are rendered and CSS shows/hides the correct one, so no
-        theme-change JavaScript is triggered.
-    </p>
+@code {
+    private enum Tab { Examples, Api, Accessibility }
 
-    <pre class="cb-example__code"><code>&lt;CyBrandLogo LogoPath="/images/logo-light.svg"
-             DarkLogoPath="/images/logo-dark.svg"
-             Href="/" /&gt;</code></pre>
-</div>
+    private Tab _activeTab = Tab.Examples;
+    private BrandLogoVariant _variant = BrandLogoVariant.Full;
+    private ComponentSize _size = ComponentSize.Medium;
+    private string _text = "CymruBlazor";
+    private bool _asLink;
 
-<div class="cb-section">
-    <h2 class="cb-section-title">API</h2>
-    <table class="cb-api-table" aria-label="CyBrandLogo parameters">
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Default</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">Variant</td>
-                <td class="cb-api-table__type">BrandLogoVariant</td>
-                <td class="cb-api-table__default">Full</td>
-                <td>Which parts of the built-in lockup render. No effect when <code>LogoPath</code> is set.</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Size</td>
-                <td class="cb-api-table__type">ComponentSize</td>
-                <td class="cb-api-table__default">Medium</td>
-                <td>Overall sizing — mark/wordmark scale, or max height for image assets</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">LogoPath</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>Light-theme (or single) logo asset. Takes precedence over the built-in lockup when set</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">DarkLogoPath</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>Dark-theme logo asset. Falls back to <code>LogoPath</code> when omitted</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Text</td>
-                <td class="cb-api-table__type">string</td>
-                <td class="cb-api-table__default">"CymruBlazor"</td>
-                <td>Organisation/product name rendered by the built-in wordmark</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Href</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>When set, renders the whole logo as a single anchor element</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">AriaLabel</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>Accessible label. Defaults to "&#123;Text&#125; home" (linked) or "&#123;Text&#125;" (unlinked)</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+    private readonly IReadOnlyList<BrandLogoVariant> _variantOptions =
+    [
+        BrandLogoVariant.Full, BrandLogoVariant.Mark, BrandLogoVariant.Wordmark, BrandLogoVariant.Stacked
+    ];
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Accessibility</h2>
-    <ul style="color:var(--cymru-color-text);
-               line-height:1.75;
-               padding-inline-start:var(--cymru-space-6)">
-        <li>
-            Renders as an <code>&lt;a&gt;</code> when <code>Href</code>
-            is set, or a <code>&lt;span role="img"&gt;</code> otherwise
-            — either way the logo is exposed to assistive technology as
-            a single labelled unit rather than separate icon/text nodes.
-        </li>
-        <li>
-            The built-in SVG mark carries <code>aria-hidden="true"</code>
-            and image assets use empty <code>alt</code> text, since the
-            accessible label is already provided at the wrapping
-            element via <code>aria-label</code>.
-        </li>
-        <li>
-            Theme selection is CSS-only (<code>data-theme</code>), so
-            the logo repaints correctly for high-contrast and dark
-            themes without any additional wiring.
-        </li>
-    </ul>
-</div>
+    private readonly IReadOnlyList<ComponentSize> _sizeOptions =
+    [
+        ComponentSize.Small, ComponentSize.Medium, ComponentSize.Large, ComponentSize.ExtraLarge
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyBrandLogo
+            Variant="BrandLogoVariant.{_variant}"
+            Size="ComponentSize.{_size}"
+            Text="{_text}"{(_asLink ? "\n    Href=\"/\"" : "")} />
+        """;
+
+    private const string ImageLogoExampleCode =
+        """
+        <CyBrandLogo LogoPath="/images/logo-light.svg"
+                     DarkLogoPath="/images/logo-dark.svg"
+                     Href="/" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Variant", "BrandLogoVariant", "Full", "Which parts of the built-in lockup render: Full, Mark, Wordmark, or Stacked. No effect when LogoPath is set."),
+        new("Size", "ComponentSize", "Medium", "Overall sizing - mark/wordmark scale, or max height for image assets."),
+        new("LogoPath", "string?", "null", "Light-theme (or single) logo asset. Takes precedence over the built-in lockup when set."),
+        new("DarkLogoPath", "string?", "null", "Dark-theme logo asset. Falls back to LogoPath when omitted."),
+        new("Text", "string", "\"CymruBlazor\"", "Organisation/product name rendered by the built-in wordmark."),
+        new("Href", "string?", "null", "When set, renders the whole logo as a single anchor element."),
+        new("AriaLabel", "string?", "null", "Accessible label. Defaults to \"{Text} home\" (linked) or \"{Text}\" (unlinked).")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Single labelled unit", "Renders as an <a> when Href is set, or a <span role=\"img\"> otherwise - either way the logo is exposed to assistive technology as one labelled unit rather than separate icon/text nodes."),
+        new("No redundant announcements", "The built-in SVG mark carries aria-hidden=\"true\" and image assets use empty alt text, since the accessible label is already provided at the wrapping element via aria-label."),
+        new("Theme-aware without JS", "Theme selection is CSS-only (data-theme), so the logo repaints correctly for high-contrast and dark themes without any additional wiring or a flash of the wrong asset.")
+    ];
+}

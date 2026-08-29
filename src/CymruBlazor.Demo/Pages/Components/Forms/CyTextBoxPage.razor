@@ -1,0 +1,109 @@
+@page "/forms/textbox"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.Shared
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<CyPageHeader Title="CyTextBox" Subtitle="A labelled single-line text input with hint and validation support.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyTextBox" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
+            <DataAnnotationsValidator />
+            <CyTextBox @bind-Value="_model.FullName"
+                       Label="Full name"
+                       HintText="As it appears on your NHS record"
+                       Type="@_type"
+                       Required="_required"
+                       Disabled="_disabled" />
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Type" @bind-Value="_type" Options="_typeOptions" TValue="string" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        public string? FullName { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private bool _required = true;
+    private bool _disabled;
+    private string _type = "text";
+
+    private readonly IReadOnlyList<string> _typeOptions = ["text", "email", "tel"];
+
+    private string GeneratedCode =>
+        $"""
+        <CyTextBox
+            @bind-Value="model.FullName"
+            Label="Full name"
+            HintText="As it appears on your NHS record"{(_type != "text" ? $"\n    Type=\"{_type}\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The field's visible, programmatically-associated label. Always required - there is no placeholder-as-label option."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
+        new("Required", "bool", "false", "Adds aria-required and a visual indicator. Does not perform validation itself."),
+        new("Disabled", "bool", "false", "Disables the field."),
+        new("Placeholder", "string?", "null", "Native placeholder text."),
+        new("MaxLength", "int?", "null", "Native maxlength attribute."),
+        new("Type", "string", "\"text\"", "Native input type (text, email, tel, etc.)."),
+        new("Value", "string", "-", "The bound value; use @bind-Value.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Label always present", "Label is an [EditorRequired] parameter, so every CyTextBox ships with a programmatically associated <label>."),
+        new("Hint and errors announced", "HintText and validation errors are wired into aria-describedby, so assistive technology announces them alongside the field."),
+        new("Validation uses role=\"alert\"", "Error messages are rendered with role=\"alert\" so screen readers announce them immediately when they appear.")
+    ];
+}

@@ -34,3 +34,85 @@
   outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
   outline-offset: 2px;
 }
+
+/* ── Content / spinner layout ── */
+.cy-button__content {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cy-button--loading .cy-button__content {
+  opacity: 0.6;
+}
+
+.cy-button__spinner {
+  width: 1em;
+  height: 1em;
+  margin-inline-end: var(--cymru-spacing-component-sm);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cy-button-spin 0.6s linear infinite;
+}
+
+@keyframes cy-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Variants ── */
+.cy-button--secondary {
+  background: transparent;
+  color: var(--cymru-color-primary);
+  border: 1px solid var(--cymru-color-border-strong);
+  box-shadow: none;
+}
+
+.cy-button--secondary:hover {
+  background: var(--cymru-color-surface-alt);
+}
+
+.cy-button--tertiary {
+  background: transparent;
+  color: var(--cymru-color-primary);
+  border: none;
+  box-shadow: none;
+  padding-inline: var(--cymru-spacing-component-sm);
+}
+
+.cy-button--tertiary:hover {
+  background: var(--cymru-color-surface-alt);
+  text-decoration: underline;
+}
+
+.cy-button--danger {
+  background: var(--cymru-color-danger);
+  color: var(--cymru-color-text-inverse);
+}
+
+.cy-button--danger:hover {
+  filter: brightness(0.9);
+}
+
+/* ── Sizes ── */
+.cy-button--small {
+  min-height: 2rem;
+  padding: var(--cymru-spacing-component-xs, 0.25rem) var(--cymru-spacing-component-sm);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.cy-button--large {
+  padding: var(--cymru-spacing-component-md) var(--cymru-spacing-component-lg, 1.5rem);
+  font-size: var(--cymru-font-size-lg, 1.125rem);
+}
+
+/* ── Disabled / loading ── */
+.cy-button:disabled,
+.cy-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}

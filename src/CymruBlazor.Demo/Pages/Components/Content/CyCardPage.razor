@@ -1,0 +1,125 @@
+@page "/content/card"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.Shared
+
+<CyPageHeader Title="CyCard" Subtitle="A content container with optional header, footer, and whole-card link.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" />
+            <CyBreadcrumbItem Text="CyCard" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview">
+        @if (_asLink)
+        {
+            <CyCard Elevation="_elevation" Href="#" Style="max-width: 20rem;">
+                <Header><strong>Cardiff and Vale clinic</strong></Header>
+                <ChildContent>Next available appointment: Thursday, 9:15am.</ChildContent>
+            </CyCard>
+        }
+        else
+        {
+            <CyCard Elevation="_elevation" Style="max-width: 20rem;">
+                <Header><strong>Cardiff and Vale clinic</strong></Header>
+                <ChildContent>Next available appointment: Thursday, 9:15am.</ChildContent>
+                <Footer><a href="#">View details</a></Footer>
+            </CyCard>
+        }
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyToggleGroup Label="Elevation" @bind-Value="_elevation" Options="_elevationOptions" TValue="ComponentElevation" />
+            @if (_elevation != ComponentElevation.None)
+            {
+                <p style="font-size: 0.8rem; color: var(--docs-text-muted); margin: -0.5rem 0 0;">
+                    Small, Medium, and Large intentionally render the same shadow - see the API tab for why.
+                </p>
+            }
+            <DemoPropertySwitch Label="Whole card is a link (Href)" @bind-Value="_asLink" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    <p class="cb-section-description" style="margin-top:1rem;">
+        <strong>Why Small/Medium/Large look identical:</strong> the design system defines exactly one shadow role
+        for cards - a gentle "raised" lift, used only when a border alone isn't enough. The next level up
+        ("overlay") is reserved for floating layers genuinely above the page - modals, drawers, tooltips - so
+        using it for a merely-emphasised card would misrepresent that layering to the user. Medium/Large
+        therefore intentionally resolve to the same value as Small, rather than a deeper one.
+    </p>
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentElevation _elevation = ComponentElevation.Small;
+    private bool _asLink;
+
+    private readonly IReadOnlyList<ComponentElevation> _elevationOptions =
+    [
+        ComponentElevation.None, ComponentElevation.Small, ComponentElevation.Medium, ComponentElevation.Large
+    ];
+
+    private string GeneratedCode =>
+        _asLink
+            ? $"""
+               <CyCard Elevation="ComponentElevation.{_elevation}" Href="/clinics/cardiff-vale">
+                   <Header><strong>Cardiff and Vale clinic</strong></Header>
+                   <ChildContent>Next available appointment: Thursday, 9:15am.</ChildContent>
+               </CyCard>
+               """
+            : $"""
+               <CyCard Elevation="ComponentElevation.{_elevation}">
+                   <Header><strong>Cardiff and Vale clinic</strong></Header>
+                   <ChildContent>Next available appointment: Thursday, 9:15am.</ChildContent>
+                   <Footer><a href="#">View details</a></Footer>
+               </CyCard>
+               """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Header", "RenderFragment?", "null", "Optional content rendered above the body."),
+        new("Footer", "RenderFragment?", "null", "Optional content rendered below the body."),
+        new("Href", "string?", "null", "When set, the whole card renders as a single <a>. Don't nest another link inside ChildContent when set."),
+        new("Elevation", "ComponentElevation", "ComponentElevation.Small", "Controls the card's shadow depth: None removes it, Small/Medium/Large all render the same 'raised' shadow (see note below) - only None vs. non-None is visually distinct."),
+        new("ChildContent", "RenderFragment", "null", "The card's body content.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Single link target", "When Href is set, the entire card is one <a> - avoid nesting a second interactive element inside it, which would create invalid nested controls."),
+        new("Neutral otherwise", "Without Href, CyCard is a plain, non-interactive container that doesn't add unexpected roles or tab stops.")
+    ];
+}

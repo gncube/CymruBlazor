@@ -1,0 +1,34 @@
+@namespace CymruBlazor.Demo.Shared
+
+<div class="cb-property-switch-row">
+    <label for="@_id" class="cb-property-label" style="margin-bottom:0;">@Label</label>
+    <button type="button"
+            id="@_id"
+            role="switch"
+            aria-checked="@(Value ? "true" : "false")"
+            class="cb-property-switch @(Value ? "on" : "")"
+            @onclick="ToggleAsync">
+        <span class="cb-property-switch__thumb"></span>
+    </button>
+</div>
+
+@code {
+    private readonly string _id = $"prop-{Guid.NewGuid():N}";
+
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    [Parameter]
+    public bool Value { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ValueChanged { get; set; }
+
+    private async Task ToggleAsync()
+    {
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(!Value);
+        }
+    }
+}

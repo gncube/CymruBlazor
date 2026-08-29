@@ -1,149 +1,107 @@
 @page "/layouts/center"
 @namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Demo.Shared
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">CyCenter</h1>
-    <p class="cb-page-description">
-        Centers child content horizontally and/or vertically using flexbox.
-        Optionally expands to fill the full available height of its parent.
-        Useful for splash screens, empty states, and hero sections.
-    </p>
+<CyPageHeader Title="CyCenter" Subtitle="Centers child content horizontally and/or vertically using flexbox.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyCenter" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Horizontal and vertical (default)</h2>
-    <p class="cb-section-description">
-        Both axes are enabled by default. The component renders as a
-        <code>&lt;div&gt;</code> with <code>display: flex</code>,
-        <code>justify-content: center</code>, and
-        <code>align-items: center</code>.
-    </p>
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyCenter FullHeight="false"
-                      Style="height:160px;background:var(--cymru-color-surface-alt);
-                             border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
-                <div style="padding:var(--cymru-space-4);background:var(--cymru-color-primary);
-                            color:var(--cymru-color-text-inverse);border-radius:var(--cymru-radius-sm)">
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="padding:0;">
+            <CyCenter Horizontal="_horizontal" Vertical="_vertical" FullHeight="_fullHeight"
+                      Style="height:200px; width:100%; background:var(--cymru-color-surface-alt); border-radius:var(--docs-code-radius);">
+                <div style="padding:var(--cymru-space-4); background:var(--cymru-color-primary); color:var(--cymru-color-text-inverse); border-radius:var(--cymru-radius-sm);">
                     Centered content
                 </div>
             </CyCenter>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyCenter&gt;
-    &lt;div&gt;Centered content&lt;/div&gt;
-&lt;/CyCenter&gt;</code></pre>
-    </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Horizontal only</h2>
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySwitch Label="Horizontal" @bind-Value="_horizontal" />
+                <DemoPropertySwitch Label="Vertical" @bind-Value="_vertical" />
+                <DemoPropertySwitch Label="FullHeight" @bind-Value="_fullHeight" />
+            </DemoPropertyControls>
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview">
-            <CyCenter Vertical="false"
-                      Style="height:100px;background:var(--cymru-color-surface-alt);
-                             border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
-                <div style="padding:var(--cymru-space-2) var(--cymru-space-6);
-                            background:var(--cymru-color-primary);
-                            color:var(--cymru-color-text-inverse);border-radius:var(--cymru-radius-sm)">
-                    Horizontally centered
-                </div>
-            </CyCenter>
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+            </div>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyCenter Vertical="false"&gt;
-    ...
-&lt;/CyCenter&gt;</code></pre>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            A common combination: <code>FullHeight="true"</code> with a nested <code>CyStack</code> for an empty-state
+            panel or loading screen -
+        </p>
+        <DemoCodeBlock Code="@EmptyStateExampleCode" Language="razor" />
+
     </div>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">Full height empty state</h2>
-    <p class="cb-section-description">
-        <code>FullHeight="true"</code> sets <code>min-height: 100%</code>
-        so the component fills its parent. Use this for empty state panels or
-        loading screens.
-    </p>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview"
-             style="height:200px;background:var(--cymru-color-surface-alt);
-                    border:1px solid var(--cymru-color-border);border-radius:var(--cymru-radius-md)">
-            <CyCenter FullHeight="true">
-                <CyStack Orientation="Orientation.Vertical"
-                         Gap="ComponentSize.Small"
-                         AlignItems="AlignItems.Center">
-                    <span style="font-size:2rem" aria-hidden="true">📋</span>
-                    <strong>No records found</strong>
-                    <span style="color:var(--cymru-color-text-muted);font-size:var(--cymru-font-size-sm)">
-                        Adjust your filters and try again.
-                    </span>
-                </CyStack>
-            </CyCenter>
-        </div>
-        <pre class="cb-example__code"><code>&lt;CyCenter FullHeight="true"&gt;
-    &lt;CyStack Orientation="Orientation.Vertical"
-             Gap="ComponentSize.Small"
-             AlignItems="AlignItems.Center"&gt;
-        &lt;span aria-hidden="true"&gt;📋&lt;/span&gt;
-        &lt;strong&gt;No records found&lt;/strong&gt;
-        &lt;span&gt;Adjust your filters and try again.&lt;/span&gt;
-    &lt;/CyStack&gt;
-&lt;/CyCenter&gt;</code></pre>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
     </div>
-</div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
 
-<div class="cb-section">
-    <h2 class="cb-section-title">API</h2>
-    <table class="cb-api-table" aria-label="CyCenter parameters">
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Default</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">Horizontal</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">true</td>
-                <td>Applies <code>justify-content: center</code></td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Vertical</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">true</td>
-                <td>Applies <code>align-items: center</code></td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">FullHeight</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">false</td>
-                <td>Sets <code>min-height: 100%</code> on the root element</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">ChildContent</td>
-                <td class="cb-api-table__type">RenderFragment</td>
-                <td class="cb-api-table__default">—</td>
-                <td>The content to center</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Class</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>Additional CSS classes</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Style</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">null</td>
-                <td>Additional inline styles (e.g. explicit height)</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private bool _horizontal = true;
+    private bool _vertical = true;
+    private bool _fullHeight;
+
+    private string GeneratedCode =>
+        $"""
+        <CyCenter{(!_horizontal ? " Horizontal=\"false\"" : "")}{(!_vertical ? " Vertical=\"false\"" : "")}{(_fullHeight ? " FullHeight=\"true\"" : "")}>
+            <div>Centered content</div>
+        </CyCenter>
+        """;
+
+    private const string EmptyStateExampleCode =
+        """
+        <CyCenter FullHeight="true">
+            <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Small" AlignItems="AlignItems.Center">
+                <span aria-hidden="true">📋</span>
+                <strong>No records found</strong>
+                <span>Adjust your filters and try again.</span>
+            </CyStack>
+        </CyCenter>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Horizontal", "bool", "true", "Applies justify-content: center."),
+        new("Vertical", "bool", "true", "Applies align-items: center."),
+        new("FullHeight", "bool", "false", "Sets min-height: 100% on the root element - use for empty states or loading screens that should fill their parent."),
+        new("ChildContent", "RenderFragment", "-", "The content to center.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Neutral wrapper", "Renders a plain <div> with no interactive or landmark semantics of its own, so it never interferes with the page's structure."),
+        new("Visual centering only", "Centering is purely presentational (flexbox) and doesn't affect the DOM order or reading order of its content, so tab order and screen reader order stay predictable regardless of visual position.")
+    ];
+}

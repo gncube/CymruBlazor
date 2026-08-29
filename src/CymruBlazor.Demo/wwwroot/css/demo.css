@@ -1,26 +1,55 @@
 :root {
-  /* Documentation shell tokens consuming library tokens */
+  /* Documentation shell tokens - purely structural, never theme-reactive,
+     so :root is fine for these. */
   --docs-sidebar-width: 260px;
   --docs-header-height: 64px;
   --docs-content-max-width: 960px;
   --docs-section-gap: var(--cymru-space-16, 4rem);
   --docs-code-radius: var(--cymru-radius-md, 6px);
+}
 
+/*
+ * IMPORTANT: the colour aliases below are deliberately declared on
+ * .cy-theme-provider, NOT :root.
+ *
+ * CyThemeProvider sets data-theme="dark"/"high-contrast" on its own
+ * wrapper div (class="cy-theme-provider"), and the library's
+ * themes/dark.css and high-contrast.css override --cymru-color-* via a
+ * `[data-theme="..."]` selector that matches that SAME div. CSS custom
+ * properties resolve `var(...)` against the cascaded value AT THE
+ * ELEMENT WHERE THEY'RE DECLARED, not lazily at each point of use - so
+ * if these aliases were declared at :root (an ANCESTOR of
+ * .cy-theme-provider), `var(--cymru-color-background)` etc. would
+ * always resolve to the light-theme value baked in at :root, and that
+ * frozen value would inherit down through the whole app regardless of
+ * which theme is actually active. Redeclaring them here, on the exact
+ * element the [data-theme] override targets, means they correctly
+ * re-resolve against the active theme's values instead.
+ */
+.cy-theme-provider {
   /* Welsh NHS Identity Tokens */
   --docs-dragon-stripe: var(--cymru-red-600, #d5281b);
-  --docs-header-bg: var(--cymru-navy-900, #1b294a);
+  --docs-header-bg: var(--cymru-color-accent, #1b294a);
   --docs-sidebar-active: var(--cymru-cyan-700, #12a3c9);
-  --docs-surface-wash: var(--cymru-grey-100, #f0f4f5);
-  --docs-card-surface: var(--cymru-white, #ffffff);
-  --docs-text-primary: var(--cymru-grey-900, #212b32);
-  --docs-text-muted: var(--cymru-grey-600, #4c6272);
+  --docs-surface-wash: var(--cymru-color-background, #f0f4f5);
+  --docs-card-surface: var(--cymru-color-surface, #ffffff);
+  --docs-text-primary: var(--cymru-color-text, #212b32);
+  --docs-text-muted: var(--cymru-color-text-muted, #4c6272);
 }
 
 body {
   margin: 0;
-  background-color: var(--docs-surface-wash);
-  color: var(--docs-text-primary);
-  font-family: var(--cymru-font-family-base, 'Roboto', sans-serif);
+  /* --docs-surface-wash/--docs-text-primary are declared on
+     .cy-theme-provider (see above) and can't cascade UP to body, since
+     body is an ancestor of that div, not a descendant. The library
+     already solves exactly this for its own --cymru-color-* tokens via
+     a body:has(.cy-theme-provider[data-theme=...]) selector in
+     dark.css/high-contrast.css, so those raw tokens (unlike my alias
+     layer) already resolve correctly on body itself - use them
+     directly here instead of the alias. */
+  background-color: var(--cymru-color-background, #f0f4f5);
+  color: var(--cymru-color-text, #212b32);
+  font-family: "Inter", var(--cymru-font-family-base, "Roboto", sans-serif);
 }
 
 /* Header & 3px Welsh dragon red stripe */
@@ -97,7 +126,10 @@ body {
 
 .cb-nav-item.active {
   background-color: var(--docs-surface-wash);
-  border-left: 4px solid var(--docs-sidebar-active);
+  /* cyan-700 (--docs-sidebar-active) is 2.95:1 against a light
+     background, just under WCAG 1.4.11's 3:1 non-text threshold.
+     cyan-900 clears it at 6.16:1. */
+  border-left: 4px solid var(--cymru-cyan-900, #0a6a84);
   font-weight: 600;
 }
 
@@ -128,11 +160,11 @@ body {
 
 /* Workbench & Playground */
 .cb-workbench-preview {
-  background: #ffffff;
-  border: 1px solid var(--cymru-grey-300, #d8dde0);
+  background: var(--docs-card-surface, #ffffff);
+  border: 1px solid var(--cymru-color-border, #d8dde0);
   border-radius: var(--docs-code-radius);
   padding: 2.5rem 1.5rem;
-  background-image: radial-gradient(#e1e7eb 1px, transparent 1px);
+  background-image: radial-gradient(var(--cymru-color-border, #e1e7eb) 1px, transparent 1px);
   background-size: 16px 16px;
   display: flex;
   justify-content: center;
@@ -148,8 +180,8 @@ body {
 }
 
 .cb-playground-panel {
-  background: #ffffff;
-  border: 1px solid var(--cymru-grey-300, #d8dde0);
+  background: var(--docs-card-surface, #ffffff);
+  border: 1px solid var(--cymru-color-border, #d8dde0);
   border-radius: var(--docs-code-radius);
   padding: 1rem;
 }
@@ -187,8 +219,8 @@ body {
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: #e2e8f0;
-  color: #334155;
+  background: var(--cymru-color-surface-alt, #e2e8f0);
+  color: var(--docs-text-primary, #334155);
 }
 
 /* Responsive */
@@ -196,12 +228,663 @@ body {
   .cb-shell-body {
     flex-direction: column;
   }
-  .cb-shell-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--cymru-grey-300, #d8dde0);
-  }
   .cb-playground-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Home hero CTA buttons */
+.cb-demo-btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--docs-code-radius);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 150ms ease, background-color 150ms ease;
+}
+
+.cb-demo-btn--primary {
+  background-color: #ffffff;
+  color: var(--docs-header-bg);
+}
+
+.cb-demo-btn--primary:hover {
+  opacity: 0.9;
+}
+
+.cb-demo-btn--secondary {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.cb-demo-btn--secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Home quick-start */
+.cb-quickstart {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.cb-quickstart__step-title {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Header actions (search / theme toggle stubs) ── */
+.cb-shell-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cb-shell-header__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  border-radius: var(--docs-code-radius);
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.cb-shell-header__icon-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cb-shell-header__icon-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* ── Mobile hamburger + off-canvas sidebar drawer ── */
+.cb-shell-header__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--docs-code-radius);
+  order: -1;
+  margin-inline-end: 0.5rem;
+}
+
+.cb-shell-header__hamburger:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cb-shell-header__hamburger:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.cb-shell-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cb-shell-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 39;
+}
+
+@media (max-width: 768px) {
+  .cb-shell-header__hamburger {
+    display: inline-flex;
+  }
+
+  .cb-shell-header__nav {
+    display: none;
+  }
+
+  .cb-shell-sidebar {
+    position: fixed;
+    top: var(--docs-header-height);
+    left: 0;
+    bottom: 0;
+    width: min(80vw, 300px);
+    z-index: 40;
+    overflow-y: auto;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+  }
+
+  .cb-shell-sidebar--open {
+    transform: translateX(0);
+  }
+}
+
+/* ── Playground property controls ── */
+.cb-property-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--docs-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.cb-property-select {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--docs-code-radius);
+  border: 1px solid var(--cymru-color-border, #cbd5e1);
+  background: var(--docs-card-surface, #ffffff);
+  color: var(--docs-text-primary);
+  font-size: 0.9rem;
+}
+
+.cb-property-toggle-group {
+  display: inline-flex;
+  border: 1px solid var(--cymru-grey-300, #cbd5e1);
+  border-radius: var(--docs-code-radius);
+  overflow: hidden;
+}
+
+.cb-property-toggle {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  background: var(--docs-card-surface, #ffffff);
+  color: var(--docs-text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-right: 1px solid var(--cymru-grey-300, #cbd5e1);
+}
+
+.cb-property-toggle:last-child {
+  border-right: none;
+}
+
+.cb-property-toggle.active {
+  /* cymru-cyan-700 (--docs-sidebar-active) with white text is only
+     2.95:1 - fails WCAG AA's 4.5:1. cyan-900 passes at 6.16:1. Only
+     this text-bearing usage changes; the brighter cyan-700 stays as
+     the accent for non-text uses (borders, the switch track) where
+     the more lenient 3:1 threshold applies and the brighter, more
+     "brand" tone reads better. */
+  background: var(--cymru-cyan-900, #0a6a84);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.cb-property-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cb-property-switch {
+  position: relative;
+  width: 2.5rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--cymru-grey-300, #cbd5e1);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 150ms ease;
+}
+
+.cb-property-switch.on {
+  /* cyan-700 gives only 2.95:1 for the white thumb against the track -
+     borderline against WCAG 1.4.11's 3:1 non-text threshold. cyan-900
+     gives a safer 6.16:1. */
+  background: var(--cymru-cyan-900, #0a6a84);
+}
+
+.cb-property-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 150ms ease;
+}
+
+.cb-property-switch.on .cb-property-switch__thumb {
+  transform: translateX(1.1rem);
+}
+
+/* ── Preview / generated code panel captions ── */
+.cb-panel-caption {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--docs-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.cb-code-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cb-open-in-github {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* ── Home page ── */
+.cb-tech-badges {
+  margin-top: 1.5rem;
+}
+
+.cb-badge--pill {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.cb-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.cb-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+/* ── Static content pages (Getting Started, Design Tokens, Installation) ── */
+.cb-page-header {
+  margin-bottom: var(--docs-section-gap, 4rem);
+}
+
+.cb-page-title {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.cb-page-description {
+  color: var(--docs-text-muted);
+  max-width: 60ch;
+  margin: 0;
+}
+
+.cb-section {
+  margin-bottom: 3rem;
+}
+
+.cb-section-title {
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem;
+}
+
+.cb-section-description {
+  color: var(--docs-text-muted);
+  margin: 0 0 1rem;
+}
+
+.cb-section pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: var(--docs-code-radius);
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+.cb-api-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.cb-api-table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--cymru-grey-300, #cbd5e1);
+}
+
+.cb-api-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--cymru-grey-200, #e2e8f0);
+}
+
+.cb-api-table__name {
+  font-family: monospace;
+  font-weight: 600;
+  /* #0284c7 (Tailwind sky-600) is 4.10:1 on white, just under WCAG AA's
+     4.5:1 for text this size - sky-700 (#0369a1) passes at 5.93:1. */
+  color: #0369a1;
+}
+
+.cb-api-table__type,
+.cb-api-table__default {
+  font-family: monospace;
+  color: var(--docs-text-muted);
+}
+
+/* ── Older per-example blocks (component doc pages predating the
+     Preview/Properties/Generated-code workbench pattern) ── */
+.cb-example {
+  border: 1px solid var(--cymru-grey-200, #e2e8f0);
+  border-radius: var(--docs-code-radius);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.cb-example__label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--docs-text-muted);
+  padding: 0.6rem 1rem;
+  background: var(--docs-surface-wash, #f8fafc);
+  border-bottom: 1px solid var(--cymru-grey-200, #e2e8f0);
+}
+
+.cb-example__preview {
+  padding: 1.5rem;
+  background-color: var(--docs-card-surface, #ffffff);
+  background-image: radial-gradient(var(--cymru-color-border, #e1e7eb) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.cb-example__code {
+  margin: 0;
+  padding: 1rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+/* ── Misc small helpers ── */
+.cb-demo-outline {
+  border: 1px dashed var(--cymru-grey-400, #94a3b8);
+  border-radius: var(--docs-code-radius);
+}
+
+.cb-demo-btn--warning {
+  /* #d97706 (Tailwind amber-600) with white text is only 3.19:1 against
+     WCAG AA's 4.5:1 requirement - amber-700 (#b45309) passes at 5.02:1
+     while staying visually a "warning" amber. */
+  background: #b45309;
+  color: #ffffff;
+  border: none;
+}
+
+/* ── Prev/next page navigation ── */
+.cb-page-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: var(--docs-section-gap, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cymru-color-border, #e2e8f0);
+}
+
+.cb-page-nav__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--cymru-color-border, #e2e8f0);
+  border-radius: var(--docs-code-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.cb-page-nav__link:hover {
+  border-color: var(--docs-sidebar-active, #12a3c9);
+  background: var(--docs-surface-wash);
+}
+
+.cb-page-nav__link:focus-visible {
+  outline: 2px solid var(--docs-sidebar-active, #12a3c9);
+  outline-offset: 2px;
+}
+
+.cb-page-nav__link--next {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.cb-page-nav__direction {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--docs-text-muted);
+}
+
+.cb-page-nav__title {
+  font-weight: 600;
+  color: var(--docs-text-primary);
+}
+
+@media (max-width: 640px) {
+  .cb-page-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-page-nav__link--next {
+    text-align: left;
+    align-items: flex-start;
+    grid-row: 1;
+  }
+}
+
+/* ── Search modal (Ctrl+K) ── */
+.cb-search-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+
+.cb-search-modal {
+  width: min(90vw, 560px);
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--docs-card-surface, #ffffff);
+  color: var(--docs-text-primary);
+  border-radius: var(--docs-code-radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.cb-search-modal__input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--cymru-color-border, #e2e8f0);
+  color: var(--docs-text-muted);
+  flex-shrink: 0;
+}
+
+.cb-search-modal__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--docs-text-primary);
+  font-size: 1rem;
+}
+
+/* demo.css loads after cymrublazor.css, so an unconditional
+   `outline: none` here would tie on specificity with the library's
+   global :focus-visible rule and win on cascade order, silently
+   defeating the keyboard focus ring (WCAG 2.4.7). Only suppress the
+   default outline for mouse/pointer focus, exactly like the library's
+   own :focus:not(:focus-visible) pattern. */
+.cb-search-modal__input:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.cb-search-modal__esc {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--cymru-color-border, #cbd5e1);
+  border-radius: 4px;
+  color: var(--docs-text-muted);
+}
+
+.cb-search-modal__results {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  overflow-y: auto;
+}
+
+.cb-search-modal__result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--docs-code-radius);
+  text-decoration: none;
+  color: inherit;
+}
+
+.cb-search-modal__result--active,
+.cb-search-modal__result:hover {
+  background: var(--docs-surface-wash);
+}
+
+.cb-search-modal__result-category {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  /* cymru-cyan-700 (the usual --docs-sidebar-active accent) is only 2.95:1
+     against white - fails WCAG AA's 4.5:1 for text this size. cyan-900
+     passes at 6.16:1. The 3:1-threshold, non-text uses of
+     --docs-sidebar-active elsewhere (active-state borders, indicators)
+     are unaffected and unchanged. */
+  color: var(--cymru-cyan-900, #0a6a84);
+}
+
+.cb-search-modal__result-title {
+  font-weight: 600;
+}
+
+.cb-search-modal__result-desc {
+  flex-basis: 100%;
+  font-size: 0.8rem;
+  color: var(--docs-text-muted);
+}
+
+.cb-search-modal__empty,
+.cb-search-modal__hint {
+  margin: 0;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--docs-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Blazor WASM boilerplate ──────────────────────────────────────────────
+   Standard framework markup rendered by index.html (#blazor-error-ui,
+   .loading-progress/.loading-progress-text) - these CSS rules ship by
+   default in the SDK's project template, but this project's index.html
+   was heavily customised and this stylesheet never carried them over.
+   Without display:none here, #blazor-error-ui showed on every single
+   page load regardless of whether an error actually occurred, since a
+   plain <div> defaults to display:block.
+   ========================================================================== */
+
+#blazor-error-ui {
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
+}
+
+#blazor-error-ui .reload {
+  color: inherit;
+  text-decoration: underline;
+  margin-inline-start: 0.5rem;
+}
+
+.loading-progress {
+  position: relative;
+  display: block;
+  width: 8rem;
+  height: 8rem;
+  margin: 20vh auto 1rem;
+}
+
+.loading-progress circle {
+  fill: none;
+  stroke: var(--cymru-color-border, #e2e8f0);
+  stroke-width: 0.6rem;
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+  stroke: var(--cymru-color-primary, #325083);
+  stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+  transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+  position: absolute;
+  text-align: center;
+  font-weight: 600;
+  inset: calc(20vh + 3.7rem) 0 auto 0;
+}
+
+.loading-progress-text::after {
+  content: var(--blazor-load-percentage-text, "Loading");
 }

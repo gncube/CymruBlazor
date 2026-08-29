@@ -1,36 +1,142 @@
 ﻿@inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@using CymruBlazor.Demo.Shared
 
-<CyContainer Size="ContainerSize.Fluid" RemovePadding="true">
+<CyThemeProvider>
 
-    <header>
+    <CySkipLink />
 
-        <DemoHeader />
+    <DemoHeader MobileMenuOpen="_mobileMenuOpen" OnToggleMobileMenu="ToggleMobileMenu" OnOpenSearch="OpenSearch" />
 
-    </header>
+    <div class="cb-shell-body">
 
-    <CyStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" Gap="ComponentSize.Medium"
-             Class="cy-stack--collapse-tablet">
+        @if (_mobileMenuOpen)
+        {
+            <div @onkeydown="HandleDrawerKeyDown">
+                <CyFocusTrap Enabled="true" AutoFocus="true" RestoreFocus="true">
+                    <DemoSidebar IsOpen="true" />
+                </CyFocusTrap>
+            </div>
+            <div class="cb-shell-backdrop" @onclick="CloseMobileMenu"></div>
+        }
+        else
+        {
+            <DemoSidebar IsOpen="false" />
+        }
 
-        <CySidebar Width="SidebarWidth.Medium" aria-label="Documentation navigation">
-
-            <DemoSidebar />
-
-        </CySidebar>
-
-        <main id="main-content" class="cb-demo-main" tabindex="-1">
+        <main id="main-content" class="cb-shell-main" tabindex="-1">
 
             @Body
 
+            <DemoPageNav />
+
         </main>
 
-    </CyStack>
+    </div>
 
-    <footer>
+    <DemoFooter />
 
-        <DemoFooter />
-
-    </footer>
+    <DemoSearchModal IsOpen="_searchOpen" OnClose="CloseSearch" />
 
     <CyLiveRegion />
 
-</CyContainer>
+</CyThemeProvider>
+
+@code {
+    private bool _mobileMenuOpen;
+    private bool _searchOpen;
+    private DotNetObjectReference<MainLayout>? _dotNetRef;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("cymruDemoSearch.addShortcutListener", _dotNetRef);
+        }
+    }
+
+    /// <summary>Invoked from search.js when Ctrl+K / Cmd+K is pressed anywhere on the page.</summary>
+    [JSInvokable]
+    public void OnGlobalShortcut()
+    {
+        _searchOpen = true;
+        StateHasChanged();
+    }
+
+    private void OpenSearch()
+    {
+        _searchOpen = true;
+    }
+
+    private void CloseSearch()
+    {
+        _searchOpen = false;
+    }
+
+    private void ToggleMobileMenu()
+    {
+        _mobileMenuOpen = !_mobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        _mobileMenuOpen = false;
+    }
+
+    private void HandleDrawerKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+        {
+            CloseMobileMenu();
+        }
+    }
+
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        var changed = false;
+
+        if (_mobileMenuOpen)
+        {
+            _mobileMenuOpen = false;
+            changed = true;
+        }
+
+        if (_searchOpen)
+        {
+            _searchOpen = false;
+            changed = true;
+        }
+
+        if (changed)
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+
+        if (_dotNetRef is not null)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("cymruDemoSearch.removeShortcutListener");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit/runtime already torn down - nothing to clean up JS-side.
+            }
+
+            _dotNetRef.Dispose();
+        }
+    }
+}

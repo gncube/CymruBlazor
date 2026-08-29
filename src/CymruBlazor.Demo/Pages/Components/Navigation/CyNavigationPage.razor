@@ -1,0 +1,85 @@
+@page "/navigation/navigation"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Branding
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyNavigation" Subtitle="Top-level site navigation with a responsive mobile toggle.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyNavigation" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <CyNavigation Style="width:100%;">
+            <Brand><CyBrandLogo Size="ComponentSize.Small" Href="/" /></Brand>
+            <ChildContent>
+                <CyNavigationItem Text="Home" Href="/" />
+                <CyNavigationItem Text="Components" Href="/forms/button" />
+                <CyNavigationItem Text="Docs" Href="/getting-started" />
+            </ChildContent>
+        </CyNavigation>
+    </div>
+
+    <span class="cb-panel-caption">Generated code</span>
+    <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private const string GeneratedCode =
+        """
+        <CyNavigation>
+            <Brand><CyBrandLogo Size="ComponentSize.Small" Href="/" /></Brand>
+            <ChildContent>
+                <CyNavigationItem Text="Home" Href="/" />
+                <CyNavigationItem Text="Components" Href="/components" />
+            </ChildContent>
+        </CyNavigation>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Brand", "RenderFragment?", "null", "Logo/wordmark slot rendered at the start of the bar."),
+        new("ChildContent", "RenderFragment", "null", "One or more CyNavigationItem entries."),
+        new("Text (CyNavigationItem)", "string", "-", "Visible link text."),
+        new("Href (CyNavigationItem)", "string", "-", "Link target; active-state highlighting is handled by the framework's own NavLink.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Labelled landmark", "Renders as <nav aria-label=\"Main\">, giving assistive tech a clear, named landmark."),
+        new("Focus trapped in the mobile menu", "While the mobile menu is open, focus is trapped inside it (via CyFocusTrap) and restored to the toggle button on close."),
+        new("Toggle state announced", "The mobile toggle button uses aria-expanded and aria-controls so screen reader users know whether the menu is open.")
+    ];
+}
