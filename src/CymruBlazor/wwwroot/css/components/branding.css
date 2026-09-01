@@ -36,7 +36,7 @@
   width: fit-content;
   max-width: 100%;
 
-  color: var(--cymru-color-text);
+  color: inherit;
   text-decoration: none;
 
   line-height: 1;
@@ -160,7 +160,7 @@ a.cy-brand-logo:focus-visible {
 .cy-brand-logo__wordmark {
   font-family: var(--cymru-font-family-base);
   font-weight: var(--cymru-font-weight-bold);
-  color: var(--cymru-color-text);
+  color: inherit;
   white-space: nowrap;
 }
 
@@ -236,15 +236,23 @@ a.cy-brand-logo:focus-visible {
 .cy-hero-banner--inverse .cy-brand-logo,
 .cy-hero-banner--inverse .cy-brand-logo__wordmark,
 .cy-navigation .cy-brand-logo,
-.cy-navigation .cy-brand-logo__wordmark {
-  color: var(--cymru-color-text-inverse);
+.cy-navigation .cy-brand-logo__wordmark,
+.cy-header--primary .cy-brand-logo,
+.cy-header--primary .cy-brand-logo__wordmark,
+.cy-header--secondary .cy-brand-logo,
+.cy-header--secondary .cy-brand-logo__wordmark {
+  color: var(--cymru-color-accent-text, #ffffff);
 }
 
-.cy-navigation .cy-brand-logo__mark-bg {
-  fill: var(--cymru-color-text-inverse);
+.cy-navigation .cy-brand-logo__mark-bg,
+.cy-header--primary .cy-brand-logo__mark-bg,
+.cy-header--secondary .cy-brand-logo__mark-bg {
+  fill: var(--cymru-color-accent-text, #ffffff);
 }
 
-.cy-navigation .cy-brand-logo__mark-fg {
+.cy-navigation .cy-brand-logo__mark-fg,
+.cy-header--primary .cy-brand-logo__mark-fg,
+.cy-header--secondary .cy-brand-logo__mark-fg {
   fill: var(--cymru-color-primary);
 }
 
