@@ -5,43 +5,48 @@
 @using CymruBlazor.Demo.Shared
 @using CymruBlazor.Enums
 
-<CyHeroBanner Title="CymruBlazor"
-              Subtitle="Accessible, composable Blazor components for Welsh NHS digital services."
-              Background="HeroBackground.Primary">
+<div class="cb-home">
 
-    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;">
-        <span class="cb-badge cb-badge--pill">.NET 10 · Blazor WebAssembly · Accessible</span>
-    </div>
-
-    <div style="display: flex; gap: 1rem; justify-content: center;">
-        <a class="cb-demo-btn cb-demo-btn--primary" href="forms/button">Explore components →</a>
-        <a class="cb-demo-btn cb-demo-btn--secondary" href="getting-started">Get started</a>
-    </div>
-
-    <CyCluster Gap="ComponentSize.Small" JustifyContent="JustifyContent.Center" Class="cb-tech-badges">
-        <span class="cb-badge">.NET 10</span>
-        <span class="cb-badge">C#</span>
-        <span class="cb-badge">Blazor WASM</span>
-        <span class="cb-badge">WCAG 2.2 AA</span>
-        <span class="cb-badge">MIT License</span>
-    </CyCluster>
-
-</CyHeroBanner>
-
-<div class="cb-feature-grid">
-    @foreach (var feature in _features)
-    {
-        <CyCard>
-            <div class="cb-feature-icon" style="background: @feature.IconBackground;">
-                <CyIcon Name="@feature.Icon" Size="22" />
+    <section class="cb-home__hero">
+        <div class="cb-home__hero-content">
+            <div class="cb-home__hero-badge-wrap">
+                <span class="cb-home__badge">.NET 10 · Blazor WebAssembly · Accessible</span>
             </div>
-            <h3 style="margin: 0.75rem 0 0.35rem;">@feature.Title</h3>
-            <p style="color: var(--docs-text-muted); font-size: 0.9rem; margin: 0;">@feature.Description</p>
-        </CyCard>
-    }
-</div>
 
-<div style="margin-top: var(--docs-section-gap);">
-    <h2>Quick start</h2>
-    <DemoQuickStart Steps="_quickStartSteps" />
+            <h1 class="cb-home__title">CymruBlazor</h1>
+            <p class="cb-home__subtitle">Accessible, composable Blazor components for Welsh NHS digital services.</p>
+
+            <div class="cb-home__actions">
+                <a class="cb-demo-btn cb-demo-btn--primary" href="forms/button">Explore components →</a>
+                <a class="cb-demo-btn cb-demo-btn--secondary" href="getting-started">Get started</a>
+            </div>
+
+            <CyCluster Gap="ComponentSize.Small" JustifyContent="JustifyContent.Center" Class="cb-home__tech-badges">
+                <span class="cb-badge">.NET 10</span>
+                <span class="cb-badge">C#</span>
+                <span class="cb-badge">Blazor WASM</span>
+                <span class="cb-badge">WCAG 2.2 AA</span>
+                <span class="cb-badge">MIT License</span>
+            </CyCluster>
+        </div>
+    </section>
+
+    <section class="cb-home__features">
+        @foreach (var feature in _features)
+        {
+            <div class="cb-home__feature">
+                <div class="cb-home__feature-icon" style="background: @feature.IconBackground;">
+                    <CyIcon Name="@feature.Icon" Size="22" />
+                </div>
+                <h3 class="cb-home__feature-title">@feature.Title</h3>
+                <p class="cb-home__feature-body">@feature.Description</p>
+            </div>
+        }
+    </section>
+
+    <section class="cb-home__quick-start">
+        <h2 class="cb-home__section-title">Quick start</h2>
+        <DemoQuickStart Steps="_quickStartSteps" />
+    </section>
+
 </div>

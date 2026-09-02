@@ -5,11 +5,14 @@
  *
  * Icons inherit colour from their surrounding text via stroke="currentColor"
  * (set directly on the <svg> element in CyIcon.razor, matching Lucide's
- * own default) - no colour classes needed here.
+ * own default) - or via the optional Color parameter.
  */
 
 .cy-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   vertical-align: middle;
+  line-height: 1;
 }
