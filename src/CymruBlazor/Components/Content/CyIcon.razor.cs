@@ -30,11 +30,22 @@ public partial class CyIcon : CyLayoutComponentBase
 
     /// <summary>
     /// Width/height in pixels. Defaults to 24, the design system's
-    /// native grid size - scaling significantly beyond that may make the
-    /// 2px stroke look disproportionately thin.
+    /// native grid size.
     /// </summary>
     [Parameter]
     public int Size { get; set; } = 24;
+
+    /// <summary>
+    /// Stroke width of the icon lines in pixels. Defaults to 2 (matching Lucide and Welsh NHS standard).
+    /// </summary>
+    [Parameter]
+    public double StrokeWidth { get; set; } = 2;
+
+    /// <summary>
+    /// Stroke colour of the icon. Defaults to <see langword="null"/> (which resolves to <c>currentColor</c>).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
 
     /// <summary>
     /// Accessible label. Leave unset for decorative icons (the common
@@ -63,4 +74,3 @@ public partial class CyIcon : CyLayoutComponentBase
         }
     }
 }
-
