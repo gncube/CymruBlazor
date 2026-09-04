@@ -10,7 +10,56 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
-### Added (demo workbench redesign)
+Nothing yet.
+
+## [0.1.0-preview.8] - 2026-09-02
+
+Demo UI/UX refinements plus one real library bug fix, found while
+building them.
+
+### Added
+
+- `CyIcon` gained `StrokeWidth` (`double`, default `2`) and `Color`
+  (`string?`, default `null` -> `currentColor`), wired into the
+  rendered SVG's `stroke`/`stroke-width` attributes.
+
+### Fixed
+
+- `CyBrandLogo` rendered illegible dark-on-dark text when placed
+  inside a dark-background header. Root cause: `.cy-brand-logo`/
+  `.cy-brand-logo__wordmark` hardcoded `color: var(--cymru-color-text)`
+  instead of inheriting from context, and the existing dark-background
+  override (`.cy-hero-banner--inverse`/`.cy-navigation`) didn't cover
+  `CyHeader`'s `.cy-header--primary`/`.cy-header--secondary` background
+  variants, since `CyHeader` didn't exist when that override was
+  written. Also corrected the override's colour token from
+  `--cymru-color-text-inverse` (which flips to dark grey in dark mode
+  and black in high-contrast mode) to `--cymru-color-accent-text`
+  (which correctly stays white in every theme, matching
+  `--cymru-color-accent`'s own fixed-across-themes navy) - the old
+  token choice was a separate, pre-existing bug affecting any inverse
+  text on the navy header/footer in dark mode, not just `CyBrandLogo`.
+- `icons.css` switched from `display: inline-block` to `inline-flex`
+  with centered alignment and `line-height: 1`, fixing inconsistent
+  vertical centering of icons against adjacent text.
+
+### Changed (demo only, no package impact)
+
+- Home page restructured to semantic `<section>` elements with a BEM
+  class scheme (`cb-home__*`) instead of inline styles, with a richer
+  hero gradient treatment.
+
+## [0.1.0-preview.7] - 2026-08-29
+
+The demo workbench redesign: repositions `CymruBlazor.Demo` from a
+basic showcase into a documented component workbench (Getting Started,
+per-component Examples/API/Accessibility pages, search, prev/next
+navigation), fixes several real library bugs found in the process, and
+adds one new component. See the demo itself for the fullest picture -
+most of this release's work is demo-only and has no NuGet package
+impact; only the items below under "Added"/"Fixed" (not "Demo") do.
+
+### Added
 
 - `CyHeader` - new component; the header-side counterpart to `CyFooter`
   that was previously missing. `Brand`/`ChildContent`/`Actions` slots,
@@ -30,14 +79,15 @@ Full detail for every release is also available as auto-generated
   for navigation when set and not disabled), `Type`, `OnClick`.
 - `IconRegistry` gained `moon`/`sun` entries (verified byte-for-byte
   against `lucide-static@1.34.0`) for theme-toggle UI.
+- Standard Blazor WASM boilerplate CSS (`#blazor-error-ui`,
+  `.loading-progress`/`.loading-progress-text`) - the SDK template
+  ships these by default, but this project's `index.html` was
+  customised early on and the stylesheet never carried them over.
+  Without `display: none`, the error banner defaulted to the browser's
+  normal `block` display for a `<div>` and showed permanently on every
+  page load regardless of whether an error actually occurred.
 
-### Added (Phase 3+4 of the next release - see plan/plan-next-release-components.md)
-
-- `CyFormFieldComponentBase<TValue>` (built on `InputBase<TValue>`), `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary`.
-- `CySkipLink`, `CyBreadcrumb`/`CyBreadcrumbItem`, `CyPageHeader`, `CyNavigation`/`CyNavigationItem` (with mobile menu + `FocusTrap` integration), `CyHeroBanner`, `CyFooter`.
-- `IFocusManager` is now registered in `AddCymruBlazor()` - previously only ever registered manually by consuming apps; `CyNavigation`'s mobile menu depends on it transitively via `FocusTrap`.
-
-### Fixed (demo workbench redesign)
+### Fixed
 
 - `CyStack`/`CyGrid`/`CyCluster`'s `Gap` parameter had no visible
   effect for any value except `Medium`: each component's base CSS
@@ -54,23 +104,42 @@ Full detail for every release is also available as auto-generated
   referenced a nonexistent `wwwroot/js/theme.js` - the actual file is
   `cymrublazor.js`. No functional impact (the doc-comment path was
   never used by code), but corrected for anyone copying it.
+- `CyHeader.razor.cs` referenced `<see cref="CyBrandLogo"/>` in a doc
+  comment without importing `CymruBlazor.Components.Branding`, leaving
+  the reference unresolvable.
+
+## [0.1.0-preview.6 and earlier] - retroactively documented
+
+The entries below accumulated under "Unreleased" across several
+releases (at least as far back as `0.1.0-preview.5`, based on when the
+components they describe first appear in git history) without ever
+being moved into a versioned section when those releases actually
+shipped. Consolidated here in one place rather than guessing which
+exact preview tag introduced each item - if you need that precision,
+`git log --diff-filter=A -- <path>` against the relevant file is more
+trustworthy than this document for anything before `0.1.0-preview.7`.
+
+### Added
+
+- `IThemeService` is now registered in DI (`AddCymruBlazor()`) - previously implemented but never resolvable.
+- `ThemeService` gained optional JS interop: `localStorage` persistence and live OS `prefers-color-scheme` detection (originally via `wwwroot/js/theme.js`, later renamed `cymrublazor.js` in `0.1.0-preview.6`). Fully backward compatible - the parameterless constructor path is unchanged.
+- `CyThemeProvider` - applies the active theme via a `data-theme` wrapper and re-renders on theme change.
+- `CyTypography` - NHS Wales typography scale (`H1`-`H6`, `Body`, `BodyLarge`, `BodySmall`, `Caption`), with an `As` override to decouple visual style from semantic heading level.
+- `CyCard` - content container with optional header/footer and whole-card-link (`Href`) support.
+- `CyAlert` - status/alert banner with severity-driven ARIA role (`alert` vs `status`) and optional dismiss button.
+- `CyFormFieldComponentBase<TValue>` (built on `InputBase<TValue>`), `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary`.
+- `CySkipLink`, `CyBreadcrumb`/`CyBreadcrumbItem`, `CyPageHeader`, `CyNavigation`/`CyNavigationItem` (with mobile menu + `FocusTrap` integration), `CyHeroBanner`, `CyFooter`.
+- `IFocusManager` is now registered in `AddCymruBlazor()` - previously only ever registered manually by consuming apps; `CyNavigation`'s mobile menu depends on it transitively via `FocusTrap`.
+- Removed `wwwroot/js/theme-service.js` - pre-existing, unreferenced scaffolding superseded by the newly-wired `theme.js`/`cymrublazor.js` + `ThemeService` interop.
 
 ### Fixed
 
 - Dark and High Contrast themes now render correctly. `CyThemeProvider` applies `data-theme` to a `display: contents` wrapper *inside* `<body>` so it never adds an extra layout box - but that meant `<body>`'s own background/text colour (set in `base/typography.css`) and any `color: inherit`/`currentColor` usage (e.g. `CyCard`) never actually picked up the dark/high-contrast palette, since both are resolved at or above `<body>`, outside the attribute's reach. Components deeper in the tree that referenced `var(--cymru-color-text)` directly looked themed, while plain text and card backgrounds silently stayed light - typically rendering as low/no-contrast text on a dark surface. Fixed via a `body:has(.cy-theme-provider[data-theme="..."])` selector in `themes/dark.css`/`themes/high-contrast.css`, so `<body>` reacts correctly with no JavaScript required. See `Components/Theming/CyThemeProvider.razor.cs` and `wwwroot/css/components/theming.css` for the full explanation.
 - `CyScreenReaderOnly` rendered CSS class `"sr-only"`, but the stylesheet only ever defined `.u-sr-only` - the component has been visually non-functional (not actually hiding its content) since `0.1.0-preview.1`. Corrected to `u-sr-only`.
 
-### Added (Phase 1+2, previously listed)
 
-- `IThemeService` is now registered in DI (`AddCymruBlazor()`) - previously implemented but never resolvable.
-- `ThemeService` gained optional JS interop: `localStorage` persistence and live OS `prefers-color-scheme` detection, via `wwwroot/js/theme.js`. Fully backward compatible - the parameterless constructor path is unchanged.
-- `CyThemeProvider` - new component; applies the active theme via a `data-theme` wrapper and re-renders on theme change.
-- `CyTypography` - NHS Wales typography scale (`H1`-`H6`, `Body`, `BodyLarge`, `BodySmall`, `Caption`), with an `As` override to decouple visual style from semantic heading level.
-- `CyCard` - content container with optional header/footer and whole-card-link (`Href`) support.
-- `CyAlert` - status/alert banner with severity-driven ARIA role (`alert` vs `status`) and optional dismiss button.
-- Removed `wwwroot/js/theme-service.js` - pre-existing, unreferenced scaffolding superseded by the newly-wired `theme.js` + `ThemeService` interop.
 
-## [0.1.0-preview.1] - Pending
+## [0.1.0-preview.1] - 2026-08-20
 
 Initial pre-release. This is a **preview**, not a feature-complete 1.0 -
 see `PRD.md` section 6 for the full v1 component scope and

@@ -15,7 +15,7 @@ what you can actually install today.
 ## 0. Current status
 
 > **CymruBlazor is pre-release.** The latest published version is
-> `0.1.0-preview.6`. The public API — component names, parameters and CSS
+> `0.1.0-preview.8`. The public API — component names, parameters and CSS
 > class names — may still change before `1.0.0`. Treat this guide as
 > describing "the current preview", not a stable contract.
 
@@ -28,7 +28,7 @@ what you can actually install today.
 
 Versioning is derived entirely from git tags by
 [MinVer](https://github.com/adamralph/minver) (tag prefix `v`, e.g. tag
-`v0.1.0-preview.6` → package version `0.1.0-preview.6`) — there is no
+`v0.1.0-preview.8` → package version `0.1.0-preview.8`) — there is no
 manually maintained version number and no GitVersion tooling involved.
 This is a repository-maintenance detail, not something a consumer needs to
 configure.
@@ -61,7 +61,7 @@ dotnet add package CymruBlazor --prerelease
 or, pinned:
 
 ```bash
-dotnet add package CymruBlazor --version 0.1.0-preview.6
+dotnet add package CymruBlazor --version 0.1.0-preview.8
 ```
 
 Using [Central Package Management](https://learn.microsoft.com/nuget/consume-packages/central-package-management)?
@@ -70,7 +70,7 @@ version in the project file:
 
 ```xml
 <!-- Directory.Packages.props -->
-<PackageVersion Include="CymruBlazor" Version="0.1.0-preview.6" />
+<PackageVersion Include="CymruBlazor" Version="0.1.0-preview.8" />
 ```
 
 ```xml
@@ -150,7 +150,7 @@ components resolve services from DI at render time and will throw if
 |---|---|
 | `IComponentIdGenerator` | Deterministic element IDs across all components (labels, `aria-describedby`, etc.) |
 | `IThemeService` | `CyThemeProvider`, and any component you build that reacts to theme changes |
-| `IFocusManager` | `FocusTrap`, and transitively `CyNavigation`'s mobile menu |
+| `IFocusManager` | `CyFocusTrap`, and transitively `CyNavigation`'s mobile menu |
 | `IPackageVersionService` | `CyFooter`'s optional `ShowVersion` parameter (looks up the published NuGet version) |
 | Mediator pipeline (`IMediator`, notification handlers) | `CyLiveRegion`'s screen-reader announcement handling |
 
@@ -180,28 +180,29 @@ Add these as needed for the areas you use:
 
 | Namespace | Contains |
 |---|---|
-| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink` |
+| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyHeader`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink` |
 | `CymruBlazor.Components.Content` | `CyCard`, `CyAlert`, `CyIcon`, `CyTypography` |
 | `CymruBlazor.Components.Forms` | `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary` |
 | `CymruBlazor.Components.Theming` | `CyThemeProvider` |
 | `CymruBlazor.Components.Branding` | `CyBrandLogo`, `CyLanguageToggle` |
-| `CymruBlazor.Components.Accessibility` | `FocusTrap`, `CyLiveRegion`, `CyScreenReaderOnly` |
-| `CymruBlazor.Components.Button` | `Button` (see note below — intentionally unprefixed and minimal) |
-| `CymruBlazor.Enums` | `ComponentSize`, `ContainerSize`, `Orientation`, `AlignItems`, `JustifyContent`, `GridColumns`, `GridGap`, `HeroBackground`, `SidebarPosition`, `SidebarWidth`, `SidebarCollapseMode`, `TypographyVariant`, `ValidationState`, `AppLanguage`, `BrandLogoVariant`, `LiveRegionPoliteness`, `IconPosition` |
+| `CymruBlazor.Components.Accessibility` | `CyFocusTrap`, `CyLiveRegion`, `CyScreenReaderOnly` |
+| `CymruBlazor.Components.Button` | `CyButton` (`Variant`, `Size`, `Disabled`, `Loading`, `Href`, `Type`, `OnClick` — see note below) |
+| `CymruBlazor.Enums` | `ComponentSize`, `ComponentColour`, `ComponentElevation`, `ContainerSize`, `Orientation`, `AlignItems`, `JustifyContent`, `GridColumns`, `GridGap`, `HeroBackground`, `SidebarPosition`, `SidebarWidth`, `SidebarCollapseMode`, `TypographyVariant`, `ValidationState`, `AppLanguage`, `BrandLogoVariant`, `LiveRegionPoliteness`, `IconPosition` |
 | `CymruBlazor.Themes` | `IThemeService`, `ThemeMode`, `ThemeDefinition`, `ThemeChangedEventArgs` |
 | `CymruBlazor.Accessibility.Focus` | `IFocusManager`, `IKeyboardNavigationService` |
 | `CymruBlazor.Accessibility.Notifications` | `LiveRegionAnnouncement` |
 
 > **Naming note:** every component uses a `Cy` prefix (`CyContainer`,
-> `CyNavigation`, `CyTextBox`, …), **not** the `Cymru`-prefixed names
-> shown in `PRD.md`/`PROMPT.md` (those describe an earlier planning
-> document, not the shipped API). Two components are deliberate,
-> historical exceptions and ship without any prefix: `Button` and
-> `FocusTrap`. `Button` in particular is currently minimal — it renders a
-> plain `<button class="cymru-btn">` with only a `ChildContent`
-> parameter; it does not yet support variants, click handling, or a
-> disabled state. Prefer building your own button markup with utility
-> classes, or wiring up `@onclick` yourself, until this is extended.
+> `CyNavigation`, `CyTextBox`, `CyButton`, `CyFocusTrap`, …), **not** the
+> `Cymru`-prefixed names shown in `PRD.md`/`PROMPT.md` (those describe an
+> earlier planning document, not the shipped API). `CyButton` and
+> `CyFocusTrap` were originally shipped unprefixed (`Button`, `FocusTrap`)
+> and later renamed - if you're looking at an example predating that
+> rename, add the `Cy` prefix. `CyButton` is no longer minimal: it
+> supports `Variant` (`ComponentColour`), `Size` (`ComponentSize`),
+> `Disabled`, `Loading` (shows a spinner, blocks `OnClick`), `Href`
+> (renders as `<a>` instead of `<button>` when set and not disabled),
+> `Type`, and `OnClick`.
 
 ---
 
@@ -329,13 +330,13 @@ user makes an explicit in-app choice.
 Beyond the WCAG-aligned markup baked into every component, CymruBlazor
 ships two accessibility-specific building blocks worth knowing about:
 
-**`FocusTrap`** — wrap transient UI (mobile menus, dialogs) to contain
+**`CyFocusTrap`** — wrap transient UI (mobile menus, dialogs) to contain
 keyboard focus and optionally restore it on close:
 
 ```razor
-<FocusTrap Enabled="_menuOpen" AutoFocus="true" RestoreFocus="true">
+<CyFocusTrap Enabled="_menuOpen" AutoFocus="true" RestoreFocus="true">
     ...
-</FocusTrap>
+</CyFocusTrap>
 ```
 
 **`CyLiveRegion`** — announces dynamic content changes to screen readers.

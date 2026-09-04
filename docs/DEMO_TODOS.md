@@ -13,162 +13,166 @@
 
 ## Missing Components
 
-### 🔴 `CyTabs` / `CyTabPanel`
+### 🟡 `CyTabs` / `CyTabPanel`
 
 - **Needed by**: Every component page — Examples | API | Accessibility tab bar
-- **Priority**: HIGH — blocks the core component page UX pattern
-- **Spec**:
-  - Props: `Items` (list of `{ Id, Label }` tab definitions), `ActiveTab` (two-way bindable string)
-  - Keyboard: Left/Right arrow keys navigate between tabs, Enter/Space activates, Home/End jump to first/last
-  - ARIA: `role="tablist"`, `role="tab"`, `aria-selected`, `role="tabpanel"`, `aria-labelledby`
-  - Variants: underline (default), pill
-  - Each tab panel uses `role="tabpanel"` with `tabindex="0"` and `aria-labelledby`
-- **Temporary workaround**: Demo uses `<div>` tab list with Blazor `bool` state and manual CSS
+- **Priority**: MEDIUM — downgraded from HIGH. The demo's hand-rolled tab bar
+  now has correct ARIA semantics (`role="tablist"`/`role="tab"`/`aria-selected`/
+  `role="tabpanel"`/`aria-controls`/`aria-labelledby`, retrofitted across all 18
+  tabbed pages), so this is no longer an accessibility blocker — but it's still
+  duplicated by hand in every one of those 18 pages. A real `CyTabs` component
+  would eliminate that duplication and reduce the risk of the same mistake
+  recurring elsewhere; it just isn't blocking anything anymore.
+- **Spec**: unchanged from the original — see git history for the full spec if
+  reviving this.
+- **Current workaround**: `<div>` tab list with Blazor `bool` state, manual
+  ARIA attributes, and manual CSS, hand-copied into each component doc page.
 
 ---
 
 ### 🟡 `CyAccordion` / `CyAccordionItem`
 
 - **Needed by**: Sidebar navigation section expand/collapse
-- **Priority**: MEDIUM — sidebar is functional with `<details>/<summary>` as interim
-- **Spec**:
-  - `CyAccordion`: optional `AllowMultipleOpen` bool
-  - `CyAccordionItem`: `Header` (string or RenderFragment), `IsExpanded` (bindable), `Id`
-  - ARIA: `aria-expanded`, `aria-controls` on trigger; `role="region"` on panel
-  - Animation: CSS `max-height` transition (no JS)
-- **Temporary workaround**: Native HTML `<details>`/`<summary>` (accessible without JS)
+- **Priority**: MEDIUM — unchanged. `DemoSidebar.razor` still uses native
+  `<details>`/`<summary>`, which remains a perfectly accessible interim (no JS
+  needed, native keyboard/screen-reader support) — this is a "nice to have
+  reusable component" gap, not a functional one.
 
 ---
 
-### 🔴 `CyButton` — Icon-only variant
+### 🟡 `CyButton` — Icon-only variant
 
-- **Needed by**: Header theme toggle button (☾/☀), header search button (🔍), code block copy button
-- **Priority**: HIGH — all currently use hand-coded `<button>` elements in the demo
-- **Spec**:
-  - New variant mode: `ButtonVariant.Icon` or a separate `CyIconButton` component
-  - Props: `AriaLabel` (required, no default — WCAG 4.1.2), icon via `ChildContent` or `Icon` param
-  - Sizes: match existing `ComponentSize` enum
-  - Note: `AriaLabel` **must be required** — icon-only buttons without an accessible name violate WCAG 2.1 SC 4.1.2
-- **Temporary workaround**: Hand-coded `<button aria-label="...">` in `DemoHeader.razor`
-
----
-
-### 🔴 `CyButton` — `Href` / anchor rendering
-
-- **Needed by**: Homepage hero CTA buttons ("Explore components →", "Get started")
-- **Priority**: HIGH — demo currently uses `<a class="cb-demo-btn">` (demo CSS utility)
-- **Spec**:
-  - When `Href` is set, render `<a>` instead of `<button>`
-  - All existing button styling/variants apply unchanged
-  - Add `Target` and `Rel` params for external links
-- **Temporary workaround**: `cb-demo-btn` utility class in `demo.css`
+- **Needed by**: Header theme toggle button, header search button
+- **Priority**: MEDIUM — downgraded from HIGH. `CyButton` itself gained a lot
+  since this was written (`Variant`, `Size`, `Disabled`, `Loading`, `Href`,
+  `Type`, `OnClick` — see CHANGELOG `0.1.0-preview.7`), but there's still no
+  dedicated icon-only mode, and `DemoHeader.razor`'s search/theme-toggle
+  buttons remain hand-coded `<button aria-label="...">` elements wrapping a
+  `CyIcon` rather than using `CyButton` at all.
+- **Current workaround**: hand-coded `<button>` + `CyIcon` in `DemoHeader.razor`.
 
 ---
 
-### 🟡 `CyBadge` / `CyTag`
+### ✅ `CyButton` — `Href` / anchor rendering — **RESOLVED** (`0.1.0-preview.7`)
 
-- **Needed by**: Technology badge strip on homepage hero, category labels on component cards
-- **Priority**: MEDIUM
-- **Spec**:
-  - Small inline label pill — purely presentational, not interactive
-  - Props: `Variant` (neutral, primary, success, warning, danger, info), `Size` (sm/md)
-  - Renders as `<span>` with appropriate ARIA role if used as a status indicator
-- **Temporary workaround**: Inline `<span>` with utility classes in `Home.razor`
-
----
-
-### 🔴 `CyCodeBlock`
-
-- **Needed by**: All component demo pages — code snippets with copy functionality
-- **Priority**: HIGH — code display and copy are core to any documentation experience
-- **Spec**:
-  - Props: `Language` (string: "razor", "csharp", "bash"), `Code` (string), `Label` (optional header string)
-  - Copy button triggers `navigator.clipboard.writeText` via `IJSRuntime`
-  - "Copied!" confirmation announced via `CyLiveRegion` (Mediator message)
-  - Syntax highlighting: CSS-only token colouring applied to HTML escaped content
-    (no JS syntax highlighter dependency — respects the library's minimal-dependency principle)
-  - Dark code surface using `--cymru-navy-900` background token
-- **Temporary workaround**: Raw `<pre><code>` styled via `demo.css` + per-page clipboard JS interop
+`CyButton.Href` now renders as `<a>` (instead of `<button>`) when set and the
+button isn't disabled. **Follow-up still open**: `Home.razor`'s hero CTAs
+(`Explore components →`, `Get started`) haven't been migrated to use it yet —
+they still use the `cb-demo-btn` demo CSS utility on plain `<a>` tags. Since
+the capability now exists in the library, migrating those two buttons is a
+small, low-risk cleanup rather than something blocked on the library.
 
 ---
 
-### ⚪ `CySearchModal` / `CyCommandPalette`
+### 🟢 `CyBadge` / `CyTag`
 
-- **Needed by**: Header search (Ctrl+K shortcut) — PR 4 scope
-- **Priority**: LOW
-- **Spec**:
-  - Triggered by Ctrl+K keyboard shortcut or clicking the search icon
-  - Full-screen overlay modal
-  - Text `<input>` with instant Blazor-side filtering (no JS search library)
-  - Results grouped by: Components / Documentation
-  - Keyboard: Arrow keys navigate results, Enter to follow link, Escape to close
-  - Uses `CyFocusTrap` internally (already exists in library ✅)
-- **Temporary workaround**: Search button is a non-functional stub in PR 1 (aria-disabled)
+- **Needed by**: Technology badge strip on homepage hero, category labels on
+  component cards
+- **Priority**: MEDIUM — unchanged. `Home.razor` still uses inline `<span>`
+  with the `cb-badge`/`cb-badge--pill` demo utility classes.
+
+---
+
+### 🟢 `CyCodeBlock`
+
+- **Needed by**: All component demo pages — code snippets with copy
+  functionality
+- **Priority**: MEDIUM — downgraded from HIGH now that a solid demo-level
+  workaround exists and is used consistently everywhere. `Shared/
+  DemoCodeBlock.razor` provides language label, a working copy-to-clipboard
+  button (via `IJSRuntime` + `navigator.clipboard.writeText`), and dark-surface
+  styling, and is used across every component doc page. What it doesn't have:
+  the "Copied!" confirmation is a plain text-swap on the button, not announced
+  via `CyLiveRegion`/a Mediator message as originally specced, and there's no
+  CSS-only syntax highlighting. A real `CyCodeBlock` library component would
+  still be valuable to avoid every consuming app rebuilding this, but it's no
+  longer a hole in the demo's own experience.
+- **Current workaround**: `Shared/DemoCodeBlock.razor` (demo-specific).
+
+---
+
+### ✅ `CySearchModal` / `CyCommandPalette` — feature resolved, component still doesn't exist
+
+Full Ctrl+K search (global shortcut, results grouped/ranked by title →
+category → description, arrow-key/Enter/Escape keyboard navigation, focus
+trapped via the existing `CyFocusTrap`) is built and working, as
+`Shared/DemoSearchModal.razor` + `Shared/DemoNavigationIndex.cs` +
+`wwwroot/js/search.js` (demo-specific — the global-shortcut listener needed a
+small JS interop bridge, since Blazor has no native way to observe a
+document-level keydown regardless of focus). The **feature** gap this item
+described is closed; whether a generalised `CySearchModal` library component
+is worth extracting from the demo-specific implementation is a separate,
+lower-priority question, since the current implementation is tightly coupled
+to `DemoNavigationIndex`'s page list.
 
 ---
 
 ### ⚪ `CyDivider`
 
 - **Needed by**: Sidebar section separators, footer visual divider
-- **Priority**: LOW
-- **Spec**: Horizontal `<hr>` or vertical variant using `--cymru-color-border` token
-- **Temporary workaround**: CSS `border-bottom` on sidebar section headings
+- **Priority**: LOW — unchanged. Still a CSS `border-bottom` on sidebar
+  section headings.
 
 ---
 
 ## Existing Component Enhancements
 
-### 🔴 `CyNavigation` / `CyNavigationItem` — active link state
+### ✅ `CyNavigation` / `CyNavigationItem` — active link state — **already correct**
 
-- **Current**: `CyNavigationItem` renders an `<a>` tag but has no Blazor `NavLink` active-matching
-- **Needed**: `CyNavigationItem` should behave like Blazor's `NavLink` — applying an active CSS class
-  when the current route matches `Href` (with optional `Match` param: `All` vs `Prefix`)
-- **Why blocking**: `DemoHeader.razor` cannot switch to `CyNavigation` until active state works correctly
-- **Priority**: HIGH (PR 1 blocker for the header)
+Checked directly: `CyNavigationItem.razor` already wraps a Blazor `NavLink`
+with `ActiveClass="cy-navigation__link--active"` and
+`Match="NavLinkMatch.Prefix"`. This was not actually blocking anything by the
+time it was checked — unclear whether it was fixed before this note was
+written or the original note was simply inaccurate. `DemoHeader.razor` still
+uses plain `NavLink` elements directly rather than `CyNavigation`/
+`CyNavigationItem` for its primary nav, but that's a deliberate choice (see
+`/navigation/header`'s own docs) to keep the demo's off-canvas mobile drawer
+as the single mobile-nav mechanism, rather than composition trouble — not
+because the active-state capability doesn't work.
 
 ---
 
-### 🔴 `CySidebar` — mobile off-canvas drawer
+### ✅ `CySidebar` — mobile off-canvas drawer — resolved at the demo level, not in the library
 
-- **Current**: `CySidebar` supports `CollapseMode.Compact`, `CollapseMode.IconOnly`, `CollapseMode.Hidden`
-  but has no off-canvas/drawer pattern for mobile viewports
-- **Needed**: A `CollapseMode.Drawer` (or `CollapseMode.OffCanvas`) mode where:
-  - At mobile widths, the sidebar renders as an absolutely-positioned overlay drawer
-  - Overlay dims the main content when the drawer is open
-  - `CyFocusTrap` is applied when drawer is open
-  - `Collapsed = true` closes it; hamburger button in header sets `Collapsed = false`
-- **Priority**: HIGH (PR 1 blocker for correct mobile layout)
+A real off-canvas drawer with backdrop, focus trapping, and Escape-to-close
+exists and works — but it's implemented in the **demo's** `MainLayout.razor`
+(Blazor component state + `NavigationManager.LocationChanged` to auto-close on
+navigation) and `DemoSidebar.razor` (an `IsOpen` parameter toggling a CSS
+transform), not as a `CollapseMode.Drawer`/`CollapseMode.OffCanvas` mode on
+the library's `CySidebar` itself. `CySidebar`'s own `CollapseMode` enum is
+unchanged. If another consuming app wants this exact off-canvas behaviour,
+they'd currently need to reimplement it rather than opt into it via a
+parameter — that's the real remaining gap.
 
 ---
 
 ### 🟢 `CyFooter` — typed link group slots
 
-- **Current**: `CyFooter` accepts `Copyright`, `Version`, `ShowVersion`, `PackageId`
-  but the link columns are not yet configurable without `ChildContent` raw markup
-- **Needed**: A `LinkGroups` parameter accepting a typed collection:
-  ```csharp
-  record FooterLinkGroup(string Title, IReadOnlyList<FooterLink> Links);
-  record FooterLink(string Label, string Href, bool External = false);
-  ```
-  so `DemoFooter.razor` can be simplified to a single `<CyFooter>` configuration
-- **Priority**: MEDIUM
+- **Priority**: MEDIUM — unchanged; not what actually got built. `CyFooter`
+  gained a `Background` parameter instead (`0.1.0-preview.7` — see CHANGELOG),
+  which was a different, real gap (no way to use it on a light page without
+  the hardcoded navy). The originally-requested typed `LinkGroups`/
+  `FooterLink` API for configuring columns without raw `ChildContent` markup
+  is still open — `DemoFooter.razor` still passes four hand-written `<div>`
+  groups as `ChildContent`.
 
 ---
 
-### 🟢 `CyHeroBanner` — verify navy gradient rendering
+### ⚪ `CyHeroBanner` — verify navy gradient rendering
 
-- **Current**: `HeroBackground.Primary` background is documented for dark header use
-- **Needed**: Confirm the gradient `linear-gradient(135deg, #1b294a, #325083)` is applied or that
-  `--cymru-color-accent` tokens produce the correct dark navy hero for the new homepage design
-- **Priority**: LOW — likely works, just needs visual verification in the demo
+- **Priority**: LOW, and arguably moot now. `Home.razor` no longer uses
+  `CyHeroBanner` at all — the homepage hero was rebuilt as custom
+  `<section class="cb-home__hero">` markup with its own gradient treatment
+  (see `Home.razor.css`), trading dogfooding this component for more visual
+  control. `CyHeroBanner` itself is unchanged and unverified either way; there
+  just isn't a live reference usage of it left in the demo to verify against.
 
 ---
 
-### 🟢 `CyButton` — `Loading` state visual indicator
+### ✅ `CyButton` — `Loading` state visual indicator — **RESOLVED** (`0.1.0-preview.7`)
 
-- **Current**: `CyButton` may or may not have a `Loading` prop — needs verification
-- **Needed for playground**: Loading state (`Loading="true"`) should show a spinner and disable interaction
-- **Priority**: MEDIUM (needed for component playground in PR 3)
+`Loading="true"` shows a spinner and disables interaction (blocks `OnClick`)
+without changing the button's width. Live, working example: `/forms/button`.
 
 ---
 
@@ -177,51 +181,63 @@
 ### 🟡 Design Principles page
 
 - **Route**: `/design-principles`
-- **Content**: The CymruBlazor design principles:
-  1. Accessible by default
-  2. C# first
-  3. Composable components
-  4. Minimal dependencies
-  5. Predictable APIs
-  6. Themeable by design
-  7. Tested components
-- **No library gap** — pure documentation prose page
+- **Priority**: HIGH — unchanged, still doesn't exist. Pure documentation
+  prose page, no library gap.
 
 ---
 
 ### 🟡 Component category overview pages
 
-- **Routes**: `/layouts`, `/forms`, `/content`, `/branding`, `/accessibility`
-- **Content**: Grid of `CyCard` components linking to individual component pages
-- **Library requirement**: `CyCard` (exists ✅) + `CyGrid` (exists ✅)
-- **Missing**: These overview pages don't exist yet — each shows a card per component in that category
+- **Routes**: `/layouts` (**exists** — `LayoutsOverview.razor`, predates this
+  list), `/forms`, `/content`, `/branding`, `/accessibility` (**still don't
+  exist**)
+- **Content**: Grid of `CyCard` components linking to individual component
+  pages within that category
+- **Library requirement**: `CyCard` ✅, `CyGrid` ✅ — both exist and are
+  unblocked; this is purely demo page-authoring work.
 
 ---
 
-### 🟢 Prev/next component navigation
+### ✅ Prev/next component navigation — **RESOLVED**
 
-- **Needed by**: Bottom of each component page — "← CyStack" / "CyGrid →" links
-- **No library component needed** — demo-specific `DemoComponentNav.razor` shared component
-- **Priority**: PR 4 scope
+`Shared/DemoPageNav.razor` + `Shared/DemoNavigationIndex.cs`, wired into
+`MainLayout.razor` once (not per-page), so it appears automatically at the
+bottom of every page in the index and correctly shows nothing on pages
+outside it (e.g. Home). Exactly the demo-specific, no-library-component-needed
+shape originally specced.
 
 ---
 
 ### 🟢 "Edit on GitHub" links
 
-- **Needed by**: Each component page — links to source `.razor` file on GitHub
-- **No library component needed** — simple anchor with constructed URL
-- **Priority**: MEDIUM
+- **Priority**: MEDIUM — unchanged, and only partially done. `/forms/button`
+  has a working "Open in GitHub" link to `CyButton.razor`'s source; no other
+  component page has one yet. Still no library component needed — this is
+  purely a matter of adding the same link, with the right per-component path,
+  to the remaining ~28 pages.
 
 ---
 
 ## Resolved Gaps
 
-*(Move items here when the corresponding library PR is merged)*
-
-| Component | Fixed in PR | Date |
+| Item | Resolved in | Notes |
 |---|---|---|
-| — | — | — |
+| `CyButton` — `Href`/anchor rendering | `0.1.0-preview.7` | Library. `Home.razor`'s hero CTAs not yet migrated to use it — see note above. |
+| `CyButton` — `Loading` state | `0.1.0-preview.7` | Library. |
+| `CyButton` — `Variant`/`Size`/`Disabled`/`Type`/`OnClick` | `0.1.0-preview.7` | Library. Not originally listed as a separate item, but was previously a `ChildContent`-only wrapper. |
+| `CySearchModal` (feature, not as a reusable component) | `0.1.0-preview.7` | Demo-only (`DemoSearchModal.razor`). Global Ctrl+K shortcut needed a small JS interop bridge (`wwwroot/js/search.js`). |
+| `CySidebar` mobile off-canvas drawer (feature, not as a `CySidebar` mode) | `0.1.0-preview.7` | Demo-only (`MainLayout.razor` + `DemoSidebar.razor`). |
+| Prev/next component navigation | `0.1.0-preview.7` | Demo-only (`DemoPageNav.razor`), as originally specced. |
+| `CyTabs` ARIA semantics (not the component itself) | `0.1.0-preview.7` | Demo-only; retrofitted across all 18 tabbed pages. Component itself still doesn't exist — see updated entry above. |
+| `CyNavigation`/`CyNavigationItem` active link state | Already correct when checked | Turned out not to be broken; note may always have been inaccurate. |
+| `CyIcon` — `StrokeWidth`/`Color` parameters | `0.1.0-preview.8` | Library. Not originally listed as a gap, but a real addition. |
+| `CyBrandLogo` illegible on dark headers | `0.1.0-preview.8` | Library bug fix, found while building `CyHeader`. |
+| `CyHeader` (new component) | `0.1.0-preview.7` | Library. Not originally listed here as a missing component, but genuinely didn't exist before. |
+| `CyFooter.Background` | `0.1.0-preview.7` | Library. Different gap than the "typed link group slots" item below, which is still open. |
 
 ---
 
-*Last updated: 2026-08-24. Maintained as part of the `feature/demo-workbench-shell` branch.*
+*Last updated: 2026-09-05, following the `0.1.0-preview.7`/`0.1.0-preview.8`
+releases. Every status above was re-verified against the actual current code
+(not assumed from memory) before being marked resolved, downgraded, or left
+open.*
