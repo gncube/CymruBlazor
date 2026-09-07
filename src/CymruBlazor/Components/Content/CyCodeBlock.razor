@@ -1,0 +1,31 @@
+@inherits CyComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <div class="cy-code-block__header">
+
+        <span class="cy-code-block__language">@LanguageLabel</span>
+
+        @if (ShowCopyButton)
+        {
+            <button
+                type="button"
+                class="cy-code-block__copy"
+                @onclick="CopyToClipboardAsync">
+
+                <CyIcon Name="@(_copyFailed ? "close" : (_copied ? "check" : "copy"))" Size="14" />
+
+                <span>@CopyButtonText</span>
+
+            </button>
+        }
+
+    </div>
+
+    <pre class="cy-code-block__pre"><code class="cy-code-block__code">@Code</code></pre>
+
+</div>

@@ -1,0 +1,13 @@
+@inherits CyLayoutComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+</div>

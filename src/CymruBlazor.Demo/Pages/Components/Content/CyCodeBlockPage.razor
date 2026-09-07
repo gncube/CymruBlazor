@@ -1,0 +1,137 @@
+@page "/content/code-block"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyCodeBlock</h1>
+    <a class="cb-open-in-github"
+       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyCodeBlock.razor"
+       target="_blank" rel="noopener noreferrer">
+        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+    </a>
+    <p class="cb-page-description">
+        A labelled, read-only code sample with a copy-to-clipboard button.
+        This is now the library's own answer to what
+        <code>Shared/DemoCodeBlock.razor</code> was a demo-only stand-in
+        for — same dark-surface presentation, but the "Copied"
+        confirmation is announced to screen readers via
+        <code>CyLiveRegion</code>, not just swapped as visible button text.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Basic usage</h2>
+    <p class="cb-section-description">
+        Try the copy button with a screen reader running — the confirmation
+        is announced through the <code>CyLiveRegion</code> mounted once in
+        this site's <code>MainLayout</code>, not only shown as text on the
+        button itself.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyCodeBlock Language="razor" Code="@_buttonExampleCode" />
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyCodeBlock Language="razor" Code="&#64;_buttonExampleCode" /&gt;
+
+&#64;code {
+    private const string _buttonExampleCode =
+        """&lt;CyButton Variant="ComponentColour.Primary"&gt;Save&lt;/CyButton&gt;""";
+}</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Without the copy button</h2>
+    <p class="cb-section-description">
+        Set <code>ShowCopyButton="false"</code> for reference snippets that
+        aren't meant to be copied verbatim (e.g. abbreviated with "...").
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyCodeBlock Language="bash" ShowCopyButton="false" Code="dotnet run --project src/CymruBlazor.Demo" />
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyCodeBlock Language="bash" ShowCopyButton="false" Code="..." /&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="CyCodeBlock parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Code</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The code sample text. Rendered verbatim, HTML-encoded — no syntax highlighting</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Language</td>
+                <td class="cb-api-table__type">string</td>
+                <td class="cb-api-table__default">"text"</td>
+                <td>The language label shown in the header — a display label only, doesn't drive highlighting</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ShowCopyButton</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">true</td>
+                <td>Hides the copy button entirely when false</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">AnnouncementPoliteness</td>
+                <td class="cb-api-table__type">LiveRegionPoliteness</td>
+                <td class="cb-api-table__default">Polite</td>
+                <td>Politeness used for the success announcement. Failures always announce as Assertive</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-6)">
+        <li>
+            Copying calls the browser's native
+            <code>navigator.clipboard.writeText</code> directly via a single
+            JS interop call — not a custom JS module — per this project's
+            "minimise JavaScript" principle.
+        </li>
+        <li>
+            A successful copy both swaps the button's visible text to
+            "Copied" (for sighted users watching the button) <em>and</em>
+            publishes a screen-reader announcement through the Mediator
+            pipeline to any <code>CyLiveRegion</code> registered in the
+            app — a screen reader user who has moved focus away from the
+            button after clicking it would otherwise never learn the copy
+            succeeded.
+        </li>
+        <li>
+            A failed copy (e.g. clipboard access denied, or unavailable on
+            a non-HTTPS origin) announces assertively rather than silently
+            leaving the user unsure whether it worked.
+        </li>
+        <li>
+            No syntax highlighting is applied — this was a known gap in the
+            demo-level workaround this component replaces, and remains a
+            reasonable follow-up rather than something addressed here.
+        </li>
+    </ul>
+</div>
+
+@code {
+    private const string _buttonExampleCode =
+        """<CyButton Variant="ComponentColour.Primary">Save</CyButton>""";
+}

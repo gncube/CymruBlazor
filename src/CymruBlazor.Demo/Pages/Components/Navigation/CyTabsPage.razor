@@ -1,0 +1,220 @@
+@page "/navigation/tabs"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyTabs</h1>
+    <a class="cb-open-in-github"
+       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyTabs.razor"
+       target="_blank" rel="noopener noreferrer">
+        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+    </a>
+    <p class="cb-page-description">
+        A set of tabs, each showing one child <code>CyTabPanel</code> at a
+        time. Implements the WAI-ARIA Tabs pattern with automatic
+        activation and a roving <code>tabindex</code> — Left/Right and
+        Home/End move focus between tabs, and moving focus also selects.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Basic usage</h2>
+    <p class="cb-section-description">
+        Left unbound, the first <code>CyTabPanel</code> is active by
+        default. This is the exact pattern every component documentation
+        page on this site now uses for its own Examples/API/Accessibility
+        tab bar — see the "Open in GitHub" link above versus the hand-copied
+        markup this replaces on older pages.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyTabs TabListAriaLabel="Component documentation">
+                <CyTabPanel TabId="examples" Title="Examples">
+                    <p>Example usage would go here.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="api" Title="API">
+                    <p>The API reference table would go here.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="accessibility" Title="Accessibility">
+                    <p>Accessibility notes would go here.</p>
+                </CyTabPanel>
+            </CyTabs>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTabs TabListAriaLabel="Component documentation"&gt;
+    &lt;CyTabPanel TabId="examples" Title="Examples"&gt;
+        &lt;p&gt;Example usage would go here.&lt;/p&gt;
+    &lt;/CyTabPanel&gt;
+    &lt;CyTabPanel TabId="api" Title="API"&gt;
+        &lt;p&gt;The API reference table would go here.&lt;/p&gt;
+    &lt;/CyTabPanel&gt;
+    &lt;CyTabPanel TabId="accessibility" Title="Accessibility"&gt;
+        &lt;p&gt;Accessibility notes would go here.&lt;/p&gt;
+    &lt;/CyTabPanel&gt;
+&lt;/CyTabs&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Controlled with two-way binding</h2>
+    <p class="cb-section-description">
+        Bind <code>@@bind-ActiveTabId</code> to drive the active tab from
+        your own state, or to deep-link a specific tab (e.g. from a query
+        string).
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview">
+            <CyTabs TabListAriaLabel="Controlled tabs example" @bind-ActiveTabId="_activeTabId">
+                <CyTabPanel TabId="day" Title="Day view">
+                    <p>Day view content.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="week" Title="Week view">
+                    <p>Week view content.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="month" Title="Month view">
+                    <p>Month view content.</p>
+                </CyTabPanel>
+            </CyTabs>
+            <p style="margin-block-start:var(--cymru-space-4);
+                      font-size:var(--cymru-font-size-sm);
+                      color:var(--cymru-color-text-muted)">
+                Active tab id: <strong>@_activeTabId</strong>
+            </p>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTabs TabListAriaLabel="..." &#64;bind-ActiveTabId="_activeTabId"&gt;
+    &lt;CyTabPanel TabId="day" Title="Day view"&gt;...&lt;/CyTabPanel&gt;
+    &lt;CyTabPanel TabId="week" Title="Week view"&gt;...&lt;/CyTabPanel&gt;
+    &lt;CyTabPanel TabId="month" Title="Month view"&gt;...&lt;/CyTabPanel&gt;
+&lt;/CyTabs&gt;
+
+&#64;code {
+    private string? _activeTabId;
+}</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Disabled tab</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyTabs TabListAriaLabel="Tabs with a disabled tab">
+                <CyTabPanel TabId="overview" Title="Overview">
+                    <p>Overview content.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="advanced" Title="Advanced" Disabled="true">
+                    <p>This content is unreachable — the tab is disabled.</p>
+                </CyTabPanel>
+            </CyTabs>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTabPanel TabId="advanced" Title="Advanced" Disabled="true"&gt;
+    ...
+&lt;/CyTabPanel&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API — CyTabs</h2>
+    <table class="cb-api-table" aria-label="CyTabs parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">TabListAriaLabel</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The accessible name for the tab list</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ActiveTabId</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">first panel's TabId</td>
+                <td>The TabId of the active tab. Two-way bindable via <code>@@bind-ActiveTabId</code></td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">ActiveTabIdChanged</td>
+                <td class="cb-api-table__type">EventCallback&lt;string&gt;</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Raised with the new TabId when a tab is activated</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API — CyTabPanel</h2>
+    <table class="cb-api-table" aria-label="CyTabPanel parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">TabId</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Stable identifier for activation, focus order, and generated DOM ids</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Title</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The tab button's label text</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Disabled</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>Renders the tab disabled and skips it during keyboard navigation</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-6)">
+        <li>
+            The tab list is <code>role="tablist"</code>, each tab is
+            <code>role="tab"</code> with <code>aria-selected</code>, and
+            each panel is <code>role="tabpanel"</code> linked back to its
+            tab via <code>aria-labelledby</code>.
+        </li>
+        <li>
+            Only the active tab is in the Tab-key sequence
+            (<code>tabindex="0"</code>); inactive tabs use
+            <code>tabindex="-1"</code> and are reached with the arrow keys
+            instead — the standard roving-tabindex pattern.
+        </li>
+        <li>
+            Left/Right move to the previous/next enabled tab (wrapping at
+            the ends and skipping disabled tabs); Home/End jump to the
+            first/last enabled tab.
+        </li>
+        <li>
+            As with <code>CyAccordion</code>, Home/End's browser-default
+            scroll behaviour isn't suppressed, to avoid adding JavaScript
+            purely for conditional <code>preventDefault</code>.
+        </li>
+    </ul>
+</div>
+
+@code {
+    private string? _activeTabId;
+}

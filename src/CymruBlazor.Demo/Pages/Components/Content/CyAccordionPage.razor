@@ -1,0 +1,187 @@
+@page "/content/accordion"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">CyAccordion</h1>
+    <a class="cb-open-in-github"
+       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyAccordion.razor"
+       target="_blank" rel="noopener noreferrer">
+        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+    </a>
+    <p class="cb-page-description">
+        A vertically stacked set of expand/collapse sections. Implements the
+        WAI-ARIA Accordion pattern: each <code>CyAccordionItem</code> header
+        is a button with <code>aria-expanded</code> controlling a region,
+        and Up/Down/Home/End move focus between section headers.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Default (single section open at a time)</h2>
+    <p class="cb-section-description">
+        By default, expanding a section collapses whichever other section
+        was open.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyAccordion DefaultExpandedItemId="eligibility">
+                <CyAccordionItem ItemId="eligibility" Title="Eligibility criteria">
+                    <p>You must be registered with a GP in Wales and have lived at your current address for at least 3 months.</p>
+                </CyAccordionItem>
+                <CyAccordionItem ItemId="how-to-apply" Title="How to apply">
+                    <p>Apply online through the NHS Wales portal, or by post using form NHW-12.</p>
+                </CyAccordionItem>
+                <CyAccordionItem ItemId="processing-time" Title="Processing time">
+                    <p>Applications are typically processed within 10 working days.</p>
+                </CyAccordionItem>
+            </CyAccordion>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyAccordion DefaultExpandedItemId="eligibility"&gt;
+    &lt;CyAccordionItem ItemId="eligibility" Title="Eligibility criteria"&gt;
+        &lt;p&gt;You must be registered with a GP in Wales...&lt;/p&gt;
+    &lt;/CyAccordionItem&gt;
+    &lt;CyAccordionItem ItemId="how-to-apply" Title="How to apply"&gt;
+        &lt;p&gt;Apply online through the NHS Wales portal...&lt;/p&gt;
+    &lt;/CyAccordionItem&gt;
+&lt;/CyAccordion&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Multiple sections open (AllowMultiple)</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyAccordion AllowMultiple="true">
+                <CyAccordionItem ItemId="section-a" Title="Section A">
+                    <p>Section A's content.</p>
+                </CyAccordionItem>
+                <CyAccordionItem ItemId="section-b" Title="Section B">
+                    <p>Section B's content — independent of Section A.</p>
+                </CyAccordionItem>
+            </CyAccordion>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyAccordion AllowMultiple="true"&gt;
+    &lt;CyAccordionItem ItemId="section-a" Title="Section A"&gt;...&lt;/CyAccordionItem&gt;
+    &lt;CyAccordionItem ItemId="section-b" Title="Section B"&gt;...&lt;/CyAccordionItem&gt;
+&lt;/CyAccordion&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Disabled section</h2>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Preview</span>
+        <div class="cb-example__preview">
+            <CyAccordion>
+                <CyAccordionItem ItemId="available" Title="Available section">
+                    <p>This section can be toggled normally.</p>
+                </CyAccordionItem>
+                <CyAccordionItem ItemId="unavailable" Title="Unavailable section" Disabled="true">
+                    <p>This content is not shown because the section is disabled.</p>
+                </CyAccordionItem>
+            </CyAccordion>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyAccordionItem ItemId="unavailable" Title="Unavailable section" Disabled="true"&gt;
+    ...
+&lt;/CyAccordionItem&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API — CyAccordion</h2>
+    <table class="cb-api-table" aria-label="CyAccordion parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">AllowMultiple</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>When false, expanding an item collapses any other open item</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">DefaultExpandedItemId</td>
+                <td class="cb-api-table__type">string?</td>
+                <td class="cb-api-table__default">null</td>
+                <td>The ItemId of the item that should start expanded</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API — CyAccordionItem</h2>
+    <table class="cb-api-table" aria-label="CyAccordionItem parameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">ItemId</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>Stable identifier used for expanded state and keyboard focus order</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Title</td>
+                <td class="cb-api-table__type">string (required)</td>
+                <td class="cb-api-table__default">—</td>
+                <td>The section header text</td>
+            </tr>
+            <tr>
+                <td class="cb-api-table__name">Disabled</td>
+                <td class="cb-api-table__type">bool</td>
+                <td class="cb-api-table__default">false</td>
+                <td>Renders the header disabled and skips it during keyboard navigation</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility</h2>
+    <ul style="color:var(--cymru-color-text);
+               line-height:1.75;
+               padding-inline-start:var(--cymru-space-6)">
+        <li>
+            Each header is a real <code>&lt;button&gt;</code> with
+            <code>aria-expanded</code>/<code>aria-controls</code>, and each
+            panel is a <code>role="region"</code> labelled by its header via
+            <code>aria-labelledby</code>.
+        </li>
+        <li>
+            Up/Down arrow keys move focus between section headers (wrapping
+            at the ends); Home/End jump to the first/last header.
+        </li>
+        <li>
+            Home/End's browser-default page-scroll behaviour is not
+            suppressed alongside the focus move — Blazor cannot
+            conditionally call <code>preventDefault</code> per key without
+            adding a JavaScript interop layer purely for this, which was
+            judged not worth it for a minor scroll side effect.
+        </li>
+        <li>
+            <code>CyAccordionItem</code> must be used inside a
+            <code>CyAccordion</code> — using it standalone throws an
+            <code>InvalidOperationException</code> rather than rendering
+            silently broken.
+        </li>
+    </ul>
+</div>

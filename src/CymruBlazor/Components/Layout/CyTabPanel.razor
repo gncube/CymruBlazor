@@ -1,0 +1,17 @@
+@inherits CyLayoutComponentBase
+
+@if (Parent is not null && Parent.IsActive(this))
+{
+    <div
+        id="@Parent.PanelId(this)"
+        role="tabpanel"
+        aria-labelledby="@Parent.TabButtonId(this)"
+        tabindex="0"
+        class="@CssClass"
+        style="@CssStyle"
+        @attributes="AdditionalAttributes">
+
+        @ChildContent
+
+    </div>
+}
