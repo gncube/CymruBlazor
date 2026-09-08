@@ -37,6 +37,17 @@ jobs:
       - name: Build
         run: dotnet build CymruBlazor.slnx -c Release --no-restore
 
+      - name: Install Playwright browsers
+        # AxeTestBase (CymruBlazor.AccessibilityTests) launches a real
+        # Chromium instance to run axe-core scans. The playwright.ps1
+        # script is generated into the test project's build output during
+        # `dotnet build` above, and its version always matches the
+        # Microsoft.Playwright package version referenced by the project,
+        # so it must run after Build and before Test.
+        run: >
+          pwsh tests/CymruBlazor.AccessibilityTests/bin/Release/net10.0/playwright.ps1
+          install --with-deps chromium
+
       - name: Test
         run: >
           dotnet test CymruBlazor.slnx -c Release --no-build
