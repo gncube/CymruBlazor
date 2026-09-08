@@ -10,7 +10,57 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
-Nothing yet.
+## [0.1.0-preview.9] - 2026-09-08
+
+### Added
+
+- `CyBadge` - a small label for categorisation, status, or metadata.
+  Covers the "tag"/chip use case too via `Dismissible`/`OnDismiss`,
+  rather than shipping a separate `CyTag` component for what only
+  differs by whether a dismiss affordance is present. Supports the
+  full `ComponentColour` palette (except `Unspecified`) and a `Pill`
+  toggle. See `/content/badge`.
+- `CyAccordion` / `CyAccordionItem` - a vertically stacked set of
+  expand/collapse sections implementing the WAI-ARIA Accordion
+  pattern, including Up/Down/Home/End keyboard navigation between
+  section headers via real `ElementReference.FocusAsync()` focus
+  moves. Replaces the native `<details>`/`<summary>` this was
+  previously only a "nice to have" wrapper around. See
+  `/content/accordion`.
+- `CyTabs` / `CyTabPanel` - a tabbed interface implementing the
+  WAI-ARIA Tabs pattern with automatic activation and a roving
+  `tabindex` (Left/Right/Home/End move focus and select). Intended to
+  replace the hand-copied tab bar markup duplicated across the site's
+  ~18 tabbed component documentation pages, though that migration
+  itself is a separate follow-up - this release only adds the
+  component and its own documentation page (`/navigation/tabs`).
+- `CyCodeBlock` - a labelled, read-only code sample display with a
+  copy-to-clipboard button, replacing `Shared/DemoCodeBlock.razor`
+  (demo-only) as the library's own answer to this. Copies via a
+  direct `navigator.clipboard.writeText` JS interop call (no custom
+  JS module), and announces success/failure through the Mediator
+  pipeline to any `CyLiveRegion` in the app - not just as a visual
+  button-label swap, which was the specific gap the demo-only
+  workaround had. Does not include syntax highlighting. See
+  `/content/code-block`.
+- Four missing component category overview pages: `/forms`,
+  `/content`, `/branding`, `/accessibility` (`/layouts` already
+  existed). Each is a `CyGrid`/`CyCard` grid linking to that
+  category's component pages, per the original spec for these pages.
+- "Open in GitHub" links added to the ~26 component documentation
+  pages that didn't already have one (`CyButton`'s `/forms/button`
+  was the only page with one before this release).
+
+### Changed
+
+- `Home.razor`'s hero CTAs ("Explore components", "Get started") now
+  use `CyButton Href=...` instead of plain `<a>` tags, now that
+  `CyButton.Href` exists (`0.1.0-preview.7`). Required re-scoping the
+  hero's CSS overrides with the `::deep` combinator, since Blazor CSS
+  isolation doesn't let `Home.razor.css` reach into a child
+  component's own rendered markup by default - a plain find/replace
+  of the anchor tag would have visibly broken the hero buttons'
+  styling.
 
 ## [0.1.0-preview.8] - 2026-09-02
 
