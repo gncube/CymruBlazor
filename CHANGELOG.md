@@ -10,6 +10,15 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+### Changed (demo only)
+
+- Demo pages migrated from obsolete `Shared/DemoCodeBlock.razor` wrapper
+  to direct usage of `CyCodeBlock` (library component). This removes the
+  compatibility wrapper and eliminates the demo application's own code
+  display abstraction, making all ~29 component documentation pages
+  consume the library's own public component. No behavioral change to
+  the demo site; this is purely a code organization improvement.
+
 ## [0.1.0-preview.9] - 2026-09-08
 
 ### Added
