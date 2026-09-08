@@ -13,13 +13,13 @@
 
 <div class="cb-section">
     <h2 class="cb-section-title">1. Install the package</h2>
-    <DemoCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
+    <CyCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
 </div>
 
 <div class="cb-section">
     <h2 class="cb-section-title">2. Reference the stylesheet</h2>
     <p class="cb-section-description">Add this to <code>wwwroot/index.html</code> (WASM) or <code>App.razor</code> (Server):</p>
-    <DemoCodeBlock Code="@_stylesheetCode" Language="html" />
+    <CyCodeBlock Code="@_stylesheetCode" Language="html" />
 </div>
 
 <div class="cb-section">
@@ -28,18 +28,18 @@
         Only needed if you want theme choice to persist across page loads and detect the OS colour-scheme
         preference. Without it, <code>CyThemeProvider</code> still works for the current session.
     </p>
-    <DemoCodeBlock Code="@_themeScriptCode" Language="html" />
+    <CyCodeBlock Code="@_themeScriptCode" Language="html" />
 </div>
 
 <div class="cb-section">
     <h2 class="cb-section-title">4. Register the services</h2>
-    <DemoCodeBlock Code="@_programCsCode" Language="csharp" />
+    <CyCodeBlock Code="@_programCsCode" Language="csharp" />
 </div>
 
 <div class="cb-section">
     <h2 class="cb-section-title">5. Wrap your app in CyThemeProvider</h2>
     <p class="cb-section-description">Once, in <code>MainLayout.razor</code>:</p>
-    <DemoCodeBlock Code="@_mainLayoutCode" Language="razor" />
+    <CyCodeBlock Code="@_mainLayoutCode" Language="razor" />
 </div>
 
 @code {
