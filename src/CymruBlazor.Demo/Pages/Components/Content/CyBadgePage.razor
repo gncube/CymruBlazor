@@ -1,174 +1,131 @@
 @page "/content/badge"
 @namespace CymruBlazor.Demo.Pages.Components.Content
 @using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.Shared
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">CyBadge</h1>
-    <a class="cb-open-in-github"
-       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyBadge.razor"
-       target="_blank" rel="noopener noreferrer">
-        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
-    </a>
-    <p class="cb-page-description">
-        A small label for categorisation, status, or metadata. Also covers
-        the "tag" use case — a removable/interactive chip — via
-        <code>Dismissible</code>, since the two only differ by whether a
-        dismiss affordance is present.
-    </p>
+<CyPageHeader Title="CyBadge" Subtitle="A small label for categorisation, status, or metadata.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyBadge" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Variants</h2>
-    <p class="cb-section-description">
-        <code>Variant</code> accepts any <code>ComponentColour</code> value
-        except <code>Unspecified</code>.
-    </p>
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview" style="display:flex;flex-wrap:wrap;gap:var(--cymru-space-2)">
-            <CyBadge Variant="ComponentColour.Primary">Primary</CyBadge>
-            <CyBadge Variant="ComponentColour.Secondary">Secondary</CyBadge>
-            <CyBadge Variant="ComponentColour.Tertiary">Tertiary</CyBadge>
-            <CyBadge Variant="ComponentColour.Success">Success</CyBadge>
-            <CyBadge Variant="ComponentColour.Warning">Warning</CyBadge>
-            <CyBadge Variant="ComponentColour.Danger">Danger</CyBadge>
-            <CyBadge Variant="ComponentColour.Info">Info</CyBadge>
-            <CyBadge Variant="ComponentColour.Surface">Surface</CyBadge>
-            <CyBadge Variant="ComponentColour.Neutral">Neutral</CyBadge>
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview">
+            <CyBadge Variant="_variant" Pill="_pill" Dismissible="_dismissible">@_label</CyBadge>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyBadge Variant="ComponentColour.Success"&gt;Success&lt;/CyBadge&gt;</code></pre>
-    </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Shape</h2>
-    <p class="cb-section-description">
-        <code>Pill="false"</code> uses the standard small corner radius
-        instead of a fully rounded pill.
-    </p>
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySelect Label="Variant" TValue="ComponentColour" @bind-Value="_variant" Options="_variantOptions" />
+                <DemoPropertyTextInput Label="Label" @bind-Value="_label" />
+                <DemoPropertySwitch Label="Pill" @bind-Value="_pill" />
+                <DemoPropertySwitch Label="Dismissible" @bind-Value="_dismissible" />
+            </DemoPropertyControls>
 
-    <div class="cb-example">
-        <span class="cb-example__label">Preview</span>
-        <div class="cb-example__preview" style="display:flex;gap:var(--cymru-space-2)">
-            <CyBadge Variant="ComponentColour.Primary" Pill="true">Pill</CyBadge>
-            <CyBadge Variant="ComponentColour.Primary" Pill="false">Square</CyBadge>
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyBadge.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
         </div>
-        <pre class="cb-example__code"><code>&lt;CyBadge Pill="false"&gt;Square&lt;/CyBadge&gt;</code></pre>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            A common combination: several dismissible badges used as removable filter tags -
+        </p>
+        <DemoCodeBlock Code="@DismissibleGroupExampleCode" Language="razor" />
+
     </div>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">Dismissible (tag/chip)</h2>
-    <p class="cb-section-description">
-        Set <code>Dismissible="true"</code> and handle <code>OnDismiss</code>
-        to use CyBadge as a removable filter/tag. Like <code>CyAlert</code>,
-        CyBadge does not remove itself — the parent owns whether/how it
-        disappears.
-    </p>
-
-    <div class="cb-example">
-        <span class="cb-example__label">Interactive</span>
-        <div class="cb-example__preview" style="display:flex;flex-wrap:wrap;gap:var(--cymru-space-2)">
-            @foreach (var filter in _activeFilters)
-            {
-                <CyBadge
-                    Variant="ComponentColour.Secondary"
-                    Dismissible="true"
-                    DismissAriaLabel="@($"Remove {filter} filter")"
-                    OnDismiss="() => RemoveFilter(filter)">
-                    @filter
-                </CyBadge>
-            }
-            @if (_activeFilters.Count == 0)
-            {
-                <span style="color:var(--cymru-color-text-muted);font-size:0.875rem">
-                    All filters removed.
-                </span>
-            }
-        </div>
-        <pre class="cb-example__code"><code>&lt;CyBadge Dismissible="true"
-         DismissAriaLabel="Remove Cardiology filter"
-         OnDismiss="RemoveCardiologyFilter"&gt;
-    Cardiology
-&lt;/CyBadge&gt;</code></pre>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
     </div>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">API</h2>
-    <table class="cb-api-table" aria-label="CyBadge parameters">
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Default</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">Variant</td>
-                <td class="cb-api-table__type">ComponentColour</td>
-                <td class="cb-api-table__default">Neutral</td>
-                <td>The badge's semantic colour. Any value except <code>Unspecified</code></td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Pill</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">true</td>
-                <td>Fully rounded pill when true; standard small radius when false</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">Dismissible</td>
-                <td class="cb-api-table__type">bool</td>
-                <td class="cb-api-table__default">false</td>
-                <td>Renders a dismiss ("x") button, turning the badge into a removable tag</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">DismissAriaLabel</td>
-                <td class="cb-api-table__type">string?</td>
-                <td class="cb-api-table__default">"Remove"</td>
-                <td>Accessible label for the dismiss button — set a specific label when several dismissible badges appear together</td>
-            </tr>
-            <tr>
-                <td class="cb-api-table__name">OnDismiss</td>
-                <td class="cb-api-table__type">EventCallback</td>
-                <td class="cb-api-table__default">—</td>
-                <td>Raised when the dismiss button is activated. CyBadge does not remove itself from the DOM</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">Accessibility</h2>
-    <ul style="color:var(--cymru-color-text);
-               line-height:1.75;
-               padding-inline-start:var(--cymru-space-6)">
-        <li>
-            The dismiss button has a real 44×44px touch target (via an
-            invisible expanded hit area), meeting WCAG 2.2 SC 2.5.8, without
-            growing the badge's compact visual size.
-        </li>
-        <li>
-            <code>Warning</code> badges use the default text colour rather
-            than the warning accent colour for their label, since the
-            accent colour alone is too light to read against its own pale
-            background — the same choice <code>CyAlert</code> makes.
-        </li>
-        <li>
-            When several dismissible badges appear together (e.g. a row of
-            active filters), always supply a specific
-            <code>DismissAriaLabel</code> per badge — the default "Remove"
-            is ambiguous once there's more than one.
-        </li>
-    </ul>
-</div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
 
 @code {
-    private readonly List<string> _activeFilters = ["Cardiology", "Paediatrics", "Radiology"];
+    private enum Tab { Examples, Api, Accessibility }
 
-    private void RemoveFilter(string filter) => _activeFilters.Remove(filter);
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _variant = ComponentColour.Neutral;
+    private string _label = "Cardiology";
+    private bool _pill = true;
+    private bool _dismissible;
+
+    private readonly IReadOnlyList<ComponentColour> _variantOptions =
+    [
+        ComponentColour.Primary,
+        ComponentColour.Secondary,
+        ComponentColour.Tertiary,
+        ComponentColour.Success,
+        ComponentColour.Warning,
+        ComponentColour.Danger,
+        ComponentColour.Info,
+        ComponentColour.Surface,
+        ComponentColour.Neutral
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyBadge Variant="ComponentColour.{_variant}"{(!_pill ? " Pill=\"false\"" : "")}{(_dismissible ? " Dismissible=\"true\" OnDismiss=\"HandleDismiss\"" : "")}>
+            {_label}
+        </CyBadge>
+        """;
+
+    private const string DismissibleGroupExampleCode =
+        """
+        <CyBadge Variant="ComponentColour.Secondary"
+                 Dismissible="true"
+                 DismissAriaLabel="Remove Cardiology filter"
+                 OnDismiss='() => RemoveFilter("Cardiology")'>
+            Cardiology
+        </CyBadge>
+        <CyBadge Variant="ComponentColour.Secondary"
+                 Dismissible="true"
+                 DismissAriaLabel="Remove Paediatrics filter"
+                 OnDismiss='() => RemoveFilter("Paediatrics")'>
+            Paediatrics
+        </CyBadge>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Variant", "ComponentColour", "Neutral", "The badge's semantic colour. Any value except Unspecified."),
+        new("Pill", "bool", "true", "Fully rounded pill when true; standard small radius when false."),
+        new("Dismissible", "bool", "false", "Renders a dismiss (\"x\") button, turning the badge into a removable tag."),
+        new("DismissAriaLabel", "string?", "\"Remove\"", "Accessible label for the dismiss button - set a specific label when several dismissible badges appear together."),
+        new("OnDismiss", "EventCallback", "-", "Raised when the dismiss button is activated. CyBadge does not remove itself from the DOM."),
+        new("ChildContent", "RenderFragment", "-", "The badge's label content.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("44x44px dismiss target", "The dismiss button has a real 44x44px touch target via an invisible expanded hit area (WCAG 2.2 SC 2.5.8), without growing the badge's compact visual size."),
+        new("Warning contrast", "Warning badges use the default text colour rather than the warning accent colour for their label, since the accent colour alone is too light to read against its own pale background - the same choice CyAlert makes."),
+        new("Distinguishable dismiss labels", "When several dismissible badges appear together (e.g. a row of active filters), always supply a specific DismissAriaLabel per badge - the default \"Remove\" is ambiguous once there's more than one.")
+    ];
 }

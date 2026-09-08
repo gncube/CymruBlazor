@@ -54,7 +54,11 @@ public partial class CyAccordion : CyLayoutComponentBase
 
     internal void Toggle(string itemId)
     {
-        if (!_expandedItemIds.Remove(itemId))
+        if (_expandedItemIds.Contains(itemId))
+        {
+            _expandedItemIds.Remove(itemId);
+        }
+        else
         {
             if (!AllowMultiple)
             {

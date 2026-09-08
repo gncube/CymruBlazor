@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using CymruBlazor.Components.Layout;
-using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Content;
 

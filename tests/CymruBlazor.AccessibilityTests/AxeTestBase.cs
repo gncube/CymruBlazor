@@ -41,7 +41,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
         Page = await _browser.NewPageAsync();
     }
 
-    public new async Task DisposeAsync()
+    public async Task DisposeAsync()
     {
         if (Page is not null)
         {
