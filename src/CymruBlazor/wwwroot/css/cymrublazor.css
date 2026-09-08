@@ -57,6 +57,10 @@
    Components
    ========================================================================== */
 
+@import "components/accordion.css" layer(components);
+@import "components/badges.css" layer(components);
+@import "components/code-block.css" layer(components);
+@import "components/tabs.css" layer(components);
 @import "components/theming.css" layer(components);
 @import "components/typography.css" layer(components);
 @import "components/cards.css" layer(components);

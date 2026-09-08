@@ -193,25 +193,6 @@ body {
   padding: 1rem;
 }
 
-/* Code Block */
-.cb-code-block {
-  background-color: #0f172a;
-  color: #f8fafc;
-  border-radius: var(--docs-code-radius);
-  overflow: hidden;
-  font-family: var(--cymru-font-family-monospace, monospace);
-  font-size: 0.875rem;
-}
-
-.cb-code-header {
-  background-color: #1e293b;
-  padding: 0.5rem 0.75rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
 
 .cb-code-block pre {
   margin: 0;
