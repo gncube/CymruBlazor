@@ -10,6 +10,8 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+## [0.1.0-preview.9] - 2026-09-08
+
 ### Added
 
 - `CyBadge` - a small label for categorisation, status, or metadata.
