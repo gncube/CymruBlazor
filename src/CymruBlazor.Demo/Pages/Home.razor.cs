@@ -1,4 +1,4 @@
-using CymruBlazor.Demo.Shared;
+using CymruBlazor.Demo.SharedComponents;
 using Microsoft.AspNetCore.Components;
 
 namespace CymruBlazor.Demo.Pages;

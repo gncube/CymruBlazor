@@ -1,4 +1,4 @@
-namespace CymruBlazor.Demo.Shared;
+namespace CymruBlazor.Demo.SharedComponents;
 
 /// <summary>
 /// The single, ordered source of truth for every documentation page in the

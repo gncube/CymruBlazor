@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Bunit;
 using Deque.AxeCore.Commons;
@@ -41,7 +42,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
         Page = await _browser.NewPageAsync();
     }
 
-    public async Task DisposeAsync()
+    public new async Task DisposeAsync()
     {
         if (Page is not null)
         {
@@ -66,6 +67,14 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
                 // Best-effort temp file cleanup - never fail a test over this.
             }
         }
+
+        // BunitContext.DisposeAsync() releases the bUnit render tree, fake
+        // JSInterop, and DI container it set up in the base class. Our
+        // DisposeAsync() above has the same name/signature, so it hides
+        // (rather than overrides) the base member - `new` makes that
+        // explicit, and this call makes sure the base's own cleanup still
+        // actually runs instead of silently being skipped.
+        await base.DisposeAsync();
     }
 
     /// <summary>
@@ -119,7 +128,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
             // matches anything, and a "dark theme" scan would silently
             // test plain light-mode styling instead - passing for the
             // wrong reason rather than actually exercising dark mode.
-            .AppendLine($"<div class=\"cy-theme-provider\" data-theme=\"{theme}\">")
+            .AppendLine(CultureInfo.InvariantCulture, $"<div class=\"cy-theme-provider\" data-theme=\"{theme}\">")
             .AppendLine(bodyMarkup)
             .AppendLine("</div>")
             .AppendLine("</body>")
