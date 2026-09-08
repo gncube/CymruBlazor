@@ -58,6 +58,12 @@ public static class DemoNavigationIndex
             "A content container with optional header, footer, and whole-card link."),
         new("Content", "Icon", "/content/icons",
             "The built-in icon set and how to render them."),
+        new("Content", "Badge", "/content/badge",
+            "A small label for categorisation, status, or metadata - also covers the removable tag/chip use case."),
+        new("Content", "Accordion", "/content/accordion",
+            "A vertically stacked set of expand/collapse sections."),
+        new("Content", "Code Block", "/content/code-block",
+            "A labelled, read-only code sample with a copy-to-clipboard button."),
 
         new("Branding", "Brand Logo", "/branding/brand-logo",
             "The CymruBlazor/product logo mark and wordmark."),
@@ -76,6 +82,8 @@ public static class DemoNavigationIndex
             "A visually-hidden-until-focused link that jumps to the main content."),
         new("Navigation", "Footer", "/navigation/footer",
             "Site footer with optional link groups, copyright, and version display."),
+        new("Navigation", "Tabs", "/navigation/tabs",
+            "A set of tabs, each showing one child CyTabPanel at a time."),
 
         new("Accessibility", "Live Region", "/accessibility/live-region",
             "Announces dynamic content changes to screen readers."),

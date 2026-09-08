@@ -15,7 +15,7 @@ what you can actually install today.
 ## 0. Current status
 
 > **CymruBlazor is pre-release.** The latest published version is
-> `0.1.0-preview.8`. The public API — component names, parameters and CSS
+> `0.1.0-preview.9`. The public API — component names, parameters and CSS
 > class names — may still change before `1.0.0`. Treat this guide as
 > describing "the current preview", not a stable contract.
 
@@ -28,10 +28,20 @@ what you can actually install today.
 
 Versioning is derived entirely from git tags by
 [MinVer](https://github.com/adamralph/minver) (tag prefix `v`, e.g. tag
-`v0.1.0-preview.8` → package version `0.1.0-preview.8`) — there is no
+`v0.1.0-preview.9` → package version `0.1.0-preview.9`) — there is no
 manually maintained version number and no GitVersion tooling involved.
 This is a repository-maintenance detail, not something a consumer needs to
 configure.
+
+> **New in `0.1.0-preview.9`:** `CyBadge`, `CyAccordion`/`CyAccordionItem`,
+> `CyTabs`/`CyTabPanel`, and `CyCodeBlock` — previously built on `main` but
+> unreleased — are now published. They're documented alongside the rest
+> of the component set in [§5a](#5a-new-in-0.1.0-preview.9-cybadge-cyaccordion-cytabs-cycodeblock)
+> below. Four component category overview pages (`/forms`, `/content`,
+> `/branding`, `/accessibility`) and "Open in GitHub" links on the
+> remaining component doc pages also shipped in this release, but those
+> are Demo-app/documentation-site changes with nothing for a consumer to
+> do differently.
 
 ---
 
@@ -61,7 +71,7 @@ dotnet add package CymruBlazor --prerelease
 or, pinned:
 
 ```bash
-dotnet add package CymruBlazor --version 0.1.0-preview.8
+dotnet add package CymruBlazor --version 0.1.0-preview.9
 ```
 
 Using [Central Package Management](https://learn.microsoft.com/nuget/consume-packages/central-package-management)?
@@ -70,7 +80,7 @@ version in the project file:
 
 ```xml
 <!-- Directory.Packages.props -->
-<PackageVersion Include="CymruBlazor" Version="0.1.0-preview.8" />
+<PackageVersion Include="CymruBlazor" Version="0.1.0-preview.9" />
 ```
 
 ```xml
@@ -180,8 +190,8 @@ Add these as needed for the areas you use:
 
 | Namespace | Contains |
 |---|---|
-| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyHeader`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink` |
-| `CymruBlazor.Components.Content` | `CyCard`, `CyAlert`, `CyIcon`, `CyTypography` |
+| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyHeader`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink`, `CyTabs`, `CyTabPanel` (yes, tabs live here, not in `.Content`) |
+| `CymruBlazor.Components.Content` | `CyCard`, `CyAlert`, `CyIcon`, `CyTypography`, `CyBadge`, `CyAccordion`, `CyAccordionItem`, `CyCodeBlock` |
 | `CymruBlazor.Components.Forms` | `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary` |
 | `CymruBlazor.Components.Theming` | `CyThemeProvider` |
 | `CymruBlazor.Components.Branding` | `CyBrandLogo`, `CyLanguageToggle` |
@@ -202,7 +212,75 @@ Add these as needed for the areas you use:
 > supports `Variant` (`ComponentColour`), `Size` (`ComponentSize`),
 > `Disabled`, `Loading` (shows a spinner, blocks `OnClick`), `Href`
 > (renders as `<a>` instead of `<button>` when set and not disabled),
-> `Type`, and `OnClick`.
+> `Type`, and `OnClick`. There is still no dedicated icon-only mode —
+> for an icon-only action button, wrap `CyIcon` in a plain
+> `<button aria-label="...">` yourself, the way the Demo app's own
+> header search/theme-toggle buttons currently do.
+
+---
+
+## 5a. New in `0.1.0-preview.9`: CyBadge, CyAccordion, CyTabs, CyCodeBlock
+
+These four components shipped in `0.1.0-preview.9` and are available as
+soon as you're on that version or later.
+
+**`CyBadge`** (`CymruBlazor.Components.Content`) — a small label for
+categorisation, status, or metadata. Also covers the removable "tag"/chip
+case via `Dismissible`, rather than shipping a separate `CyTag`
+component — the two only differ by whether a dismiss affordance is
+present:
+
+```razor
+<CyBadge Variant="ComponentColour.Success">Active</CyBadge>
+<CyBadge Variant="ComponentColour.Info" Pill="false"
+         Dismissible="true" DismissAriaLabel="Remove Cardiology filter"
+         OnDismiss="HandleDismiss">
+    Cardiology
+</CyBadge>
+```
+
+`Variant` accepts any `ComponentColour` except `Unspecified`; `Pill`
+defaults to `true`. Note the parameter is `Variant`, not `Colour`.
+
+**`CyAccordion` / `CyAccordionItem`** (`CymruBlazor.Components.Content`)
+— a vertically stacked set of expand/collapse sections implementing the
+WAI-ARIA Accordion pattern (Up/Down/Home/End move focus between section
+headers):
+
+```razor
+<CyAccordion AllowMultiple="false" DefaultExpandedItemId="getting-started">
+    <CyAccordionItem ItemId="getting-started" Title="Getting started">
+        ...
+    </CyAccordionItem>
+    <CyAccordionItem ItemId="foundations" Title="Foundations">
+        ...
+    </CyAccordionItem>
+</CyAccordion>
+```
+
+**`CyTabs` / `CyTabPanel`** — implements the WAI-ARIA Tabs pattern with
+automatic activation — moving focus with Left/Right/Home/End also selects
+the tab — and skips disabled tabs:
+
+```razor
+<CyTabs TabListAriaLabel="Component documentation" @bind-ActiveTabId="_activeTab">
+    <CyTabPanel TabId="usage" Title="Usage">...</CyTabPanel>
+    <CyTabPanel TabId="api" Title="API" Disabled="@_apiDocsPending">...</CyTabPanel>
+</CyTabs>
+```
+
+**`CyCodeBlock`** (`CymruBlazor.Components.Content`) — a labelled,
+read-only code sample with a copy-to-clipboard button (direct
+`navigator.clipboard.writeText` JS interop; no syntax highlighting):
+
+```razor
+<CyCodeBlock Language="razor" Code="@codeSample" />
+```
+
+Copy success/failure is announced via the `Mediator` pipeline to any
+`CyLiveRegion` in your layout (see [§9](#9-accessibility-services)) —
+add one if you want that announcement to be audible to screen reader
+users, otherwise the copy still works, it just isn't announced.
 
 ---
 
@@ -245,12 +323,22 @@ The NHS Wales-specific layout components compose the same way:
 </main>
 
 <CyFooter Copyright="© 2026 Digital Health and Care Wales"
-          ShowVersion="true" />
+          ShowVersion="true"
+          Background="ComponentColour.Surface" />
 ```
 
 Place `CySkipLink` before `CyNavigation` in markup, not after — it must be
 the first focusable element on the page to satisfy WCAG 2.4.1 (Bypass
 Blocks).
+
+`CyFooter.Background` (`0.1.0-preview.7`) lets you use the footer on a
+light page without the hardcoded navy — it accepts `Primary`,
+`Secondary`, `Surface`, or `Neutral`. There is still no typed
+`LinkGroups`/`FooterLink` API for footer columns; keep passing your link
+markup as plain `ChildContent` for now. There is also no `CyDivider`
+component yet — use a plain CSS border/rule where you need a visual
+separator, the way the library's own Demo app currently does for its
+sidebar section separators.
 
 ---
 

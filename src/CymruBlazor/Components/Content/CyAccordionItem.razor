@@ -1,0 +1,44 @@
+@inherits CyLayoutComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <h3 class="cy-accordion-item__heading">
+        <button
+            type="button"
+            @ref="_triggerRef"
+            id="@HeaderId"
+            class="cy-accordion-item__trigger"
+            aria-expanded="@(IsExpanded ? "true" : "false")"
+            aria-controls="@PanelId"
+            disabled="@Disabled"
+            @onclick="ToggleAsync"
+            @onkeydown="HandleKeyDownAsync">
+
+            <CyIcon
+                Name="chevron-down"
+                Size="16"
+                Class="cy-accordion-item__chevron" />
+
+            <span>@Title</span>
+
+        </button>
+    </h3>
+
+    @if (IsExpanded)
+    {
+        <div
+            id="@PanelId"
+            role="region"
+            aria-labelledby="@HeaderId"
+            class="cy-accordion-item__panel">
+
+            @ChildContent
+
+        </div>
+    }
+
+</div>

@@ -93,29 +93,45 @@
     margin-bottom: var(--cymru-space-6, 1.5rem);
 }
 
-.cb-home__hero .cb-demo-btn--primary {
+/* The CTAs are now rendered by the CyButton child component (see Home.razor),
+   so these selectors need ::deep to reach past its own CSS-isolation scope.
+   We also restate padding/border/box-shadow/text-decoration explicitly to
+   fully override CyButton's own scoped button styling (base .cy-button plus
+   the Tertiary variant), rather than relying on it to stay out of the way. */
+.cb-home__hero ::deep .cb-demo-btn--primary {
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: var(--docs-code-radius);
     background-color: #ffffff;
     color: var(--cymru-navy-900, #1b294a);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
     transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
-.cb-home__hero .cb-demo-btn--primary:hover {
+.cb-home__hero ::deep .cb-demo-btn--primary:hover {
     background-color: #f8fafc;
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
 }
 
-.cb-home__hero .cb-demo-btn--secondary {
-    border-color: rgba(255, 255, 255, 0.7);
+.cb-home__hero ::deep .cb-demo-btn--secondary {
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--docs-code-radius);
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.7);
     color: #ffffff;
+    box-shadow: none;
+    text-decoration: none;
     transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
 }
 
-.cb-home__hero .cb-demo-btn--secondary:hover {
+.cb-home__hero ::deep .cb-demo-btn--secondary:hover {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: #ffffff;
     transform: translateY(-1px);
+    text-decoration: none;
 }
 
 .cb-home__tech-badges {

@@ -1,0 +1,58 @@
+@page "/accessibility"
+@namespace CymruBlazor.Demo.Pages.Components.Accessibility
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Accessibility Components</h1>
+    <p class="cb-page-description">
+        Non-visual and assistive-technology-focused building blocks. These
+        components render little or nothing visually themselves — they exist
+        to manage focus and announce state to screen reader users, and are
+        typically composed into other components rather than used alone.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Components</h2>
+    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+        <CyCard Href="/accessibility/focus-trap">
+            <Header><strong>CyFocusTrap</strong></Header>
+            <ChildContent>Traps keyboard focus within a region, for modals and menus.</ChildContent>
+        </CyCard>
+        <CyCard Href="/accessibility/live-region">
+            <Header><strong>CyLiveRegion</strong></Header>
+            <ChildContent>Announces dynamic content changes to screen readers.</ChildContent>
+        </CyCard>
+        <CyCard Href="/accessibility/screen-reader-only">
+            <Header><strong>CyScreenReaderOnly</strong></Header>
+            <ChildContent>Hides content visually while keeping it available to screen readers.</ChildContent>
+        </CyCard>
+    </CyGrid>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>Behaviour, not appearance.</strong> None of these
+            components apply visible styling of their own beyond what's
+            needed for their function (e.g. visually hiding content while
+            keeping it in the accessibility tree).
+        </li>
+        <li>
+            <strong>Compose into overlays and forms.</strong>
+            <code>CyFocusTrap</code> is meant to wrap modal/drawer content,
+            and <code>CyLiveRegion</code> is meant to be registered once in
+            a shell layout and driven via the Mediator pipeline from
+            anywhere in the app.
+        </li>
+        <li>
+            <strong>WCAG-mapped.</strong> Each component exists to satisfy a
+            specific WCAG success criterion — focus order, status messages,
+            and name/role/value for visually hidden content — documented on
+            each component's own Accessibility tab.
+        </li>
+    </ul>
+</div>
