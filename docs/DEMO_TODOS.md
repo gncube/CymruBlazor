@@ -82,7 +82,7 @@ end up) off the `cb-badge`/`cb-badge--pill` demo utility classes onto
 
 ---
 
-### ✅ `CyCodeBlock` — component built; existing pages still use the demo-only version
+### ✅ `CyCodeBlock` — component built and demo pages migrated
 
 `CyCodeBlock` now exists as a real library component — language label,
 dark-surface styling, and a working copy-to-clipboard button via a direct
@@ -91,11 +91,12 @@ workaround it replaces, the "Copied"/"Copy failed" confirmation is
 announced via `CyLiveRegion`/a Mediator message, not just a plain
 text-swap on the button — closing the specific original gap. No syntax
 highlighting, matching the original scope. See `/content/code-block`.
-**Not done in this pass**: migrating every existing component doc page off
-`Shared/DemoCodeBlock.razor` onto this — left as a follow-up, same as the
-`CyTabs` migration above.
-- **Current workaround** (until that migration happens): `Shared/DemoCodeBlock.razor`
-  (demo-specific), unchanged, still in place on every component doc page.
+
+**Migration complete**: All ~29 component documentation pages have been
+migrated from the obsolete `Shared/DemoCodeBlock.razor` wrapper to direct
+usage of `CyCodeBlock`. This removes the compatibility wrapper entirely,
+making the demo application consume only the library's own public
+component for code display.
 
 ---
 
@@ -232,7 +233,7 @@ source file on GitHub.
 | `CyBadge`/`CyTag` (as a single `CyBadge` component) | This pass | Library. `Home.razor`/component-card usages not yet migrated onto it. |
 | `CyAccordion`/`CyAccordionItem` | This pass | Library. `DemoSidebar.razor`'s native `<details>` not yet migrated onto it. |
 | `CyTabs`/`CyTabPanel` (the component itself) | This pass | Library. The 18 existing hand-copied tab bars not yet migrated onto it. |
-| `CyCodeBlock` | This pass | Library. Existing pages still use `Shared/DemoCodeBlock.razor`, not yet migrated. |
+| `CyCodeBlock` | This pass | Library component built. Demo pages migrated to use `CyCodeBlock` directly; `Shared/DemoCodeBlock.razor` wrapper removed. |
 | Category overview pages (`/forms`, `/content`, `/branding`, `/accessibility`) | This pass | Demo-only, `CyGrid`/`CyCard` grids, as originally specced. |
 | "Open in GitHub" links (remaining ~26 pages) | This pass | Demo-only, extending the pattern from `/forms/button`. |
 | `CyButton` — `Variant`/`Size`/`Disabled`/`Type`/`OnClick` | `0.1.0-preview.7` | Library. Not originally listed as a separate item, but was previously a `ChildContent`-only wrapper. |
