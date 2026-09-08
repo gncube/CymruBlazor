@@ -1,0 +1,111 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using Mediator;
+using CymruBlazor.Accessibility.Notifications;
+using CymruBlazor.Enums;
+using CymruBlazor.Components.Core;
+
+namespace CymruBlazor.Components.Content;
+
+/// <summary>
+/// Displays a labelled, read-only code sample with a copy-to-clipboard
+/// button.
+///
+/// Copying calls the browser's native <c>navigator.clipboard.writeText</c>
+/// API directly via <see cref="IJSRuntime"/> - per this project's
+/// "minimise JavaScript" principle (see PROMPT.md), this is a single
+/// interop call to a built-in browser API, not a custom JS module.
+///
+/// The "Copied"/"Copy failed" confirmation is both a visual button-label
+/// swap (for sighted mouse users watching the button they just clicked)
+/// and a screen-reader announcement published through the Mediator
+/// pipeline to any <see cref="CymruBlazor.Components.Accessibility.CyLiveRegion"/>
+/// registered in the app - a screen reader user who has already moved
+/// focus away from the button would otherwise never learn the copy
+/// succeeded.
+/// </summary>
+public partial class CyCodeBlock : CyComponentBase
+{
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    private bool _copied;
+    private bool _copyFailed;
+
+    /// <summary>
+    /// The code sample text. Rendered verbatim (via Razor's default HTML
+    /// encoding) inside a <c>&lt;pre&gt;&lt;code&gt;</c> block - no syntax
+    /// highlighting is applied.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string Code { get; set; }
+
+    /// <summary>
+    /// The language label shown in the header, e.g. "razor", "csharp",
+    /// "bash". Purely a display label - no highlighting is driven by it.
+    /// </summary>
+    [Parameter]
+    public string Language { get; set; } = "text";
+
+    /// <summary>
+    /// When <see langword="false"/>, hides the copy button entirely (for
+    /// read-only reference snippets that aren't meant to be copied
+    /// verbatim, e.g. abbreviated "...")
+    /// </summary>
+    [Parameter]
+    public bool ShowCopyButton { get; set; } = true;
+
+    /// <summary>
+    /// The screen-reader announcement politeness used when reporting a
+    /// successful copy. Copy failures always announce as
+    /// <see cref="LiveRegionPoliteness.Assertive"/> regardless of this
+    /// setting, since a failure needs to interrupt.
+    /// </summary>
+    [Parameter]
+    public LiveRegionPoliteness AnnouncementPoliteness { get; set; } = LiveRegionPoliteness.Polite;
+
+    protected override string BaseCssClass => "cy-code-block";
+
+    private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? "Code" : Language;
+
+    private string CopyButtonText => _copyFailed ? "Copy failed" : (_copied ? "Copied" : "Copy");
+
+    private async Task CopyToClipboardAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", Code);
+
+            _copied = true;
+            _copyFailed = false;
+
+            await Mediator.Publish(new LiveRegionAnnouncement(
+                "Code copied to clipboard.",
+                AnnouncementPoliteness));
+        }
+        catch (JSException)
+        {
+            // navigator.clipboard is unavailable in some contexts (e.g.
+            // non-HTTPS origins, certain embedded webviews, or a denied
+            // permission) - fail visibly rather than silently.
+            _copied = false;
+            _copyFailed = true;
+
+            await Mediator.Publish(new LiveRegionAnnouncement(
+                "Copying to clipboard failed.",
+                LiveRegionPoliteness.Assertive));
+        }
+
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
+        _copied = false;
+        _copyFailed = false;
+
+        StateHasChanged();
+    }
+}

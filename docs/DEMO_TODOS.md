@@ -13,30 +13,32 @@
 
 ## Missing Components
 
-### 🟡 `CyTabs` / `CyTabPanel`
+### ✅ `CyTabs` / `CyTabPanel` — component built; existing 18 pages not yet migrated
 
-- **Needed by**: Every component page — Examples | API | Accessibility tab bar
-- **Priority**: MEDIUM — downgraded from HIGH. The demo's hand-rolled tab bar
-  now has correct ARIA semantics (`role="tablist"`/`role="tab"`/`aria-selected`/
-  `role="tabpanel"`/`aria-controls`/`aria-labelledby`, retrofitted across all 18
-  tabbed pages), so this is no longer an accessibility blocker — but it's still
-  duplicated by hand in every one of those 18 pages. A real `CyTabs` component
-  would eliminate that duplication and reduce the risk of the same mistake
-  recurring elsewhere; it just isn't blocking anything anymore.
-- **Spec**: unchanged from the original — see git history for the full spec if
-  reviving this.
-- **Current workaround**: `<div>` tab list with Blazor `bool` state, manual
-  ARIA attributes, and manual CSS, hand-copied into each component doc page.
+`CyTabs`/`CyTabPanel` now exist as real library components (WAI-ARIA Tabs
+pattern, automatic activation, roving `tabindex`, Left/Right/Home/End
+keyboard support, disabled-tab skipping) — see `/navigation/tabs`.
+**Not done in this pass**: migrating the 18 existing hand-copied tab bars
+(one per tabbed component doc page) to use it. That's mechanical but
+sizeable — each page's `role="tablist"`/`@onclick`/`_activeTab` markup
+needs replacing with `<CyTabs>`/`<CyTabPanel>` — and is left as its own
+follow-up so a regression is traceable to one page's diff rather than
+buried in an 18-page batch change.
+- **Current workaround** (until that migration happens): the existing
+  hand-copied tab bar, unchanged, still in place on all 18 pages.
 
 ---
 
-### 🟡 `CyAccordion` / `CyAccordionItem`
+### ✅ `CyAccordion` / `CyAccordionItem` — component built; `DemoSidebar` not migrated
 
-- **Needed by**: Sidebar navigation section expand/collapse
-- **Priority**: MEDIUM — unchanged. `DemoSidebar.razor` still uses native
-  `<details>`/`<summary>`, which remains a perfectly accessible interim (no JS
-  needed, native keyboard/screen-reader support) — this is a "nice to have
-  reusable component" gap, not a functional one.
+`CyAccordion`/`CyAccordionItem` now exist as real library components
+(WAI-ARIA Accordion pattern, `AllowMultiple`, Up/Down/Home/End keyboard
+navigation between headers via real `ElementReference.FocusAsync()` focus
+moves) — see `/content/accordion`. **Not done in this pass**: migrating
+`DemoSidebar.razor`'s native `<details>`/`<summary>` to use it. That native
+markup remains a perfectly accessible interim on its own terms (no JS
+needed, native keyboard/screen-reader support), so this migration is a
+"nice to have consistency" follow-up, not a functional fix.
 
 ---
 
@@ -56,38 +58,44 @@
 ### ✅ `CyButton` — `Href` / anchor rendering — **RESOLVED** (`0.1.0-preview.7`)
 
 `CyButton.Href` now renders as `<a>` (instead of `<button>`) when set and the
-button isn't disabled. **Follow-up still open**: `Home.razor`'s hero CTAs
-(`Explore components →`, `Get started`) haven't been migrated to use it yet —
-they still use the `cb-demo-btn` demo CSS utility on plain `<a>` tags. Since
-the capability now exists in the library, migrating those two buttons is a
-small, low-risk cleanup rather than something blocked on the library.
+button isn't disabled. **Follow-up resolved**: `Home.razor`'s hero CTAs
+(`Explore components →`, `Get started`) now use `CyButton Href=...`. This
+required re-scoping `Home.razor.css`'s hero overrides with the `::deep`
+combinator and explicitly restating properties CyButton's own scoped CSS
+would otherwise contribute (padding, border, box-shadow, hover underline) -
+a plain anchor-to-CyButton swap alone would have visibly broken the hero
+buttons' styling, since Blazor CSS isolation doesn't let a parent's CSS
+reach into a child component's own rendered markup by default.
 
 ---
 
-### 🟢 `CyBadge` / `CyTag`
+### ✅ `CyBadge` / `CyTag` — component built as a single `CyBadge`; `Home.razor` not migrated
 
-- **Needed by**: Technology badge strip on homepage hero, category labels on
-  component cards
-- **Priority**: MEDIUM — unchanged. `Home.razor` still uses inline `<span>`
-  with the `cb-badge`/`cb-badge--pill` demo utility classes.
+Built as one `CyBadge` component rather than two separate `CyBadge`/`CyTag`
+components — a `Dismissible`/`OnDismiss` toggle covers the "tag"/removable
+chip use case, since that's the only real difference between a badge and a
+tag. Supports the full `ComponentColour` palette and a `Pill` toggle — see
+`/content/badge`. **Not done in this pass**: migrating `Home.razor`'s
+technology badge strip (or component-card category labels, wherever those
+end up) off the `cb-badge`/`cb-badge--pill` demo utility classes onto
+`CyBadge` — left as a follow-up rather than bundled into this change.
 
 ---
 
-### 🟢 `CyCodeBlock`
+### ✅ `CyCodeBlock` — component built; existing pages still use the demo-only version
 
-- **Needed by**: All component demo pages — code snippets with copy
-  functionality
-- **Priority**: MEDIUM — downgraded from HIGH now that a solid demo-level
-  workaround exists and is used consistently everywhere. `Shared/
-  DemoCodeBlock.razor` provides language label, a working copy-to-clipboard
-  button (via `IJSRuntime` + `navigator.clipboard.writeText`), and dark-surface
-  styling, and is used across every component doc page. What it doesn't have:
-  the "Copied!" confirmation is a plain text-swap on the button, not announced
-  via `CyLiveRegion`/a Mediator message as originally specced, and there's no
-  CSS-only syntax highlighting. A real `CyCodeBlock` library component would
-  still be valuable to avoid every consuming app rebuilding this, but it's no
-  longer a hole in the demo's own experience.
-- **Current workaround**: `Shared/DemoCodeBlock.razor` (demo-specific).
+`CyCodeBlock` now exists as a real library component — language label,
+dark-surface styling, and a working copy-to-clipboard button via a direct
+`navigator.clipboard.writeText` JS interop call. Unlike the demo-level
+workaround it replaces, the "Copied"/"Copy failed" confirmation is
+announced via `CyLiveRegion`/a Mediator message, not just a plain
+text-swap on the button — closing the specific original gap. No syntax
+highlighting, matching the original scope. See `/content/code-block`.
+**Not done in this pass**: migrating every existing component doc page off
+`Shared/DemoCodeBlock.razor` onto this — left as a follow-up, same as the
+`CyTabs` migration above.
+- **Current workaround** (until that migration happens): `Shared/DemoCodeBlock.razor`
+  (demo-specific), unchanged, still in place on every component doc page.
 
 ---
 
@@ -186,15 +194,14 @@ without changing the button's width. Live, working example: `/forms/button`.
 
 ---
 
-### 🟡 Component category overview pages
+### ✅ Component category overview pages — RESOLVED
 
-- **Routes**: `/layouts` (**exists** — `LayoutsOverview.razor`, predates this
-  list), `/forms`, `/content`, `/branding`, `/accessibility` (**still don't
-  exist**)
-- **Content**: Grid of `CyCard` components linking to individual component
-  pages within that category
-- **Library requirement**: `CyCard` ✅, `CyGrid` ✅ — both exist and are
-  unblocked; this is purely demo page-authoring work.
+`/forms`, `/content`, `/branding`, and `/accessibility` now exist
+(`/layouts` already did, predating this list), each a `CyGrid`/`CyCard`
+grid linking to that category's component pages, per the original spec.
+`/layouts` itself is unchanged (it predates this list and uses a table
+layout instead of the `CyCard` grid pattern used here) - left as-is rather
+than reworked as part of this change.
 
 ---
 
@@ -208,13 +215,11 @@ shape originally specced.
 
 ---
 
-### 🟢 "Edit on GitHub" links
+### ✅ "Edit on GitHub" links — RESOLVED
 
-- **Priority**: MEDIUM — unchanged, and only partially done. `/forms/button`
-  has a working "Open in GitHub" link to `CyButton.razor`'s source; no other
-  component page has one yet. Still no library component needed — this is
-  purely a matter of adding the same link, with the right per-component path,
-  to the remaining ~28 pages.
+Extended to all component documentation pages (`/forms/button` was
+previously the only one). Each links to that specific component's actual
+source file on GitHub.
 
 ---
 
@@ -222,8 +227,14 @@ shape originally specced.
 
 | Item | Resolved in | Notes |
 |---|---|---|
-| `CyButton` — `Href`/anchor rendering | `0.1.0-preview.7` | Library. `Home.razor`'s hero CTAs not yet migrated to use it — see note above. |
+| `CyButton` — `Href`/anchor rendering | `0.1.0-preview.7` | Library. `Home.razor`'s hero CTAs migrated to use it in this pass. |
 | `CyButton` — `Loading` state | `0.1.0-preview.7` | Library. |
+| `CyBadge`/`CyTag` (as a single `CyBadge` component) | This pass | Library. `Home.razor`/component-card usages not yet migrated onto it. |
+| `CyAccordion`/`CyAccordionItem` | This pass | Library. `DemoSidebar.razor`'s native `<details>` not yet migrated onto it. |
+| `CyTabs`/`CyTabPanel` (the component itself) | This pass | Library. The 18 existing hand-copied tab bars not yet migrated onto it. |
+| `CyCodeBlock` | This pass | Library. Existing pages still use `Shared/DemoCodeBlock.razor`, not yet migrated. |
+| Category overview pages (`/forms`, `/content`, `/branding`, `/accessibility`) | This pass | Demo-only, `CyGrid`/`CyCard` grids, as originally specced. |
+| "Open in GitHub" links (remaining ~26 pages) | This pass | Demo-only, extending the pattern from `/forms/button`. |
 | `CyButton` — `Variant`/`Size`/`Disabled`/`Type`/`OnClick` | `0.1.0-preview.7` | Library. Not originally listed as a separate item, but was previously a `ChildContent`-only wrapper. |
 | `CySearchModal` (feature, not as a reusable component) | `0.1.0-preview.7` | Demo-only (`DemoSearchModal.razor`). Global Ctrl+K shortcut needed a small JS interop bridge (`wwwroot/js/search.js`). |
 | `CySidebar` mobile off-canvas drawer (feature, not as a `CySidebar` mode) | `0.1.0-preview.7` | Demo-only (`MainLayout.razor` + `DemoSidebar.razor`). |
@@ -237,7 +248,16 @@ shape originally specced.
 
 ---
 
-*Last updated: 2026-09-05, following the `0.1.0-preview.7`/`0.1.0-preview.8`
-releases. Every status above was re-verified against the actual current code
-(not assumed from memory) before being marked resolved, downgraded, or left
-open.*
+*Last updated: 2026-09-07, following a pass that: migrated `Home.razor`'s
+hero CTAs to `CyButton.Href`; added the four missing category overview
+pages; extended "Open in GitHub" links to the remaining component pages;
+and built `CyBadge`, `CyAccordion`/`CyAccordionItem`, `CyTabs`/`CyTabPanel`,
+and `CyCodeBlock` as real library components. Migrating existing demo
+pages/usages onto these four new components (the 18 tab bars, the demo
+code block, the sidebar's `<details>`, and the homepage badge strip) is
+explicitly left open - see each component's entry above. Every status
+above was re-verified against the actual current code (not assumed from
+memory) before being marked resolved, downgraded, or left open. This pass
+was not verified by an actual `dotnet build`/`dotnet test` run - no .NET
+SDK was available in the environment it was written in - so treat it as
+reviewed-but-unverified until CI runs on it.*

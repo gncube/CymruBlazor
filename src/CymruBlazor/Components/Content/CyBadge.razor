@@ -1,0 +1,26 @@
+@inherits CyLayoutComponentBase
+
+<span
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <span class="cy-badge__label">
+        @ChildContent
+    </span>
+
+    @if (Dismissible)
+    {
+        <button
+            type="button"
+            class="cy-badge__dismiss"
+            aria-label="@(DismissAriaLabel ?? "Remove")"
+            @onclick="HandleDismissAsync">
+
+            <CyIcon Name="close" Size="12" />
+
+        </button>
+    }
+
+</span>

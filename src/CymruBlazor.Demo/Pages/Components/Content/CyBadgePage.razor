@@ -1,0 +1,131 @@
+@page "/content/badge"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.Shared
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyBadge" Subtitle="A small label for categorisation, status, or metadata.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyBadge" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview">
+            <CyBadge Variant="_variant" Pill="_pill" Dismissible="_dismissible">@_label</CyBadge>
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySelect Label="Variant" TValue="ComponentColour" @bind-Value="_variant" Options="_variantOptions" />
+                <DemoPropertyTextInput Label="Label" @bind-Value="_label" />
+                <DemoPropertySwitch Label="Pill" @bind-Value="_pill" />
+                <DemoPropertySwitch Label="Dismissible" @bind-Value="_dismissible" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyBadge.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            A common combination: several dismissible badges used as removable filter tags -
+        </p>
+        <DemoCodeBlock Code="@DismissibleGroupExampleCode" Language="razor" />
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private ComponentColour _variant = ComponentColour.Neutral;
+    private string _label = "Cardiology";
+    private bool _pill = true;
+    private bool _dismissible;
+
+    private readonly IReadOnlyList<ComponentColour> _variantOptions =
+    [
+        ComponentColour.Primary,
+        ComponentColour.Secondary,
+        ComponentColour.Tertiary,
+        ComponentColour.Success,
+        ComponentColour.Warning,
+        ComponentColour.Danger,
+        ComponentColour.Info,
+        ComponentColour.Surface,
+        ComponentColour.Neutral
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyBadge Variant="ComponentColour.{_variant}"{(!_pill ? " Pill=\"false\"" : "")}{(_dismissible ? " Dismissible=\"true\" OnDismiss=\"HandleDismiss\"" : "")}>
+            {_label}
+        </CyBadge>
+        """;
+
+    private const string DismissibleGroupExampleCode =
+        """
+        <CyBadge Variant="ComponentColour.Secondary"
+                 Dismissible="true"
+                 DismissAriaLabel="Remove Cardiology filter"
+                 OnDismiss='() => RemoveFilter("Cardiology")'>
+            Cardiology
+        </CyBadge>
+        <CyBadge Variant="ComponentColour.Secondary"
+                 Dismissible="true"
+                 DismissAriaLabel="Remove Paediatrics filter"
+                 OnDismiss='() => RemoveFilter("Paediatrics")'>
+            Paediatrics
+        </CyBadge>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Variant", "ComponentColour", "Neutral", "The badge's semantic colour. Any value except Unspecified."),
+        new("Pill", "bool", "true", "Fully rounded pill when true; standard small radius when false."),
+        new("Dismissible", "bool", "false", "Renders a dismiss (\"x\") button, turning the badge into a removable tag."),
+        new("DismissAriaLabel", "string?", "\"Remove\"", "Accessible label for the dismiss button - set a specific label when several dismissible badges appear together."),
+        new("OnDismiss", "EventCallback", "-", "Raised when the dismiss button is activated. CyBadge does not remove itself from the DOM."),
+        new("ChildContent", "RenderFragment", "-", "The badge's label content.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("44x44px dismiss target", "The dismiss button has a real 44x44px touch target via an invisible expanded hit area (WCAG 2.2 SC 2.5.8), without growing the badge's compact visual size."),
+        new("Warning contrast", "Warning badges use the default text colour rather than the warning accent colour for their label, since the accent colour alone is too light to read against its own pale background - the same choice CyAlert makes."),
+        new("Distinguishable dismiss labels", "When several dismissible badges appear together (e.g. a row of active filters), always supply a specific DismissAriaLabel per badge - the default \"Remove\" is ambiguous once there's more than one.")
+    ];
+}

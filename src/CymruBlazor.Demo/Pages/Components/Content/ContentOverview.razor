@@ -1,0 +1,69 @@
+@page "/content"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Content Components</h1>
+    <p class="cb-page-description">
+        Presentational components for displaying information: status
+        messages, grouped content containers, and the icon set shared
+        across the rest of the library.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Components</h2>
+    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+        <CyCard Href="/content/alert">
+            <Header><strong>CyAlert</strong></Header>
+            <ChildContent>An inline status/alert banner.</ChildContent>
+        </CyCard>
+        <CyCard Href="/content/card">
+            <Header><strong>CyCard</strong></Header>
+            <ChildContent>A content container with optional header, footer, and whole-card link.</ChildContent>
+        </CyCard>
+        <CyCard Href="/content/icons">
+            <Header><strong>CyIcon</strong></Header>
+            <ChildContent>The built-in icon set and how to render them.</ChildContent>
+        </CyCard>
+        <CyCard Href="/content/badge">
+            <Header><strong>CyBadge</strong></Header>
+            <ChildContent>A small label for categorisation, status, or metadata - also covers the removable tag/chip use case.</ChildContent>
+        </CyCard>
+        <CyCard Href="/content/accordion">
+            <Header><strong>CyAccordion</strong></Header>
+            <ChildContent>A vertically stacked set of expand/collapse sections.</ChildContent>
+        </CyCard>
+        <CyCard Href="/content/code-block">
+            <Header><strong>CyCodeBlock</strong></Header>
+            <ChildContent>A labelled, read-only code sample with a copy-to-clipboard button.</ChildContent>
+        </CyCard>
+    </CyGrid>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>Semantic status colour.</strong> <code>CyAlert</code>'s
+            variant drives both its colour and an implicit ARIA role
+            (<code>alert</code> for urgent variants, <code>status</code>
+            otherwise), so the visual and assistive-technology signal never
+            disagree.
+        </li>
+        <li>
+            <strong>Composable, not prescriptive.</strong>
+            <code>CyCard</code> renders whatever <code>Header</code>,
+            <code>ChildContent</code>, and <code>Footer</code> you give it —
+            it supplies structure and elevation, not opinions about layout.
+        </li>
+        <li>
+            <strong>One icon source of truth.</strong> Every icon in the
+            library, including ones used internally by other components,
+            resolves through the same <code>IconRegistry</code> that
+            <code>CyIcon</code> renders from.
+        </li>
+    </ul>
+</div>

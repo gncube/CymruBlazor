@@ -1,0 +1,96 @@
+@page "/content/code-block"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.Shared
+
+<CyPageHeader Title="CyCodeBlock" Subtitle="A labelled, read-only code sample with a copy-to-clipboard button.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyCodeBlock" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <p class="cb-section-description" style="margin-top:0;">
+            Try the copy button with a screen reader running - the confirmation is announced through the
+            <code>CyLiveRegion</code> mounted once in this site's <code>MainLayout</code>, not only shown
+            as text on the button itself.
+        </p>
+        <div class="cb-workbench-preview" style="padding:0; align-items:stretch;">
+            <CyCodeBlock Language="@_language" ShowCopyButton="_showCopyButton" Code="@ExampleCode" Style="width:100%;" />
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertyTextInput Label="Language" @bind-Value="_language" />
+                <DemoPropertySwitch Label="ShowCopyButton" @bind-Value="_showCopyButton" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyCodeBlock.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private string _language = "razor";
+    private bool _showCopyButton = true;
+
+    private const string ExampleCode = """<CyButton Variant="ComponentColour.Primary">Save</CyButton>""";
+
+    private string GeneratedCode =>
+        $"""
+        <CyCodeBlock Language="{_language}"{(!_showCopyButton ? " ShowCopyButton=\"false\"" : "")} Code="..." />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Code", "string (required)", "-", "The code sample text. Rendered verbatim, HTML-encoded - no syntax highlighting."),
+        new("Language", "string", "\"text\"", "The language label shown in the header - a display label only, doesn't drive highlighting."),
+        new("ShowCopyButton", "bool", "true", "Hides the copy button entirely when false."),
+        new("AnnouncementPoliteness", "LiveRegionPoliteness", "Polite", "Politeness used for the success announcement. Failures always announce as Assertive.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native clipboard API", "Copying calls the browser's native navigator.clipboard.writeText directly via a single JS interop call - not a custom JS module - per this project's \"minimise JavaScript\" principle."),
+        new("Announced, not just shown", "A successful copy both swaps the button's visible text to \"Copied\" and publishes a screen-reader announcement through the Mediator pipeline to any CyLiveRegion registered in the app - a screen reader user who has moved focus away from the button would otherwise never learn the copy succeeded."),
+        new("Failure announces assertively", "A failed copy (e.g. clipboard access denied, or unavailable on a non-HTTPS origin) announces assertively rather than silently leaving the user unsure whether it worked."),
+        new("No syntax highlighting", "This was a known gap in the demo-level workaround this component replaces, and remains a reasonable follow-up rather than something addressed here.")
+    ];
+}

@@ -1,0 +1,128 @@
+@page "/navigation/tabs"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.Shared
+
+<CyPageHeader Title="CyTabs" Subtitle="A set of tabs, each showing one child CyTabPanel at a time.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="CyTabs" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="padding:0; align-items:stretch;">
+            <CyTabs TabListAriaLabel="@_tabListAriaLabel" @bind-ActiveTabId="_activeDemoTabId" Style="width:100%;">
+                <CyTabPanel TabId="examples" Title="Examples">
+                    <p>Example usage would go here.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="api" Title="API">
+                    <p>The API reference table would go here.</p>
+                </CyTabPanel>
+                <CyTabPanel TabId="accessibility" Title="Accessibility">
+                    <p>Accessibility notes would go here.</p>
+                </CyTabPanel>
+            </CyTabs>
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertyTextInput Label="TabListAriaLabel" @bind-Value="_tabListAriaLabel" />
+                <DemoPropertySelect Label="Active tab" TValue="string" @bind-Value="_activeDemoTabId" Options="_tabIdOptions" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <DemoCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyTabs.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            This is the exact pattern every component documentation page on this site uses for its own
+            Examples/API/Accessibility tab bar above - though those tab bars are still the original
+            hand-copied markup rather than <code>CyTabs</code> itself; migrating them is a separate
+            follow-up. A disabled tab is skipped entirely by keyboard navigation -
+        </p>
+        <DemoCodeBlock Code="@DisabledTabExampleCode" Language="razor" />
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private string _tabListAriaLabel = "Component documentation";
+    private string _activeDemoTabId = "examples";
+
+    private readonly IReadOnlyList<string> _tabIdOptions = ["examples", "api", "accessibility"];
+
+    private string GeneratedCode =>
+        $"""
+        <CyTabs TabListAriaLabel="{_tabListAriaLabel}" @bind-ActiveTabId="_activeTabId">
+            <CyTabPanel TabId="examples" Title="Examples">
+                <p>...</p>
+            </CyTabPanel>
+            <CyTabPanel TabId="api" Title="API">
+                <p>...</p>
+            </CyTabPanel>
+            <CyTabPanel TabId="accessibility" Title="Accessibility">
+                <p>...</p>
+            </CyTabPanel>
+        </CyTabs>
+        """;
+
+    private const string DisabledTabExampleCode =
+        """
+        <CyTabPanel TabId="advanced" Title="Advanced" Disabled="true">
+            ...
+        </CyTabPanel>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("TabListAriaLabel (CyTabs)", "string (required)", "-", "The accessible name for the tab list."),
+        new("ActiveTabId (CyTabs)", "string?", "first panel's TabId", "The TabId of the active tab. Two-way bindable via @bind-ActiveTabId."),
+        new("ActiveTabIdChanged (CyTabs)", "EventCallback<string>", "-", "Raised with the new TabId when a tab is activated."),
+        new("TabId (CyTabPanel)", "string (required)", "-", "Stable identifier for activation, focus order, and generated DOM ids."),
+        new("Title (CyTabPanel)", "string (required)", "-", "The tab button's label text."),
+        new("Disabled (CyTabPanel)", "bool", "false", "Renders the tab disabled and skips it during keyboard navigation.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("WAI-ARIA Tabs pattern", "The tab list is role=\"tablist\", each tab is role=\"tab\" with aria-selected, and each panel is role=\"tabpanel\" linked back to its tab via aria-labelledby."),
+        new("Roving tabindex", "Only the active tab is in the Tab-key sequence (tabindex=\"0\"); inactive tabs use tabindex=\"-1\" and are reached with the arrow keys instead."),
+        new("Automatic activation", "Left/Right move to the previous/next enabled tab (wrapping at the ends and skipping disabled tabs) and also select it; Home/End jump to the first/last enabled tab."),
+        new("Scroll side effect on Home/End", "As with CyAccordion, Home/End's browser-default scroll behaviour isn't suppressed, to avoid adding JavaScript purely for conditional preventDefault.")
+    ];
+}

@@ -1,0 +1,40 @@
+@inherits CyLayoutComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <div
+        class="cy-tabs__list"
+        role="tablist"
+        aria-label="@TabListAriaLabel"
+        @onkeydown="HandleKeyDownAsync">
+
+        @foreach (var panel in _panels)
+        {
+            <button
+                type="button"
+                @ref="_tabRefs[panel.TabId]"
+                role="tab"
+                id="@TabButtonId(panel)"
+                aria-selected="@(IsActive(panel) ? "true" : "false")"
+                aria-controls="@PanelId(panel)"
+                tabindex="@(IsActive(panel) ? "0" : "-1")"
+                disabled="@panel.Disabled"
+                class="@TabButtonClass(panel)"
+                @onclick="() => ActivateAsync(panel.TabId)">
+
+                @panel.Title
+
+            </button>
+        }
+
+    </div>
+
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+</div>
