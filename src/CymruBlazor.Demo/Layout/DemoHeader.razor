@@ -16,7 +16,10 @@
             <span aria-hidden="true">@(MobileMenuOpen ? "✕" : "☰")</span>
         </button>
 
-        <CyBrandLogo Size="ComponentSize.Small" Href="/" />
+        <div class="cb-shell-header__brand-group">
+            <CyBrandLogo Size="ComponentSize.Small" Href="/" />
+            <span class="cb-version-badge">v1.0</span>
+        </div>
     </Brand>
 
     <ChildContent>
@@ -34,8 +37,10 @@
 
     <Actions>
         <div class="cb-shell-header__actions">
-            <button type="button" class="cb-shell-header__icon-btn" aria-label="Search (Ctrl+K)" title="Search (Ctrl+K)" @onclick="OnOpenSearch">
-                <CyIcon Name="search" Size="18" />
+            <button type="button" class="cb-shell-header__search-trigger" aria-label="Search documentation" title="Search (Ctrl+K)" @onclick="OnOpenSearch">
+                <CyIcon Name="search" Size="16" />
+                <span class="search-text">Search...</span>
+                <kbd class="search-kbd">Ctrl+K</kbd>
             </button>
             <button type="button"
                     class="cb-shell-header__icon-btn"

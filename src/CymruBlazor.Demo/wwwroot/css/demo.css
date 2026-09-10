@@ -5,7 +5,25 @@
   --docs-header-height: 64px;
   --docs-content-max-width: 1320px;
   --docs-section-gap: var(--cymru-space-16, 4rem);
-  --docs-code-radius: var(--cymru-radius-md, 6px);
+  --docs-code-radius: var(--cb-radius-md, 8px);
+
+  /* Brand Accents (Welsh NHS Identity Refined) */
+  --cb-brand-primary: #005eb8;        /* NHS Wales Blue */
+  --cb-brand-primary-hover: #004b94;
+  --cb-brand-accent: #d5281b;         /* Dragon Red (used sparingly) */
+  --cb-brand-accent-subtle: #fef2f2;
+  --cb-brand-teal: #00a499;
+
+  /* Typography Stacks */
+  --cb-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cb-font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radii Scale */
+  --cb-radius-sm: 6px;
+  --cb-radius-md: 8px;
+  --cb-radius-lg: 12px;
+  --cb-radius-xl: 16px;
+  --cb-radius-full: 9999px;
 }
 
 /*
@@ -19,7 +37,7 @@
  * properties resolve `var(...)` against the cascaded value AT THE
  * ELEMENT WHERE THEY'RE DECLARED, not lazily at each point of use - so
  * if these aliases were declared at :root (an ANCESTOR of
- * .cy-theme-provider), `var(--cymru-color-background)` etc. would
+ * .cy-theme-provider), `var(--cb-bg-canvas)` etc. would
  * always resolve to the light-theme value baked in at :root, and that
  * frozen value would inherit down through the whole app regardless of
  * which theme is actually active. Redeclaring them here, on the exact
@@ -27,51 +45,176 @@
  * re-resolve against the active theme's values instead.
  */
 .cy-theme-provider {
-  /* Welsh NHS Identity Tokens */
-  --docs-dragon-stripe: var(--cymru-red-600, #d5281b);
-  --docs-header-bg: var(--cymru-color-accent, #1b294a);
-  --docs-sidebar-active: var(--cymru-cyan-700, #12a3c9);
-  --docs-surface-wash: var(--cymru-color-background, #f0f4f5);
-  --docs-card-surface: var(--cymru-color-surface, #ffffff);
-  --docs-text-primary: var(--cymru-color-text, #212b32);
-  --docs-text-muted: var(--cymru-color-text-muted, #4c6272);
+  /* Light Mode Surface Palette */
+  --cb-bg-canvas: #ffffff;
+  --cb-bg-subtle: #f8fafc;            /* Slate 50 */
+  --cb-bg-surface: #ffffff;
+  --cb-bg-surface-elevated: #ffffff;
+  --cb-bg-muted: #f1f5f9;             /* Slate 100 */
+  --cb-bg-canvas-dots: #cbd5e1;
+
+  /* Borders & Dividers */
+  --cb-border-subtle: #e2e8f0;        /* Slate 200 */
+  --cb-border-strong: #cbd5e1;        /* Slate 300 */
+  --cb-border-focus: #005eb8;
+
+  /* Foreground / Text Hierarchy */
+  --cb-text-primary: #0f172a;         /* Slate 900 */
+  --cb-text-secondary: #475569;       /* Slate 600 */
+  --cb-text-muted: #64748b;           /* Slate 500 */
+  --cb-text-subtle: #94a3b8;          /* Slate 400 */
+  --cb-text-on-accent: #ffffff;
+
+  /* Code / Previews */
+  --cb-code-bg: #090d16;
+  --cb-code-border: #1e293b;
+  --cb-code-header-bg: #0f172a;
+  --cb-code-text: #e2e8f0;
+
+  /* Shadows */
+  --cb-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --cb-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --cb-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+.cy-theme-provider[data-theme="dark"] {
+  /* Dark Mode Surface Elevation (Deep Slate / Obsidian) */
+  --cb-bg-canvas: #090d16;            /* Deep Obsidian */
+  --cb-bg-subtle: #0f172a;            /* Slate 900 */
+  --cb-bg-surface: #131d31;           /* Slate 850 */
+  --cb-bg-surface-elevated: #1e293b;  /* Slate 800 */
+  --cb-bg-muted: #1e293b;
+  --cb-bg-canvas-dots: #334155;
+
+  /* Dark Mode Borders */
+  --cb-border-subtle: rgba(255, 255, 255, 0.08);
+  --cb-border-strong: rgba(255, 255, 255, 0.16);
+  --cb-border-focus: #38bdf8;
+
+  /* Dark Mode Text Hierarchy */
+  --cb-text-primary: #f8fafc;         /* Slate 50 */
+  --cb-text-secondary: #cbd5e1;       /* Slate 300 */
+  --cb-text-muted: #94a3b8;           /* Slate 400 */
+  --cb-text-subtle: #64748b;          /* Slate 500 */
+  --cb-text-on-accent: #ffffff;
+
+  /* Code Blocks */
+  --cb-code-bg: #070a10;
+  --cb-code-border: rgba(255, 255, 255, 0.1);
+  --cb-code-header-bg: #0d121c;
+
+  /* Shadows */
+  --cb-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --cb-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+  --cb-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
 }
 
 body {
   margin: 0;
-  /* --docs-surface-wash/--docs-text-primary are declared on
-     .cy-theme-provider (see above) and can't cascade UP to body, since
-     body is an ancestor of that div, not a descendant. The library
-     already solves exactly this for its own --cymru-color-* tokens via
-     a body:has(.cy-theme-provider[data-theme=...]) selector in
-     dark.css/high-contrast.css, so those raw tokens (unlike my alias
-     layer) already resolve correctly on body itself - use them
-     directly here instead of the alias. */
-  background-color: var(--cymru-color-background, #f0f4f5);
-  color: var(--cymru-color-text, #212b32);
-  font-family: "Inter", var(--cymru-font-family-base, "Roboto", sans-serif);
+  background-color: #f0f4f5; /* Light default, overridden by app contents */
+  color: #212b32;
+  font-family: var(--cb-font-sans);
+  letter-spacing: -0.011em;
 }
 
-/* Header & 3px Welsh dragon red stripe */
+/* Glassmorphism Header & refined accent stripe */
 .cb-shell-header {
-  background-color: var(--docs-header-bg);
-  border-top: 3px solid var(--docs-dragon-stripe);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 2px solid var(--cb-brand-primary);
+  border-bottom: 1px solid var(--cb-border-subtle);
   height: var(--docs-header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  color: #ffffff;
+  color: var(--cb-text-primary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.cy-theme-provider[data-theme="dark"] .cb-shell-header {
+  background-color: rgba(9, 13, 22, 0.8); /* --cb-bg-canvas with opacity */
+  border-top: 2px solid var(--cb-border-focus);
 }
 
 .cb-shell-header a {
-  color: #ffffff;
+  color: var(--cb-text-secondary);
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.cb-shell-header a:hover {
+  color: var(--cb-text-primary);
 }
 
 .cb-shell-header .cy-brand-logo,
 .cb-shell-header .cy-brand-logo__wordmark {
-  color: #ffffff;
+  color: var(--cb-text-primary);
+}
+
+.cb-shell-header__brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cb-version-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--cb-radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  background-color: var(--cb-brand-primary);
+  color: var(--cb-text-on-accent);
+  letter-spacing: 0.05em;
+  font-family: var(--cb-font-mono);
+}
+
+.cb-shell-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cb-shell-header__search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--cb-bg-muted);
+  border: 1px solid var(--cb-border-subtle);
+  border-radius: var(--cb-radius-md);
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+  color: var(--cb-text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+.cb-shell-header__search-trigger:hover {
+  background: var(--cb-bg-surface);
+  border-color: var(--cb-border-strong);
+  color: var(--cb-text-primary);
+}
+
+.search-text {
+  margin-right: 1.5rem;
+}
+
+.search-kbd {
+  display: inline-block;
+  padding: 0.125rem 0.25rem;
+  font-family: var(--cb-font-mono);
+  font-size: 0.65rem;
+  background: var(--cb-bg-surface);
+  border: 1px solid var(--cb-border-strong);
+  border-radius: 4px;
+  color: var(--cb-text-secondary);
 }
 
 /* Shell Layout */
@@ -82,8 +225,8 @@ body {
 
 .cb-shell-sidebar {
   width: var(--docs-sidebar-width);
-  background-color: var(--docs-card-surface);
-  border-right: 1px solid var(--cymru-grey-300, #d8dde0);
+  background-color: var(--cb-bg-surface);
+  border-right: 1px solid var(--cb-border-subtle);
   padding: 1.5rem 1rem;
   flex-shrink: 0;
 }
@@ -92,9 +235,60 @@ body {
   flex-grow: 1;
   max-width: var(--docs-content-max-width);
   padding: 2rem 2.5rem;
-  margin: 0 auto;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
+}
+
+.cb-shell-toc {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 2rem 1rem 2rem 0;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .cb-shell-toc {
+    display: block;
+  }
+}
+
+.cb-toc-sticky {
+  position: sticky;
+  top: calc(var(--docs-header-height) + 2rem);
+}
+
+.cb-toc-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--cb-text-primary);
+}
+
+.cb-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 1px solid var(--cb-border-subtle);
+}
+
+.cb-toc-list li {
+  margin-bottom: 0.5rem;
+}
+
+.cb-toc-list a {
+  display: block;
+  padding-left: 1rem;
+  color: var(--cb-text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.cb-toc-list a:hover {
+  color: var(--cb-text-primary);
+  border-left: 2px solid var(--cb-brand-primary);
+  margin-left: -1px;
 }
 
 /* Sidebar Nav Links */
@@ -103,14 +297,33 @@ body {
 }
 
 .cb-nav-group summary {
-  font-weight: 700;
-  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--docs-text-muted);
+  color: var(--cb-text-muted);
   cursor: pointer;
-  padding: 0.25rem 0;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0.25rem;
   list-style: none;
+  border-radius: var(--cb-radius-md);
+  transition: all 0.2s ease;
+}
+
+.cb-nav-group summary:hover {
+  background-color: var(--cb-bg-muted);
+  color: var(--cb-text-primary);
+}
+
+.cb-nav-group__chevron {
+  transition: transform 0.2s ease;
+}
+
+details[open] > summary .cb-nav-group__chevron {
+  transform: rotate(90deg);
 }
 
 .cb-nav-group summary::-webkit-details-marker {
@@ -121,30 +334,29 @@ body {
   display: block;
   padding: 0.4rem 0.75rem;
   margin: 0.15rem 0;
-  color: var(--docs-text-primary);
+  color: var(--cb-text-secondary);
   text-decoration: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  border-radius: var(--cb-radius-md);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 .cb-nav-item:hover {
-  background-color: var(--docs-surface-wash);
+  background-color: var(--cb-bg-muted);
+  color: var(--cb-text-primary);
 }
 
 .cb-nav-item.active {
-  background-color: var(--docs-surface-wash);
-  /* cyan-700 (--docs-sidebar-active) is 2.95:1 against a light
-     background, just under WCAG 1.4.11's 3:1 non-text threshold.
-     cyan-900 clears it at 6.16:1. */
-  border-left: 4px solid var(--cymru-cyan-900, #0a6a84);
-  font-weight: 600;
+  background-color: var(--cb-bg-muted);
+  color: var(--cb-text-primary);
+  font-weight: 500;
 }
 
 /* Tab Navigation */
 .cb-tabs {
   display: flex;
   gap: 1rem;
-  border-bottom: 2px solid var(--cymru-grey-300, #d8dde0);
+  border-bottom: 2px solid var(--cb-border-subtle);
   margin-bottom: 1.5rem;
 }
 
@@ -152,31 +364,38 @@ body {
   background: none;
   border: none;
   padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--docs-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cb-text-muted);
   cursor: pointer;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   margin-bottom: -2px;
+  transition: all 0.2s ease;
+}
+
+.cb-tab-btn:hover {
+  color: var(--cb-text-primary);
 }
 
 .cb-tab-btn.active {
-  color: var(--cymru-blue-800, #325083);
-  border-bottom-color: var(--cymru-blue-800, #325083);
+  color: var(--cb-text-primary);
+  border-bottom-color: var(--cb-brand-primary);
+  font-weight: 600;
 }
 
 /* Workbench & Playground */
 .cb-workbench-preview {
-  background: var(--docs-card-surface, #ffffff);
-  border: 1px solid var(--cymru-color-border, #d8dde0);
+  background: var(--cb-bg-surface);
+  border: 1px solid var(--cb-border-subtle);
   border-radius: var(--docs-code-radius);
   padding: 2.5rem 1.5rem;
-  background-image: radial-gradient(var(--cymru-color-border, #e1e7eb) 1px, transparent 1px);
+  background-image: radial-gradient(var(--cb-bg-canvas-dots) 1px, transparent 1px);
   background-size: 16px 16px;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 180px;
+  box-shadow: var(--cb-shadow-sm);
 }
 
 .cb-playground-grid {
@@ -187,10 +406,11 @@ body {
 }
 
 .cb-playground-panel {
-  background: var(--docs-card-surface, #ffffff);
-  border: 1px solid var(--cymru-color-border, #d8dde0);
+  background: var(--cb-bg-surface);
+  border: 1px solid var(--cb-border-subtle);
   border-radius: var(--docs-code-radius);
   padding: 1rem;
+  box-shadow: var(--cb-shadow-sm);
 }
 
 
@@ -203,12 +423,13 @@ body {
 /* Badges */
 .cb-badge {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--cb-radius-full);
   font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--cymru-color-surface-alt, #e2e8f0);
-  color: var(--docs-text-primary, #334155);
+  font-weight: 500;
+  background: var(--cb-bg-muted);
+  color: var(--cb-text-primary);
+  border: 1px solid var(--cb-border-strong);
 }
 
 /* Responsive */
@@ -223,31 +444,35 @@ body {
 
 /* Home hero CTA buttons */
 .cb-demo-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.65rem 1.25rem;
-  border-radius: var(--docs-code-radius);
-  font-weight: 600;
+  border-radius: var(--cb-radius-md);
+  font-weight: 500;
   text-decoration: none;
-  transition: opacity 150ms ease, background-color 150ms ease;
+  transition: all 150ms ease;
+  font-size: 0.875rem;
 }
 
 .cb-demo-btn--primary {
-  background-color: #ffffff;
-  color: var(--docs-header-bg);
+  background-color: var(--cb-brand-primary);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 .cb-demo-btn--primary:hover {
-  opacity: 0.9;
+  background-color: var(--cb-brand-primary-hover);
 }
 
 .cb-demo-btn--secondary {
-  background-color: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background-color: var(--cb-bg-surface);
+  color: var(--cb-text-primary);
+  border: 1px solid var(--cb-border-strong);
 }
 
 .cb-demo-btn--secondary:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--cb-bg-muted);
 }
 
 /* Home quick-start */
