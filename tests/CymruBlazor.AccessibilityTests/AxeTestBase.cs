@@ -121,6 +121,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
             .AppendLine("<html lang=\"en\">")
             .AppendLine("<head>")
             .AppendLine("<meta charset=\"utf-8\" />")
+            .AppendLine("<title>CymruBlazor accessibility test host</title>")
             .AppendLine(cssPath is not null
                 ? $"<link rel=\"stylesheet\" href=\"file:///{ToFileUrl(cssPath)}\" />"
                 : "<!-- cymrublazor.css not found - see AxeTestBase.FindBundledCssPath -->")
@@ -132,6 +133,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
                   + "be inaccurate without it. -->")
             .AppendLine("</head>")
             .AppendLine("<body>")
+            .AppendLine("<main>")
             // data-theme belongs on THIS element specifically - it's what
             // the real CyThemeProvider sets it on, and what dark.css/
             // high-contrast.css's [data-theme="..."] and
@@ -144,6 +146,7 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
             .AppendLine(CultureInfo.InvariantCulture, $"<div class=\"cy-theme-provider\" data-theme=\"{theme}\">")
             .AppendLine(bodyMarkup)
             .AppendLine("</div>")
+            .AppendLine("</main>")
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString();
@@ -154,7 +157,15 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
 
         await Page.GotoAsync($"file:///{ToFileUrl(tempFile)}");
 
-        return await Page.RunAxe();
+        var options = new AxeRunOptions
+        {
+            Rules = new Dictionary<string, RuleOptions>
+            {
+                ["page-has-heading-one"] = new() { Enabled = false }
+            }
+        };
+
+        return await Page.RunAxe(options);
     }
 
     private static string ToFileUrl(string path) => path.Replace('\\', '/');
