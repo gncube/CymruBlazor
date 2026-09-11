@@ -657,7 +657,7 @@ details[open] > summary .cb-nav-group__chevron {
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  color: #ffffff;
+  color: var(--cb-text-primary);
   background: transparent;
   border: none;
   border-radius: var(--docs-code-radius);
@@ -667,11 +667,11 @@ details[open] > summary .cb-nav-group__chevron {
 
 .cb-shell-header__icon-btn:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--cb-bg-muted);
 }
 
 .cb-shell-header__icon-btn:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--cb-border-focus);
   outline-offset: 2px;
   opacity: 1;
 }
@@ -683,7 +683,7 @@ details[open] > summary .cb-nav-group__chevron {
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  color: #ffffff;
+  color: var(--cb-text-primary);
   background: transparent;
   border: none;
   font-size: 1.25rem;
@@ -695,11 +695,11 @@ details[open] > summary .cb-nav-group__chevron {
 }
 
 .cb-shell-header__hamburger:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--cb-bg-muted);
 }
 
 .cb-shell-header__hamburger:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--cb-border-focus);
   outline-offset: 2px;
 }
 
