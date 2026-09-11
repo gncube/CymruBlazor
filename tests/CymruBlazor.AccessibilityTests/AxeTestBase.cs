@@ -1,9 +1,11 @@
 using System.Globalization;
 using System.Text;
 using Bunit;
+using CymruBlazor.Components.Core;
 using Deque.AxeCore.Commons;
 using Deque.AxeCore.Playwright;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using Xunit;
 
@@ -34,6 +36,17 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
     private readonly List<string> _tempFiles = [];
 
     protected IPage Page { get; private set; } = null!;
+
+    protected AxeTestBase()
+    {
+        // Every CymruBlazor component derives from CyComponentBase, which
+        // injects IComponentIdGenerator and calls it from OnParametersSet.
+        // CymruBlazor.Tests gets this for free from TestContextBase; this
+        // project doesn't share that base (it needs Playwright's
+        // IAsyncLifetime instead), so it has to register the same default
+        // implementation itself or every component fails to render.
+        Services.AddSingleton<IComponentIdGenerator, ComponentIdGenerator>();
+    }
 
     public async Task InitializeAsync()
     {

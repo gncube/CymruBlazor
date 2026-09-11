@@ -60,7 +60,8 @@ public sealed class CyCodeBlockTests : TestContextBase
     public async Task Should_Copy_Code_To_Clipboard_And_Announce_Success()
     {
         // Arrange
-        JSInterop.SetupVoid("navigator.clipboard.writeText", "var x = 1;");
+        JSInterop.SetupVoid("navigator.clipboard.writeText", "var x = 1;")
+            .SetVoidResult();
 
         var cut = Render<CyCodeBlock>(parameters => parameters
             .Add(p => p.Code, "var x = 1;"));
@@ -75,12 +76,19 @@ public sealed class CyCodeBlockTests : TestContextBase
         // that the clipboard call happened and the announcement fired.
         JSInterop.VerifyInvoke("navigator.clipboard.writeText");
 
-        _mediatorMock.Verify(m => m.Publish(
+        // ClickAsync isn't guaranteed to block until every downstream
+        // await in CopyToClipboardAsync (JS interop -> Mediator.Publish ->
+        // StateHasChanged -> the 2s reset delay) has resumed on the
+        // renderer's dispatcher, so asserting immediately after it returns
+        // can race the Publish call. WaitForAssertion retries until the
+        // assertion passes (or its default timeout elapses) instead of
+        // checking exactly once.
+        cut.WaitForAssertion(() => _mediatorMock.Verify(m => m.Publish(
             It.Is<LiveRegionAnnouncement>(a =>
                 a.Message == "Code copied to clipboard." &&
                 a.Politeness == LiveRegionPoliteness.Polite),
             It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Once));
     }
 
     [Fact]
