@@ -18,6 +18,27 @@ Full detail for every release is also available as auto-generated
   display abstraction, making all ~29 component documentation pages
   consume the library's own public component. No behavioral change to
   the demo site; this is purely a code organization improvement.
+- `/content/icons` workbench redesigned: live search by name/domain,
+  a global size toggle (16/20/24/32) driving the full gallery, friendly
+  domain headings with badges and per-domain counts, and one-click
+  copy of `<CyIcon Name="..." />` markup with an accessible live-region
+  announcement, matching the pattern already used by `CyCodeBlock`.
+- Fixed several dark-mode contrast bugs in the demo shell: the header's
+  theme-toggle and mobile hamburger icons were hardcoded white and
+  disappeared against the light-mode header; the main content column
+  had no theme-aware background at all, so it silently inherited the
+  page's static light background under dark mode while its text
+  correctly switched to dark-mode colours, making page titles,
+  breadcrumbs, tabs, and the "On This Page" panel unreadable. Also
+  found and fixed the root cause behind both: five CSS custom
+  properties (`--docs-text-primary`, `--docs-text-muted`,
+  `--docs-card-surface`, `--docs-surface-wash`, `--docs-sidebar-active`)
+  were referenced throughout `demo.css` but never actually defined
+  anywhere, so every usage silently fell back to a hardcoded, non-theme-
+  reactive value (most often literal white) - most visibly on the Theme
+  Provider page's own System/Light/Dark/HighContrast control. All usages
+  now map to the real, already theme-reactive `--cb-*`/`--cymru-*`
+  tokens. No behavioral or visual change in light mode; demo-only.
 
 ## [0.1.0-preview.9] - 2026-09-08
 

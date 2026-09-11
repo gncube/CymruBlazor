@@ -108,7 +108,7 @@ else
         $"""
         <CyButton
             Variant="ComponentColour.{_variant}"
-            Size="ComponentSize.{_size}"@(_disabled ? "\n    Disabled=\"true\"" : "")@(_loading ? "\n    Loading=\"true\"" : "")>
+            Size="ComponentSize.{_size}"{(_disabled ? "\n    Disabled=\"true\"" : "")}{(_loading ? "\n    Loading=\"true\"" : "")}>
             Save changes
         </CyButton>
         """;
