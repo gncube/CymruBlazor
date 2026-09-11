@@ -134,13 +134,6 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
             .AppendLine("</head>")
             .AppendLine("<body>")
             .AppendLine("<main>")
-            .AppendLine("<div style=\"position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;\">")
-            .AppendLine("<h1>CymruBlazor accessibility test host</h1>")
-            .AppendLine("<h2>CymruBlazor accessibility test host section</h2>")
-            .AppendLine("<h3>CymruBlazor accessibility test host subsection</h3>")
-            .AppendLine("<h4>CymruBlazor accessibility test host detail</h4>")
-            .AppendLine("<h5>CymruBlazor accessibility test host detail level</h5>")
-            .AppendLine("</div>")
             // data-theme belongs on THIS element specifically - it's what
             // the real CyThemeProvider sets it on, and what dark.css/
             // high-contrast.css's [data-theme="..."] and
@@ -164,7 +157,15 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
 
         await Page.GotoAsync($"file:///{ToFileUrl(tempFile)}");
 
-        return await Page.RunAxe();
+        var options = new AxeRunOptions
+        {
+            Rules = new Dictionary<string, RuleOptions>
+            {
+                ["page-has-heading-one"] = new() { Enabled = false }
+            }
+        };
+
+        return await Page.RunAxe(options);
     }
 
     private static string ToFileUrl(string path) => path.Replace('\\', '/');
