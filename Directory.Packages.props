@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup Label="ASP.NET Core / Blazor">
     <!--<PackageVersion Include="Mediator" Version="1.0.2123" />-->
+    <PackageVersion Include="CymruBlazor" Version="0.1.0-preview.6" />
     <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

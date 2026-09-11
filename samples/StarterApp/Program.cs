@@ -1,3 +1,5 @@
+
+using CymruBlazor.Extensions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using StarterApp;
@@ -12,5 +14,7 @@ builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 });
+
+builder.Services.AddCymruBlazor();
 
 await builder.Build().RunAsync();
