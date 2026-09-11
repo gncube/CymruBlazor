@@ -1,0 +1,416 @@
+diff --git a/src/CymruBlazor.Demo/Pages/Components/Content/IconRegistryPage.razor b/src/CymruBlazor.Demo/Pages/Components/Content/IconRegistryPage.razor
+index d70ed61..9fdb4c6 100644
+--- a/src/CymruBlazor.Demo/Pages/Components/Content/IconRegistryPage.razor
++++ b/src/CymruBlazor.Demo/Pages/Components/Content/IconRegistryPage.razor
+@@ -2,6 +2,8 @@
+ @namespace CymruBlazor.Demo.Pages.Components.Content
+ @using CymruBlazor.Icons
+ @using CymruBlazor.Demo.SharedComponents
++@inject IJSRuntime JSRuntime
++@inject IMediator Mediator
+ 
+ <CyPageHeader Title="CyIcon" Subtitle="Renders a single named icon from IconRegistry, the static source of truth for every icon in CymruBlazor.">
+     <Breadcrumb>
+@@ -47,26 +49,70 @@
+ 
+         <div style="margin-top: var(--docs-section-gap);">
+             <h2 style="margin-bottom:0.25rem;">All icons (@IconRegistry.AllNames.Count)</h2>
++            <p class="cb-icon-meta-bar">
++                @IconRegistry.AllNames.Count icons &middot; @_iconsByDomain.Count domains &middot;
++                Source: Lucide Icons &mdash; ISC licence &middot; Grid: 24 &times; 24 px &mdash; 2px stroke
++            </p>
+             <p class="cb-section-description">
+-                Grouped by domain. Click a name to load it into the playground above.
++                Grouped by domain. Click a tile to load it into the playground above and copy its
++                <code>&lt;CyIcon /&gt;</code> markup to the clipboard.
+             </p>
+ 
+-            @foreach (var group in _iconsByDomain)
++            <div class="cb-icon-toolbar">
++                <div class="cb-icon-toolbar__search">
++                    <label for="icon-search" class="cb-property-label">Search</label>
++                    <div class="cb-icon-search-field">
++                        <CyIcon Name="search" Size="16" />
++                        <input id="icon-search"
++                               class="cb-icon-search-input"
++                               type="text"
++                               placeholder="Search icons by name or domain..."
++                               value="@_searchText"
++                               @oninput="OnSearchInput" />
++                        @if (!string.IsNullOrEmpty(_searchText))
++                        {
++                            <button type="button" class="cb-icon-search-clear" aria-label="Clear search" @onclick="ClearSearch">
++                                <CyIcon Name="clear" Size="16" />
++                            </button>
++                        }
++                    </div>
++                </div>
++
++                <DemoPropertyToggleGroup Label="Size" @bind-Value="_gallerySize" Options="_sizeOptions" TValue="int" />
++
++                <span class="cb-badge cb-icon-count-badge" aria-live="polite">
++                    @FilteredIconCount showing
++                </span>
++            </div>
++
++            @if (FilteredIconCount == 0)
++            {
++                <p class="cb-section-description">No icons match &ldquo;@_searchText&rdquo;.</p>
++            }
++
++            @foreach (var group in FilteredGroups)
+             {
+-                <div class="cb-example">
+-                    <span class="cb-example__label">@group.Domain</span>
+-                    <div class="cb-example__preview">
+-                        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:var(--cymru-space-4);">
+-                            @foreach (var name in group.Names)
+-                            {
+-                                <button type="button"
+-                                        style="display:flex; flex-direction:column; align-items:center; gap:var(--cymru-space-2); text-align:center; background:none; border:none; cursor:pointer; padding:0.25rem; border-radius:var(--docs-code-radius); color:inherit;"
+-                                        @onclick="() => _selectedIcon = name">
+-                                    <CyIcon Name="@name" />
+-                                    <code style="font-size:var(--cymru-font-size-xs); word-break:break-word;">@name</code>
+-                                </button>
+-                            }
+-                        </div>
++                <div class="cb-icon-domain-group">
++                    <div class="cb-icon-domain-header">
++                        <span class="cb-icon-domain-title">@FriendlyDomainName(group.Domain)</span>
++                        <span class="cb-badge">@group.Domain</span>
++                        <span class="cb-icon-domain-count">@group.Names.Count</span>
++                    </div>
++                    <div class="cb-icon-grid">
++                        @foreach (var name in group.Names)
++                        {
++                            <button type="button"
++                                    class="cb-icon-tile @(_selectedIcon == name ? "cb-icon-tile--active" : "") @(_copiedIconName == name ? "cb-icon-tile--copied" : "")"
++                                    title="@TileTitle(name)"
++                                    @onclick="() => SelectAndCopyAsync(name)">
++                                <CyIcon Name="@name" Size="_gallerySize" />
++                                <code class="cb-icon-tile__name">@name</code>
++                                @if (_copiedIconName == name)
++                                {
++                                    <span class="cb-icon-tile__toast">Copied</span>
++                                }
++                            </button>
++                        }
+                     </div>
+                 </div>
+             }
+@@ -127,15 +173,37 @@ else
+ 
+     private sealed record IconDomainGroup(string Domain, IReadOnlyList<string> Names);
+ 
++    // The registry's domain keys are an internal grouping detail (see
++    // IconRegistry.GetDomain remarks) - this maps each of the 11 real
++    // keys to the friendly heading shown in the gallery. Kept in sync
++    // manually since the registry doesn't expose display names itself.
++    private static readonly Dictionary<string, string> FriendlyDomainNames = new(StringComparer.OrdinalIgnoreCase)
++    {
++        { "clinical", "Clinical records & data" },
++        { "clinical-actions", "Clinical actions & editing" },
++        { "comms", "Communication & messaging" },
++        { "data", "Data & analytics" },
++        { "file", "Documents & files" },
++        { "location", "Location & organisation" },
++        { "nav", "Navigation & UI chrome" },
++        { "people", "Patient & people" },
++        { "schedule", "Scheduling & appointments" },
++        { "status", "Status & feedback" },
++        { "ui", "UI & appearance" },
++    };
++
+     private Tab _activeTab = Tab.Examples;
+     private List<IconDomainGroup> _iconsByDomain = [];
+     private string _selectedIcon = "search";
+     private int _size = 24;
++    private int _gallerySize = 24;
+     private bool _asIconOnlyButton;
++    private string _searchText = string.Empty;
++    private string? _copiedIconName;
+ 
+     private IReadOnlyList<string> _iconOptions = [];
+ 
+-    private readonly IReadOnlyList<int> _sizeOptions = [16, 24, 32];
++    private readonly IReadOnlyList<int> _sizeOptions = [16, 20, 24, 32];
+ 
+     protected override void OnInitialized()
+     {
+@@ -152,6 +220,84 @@ else
+         _iconOptions = IconRegistry.AllNames.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+     }
+ 
++    private string FriendlyDomainName(string domain) =>
++        FriendlyDomainNames.TryGetValue(domain, out var friendly) ? friendly : domain;
++
++    private IReadOnlyList<IconDomainGroup> FilteredGroups =>
++        _iconsByDomain
++            .Select(g => new IconDomainGroup(
++                g.Domain,
++                g.Names.Where(MatchesSearch).ToList()))
++            .Where(g => g.Names.Count > 0)
++            .ToList();
++
++    private int FilteredIconCount => FilteredGroups.Sum(g => g.Names.Count);
++
++    private bool MatchesSearch(string name)
++    {
++        if (string.IsNullOrWhiteSpace(_searchText))
++        {
++            return true;
++        }
++
++        var domain = IconRegistry.GetDomain(name) ?? "other";
++        var friendly = FriendlyDomainName(domain);
++
++        return name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)
++            || domain.Contains(_searchText, StringComparison.OrdinalIgnoreCase)
++            || friendly.Contains(_searchText, StringComparison.OrdinalIgnoreCase);
++    }
++
++    private string TileTitle(string name) =>
++        _copiedIconName == name
++            ? "Copied!"
++            : $"""Click to select and copy <CyIcon Name="{name}" />""";
++
++    private void OnSearchInput(ChangeEventArgs args) =>
++        _searchText = args.Value?.ToString() ?? string.Empty;
++
++    private void ClearSearch() => _searchText = string.Empty;
++
++    private async Task SelectAndCopyAsync(string name)
++    {
++        _selectedIcon = name;
++
++        var snippet = $"<CyIcon Name=\"{name}\" />";
++
++        try
++        {
++            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", snippet);
++
++            _copiedIconName = name;
++
++            await Mediator.Publish(new LiveRegionAnnouncement(
++                $"Copied {snippet} to clipboard.",
++                LiveRegionPoliteness.Polite));
++        }
++        catch (JSException)
++        {
++            // navigator.clipboard is unavailable in some contexts (e.g.
++            // non-HTTPS origins, certain embedded webviews, or a denied
++            // permission) - the tile is still selected into the
++            // playground above even if the copy itself failed.
++            _copiedIconName = null;
++
++            await Mediator.Publish(new LiveRegionAnnouncement(
++                "Copying to clipboard failed.",
++                LiveRegionPoliteness.Assertive));
++        }
++
++        StateHasChanged();
++
++        await Task.Delay(1500);
++
++        if (_copiedIconName == name)
++        {
++            _copiedIconName = null;
++            StateHasChanged();
++        }
++    }
++
+     private string GeneratedCode =>
+         _asIconOnlyButton
+             ? $"""
+@@ -167,6 +313,8 @@ else
+     [
+         new("Name", "string", "-", "Required. Icon name - see IconRegistry.AllNames, or the full gallery above."),
+         new("Size", "int", "24", "Width/height in pixels - 24 is the design system's native grid size."),
++        new("StrokeWidth", "double", "2", "Stroke width of the icon lines in pixels, matching Lucide and the Welsh NHS standard."),
++        new("Color", "string?", "null", "Stroke colour. Defaults to null, which resolves to currentColor so the icon inherits surrounding text colour."),
+         new("Label", "string?", "null", "Accessible label. Leave unset for decorative icons paired with visible text.")
+     ];
+ 
+@@ -174,6 +322,7 @@ else
+     [
+         new("Decorative by default", "Without Label, icons render aria-hidden=\"true\" with no role - screen readers skip them entirely, which is correct when adjacent visible text already conveys the meaning."),
+         new("Label only for icon-only usage", "Set Label only when the icon is the sole conveyor of meaning (icon-only buttons/links). CyIcon then switches to role=\"img\" with aria-label set from Label."),
+-        new("Avoid double announcement", "Don't set Label when visible text already sits next to the icon - doing so causes the label to be announced twice.")
++        new("Avoid double announcement", "Don't set Label when visible text already sits next to the icon - doing so causes the label to be announced twice."),
++        new("Copy feedback is announced, not just shown", "Copying a tile's markup in the gallery below both shows a transient \"Copied\" badge on the tile and publishes a screen-reader announcement via CyLiveRegion, matching the pattern used by CyCodeBlock.")
+     ];
+ }
+diff --git a/src/CymruBlazor.Demo/wwwroot/css/demo.css b/src/CymruBlazor.Demo/wwwroot/css/demo.css
+index eb902ba..c881fc0 100644
+--- a/src/CymruBlazor.Demo/wwwroot/css/demo.css
++++ b/src/CymruBlazor.Demo/wwwroot/css/demo.css
+@@ -432,6 +432,158 @@ details[open] > summary .cb-nav-group__chevron {
+   border: 1px solid var(--cb-border-strong);
+ }
+ 
++/* ── Icon gallery (CyIcon workbench) ── */
++.cb-icon-meta-bar {
++  font-size: 0.8rem;
++  color: var(--docs-text-muted);
++  margin: 0 0 0.5rem;
++}
++
++.cb-icon-toolbar {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: flex-end;
++  gap: 1rem;
++  margin: 1rem 0 1.5rem;
++}
++
++.cb-icon-toolbar__search {
++  flex: 1 1 260px;
++  min-width: 220px;
++}
++
++.cb-icon-search-field {
++  position: relative;
++  display: flex;
++  align-items: center;
++  gap: 0.5rem;
++  padding: 0 0.6rem;
++  border-radius: var(--docs-code-radius);
++  border: 1px solid var(--cymru-color-border, #cbd5e1);
++  background: var(--docs-card-surface, #ffffff);
++}
++
++.cb-icon-search-field .cy-icon {
++  color: var(--docs-text-muted);
++  flex-shrink: 0;
++}
++
++.cb-icon-search-input {
++  flex: 1;
++  border: none;
++  background: none;
++  padding: 0.5rem 0;
++  font-size: 0.9rem;
++  color: var(--docs-text-primary);
++  outline: none;
++}
++
++.cb-icon-search-clear {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  padding: 0.2rem;
++  border: none;
++  background: none;
++  color: var(--docs-text-muted);
++  cursor: pointer;
++  border-radius: var(--cb-radius-full);
++}
++
++.cb-icon-search-clear:hover {
++  color: var(--docs-text-primary);
++  background: var(--docs-surface-wash, #f8fafc);
++}
++
++.cb-icon-count-badge {
++  white-space: nowrap;
++}
++
++.cb-icon-domain-group {
++  margin-bottom: 2rem;
++}
++
++.cb-icon-domain-header {
++  display: flex;
++  align-items: center;
++  gap: 0.6rem;
++  margin-bottom: 0.75rem;
++}
++
++.cb-icon-domain-title {
++  font-size: 0.95rem;
++  font-weight: 700;
++  color: var(--docs-text-primary);
++}
++
++.cb-icon-domain-count {
++  font-size: 0.8rem;
++  color: var(--docs-text-muted);
++}
++
++.cb-icon-grid {
++  display: grid;
++  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
++  gap: var(--cymru-space-4, 1rem);
++}
++
++.cb-icon-tile {
++  position: relative;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: var(--cymru-space-2, 0.5rem);
++  text-align: center;
++  background: var(--docs-card-surface, #ffffff);
++  border: 1px solid var(--cymru-color-border, #e2e8f0);
++  border-radius: var(--docs-code-radius);
++  padding: 0.85rem 0.5rem;
++  cursor: pointer;
++  color: inherit;
++  box-shadow: var(--cb-shadow-sm);
++  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
++}
++
++.cb-icon-tile:hover {
++  transform: translateY(-2px);
++  border-color: var(--docs-sidebar-active, #12a3c9);
++  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
++}
++
++.cb-icon-tile:focus-visible {
++  outline: 2px solid var(--docs-sidebar-active, #12a3c9);
++  outline-offset: 2px;
++}
++
++.cb-icon-tile--active {
++  border-color: var(--cb-brand-primary);
++  background: var(--docs-surface-wash, #f8fafc);
++}
++
++.cb-icon-tile--copied {
++  border-color: var(--cymru-color-success, #007f3b);
++}
++
++.cb-icon-tile__name {
++  font-size: var(--cymru-font-size-xs, 0.75rem);
++  word-break: break-word;
++  color: var(--docs-text-muted);
++}
++
++.cb-icon-tile__toast {
++  position: absolute;
++  top: -0.6rem;
++  right: -0.4rem;
++  background: var(--cymru-color-success, #007f3b);
++  color: #ffffff;
++  font-size: 0.65rem;
++  font-weight: 600;
++  padding: 0.15rem 0.45rem;
++  border-radius: var(--cb-radius-full);
++  box-shadow: var(--cb-shadow-sm);
++}
++
+ /* Responsive */
+ @media (max-width: 768px) {
+   .cb-shell-body {
+@@ -440,6 +592,10 @@ details[open] > summary .cb-nav-group__chevron {
+   .cb-playground-grid {
+     grid-template-columns: 1fr;
+   }
++  .cb-icon-toolbar {
++    flex-direction: column;
++    align-items: stretch;
++  }
+ }
+ 
+ /* Home hero CTA buttons */
