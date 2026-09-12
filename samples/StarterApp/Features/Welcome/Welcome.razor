@@ -14,23 +14,27 @@
         </p>
 
         <CyCard>
-            <Header><h2>Try a component</h2></Header>
-            <p>
-                Every component in the package works the same way once
-                it's referenced - no extra setup needed per component.
-            </p>
-            <CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Small">
-                <CyButton Variant="ComponentColour.Primary" OnClick="HandlePrimaryClick">
-                    Primary action
-                </CyButton>
-                <CyButton Variant="ComponentColour.Secondary" OnClick="HandleSecondaryClick">
-                    Secondary action
-                </CyButton>
-            </CyStack>
-            @if (_lastClicked is not null)
-            {
-                <p role="status">Last clicked: @_lastClicked</p>
-            }
+            <Header>
+                <h2>Try a component</h2>
+            </Header>
+            <ChildContent>
+                <p>
+                    Every component in the package works the same way once
+                    it's referenced - no extra setup needed per component.
+                </p>
+                <CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Small">
+                    <CyButton Variant="ComponentColour.Primary" OnClick="HandlePrimaryClick">
+                        Primary action
+                    </CyButton>
+                    <CyButton Variant="ComponentColour.Secondary" OnClick="HandleSecondaryClick">
+                        Secondary action
+                    </CyButton>
+                </CyStack>
+                @if (_lastClicked is not null)
+                {
+                    <p role="status">Last clicked: @_lastClicked</p>
+                }
+            </ChildContent>
         </CyCard>
 
     </CyStack>
