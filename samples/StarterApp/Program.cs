@@ -1,4 +1,3 @@
-
 using CymruBlazor.Extensions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -8,13 +7,10 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-builder.Services.AddMsalAuthentication(options =>
-{
-    builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
-});
-
+// This one line is the only DI setup CymruBlazor needs - see
+// README.md "Getting Started". No other services (focus management,
+// theming, id generation, ...) need registering by hand; AddCymruBlazor()
+// covers all of them.
 builder.Services.AddCymruBlazor();
 
 await builder.Build().RunAsync();
