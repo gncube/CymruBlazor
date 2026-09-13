@@ -100,4 +100,11 @@
     <PackageReference Include="Microsoft.JSInterop" />
   </ItemGroup>
 
+  <!--
+    Bundles wwwroot/css/cymrublazor.css into a single, runtime-import-free
+    stylesheet on Release/Publish builds. See build/BundleCss.targets and
+    CONTRIBUTING.md for details.
+  -->
+  <Import Project="build\BundleCss.targets" />
+
 </Project>

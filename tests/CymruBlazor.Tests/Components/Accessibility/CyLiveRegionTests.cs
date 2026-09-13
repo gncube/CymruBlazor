@@ -1,22 +1,21 @@
 using Xunit;
 using Shouldly;
 using Bunit;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Mediator;
+using Microsoft.Extensions.DependencyInjection;
+using CymruBlazor.Accessibility;
 using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Enums;
 using CymruBlazor.Accessibility.Notifications;
+using CymruBlazor.Extensions;
 
 namespace CymruBlazor.Tests.Components.Accessibility;
 
 public sealed class CyLiveRegionTests : TestContextBase
 {
-    private readonly Mock<IMediator> _mediatorMock = new();
-
     public CyLiveRegionTests()
     {
-        Services.AddSingleton(_mediatorMock.Object);
+        Services.AddScoped<ILiveRegionRegistry, LiveRegionRegistry>();
     }
 
     [Fact]
@@ -58,5 +57,28 @@ public sealed class CyLiveRegionTests : TestContextBase
         var element = cut.Find("*");
         element.TextContent.ShouldContain("Operation Successful");
         element.GetAttribute("aria-live").ShouldBe("assertive");
+    }
+
+    [Fact]
+    public async Task Should_Not_Throw_And_Should_Update_Dom_When_Published_Through_Real_Mediator_Pipeline()
+    {
+        // Arrange - uses the real AddCymruBlazor() DI registration (real
+        // Mediator dispatch, not a direct method call) to guard against
+        // CyLiveRegion implementing INotificationHandler<> directly,
+        // which causes Mediator to resolve a separate, render-handle-less
+        // instance from the container and throw
+        // "The render handle is not yet assigned."
+        Services.AddCymruBlazor();
+
+        var cut = Render<CyLiveRegion>();
+        var mediator = cut.Services.GetRequiredService<IMediator>();
+
+        // Act
+        await cut.InvokeAsync(async () =>
+            await mediator.Publish(new LiveRegionAnnouncement("Code copied to clipboard.", LiveRegionPoliteness.Polite)));
+
+        // Assert
+        var element = cut.Find("*");
+        element.TextContent.ShouldContain("Code copied to clipboard.");
     }
 }

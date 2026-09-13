@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Services;
@@ -40,6 +41,12 @@ public static class ServiceCollectionExtensions
         // manually by consuming apps (e.g. the Demo app); any component
         // using FocusTrap would throw at resolution time without it.
         services.AddScoped<IFocusManager, FocusManager>();
+
+        // Register the live-region registry used to forward Mediator
+        // announcements to the actual, render-tree-attached CyLiveRegion
+        // instance(s) - see ILiveRegionRegistry for why CyLiveRegion can't
+        // safely implement INotificationHandler<> itself.
+        services.AddScoped<ILiveRegionRegistry, LiveRegionRegistry>();
 
         // Register the source-generated Mediator context pipeline
         services.AddMediator(options =>

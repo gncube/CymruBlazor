@@ -1,17 +1,55 @@
 <Project>
-    <!-- MSBuild Target for CymruBlazor CSS Bundling -->
-    <!-- Automatically bundles all CSS files into a single output stylesheet -->
-    <!-- Runs during Build and Publish phases -->
+  <!--
+    Bundles the dev-mode CSS entry point (wwwroot/css/cymrublazor.css,
+    which lists its stylesheets as `@import "path" layer(name);`
+    statements) into a single, runtime-import-free stylesheet, for
+    Release/Publish builds and the packed NuGet package. See
+    CONTRIBUTING.md for the rationale.
 
-    <Target Name="BundleCymruCss" BeforeTargets="AssignTargetPaths">
-        <Message Text="CymruBlazor: Bundling CSS stylesheets..." Importance="high" />
+    Only runs for Release builds - Debug builds keep serving the
+    multi-file dev-mode entry point as-is via the browser's own @import
+    resolution, so the inner loop stays fast.
 
-        <Exec
-            Command="dotnet run --project tools\CymruBlazor.CssBundler\CymruBlazor.CssBundler.csproj -- src\CymruBlazor\wwwroot\css\cymrublazor.css @(CymruCss)"
-            WorkingDirectory="$(SolutionDir ?? $(MSBuildProjectDirectory)\..\..)"
-            ContinueOnError="false" />
+    Deliberately does NOT overwrite wwwroot/css/cymrublazor.css in place.
+    release.yml and ci.yml both run "dotnet pack" with the no-build flag
+    set, as a separate process *after* "dotnet build" has already
+    completed - so a target that mutated the source file and then
+    restored it before "dotnet build" exits would already have reverted
+    the source file by the time that separate, no-build pack step reads
+    it from disk, and the wrong (dev-mode, unbundled) CSS would ship in
+    the package. Writing to $(IntermediateOutputPath) instead, and swapping
+    it in via the ItemGroup below, means the bundled bytes stay on disk
+    for the whole build-then-pack sequence, and a local
+    `dotnet build -c Release` never leaves the working tree dirty.
+  -->
 
-        <Message Text="CymruBlazor: CSS bundling complete." Importance="high" />
-    </Target>
+  <Target Name="BundleCymruCss"
+          BeforeTargets="AssignTargetPaths"
+          Condition="'$(Configuration)' == 'Release'"
+          Inputs="wwwroot\css\cymrublazor.css"
+          Outputs="$(IntermediateOutputPath)css\cymrublazor.css">
+
+    <Message Text="CymruBlazor: bundling CSS stylesheets..." Importance="high" />
+
+    <Exec
+        Command="dotnet run --project ..\..\tools\CymruBlazor.CssBundler\CymruBlazor.CssBundler.csproj -- wwwroot\css\cymrublazor.css $(IntermediateOutputPath)css\cymrublazor.css"
+        WorkingDirectory="$(MSBuildProjectDirectory)"
+        ContinueOnError="false" />
+
+    <Message Text="CymruBlazor: CSS bundling complete." Importance="high" />
+  </Target>
+
+  <!--
+    Swap the dev-mode entry point for the bundled stylesheet at the same
+    logical wwwroot path, so it still publishes/packs as
+    _content/CymruBlazor/css/cymrublazor.css - consumers' markup and the
+    README never need to know which version they got.
+  -->
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Content Remove="wwwroot\css\cymrublazor.css" />
+    <Content Include="$(IntermediateOutputPath)css\cymrublazor.css"
+             Link="wwwroot\css\cymrublazor.css"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>

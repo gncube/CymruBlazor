@@ -1,129 +1,138 @@
-/*
- * CymruBlazor CSS Bundler
- *
- * A lightweight utility that bundles CSS files in a defined order, removes
- * duplicate @layer declarations and @import directives, and generates a
- * single deterministic output stylesheet suitable for PWA asset manifests.
- *
- * Usage: dotnet run -- <output_file> <input_file_1> [<input_file_2> ...]
- *
- * Example:
- *   dotnet run -- src/CymruBlazor/wwwroot/css/cymrublazor.css \
- *     wwwroot/css/base/reset.css \
- *     wwwroot/css/tokens/colours.css \
- *     wwwroot/css/tokens/typography.css
- */
+// CymruBlazor.CssBundler
+//
+// Bundles CymruBlazor's dev-mode CSS entry point into a single stylesheet
+// with no runtime @import statements, for use in Release/Publish builds
+// and the packed NuGet package.
+//
+// The entry point file (wwwroot/css/cymrublazor.css) already lists every
+// stylesheet and the cascade layer it belongs to, as statements shaped
+// like:
+//
+//     @import "tokens/colours.css" layer(tokens);
+//
+// This tool parses those statements directly, rather than maintaining a
+// second, separately-ordered list elsewhere - two lists describing the
+// same thing are the classic way this kind of build step quietly drifts
+// out of sync. The entry point is the only file anyone needs to edit when
+// a stylesheet is added, removed or reordered.
+//
+// Usage:
+//   CymruBlazor.CssBundler <entrypoint-css-path> <output-css-path>
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-sealed class CssBundler
+if (args.Length != 2)
 {
-    private static readonly string[] LineSplitSeparators = { "\r\n", "\r", "\n" };
-
-    static int Main(string[] args)
-    {
-        if (args.Length < 2)
-        {
-            Console.Error.WriteLine("Usage: dotnet run -- <output_file> <input_file_1> [<input_file_2> ...]");
-            return 1;
-        }
-
-        var outputFile = args[0];
-        var inputFiles = args.Skip(1).ToList();
-
-        try
-        {
-            Console.WriteLine($"CymruBlazor CSS Bundler");
-            Console.WriteLine($"Output: {outputFile}");
-            Console.WriteLine($"Inputs: {string.Join(", ", inputFiles)}");
-
-            var bundled = BundleCss(inputFiles);
-
-            // Ensure output directory exists
-            var outputDir = Path.GetDirectoryName(outputFile);
-            if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
-            {
-                Directory.CreateDirectory(outputDir);
-            }
-
-            File.WriteAllText(outputFile, bundled, Encoding.UTF8);
-            Console.WriteLine($"✓ Bundle written to {outputFile}");
-
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"✗ Error: {ex.Message}");
-            return 1;
-        }
-    }
-
-    static string BundleCss(List<string> inputFiles)
-    {
-        var output = new StringBuilder();
-        var layersSeen = new HashSet<string>();
-        var globalLayerDeclaration = "@layer reset,tokens,base,layout,components,utilities,overrides;";
-
-        // Add global layer declaration at the very top
-        output.AppendLine(globalLayerDeclaration);
-        output.AppendLine();
-
-        foreach (var inputFile in inputFiles)
-        {
-            if (!File.Exists(inputFile))
-            {
-                Console.WriteLine($"⚠ Warning: Input file not found: {inputFile}");
-                continue;
-            }
-
-            var content = File.ReadAllText(inputFile, Encoding.UTF8);
-
-            // Remove all @import statements (they're development-only)
-            content = Regex.Replace(content, @"@import\s+[^;]+;", "", RegexOptions.Multiline);
-
-            // Skip @layer declarations since we have the global one
-            // But preserve everything else
-            var lines = content.Split(LineSplitSeparators, StringSplitOptions.None);
-            var processedLines = new List<string>();
-
-            foreach (var line in lines)
-            {
-                var trimmed = line.Trim();
-
-                // Skip empty lines between removals
-                if (string.IsNullOrWhiteSpace(trimmed))
-                    continue;
-
-                // Skip individual @layer declarations (we only want the global one)
-                if (trimmed.StartsWith("@layer", StringComparison.Ordinal))
-                    continue;
-
-                processedLines.Add(line);
-            }
-
-            if (processedLines.Count > 0)
-            {
-                // Add file boundary comment for debugging
-                output.AppendLine($"/* ============================================ */");
-                output.AppendLine(CultureInfo.InvariantCulture, $"/* {Path.GetFileName(inputFile)} */");
-                output.AppendLine($"/* ============================================ */");
-                output.AppendLine();
-
-                foreach (var line in processedLines)
-                {
-                    output.AppendLine(line);
-                }
-
-                output.AppendLine();
-            }
-        }
-
-        return output.ToString();
-    }
+    Console.Error.WriteLine(
+        "Usage: CymruBlazor.CssBundler <entrypoint-css-path> <output-css-path>");
+    return 1;
 }
+
+var entryPointPath = Path.GetFullPath(args[0]);
+var outputPath = Path.GetFullPath(args[1]);
+
+if (!File.Exists(entryPointPath))
+{
+    Console.Error.WriteLine(
+        $"CymruBlazor.CssBundler: entry point not found: '{entryPointPath}'.");
+    return 1;
+}
+
+var entryPointDirectory = Path.GetDirectoryName(entryPointPath);
+if (string.IsNullOrEmpty(entryPointDirectory))
+{
+    Console.Error.WriteLine(
+        $"CymruBlazor.CssBundler: could not determine the directory of '{entryPointPath}'.");
+    return 1;
+}
+
+var entryPointText = File.ReadAllText(entryPointPath);
+
+// The layer precedence order, declared once near the top of the entry
+// point, e.g.:
+//   @layer reset, tokens, base, layout, components, utilities, overrides;
+var layerOrderMatch = Regex.Match(entryPointText, @"@layer\s+[a-zA-Z0-9_,\s-]+;");
+
+if (!layerOrderMatch.Success)
+{
+    Console.Error.WriteLine(
+        "CymruBlazor.CssBundler: could not find a '@layer a, b, c;' " +
+        $"precedence declaration in '{entryPointPath}'.");
+    return 1;
+}
+
+// Each imported stylesheet and the layer it belongs to, e.g.:
+//   @import "base/reset.css" layer(reset);
+var importPattern = new Regex(
+    @"@import\s+""(?<path>[^""]+)""\s+layer\((?<layer>[^)]+)\)\s*;");
+
+var importMatches = importPattern.Matches(entryPointText);
+
+if (importMatches.Count == 0)
+{
+    Console.Error.WriteLine(
+        "CymruBlazor.CssBundler: no '@import \"path\" layer(name);' " +
+        $"statements found in '{entryPointPath}'.");
+    return 1;
+}
+
+var output = new StringBuilder();
+
+output.AppendLine("/*");
+output.AppendLine(" * CymruBlazor - bundled stylesheet.");
+output.AppendLine(" *");
+output.AppendLine(" * Generated by tools/CymruBlazor.CssBundler from:");
+output.AppendLine($" *   {Path.GetFileName(entryPointPath)}");
+output.AppendLine(" *");
+output.AppendLine(" * Do not edit this file directly. Edit the individual");
+output.AppendLine(" * stylesheets, and the @import list above, instead.");
+output.AppendLine(" */");
+output.AppendLine();
+output.AppendLine(layerOrderMatch.Value);
+
+var bundledCount = 0;
+
+foreach (Match match in importMatches)
+{
+    var relativePath = match.Groups["path"].Value;
+    var layerName = match.Groups["layer"].Value.Trim();
+
+    var sourcePath = Path.GetFullPath(Path.Combine(entryPointDirectory, relativePath));
+
+    if (!File.Exists(sourcePath))
+    {
+        Console.Error.WriteLine(
+            $"CymruBlazor.CssBundler: '{relativePath}' (referenced from " +
+            $"'{Path.GetFileName(entryPointPath)}') was not found at '{sourcePath}'.");
+        return 1;
+    }
+
+    var css = File.ReadAllText(sourcePath).Trim();
+
+    output.AppendLine();
+    output.AppendLine($"/* ---- {relativePath} ---- */");
+    output.AppendLine($"@layer {layerName} {{");
+    output.AppendLine(css);
+    output.AppendLine("}");
+
+    bundledCount++;
+}
+
+var outputDirectory = Path.GetDirectoryName(outputPath);
+if (string.IsNullOrEmpty(outputDirectory))
+{
+    Console.Error.WriteLine(
+        $"CymruBlazor.CssBundler: could not determine the directory of '{outputPath}'.");
+    return 1;
+}
+
+Directory.CreateDirectory(outputDirectory);
+
+// No BOM: this file is served as-is over HTTP as a static web asset.
+File.WriteAllText(outputPath, output.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+
+Console.WriteLine(
+    $"CymruBlazor.CssBundler: bundled {bundledCount} stylesheet(s) into '{outputPath}'.");
+
+return 0;

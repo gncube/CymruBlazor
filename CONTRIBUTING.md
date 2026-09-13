@@ -27,6 +27,21 @@ dotnet build CymruBlazor.slnx
 dotnet run --project src/CymruBlazor.Demo
 ```
 
+If you're working on `samples/StarterApp`, `samples/Dashboard`, or
+`samples/HealthcarePortal`, one extra step is needed first. Those apps
+consume CymruBlazor as a real NuGet package (never a `ProjectReference` to
+`src/CymruBlazor`), and MinVer computes a new package version on every
+commit, so there's nothing fixed to restore against out of the box:
+
+```powershell
+./New-LocalPackageFeed.ps1
+```
+
+This packs `src/CymruBlazor` to `./artifacts` and points the samples'
+central package version at whatever version was just produced (see
+`nuget.config` and `Directory.Packages.props`). Re-run it whenever you
+want the samples to pick up local library changes.
+
 ## Making a change
 
 1. Branch from `main`.
@@ -35,11 +50,15 @@ dotnet run --project src/CymruBlazor.Demo
    code-behind, and a matching test file per component.
 3. Every new CSS class a component's `CssBuilder` generates must have a
    corresponding rule in the appropriate `wwwroot/css/**` stylesheet, and
-   that stylesheet must be listed in **both**
-   `src/CymruBlazor/wwwroot/css/cymrublazor.css` (`@import`, used in dev)
-   **and** `src/CymruBlazor/build/BundleCss.props` (used for
-   Release/Publish builds). These two lists drifting out of sync is a
-   recurring source of bugs in this project - please keep them identical.
+   that stylesheet must be listed in
+   `src/CymruBlazor/wwwroot/css/cymrublazor.css` as an
+   `@import "path" layer(name);` statement. This one list is the single
+   source of truth for both dev-mode (the browser resolves the `@import`s
+   directly) and Release/Publish builds (`tools/CymruBlazor.CssBundler`
+   parses this same file and inlines each stylesheet into a single
+   bundled file with no runtime `@import`s - see
+   `src/CymruBlazor/build/BundleCss.targets`). There is deliberately no
+   second list to keep in sync.
 4. Add or update tests:
    - `tests/CymruBlazor.Tests` - bUnit component tests (the primary,
      actively-used test project right now).

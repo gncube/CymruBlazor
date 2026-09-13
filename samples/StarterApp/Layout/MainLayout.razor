@@ -1,4 +1,11 @@
 ﻿@inherits LayoutComponentBase
-<LoginDisplay />
 
-@Body
+<CyThemeProvider>
+
+    <CySkipLink />
+
+    <main id="main-content" tabindex="-1">
+        @Body
+    </main>
+
+</CyThemeProvider>
