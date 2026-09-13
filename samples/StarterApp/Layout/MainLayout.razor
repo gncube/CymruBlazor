@@ -1,11 +1,161 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject IThemeService Theme
 
 <CyThemeProvider>
 
     <CySkipLink />
 
-    <main id="main-content" tabindex="-1">
-        @Body
-    </main>
+    <CyStack Orientation="Orientation.Horizontal"
+             Gap="ComponentSize.Unspecified"
+             Class="cy-stack--collapse-tablet app-shell">
+
+        <CySidebar @ref="_sidebar"
+                   @bind-Collapsed="_sidebarCollapsed"
+                   CollapseMode="SidebarCollapseMode.Compact"
+                   Width="SidebarWidth.Small"
+                   Class="app-shell__sidebar">
+
+            <Brand>
+                <CyBrandLogo Variant="BrandLogoVariant.Stacked"
+                             Text="NHS Wales"
+                             AriaLabel="GIG Cymru NHS Wales, Digital Health and Care Wales home"
+                             Size="ComponentSize.Large"
+                             Href="/" />
+            </Brand>
+
+            <ChildContent>
+
+                <span class="cy-sidebar__heading">Home</span>
+                <a href="/" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="dashboard" Size="20" />
+                    <span class="cy-sidebar__label">Dashboard</span>
+                </a>
+
+                <span class="cy-sidebar__heading">Patients</span>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="search" Size="20" />
+                    <span class="cy-sidebar__label">Patient search</span>
+                </a>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="contact" Size="20" />
+                    <span class="cy-sidebar__label">Demographics</span>
+                    <span class="app-shell__nav-badge" aria-label="20 pending">20</span>
+                </a>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="appointment" Size="20" />
+                    <span class="cy-sidebar__label">Appointments</span>
+                    <span class="app-shell__nav-badge" aria-label="20 today">20</span>
+                </a>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="clipboard-list" Size="20" />
+                    <span class="cy-sidebar__label">Watchlists</span>
+                </a>
+
+                <span class="cy-sidebar__heading">Clinical</span>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="specialist" Size="20" />
+                    <span class="cy-sidebar__label">Specialists</span>
+                </a>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="flask" Size="20" />
+                    <span class="cy-sidebar__label">Tests</span>
+                </a>
+
+                <span class="cy-sidebar__heading">Nursing</span>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="patient" Size="20" />
+                    <span class="cy-sidebar__label">Adults</span>
+                </a>
+                <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                    <CyIcon Name="carer" Size="20" />
+                    <span class="cy-sidebar__label">Paediatrics</span>
+                </a>
+
+                <div class="app-shell__sidebar-footer">
+                    <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                        <CyIcon Name="settings" Size="20" />
+                        <span class="cy-sidebar__label">Settings</span>
+                    </a>
+                    <a href="#" class="cy-sidebar__item app-shell__nav-link">
+                        <CyIcon Name="logout" Size="20" />
+                        <span class="cy-sidebar__label">Log Out</span>
+                    </a>
+                </div>
+
+            </ChildContent>
+
+        </CySidebar>
+
+        <div class="app-shell__content">
+
+            <CyHeader Sticky="true" Background="ComponentColour.Surface" Class="app-shell__header">
+                <Brand>
+                    <button type="button"
+                            class="app-shell__icon-button"
+                            aria-expanded="@(!_sidebarCollapsed)"
+                            aria-label="@(_sidebarCollapsed ? "Expand navigation" : "Collapse navigation")"
+                            title="@(_sidebarCollapsed ? "Expand navigation" : "Collapse navigation")"
+                            @onclick="ToggleSidebarAsync">
+                        <CyIcon Name="menu" Size="20" />
+                    </button>
+                </Brand>
+
+                <Actions>
+                    <button type="button"
+                            class="app-shell__icon-button"
+                            aria-label="@ThemeLabel"
+                            title="@ThemeLabel"
+                            @onclick="ToggleThemeAsync">
+                        <CyIcon Name="@(IsDark ? "sun" : "moon")" Size="18" />
+                    </button>
+                </Actions>
+            </CyHeader>
+
+            <main id="main-content" class="app-shell__main" tabindex="-1">
+                @Body
+            </main>
+
+            <CyFooter Background="ComponentColour.Primary"
+                      Copyright="@($"\u00a9 {DateTime.UtcNow.Year} GIG Cymru NHS Wales \u00b7 Digital Health and Care Wales")">
+                <a href="#">Accessibility</a>
+                <a href="#">Privacy</a>
+                <a href="#">Contact</a>
+            </CyFooter>
+
+        </div>
+
+    </CyStack>
 
 </CyThemeProvider>
+
+@code {
+    private CySidebar? _sidebar;
+    private bool _sidebarCollapsed;
+
+    private bool IsDark => Theme.CurrentTheme.Mode == ThemeMode.Dark;
+
+    private string ThemeLabel => IsDark ? "Switch to light mode" : "Switch to dark mode";
+
+    protected override void OnInitialized()
+    {
+        Theme.ThemeChanged += OnThemeChanged;
+    }
+
+    private async Task ToggleSidebarAsync()
+    {
+        if (_sidebar is not null)
+        {
+            await _sidebar.ToggleAsync();
+        }
+    }
+
+    private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e) => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Theme.ThemeChanged -= OnThemeChanged;
+    }
+}

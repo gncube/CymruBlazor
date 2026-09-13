@@ -1,0 +1,350 @@
+/*
+ * StarterApp - Health Board Overview
+ *
+ * Layout/visual polish sitting on top of CymruBlazor's own component CSS.
+ * Only semantic design tokens (--cymru-color-*, --cymru-space-*, etc.) are
+ * used here so the page automatically follows light/dark/high-contrast
+ * theme changes driven by CyThemeProvider - no colour is hardcoded.
+ */
+
+html,
+body {
+  background-color: var(--cymru-color-background);
+}
+
+/* ==========================================================================
+   App shell (Sidebar + Header + Main + Footer)
+   ========================================================================== */
+
+.app-shell {
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.app-shell__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.app-shell__main {
+  flex: 1 1 auto;
+  padding: var(--cymru-space-6);
+  background-color: var(--cymru-color-background);
+}
+
+.app-shell__header {
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.app-shell__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: var(--cymru-radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app-shell__icon-button:hover {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.app-shell__icon-button:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.app-shell__nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-2) var(--cymru-space-4);
+  color: var(--cymru-color-text);
+  text-decoration: none;
+  border-radius: var(--cymru-radius-sm);
+  position: relative;
+}
+
+.app-shell__nav-link:hover {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.app-shell__nav-badge {
+  margin-inline-start: auto;
+  min-width: 1.25rem;
+  padding: 0 var(--cymru-space-1);
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-primary-subtle);
+  color: var(--cymru-color-primary);
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.cy-sidebar--compact .app-shell__nav-badge {
+  margin-inline-start: 0;
+}
+
+.app-shell__sidebar-footer {
+  margin-top: auto;
+  border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  padding-block-start: var(--cymru-space-2);
+}
+
+.cy-sidebar {
+  display: flex;
+  flex-direction: column;
+  padding-block-end: var(--cymru-space-4);
+  gap: var(--cymru-space-1);
+}
+
+/* ==========================================================================
+   Health Board Overview page
+   ========================================================================== */
+
+.hbo-page {
+  padding-block: var(--cymru-space-6);
+}
+
+.hbo-page > .cy-breadcrumb {
+  margin-block-end: var(--cymru-space-4);
+}
+
+.hbo-page-header {
+  margin-block-end: var(--cymru-space-6);
+}
+
+.hbo-page-header h1 {
+  margin: 0;
+}
+
+/* KPI cards */
+
+.hbo-kpi-card {
+  padding: var(--cymru-space-5);
+  border: none;
+}
+
+.hbo-kpi-card__label {
+  font-weight: 600;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.hbo-kpi-card__value {
+  margin: var(--cymru-space-3) 0 var(--cymru-space-1);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hbo-kpi-card__delta {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  margin: 0;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.hbo-kpi-card__delta-label {
+  color: var(--cymru-color-text-muted);
+  font-weight: 400;
+}
+
+.hbo-kpi-card--info {
+  background-color: var(--cymru-color-info-background);
+  color: var(--cymru-color-info);
+}
+
+.hbo-kpi-card--success {
+  background-color: var(--cymru-color-success-background);
+  color: var(--cymru-color-success);
+}
+
+.hbo-kpi-card--warning {
+  background-color: var(--cymru-color-warning-background);
+  color: var(--cymru-color-text);
+}
+
+.hbo-kpi-card--danger {
+  background-color: var(--cymru-color-danger-background);
+  color: var(--cymru-color-danger);
+}
+
+.hbo-kpi-card .hbo-kpi-card__value,
+.hbo-kpi-card .hbo-kpi-card__delta-label {
+  color: var(--cymru-color-text);
+}
+
+/* Widget cards (My Appointments / Inpatient Occupancy / Waiting List) */
+
+.hbo-widget-card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.hbo-widget-card__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+  color: var(--cymru-color-link);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.hbo-widget-card__view-all:hover {
+  text-decoration: underline;
+}
+
+.hbo-widget-card__subtitle {
+  margin: var(--cymru-space-1) 0 0;
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.hbo-empty {
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+/* Day tabs inside My Appointments */
+
+.hbo-day-tabs .cy-tabs__list {
+  overflow-x: auto;
+  margin-block-end: var(--cymru-space-4);
+}
+
+/* Appointment list */
+
+.hbo-appointment-item {
+  display: flex;
+  align-items: stretch;
+  gap: var(--cymru-space-3);
+  padding-block: var(--cymru-space-2);
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.hbo-appointment-item:last-child {
+  border-block-end: none;
+}
+
+.hbo-appointment-item__bar {
+  flex: 0 0 auto;
+  width: 4px;
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-info);
+}
+
+.hbo-appointment-item__bar--success {
+  background-color: var(--cymru-color-success);
+}
+
+.hbo-appointment-item__bar--warning {
+  background-color: var(--cymru-color-warning);
+}
+
+.hbo-appointment-item__bar--danger {
+  background-color: var(--cymru-color-danger);
+}
+
+.hbo-appointment-item__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hbo-appointment-item__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.hbo-appointment-item__note {
+  margin: 0;
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.hbo-appointment-item__meta {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--cymru-space-1);
+}
+
+.hbo-appointment-item__mode {
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+}
+
+/* Occupancy bars */
+
+.hbo-occupancy-row__label {
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: var(--cymru-space-1);
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.hbo-occupancy-row__track {
+  height: 0.5rem;
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-surface-alt);
+  overflow: hidden;
+}
+
+.hbo-occupancy-row__fill {
+  height: 100%;
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-info);
+}
+
+.hbo-occupancy-row__fill--warning {
+  background-color: var(--cymru-color-warning);
+}
+
+.hbo-occupancy-row__fill--danger {
+  background-color: var(--cymru-color-danger);
+}
+
+.hbo-occupancy-row__fill--success {
+  background-color: var(--cymru-color-success);
+}
+
+/* Waiting list */
+
+.hbo-waiting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-3);
+  border-inline-start: 4px solid var(--cymru-color-danger);
+  background-color: var(--cymru-color-surface-alt);
+  border-radius: var(--cymru-radius-sm);
+}
+
+.hbo-waiting-row--warning {
+  border-inline-start-color: var(--cymru-color-warning);
+}
+
+.hbo-waiting-row__body {
+  min-width: 0;
+}
+
+.hbo-waiting-row__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.hbo-waiting-row__meta {
+  margin: 0;
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+}
