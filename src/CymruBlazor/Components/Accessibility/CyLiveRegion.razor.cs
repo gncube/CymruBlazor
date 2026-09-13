@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Mediator;
 using CymruBlazor.Enums;
+using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Notifications;
 using CymruBlazor.Components.Core;
 
@@ -8,14 +8,24 @@ namespace CymruBlazor.Components.Accessibility;
 
 /// <summary>
 /// An accessibility component that dynamically announces content changes to screen readers using ARIA live regions.
+///
+/// Deliberately does <em>not</em> implement Mediator's
+/// <c>INotificationHandler&lt;LiveRegionAnnouncement&gt;</c> itself - doing
+/// so would cause Mediator's DI-based dispatch to resolve a separate,
+/// disconnected instance of this component from the container (never
+/// attached to the render tree, so it has no render handle) instead of
+/// calling this live instance. Instead it registers itself with
+/// <see cref="ILiveRegionRegistry"/>, which the real handler
+/// (<see cref="LiveRegionAnnouncementHandler"/>) uses to forward
+/// announcements to whichever instance(s) are actually rendered.
 /// </summary>
-public partial class CyLiveRegion : CyComponentBase, INotificationHandler<LiveRegionAnnouncement>
+public partial class CyLiveRegion : CyComponentBase
 {
     private ElementReference _elementRef;
     private string _activeMessage = string.Empty;
 
     [Inject]
-    private IMediator MediatorInstance { get; set; } = default!;
+    private ILiveRegionRegistry Registry { get; set; } = default!;
 
     [Parameter]
     public LiveRegionPoliteness Politeness { get; set; } = LiveRegionPoliteness.Polite;
@@ -45,8 +55,13 @@ public partial class CyLiveRegion : CyComponentBase, INotificationHandler<LiveRe
             .AddClass("sr-only")
             .Build();
 
+    /// <inheritdoc />
+    protected override void OnInitialized() => Registry.Register(this);
+
     /// <summary>
-    /// Handles incoming accessibility announcements from the Mediator pipeline safely within the UI thread context.
+    /// Handles incoming accessibility announcements, forwarded via
+    /// <see cref="ILiveRegionRegistry"/> from the Mediator pipeline,
+    /// safely within the UI thread context.
     /// </summary>
     public async ValueTask Handle(LiveRegionAnnouncement notification, CancellationToken cancellationToken)
     {
@@ -64,7 +79,7 @@ public partial class CyLiveRegion : CyComponentBase, INotificationHandler<LiveRe
 
     public void Dispose()
     {
-        // Lifetime managed transparently by the container framework
+        Registry.Unregister(this);
         GC.SuppressFinalize(this);
     }
 }

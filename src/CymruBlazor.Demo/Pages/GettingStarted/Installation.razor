@@ -5,9 +5,9 @@
 <div class="cb-page-header">
     <h1 class="cb-page-title">Installation</h1>
     <p class="cb-page-description">
-        A complete setup reference, including the pieces not covered by the
-        <a href="/getting-started">Getting Started</a> quick start: the stylesheet link,
-        the optional theme script, and service registration.
+        The complete, copy-pasteable setup reference for adding CymruBlazor to a
+        Blazor WebAssembly or Blazor Server project. For what CymruBlazor is and
+        its design principles, see <a href="/getting-started">Getting Started</a>.
     </p>
 </div>
 
@@ -42,6 +42,15 @@
     <CyCodeBlock Code="@_mainLayoutCode" Language="razor" />
 </div>
 
+<div class="cb-section">
+    <h2 class="cb-section-title">6. Add global usings (optional)</h2>
+    <p class="cb-section-description">
+        Add these to your <code>_Imports.razor</code> to avoid repeating
+        <code>@@using</code> directives on every page.
+    </p>
+    <CyCodeBlock Code="@_globalUsingsCode" Language="razor" />
+</div>
+
 @code {
     private const string _stylesheetCode =
         """<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />""";
@@ -61,5 +70,14 @@
                 ...
             </Router>
         </CyThemeProvider>
+        """;
+
+    private const string _globalUsingsCode =
+        """
+        @using CymruBlazor.Components.Layout
+        @using CymruBlazor.Components.Accessibility
+        @using CymruBlazor.Enums
+        @using CymruBlazor.Accessibility.Notifications
+        @using Mediator
         """;
 }
