@@ -5,68 +5,70 @@
     <h1 class="cb-page-title">Getting Started</h1>
     <p class="cb-page-description">
         CymruBlazor is an open-source Blazor component library implementing the
-        NHS Wales Design System. Add it to any Blazor WebAssembly or Blazor Server
-        project in three steps.
+        NHS Wales Design System, for any Blazor WebAssembly or Blazor Server
+        project. This page covers what it is and how it's built; for the
+        step-by-step setup, see <a href="/installation">Installation</a>.
     </p>
 </div>
 
 <div class="cb-section">
-    <h2 class="cb-section-title">1. Install the NuGet package</h2>
+    <h2 class="cb-section-title">What is CymruBlazor?</h2>
     <p class="cb-section-description">
-        Add the core package to your Blazor project.
-    </p>
-
-    <pre><code>dotnet add package CymruBlazor</code></pre>
-
-    <p class="cb-section-description">
-        That's it - icons (<code>CyIcon</code>) and theming (<code>IThemeService</code>,
-        <code>CyThemeProvider</code>) ship as part of the core package, no separate
-        install required.
+        A set of accessible, composable Blazor components - layout primitives,
+        form controls, content and navigation elements - styled to the DHCW
+        "Single Record Design System" and distributed as a single NuGet
+        package. Icons, theming, and design tokens all ship as part of the
+        core package; nothing extra to install.
     </p>
 </div>
 
 <div class="cb-section">
-    <h2 class="cb-section-title">2. Reference the stylesheet</h2>
+    <h2 class="cb-section-title">Design principles</h2>
 
-    <p class="cb-section-description">
-        Add one link element to your <code>wwwroot/index.html</code>
-        (Blazor WASM) or <code>_Host.cshtml</code> / <code>App.razor</code>
-        (Blazor Server). This is the only CSS file you need to reference.
-    </p>
+    <table class="cb-api-table" aria-label="Design principles">
+        <thead>
+            <tr>
+                <th>Principle</th>
+                <th>What it means</th>
+            </tr>
+        </thead>
 
-    <pre><code>&lt;link rel="stylesheet"
-      href="_content/CymruBlazor/css/cymrublazor.css" /&gt;</code></pre>
+        <tbody>
+            <tr>
+                <td class="cb-api-table__name">Accessible by default</td>
+                <td>Every component is built to WCAG 2.2 AA, not retrofitted afterwards.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Composable</td>
+                <td>Small, single-purpose components that connect together instead of one large monolith.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Design tokens</td>
+                <td>Colour, spacing, and typography are tokenised CSS custom properties aligned to Welsh NHS branding guidelines - see <a href="/design-tokens">Design Tokens</a>.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Minimal JavaScript</td>
+                <td>Interop is used only for genuine browser API calls (e.g. clipboard, focus); behaviour otherwise lives in C#.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Mediator pipeline</td>
+                <td>Cross-cutting concerns, such as screen-reader live-region announcements, flow through a shared Mediator pipeline rather than direct component references.</td>
+            </tr>
+
+            <tr>
+                <td class="cb-api-table__name">Welsh language support</td>
+                <td>Native language toggling primitives for Welsh and English content.</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="cb-section">
-    <h2 class="cb-section-title">3. Register services</h2>
-
-    <p class="cb-section-description">
-        Call <code>AddCymruBlazor()</code> in your <code>Program.cs</code>.
-        This registers the component ID generator and the Mediator pipeline
-        used by live region announcements.
-    </p>
-
-    <pre><code>builder.Services.AddCymruBlazor();</code></pre>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">4. Add global usings (optional)</h2>
-
-    <p class="cb-section-description">
-        Add these to your <code>_Imports.razor</code> to avoid repeating
-        <code>&#64;using</code> directives on every page.
-    </p>
-
-    <pre><code>&#64;using CymruBlazor.Components.Layout
-&#64;using CymruBlazor.Components.Accessibility
-&#64;using CymruBlazor.Enums
-&#64;using CymruBlazor.Accessibility.Notifications
-&#64;using Mediator</code></pre>
-</div>
-
-<div class="cb-section">
-    <h2 class="cb-section-title">5. Use your first component</h2>
+    <h2 class="cb-section-title">See it in action</h2>
 
     <p class="cb-section-description">
         Layout primitives compose to build any NHS Wales-aligned page structure.
@@ -131,4 +133,11 @@
             </tr>
         </tbody>
     </table>
+</div>
+
+<div class="cb-section">
+    <p class="cb-section-description">
+        Ready to add it to your project? Head to
+        <a href="/installation">Installation</a> for the complete, copy-pasteable setup steps.
+    </p>
 </div>

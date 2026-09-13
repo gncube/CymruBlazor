@@ -1,0 +1,49 @@
+@page "/"
+
+<PageTitle>CymruBlazor Starter</PageTitle>
+
+<CyContainer>
+    <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Large">
+
+        <h1>Welcome to CymruBlazor</h1>
+        <p>
+            This page has nothing in it beyond what the README's Getting
+            Started section describes: a package reference, a stylesheet
+            link, and <code>builder.Services.AddCymruBlazor()</code>. If
+            this looks styled, the package is wired up correctly.
+        </p>
+
+        <CyCard>
+            <Header>
+                <h2>Try a component</h2>
+            </Header>
+            <ChildContent>
+                <p>
+                    Every component in the package works the same way once
+                    it's referenced - no extra setup needed per component.
+                </p>
+                <CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Small">
+                    <CyButton Variant="ComponentColour.Primary" OnClick="HandlePrimaryClick">
+                        Primary action
+                    </CyButton>
+                    <CyButton Variant="ComponentColour.Secondary" OnClick="HandleSecondaryClick">
+                        Secondary action
+                    </CyButton>
+                </CyStack>
+                @if (_lastClicked is not null)
+                {
+                    <p role="status">Last clicked: @_lastClicked</p>
+                }
+            </ChildContent>
+        </CyCard>
+
+    </CyStack>
+</CyContainer>
+
+@code {
+    private string? _lastClicked;
+
+    private void HandlePrimaryClick() => _lastClicked = "Primary action";
+
+    private void HandleSecondaryClick() => _lastClicked = "Secondary action";
+}
