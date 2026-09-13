@@ -494,3 +494,4 @@ GitVersion.yml.bak
 /.github/agents/
 /.github/prompts/
 /.github/skills/
+local-package-versions.props
