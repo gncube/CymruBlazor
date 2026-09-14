@@ -22,38 +22,40 @@
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
 
         <span class="cb-panel-caption">Preview</span>
+        <p class="cb-section-description">
+            Click the chevron in the sidebar's own header to cycle through its three
+            visible states: <strong>Full</strong> &rarr; <strong>Compact</strong> &rarr;
+            <strong>Icon-only</strong> &rarr; back to Full. The toggle button, and hiding/showing
+            <code>Brand</code> as it collapses, are both built into <code>CySidebar</code> - this
+            page only supplies the target <code>CollapseMode</code> for each step.
+        </p>
         <div class="cb-workbench-preview">
-            <div style="display:flex; gap:0; height:180px; width:100%; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
+            <div style="display:flex; gap:0; height:220px; width:100%; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
                 @if (_position == SidebarPosition.Left)
                 {
-                    <CySidebar Position="_position" Width="_width" Collapsed="_collapsed" CollapseMode="_collapseMode">
+                    <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
                         <Brand>
-                            @if (!_collapsed)
-                            {
-                                <CyBrandLogo Variant="BrandLogoVariant.Mark" Size="ComponentSize.Small" />
-                            }
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="false" Size="ComponentSize.Small" />
                         </Brand>
                         <ChildContent>
-                            <div class="cy-sidebar__item"><span class="cy-sidebar__label">Home</span></div>
-                            <div class="cy-sidebar__item"><span class="cy-sidebar__label">Appointments</span></div>
+                            <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
+                            <div class="cy-sidebar__item"><CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span></div>
                         </ChildContent>
                     </CySidebar>
                 }
                 <div style="flex:1; padding:var(--cymru-space-4); font-size:var(--cymru-font-size-sm); color:var(--cymru-color-text-muted);">
                     Main content area
+                    <div style="margin-top:var(--cymru-space-2);">Current state: <strong>@_displayState</strong></div>
                 </div>
                 @if (_position == SidebarPosition.Right)
                 {
-                    <CySidebar Position="_position" Width="_width" Collapsed="_collapsed" CollapseMode="_collapseMode">
+                    <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
                         <Brand>
-                            @if (!_collapsed)
-                            {
-                                <CyBrandLogo Variant="BrandLogoVariant.Mark" Size="ComponentSize.Small" />
-                            }
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="false" Size="ComponentSize.Small" />
                         </Brand>
                         <ChildContent>
-                            <div class="cy-sidebar__item"><span class="cy-sidebar__label">Home</span></div>
-                            <div class="cy-sidebar__item"><span class="cy-sidebar__label">Appointments</span></div>
+                            <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
+                            <div class="cy-sidebar__item"><CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span></div>
                         </ChildContent>
                     </CySidebar>
                 }
@@ -64,8 +66,6 @@
             <DemoPropertyControls>
                 <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions" TValue="SidebarPosition" />
                 <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
-                <DemoPropertySelect Label="Collapse mode" @bind-Value="_collapseMode" Options="_collapseModeOptions" TValue="SidebarCollapseMode" />
-                <DemoPropertySwitch Label="Collapsed" @bind-Value="_collapsed" />
             </DemoPropertyControls>
 
             <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
@@ -80,10 +80,21 @@
         </div>
 
         <p class="cb-section-description" style="margin-top:1.5rem;">
+            <code>CySidebar</code> only exposes a single on/off <code>Collapsed</code> switch and a
+            fixed <code>CollapseMode</code> for what "collapsed" looks like - cycling through
+            <em>three</em> visible states, as above, is a thin pattern the host page builds on top:
+            treat every <code>CollapsedChanged</code> firing as "advance to the next step" rather than
+            reading the bool it carries, and hand the sidebar back whichever <code>CollapseMode</code>
+            that step calls for.
+        </p>
+        <CyCodeBlock Code="@CycleRecipeCode" Language="csharp" />
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
             <code>CollapseMode.Disabled</code> ignores <code>Collapsed</code> entirely (always renders expanded) -
-            use it for a permanent, structural navigation rail. <code>Hidden</code> collapses to zero width with
+            use it for a permanent, structural navigation rail, and note it also removes the header's chevron
+            button entirely (there'd be nothing for it to do). <code>Hidden</code> collapses to zero width with
             <code>overflow: hidden</code>, the most extreme "fully hidden" state; <code>Compact</code>/<code>IconOnly</code>
-            (shown above) keep a visible icon rail instead.
+            (cycled through above) keep a visible icon rail instead.
         </p>
 
     </div>
@@ -104,11 +115,45 @@ else
 @code {
     private enum Tab { Examples, Api, Accessibility }
 
+    /// <summary>
+    /// The three visible states this page cycles the sidebar through by
+    /// treating every <c>CollapsedChanged</c> firing (i.e. every click of
+    /// CySidebar's own built-in header chevron) as "advance one step" -
+    /// see <see cref="OnToggled"/>.
+    /// </summary>
+    private enum SidebarDisplayState { Full, Compact, IconOnly }
+
     private Tab _activeTab = Tab.Examples;
     private SidebarPosition _position = SidebarPosition.Left;
-    private SidebarWidth _width = SidebarWidth.Small;
-    private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
-    private bool _collapsed;
+    private SidebarWidth _width = SidebarWidth.Medium;
+    private SidebarDisplayState _displayState = SidebarDisplayState.Full;
+
+    private bool IsCollapsed => _displayState != SidebarDisplayState.Full;
+
+    private SidebarCollapseMode EffectiveCollapseMode => _displayState switch
+    {
+        SidebarDisplayState.IconOnly => SidebarCollapseMode.IconOnly,
+        _ => SidebarCollapseMode.Compact
+    };
+
+    /// <summary>
+    /// Wired to CySidebar's <c>CollapsedChanged</c>. The bool it carries
+    /// (whatever CySidebar's own <c>ToggleAsync</c> flipped its local
+    /// <c>Collapsed</c> to) is deliberately ignored - this page owns a
+    /// three-step state machine instead of a two-way on/off switch, so
+    /// every callback just means "the chevron was clicked, advance the
+    /// cycle" and this method recomputes <c>Collapsed</c>/<c>CollapseMode</c>
+    /// from <see cref="_displayState"/> and hands them straight back down.
+    /// </summary>
+    private void OnToggled(bool _)
+    {
+        _displayState = _displayState switch
+        {
+            SidebarDisplayState.Full => SidebarDisplayState.Compact,
+            SidebarDisplayState.Compact => SidebarDisplayState.IconOnly,
+            _ => SidebarDisplayState.Full
+        };
+    }
 
     private readonly IReadOnlyList<SidebarPosition> _positionOptions =
     [
@@ -120,23 +165,46 @@ else
         SidebarWidth.Small, SidebarWidth.Medium, SidebarWidth.Large
     ];
 
-    private readonly IReadOnlyList<SidebarCollapseMode> _collapseModeOptions =
-    [
-        SidebarCollapseMode.Compact, SidebarCollapseMode.IconOnly,
-        SidebarCollapseMode.Disabled, SidebarCollapseMode.Hidden
-    ];
-
     private string GeneratedCode =>
         $"""
         <CySidebar
             Position="SidebarPosition.{_position}"
             Width="SidebarWidth.{_width}"
-            CollapseMode="SidebarCollapseMode.{_collapseMode}"{(_collapsed ? "\n    Collapsed=\"true\"" : "")}>
-            <Brand><CyBrandLogo Variant="BrandLogoVariant.Mark" /></Brand>
+            CollapseMode="SidebarCollapseMode.{EffectiveCollapseMode}"
+            Collapsed="{IsCollapsed.ToString().ToLowerInvariant()}"
+            CollapsedChanged="OnToggled">
+            <Brand><CyBrandLogo Variant="BrandLogoVariant.Auto" /></Brand>
             <ChildContent>
-                <div class="cy-sidebar__item"><span class="cy-sidebar__label">Home</span></div>
+                <div class="cy-sidebar__item"><CyIcon Name="home" /><span class="cy-sidebar__label">Home</span></div>
             </ChildContent>
         </CySidebar>
+        """;
+
+    private const string CycleRecipeCode =
+        """
+        private enum SidebarDisplayState { Full, Compact, IconOnly }
+
+        private SidebarDisplayState _displayState = SidebarDisplayState.Full;
+
+        private bool IsCollapsed => _displayState != SidebarDisplayState.Full;
+
+        private SidebarCollapseMode EffectiveCollapseMode => _displayState switch
+        {
+            SidebarDisplayState.IconOnly => SidebarCollapseMode.IconOnly,
+            _ => SidebarCollapseMode.Compact
+        };
+
+        // Wired to CySidebar's CollapsedChanged - ignore the bool it
+        // carries and just advance the cycle.
+        private void OnToggled(bool _)
+        {
+            _displayState = _displayState switch
+            {
+                SidebarDisplayState.Full => SidebarDisplayState.Compact,
+                SidebarDisplayState.Compact => SidebarDisplayState.IconOnly,
+                _ => SidebarDisplayState.Full
+            };
+        }
         """;
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
@@ -144,16 +212,16 @@ else
         new("Position", "SidebarPosition", "Left", "Which edge the sidebar docks to: Left or Right."),
         new("Width", "SidebarWidth", "Medium", "Expanded width: Small, Medium, or Large."),
         new("Collapsed", "bool", "false", "Whether the sidebar is collapsed. Two-way bindable via @bind-Collapsed, or toggle programmatically with ToggleAsync()."),
-        new("CollapsedChanged", "EventCallback<bool>", "-", "Raised when Collapsed changes, including via ToggleAsync()."),
+        new("CollapsedChanged", "EventCallback<bool>", "-", "Raised when Collapsed changes, including via ToggleAsync() or clicking the built-in header chevron button."),
         new("CollapseMode", "SidebarCollapseMode", "Compact", "Appearance used while collapsed: Compact, IconOnly, Disabled, or Hidden."),
-        new("Brand", "RenderFragment?", "null", "Optional brand lockup rendered above ChildContent. Omitted entirely (not just hidden) while collapsed."),
+        new("Brand", "RenderFragment?", "null", "Optional brand lockup (e.g. CyBrandLogo) rendered in the header row next to the chevron toggle. Omitted entirely (not just hidden) while collapsed."),
         new("ChildContent", "RenderFragment?", "null", "The sidebar's navigation content.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
         new("Complementary landmark", "Renders as <aside>, a complementary landmark - screen readers announce it as a separate navigation region."),
-        new("Toggle trigger is the consumer's responsibility", "CySidebar doesn't render its own toggle button; whatever triggers Collapsed must carry a descriptive aria-label or aria-expanded."),
+        new("Built-in, labelled toggle", "CySidebar renders its own chevron button in the header row (unless CollapseMode is Disabled), with aria-expanded reflecting the current state and an aria-label of \"Expand sidebar\"/\"Collapse sidebar\" - consumers don't need to build their own trigger."),
         new("Labels survive IconOnly", "Item labels stay in the accessible tree (not aria-hidden) even in CollapseMode.IconOnly, where they're only hidden visually."),
         new("Transform, not display:none", "On mobile, the collapsed sidebar animates via transform: translateX rather than display: none, so it stays predictable for assistive tech during the transition.")
     ];
