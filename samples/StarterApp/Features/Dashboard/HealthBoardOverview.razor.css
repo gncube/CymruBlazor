@@ -449,3 +449,20 @@
 .dark .hbo-kpi-card__value {
     color: #ffffff;
 }
+
+/* Enforce SVG Outline stroke across all dashboard CyIcons */
+::deep svg.cy-icon {
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2px !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Dashboard CyIcon alignment */
+::deep .cy-icon {
+    display: inline-flex;
+    vertical-align: middle;
+}

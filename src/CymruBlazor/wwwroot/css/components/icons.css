@@ -16,3 +16,18 @@
   vertical-align: middle;
   line-height: 1;
 }
+
+/* ==========================================================================
+   SVG Outline Enforcement
+   ========================================================================== */
+
+.cy-icon svg,
+svg.cy-icon {
+  fill: none !important;
+  stroke: currentColor;
+}
+
+.cy-icon svg *,
+svg.cy-icon * {
+  fill: none !important;
+}
