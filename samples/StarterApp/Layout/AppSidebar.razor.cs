@@ -24,6 +24,43 @@ public partial class AppSidebar : ComponentBase
         }
     }
 
+    protected override void OnInitialized()
+    {
+        SyncSubmenuExpandedState();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SyncSubmenuExpandedState();
+    }
+
+    private void SyncSubmenuExpandedState()
+    {
+        if (string.IsNullOrWhiteSpace(ActiveHref))
+        {
+            return;
+        }
+
+        var normalizedActiveHref = NormalizeHref(ActiveHref);
+
+        foreach (var section in _menuSections)
+        {
+            foreach (var item in section.Items)
+            {
+                if (item.HasSubmenu && item.SubItems.Count > 0)
+                {
+                    if (item.SubItems.Any(subItem => string.Equals(NormalizeHref(subItem.Href), normalizedActiveHref, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        item.IsExpanded = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private static string NormalizeHref(string href) =>
+        href.TrimEnd('/').ToLowerInvariant();
+
     private void ToggleSubmenu(NavItemModel item)
     {
         if (item.HasSubmenu)

@@ -22,7 +22,7 @@
             @foreach (var item in section.Items)
             {
                 var isActive = string.Equals(ActiveHref, item.Href, StringComparison.OrdinalIgnoreCase)
-                    || (item.Href == "/" && string.IsNullOrEmpty(ActiveHref));
+                    || (item.Href == "/" && (string.IsNullOrEmpty(ActiveHref) || ActiveHref == "/"));
 
                 @if (item.HasSubmenu)
                 {
