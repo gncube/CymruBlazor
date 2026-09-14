@@ -1,84 +1,79 @@
-using Xunit;
-using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Branding;
+using CymruBlazor.Components.Theming;
 using CymruBlazor.Enums;
+using CymruBlazor.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using Xunit;
 
 namespace CymruBlazor.Tests.Components.Branding;
 
-public sealed class CyBrandLogoTests : TestContextBase
+public sealed class CyBrandLogoTests : BunitContext
 {
-    [Fact]
-    public void Should_Render_Mark_And_Wordmark_By_Default()
-    {
-        // Act
-        var cut = Render<CyBrandLogo>();
+    private readonly ThemeService _themeService;
 
-        // Assert
-        cut.FindAll("svg.cy-brand-logo__mark").Count.ShouldBe(1);
-        cut.Find("span.cy-brand-logo__wordmark").TextContent.ShouldBe("CymruBlazor");
+    public CyBrandLogoTests()
+    {
+        _themeService = new ThemeService();
+        Services.AddSingleton(_themeService);
     }
 
     [Fact]
-    public void Should_Render_As_Span_When_Href_Is_Not_Set()
+    public void WhenVariantIsAutoAndThemeIsLightResolvesLightFullLogo()
     {
-        // Act
-        var cut = Render<CyBrandLogo>();
+        _themeService.IsDark = false;
 
-        // Assert
-        cut.Find("*").TagName.ShouldBe("SPAN");
-    }
-
-    [Fact]
-    public void Should_Render_As_Link_When_Href_Is_Set()
-    {
-        // Act
         var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Href, "/"));
+            .Add(p => p.Variant, BrandLogoVariant.Auto)
+            .Add(p => p.SymbolOnly, false));
 
-        // Assert
-        var anchor = cut.Find("a");
-        anchor.GetAttribute("href").ShouldBe("/");
-    }
-
-    [Theory]
-    [InlineData(BrandLogoVariant.Mark, true, false)]
-    [InlineData(BrandLogoVariant.Wordmark, false, true)]
-    [InlineData(BrandLogoVariant.Full, true, true)]
-    public void Should_Render_Only_The_Requested_Variant_Parts(
-        BrandLogoVariant variant,
-        bool expectMark,
-        bool expectWordmark)
-    {
-        // Act
-        var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Variant, variant));
-
-        // Assert
-        cut.FindAll("svg.cy-brand-logo__mark").Count.ShouldBe(expectMark ? 1 : 0);
-        cut.FindAll("span.cy-brand-logo__wordmark").Count.ShouldBe(expectWordmark ? 1 : 0);
+        var img = cut.Find("img");
+        img.GetAttribute("src").ShouldBe("images/logo-dhcw-light.svg");
+        img.GetAttribute("class").ShouldContain("h-15");
     }
 
     [Fact]
-    public void Should_Expose_Accessible_Label_For_Mark_Only_Variant()
+    public void WhenSymbolOnlyIsTrueResolvesIconAsset()
     {
-        // Act
-        var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Variant, BrandLogoVariant.Mark)
-            .Add(p => p.Text, "DHCW"));
+        _themeService.IsDark = false;
 
-        // Assert
-        cut.Find("*").GetAttribute("aria-label").ShouldBe("DHCW");
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Variant, BrandLogoVariant.Auto)
+            .Add(p => p.SymbolOnly, true));
+
+        var img = cut.Find("img");
+        img.GetAttribute("src").ShouldBe("images/icon-dhcw-light.svg");
+        img.GetAttribute("class").ShouldContain("h-8");
     }
 
     [Fact]
-    public void Should_Apply_Size_Modifier_Class()
+    public void WhenVariantIsDarkResolvesDarkAssetRegardlessOfThemeService()
     {
-        // Act
-        var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Size, ComponentSize.Large));
+        _themeService.IsDark = false;
 
-        // Assert
-        cut.Find("*").ClassList.ShouldContain("cy-brand-logo--large");
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Variant, BrandLogoVariant.Dark)
+            .Add(p => p.SymbolOnly, false));
+
+        var img = cut.Find("img");
+        img.GetAttribute("src").ShouldBe("images/logo-dhcw-dark.svg");
+    }
+
+    [Fact]
+    public void WhenThemeServiceChangesLogoReRenders()
+    {
+        _themeService.IsDark = false;
+
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Variant, BrandLogoVariant.Auto)
+            .Add(p => p.SymbolOnly, false));
+
+        cut.Find("img").GetAttribute("src").ShouldBe("images/logo-dhcw-light.svg");
+
+        _themeService.IsDark = true;
+        _themeService.NotifyChanged();
+
+        cut.Find("img").GetAttribute("src").ShouldBe("images/logo-dhcw-dark.svg");
     }
 }

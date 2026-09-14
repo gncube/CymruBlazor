@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using CymruBlazor.Components.Content;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Components.Theming;
@@ -8,98 +7,71 @@ using CymruBlazor.Enums;
 namespace CymruBlazor.Components.Branding;
 
 /// <summary>
-/// Renders a CymruBlazor brand logo.
-///
-/// The component supports two rendering modes:
-/// <list type="bullet">
-/// <item>
-/// When <see cref="LogoPath"/> is supplied, an image-based logo is rendered.
-/// </item>
-/// <item>
-/// When <see cref="LogoPath"/> is not supplied, the built-in SVG mark and
-/// wordmark lockup is rendered.
-/// </item>
-/// </list>
-///
-/// Image-based logos can provide separate light and dark theme assets.
-/// Theme selection is performed entirely through CSS using the ambient
-/// <c>data-theme</c> attribute. No JavaScript interop or theme-service
-/// dependency is required by this component.
-///
-/// The component follows the whole-element link convention used by other
-/// CymruBlazor components. Set <see cref="Href"/> to render the logo as
-/// a single link target.
+/// Renders an NHS Wales / DHCW brand logo with theme-reactive asset resolution
+/// or built-in SVG mark and wordmark lockup.
 /// </summary>
 public partial class CyBrandLogo : CyLayoutComponentBase
 {
     /// <summary>
-    /// Which parts of the built-in lockup to render.
-    ///
-    /// This parameter applies when <see cref="LogoPath"/> is not supplied.
-    /// Defaults to <see cref="BrandLogoVariant.Full"/>.
+    /// Gets or sets the display or theme mode variant.
+    /// Defaults to <see cref="BrandLogoVariant.Auto"/>.
     /// </summary>
     [Parameter]
-    public BrandLogoVariant Variant { get; set; } = BrandLogoVariant.Full;
+    public BrandLogoVariant Variant { get; set; } = BrandLogoVariant.Auto;
+
+    /// <summary>
+    /// Gets or sets whether to render only the symbol/icon rather than the full logo lockup.
+    /// </summary>
+    [Parameter]
+    public bool SymbolOnly { get; set; }
 
     /// <summary>
     /// Overall sizing of the logo from the shared component size scale.
-    ///
-    /// For the built-in logo this controls the SVG mark and wordmark.
-    /// For external assets this controls the maximum logo height while
-    /// preserving the supplied asset's intrinsic aspect ratio.
-    ///
     /// Defaults to <see cref="ComponentSize.Medium"/>.
     /// </summary>
     [Parameter]
     public ComponentSize Size { get; set; } = ComponentSize.Medium;
 
     /// <summary>
-    /// Path or URL to the logo asset used by the light theme.
-    ///
-    /// When supplied, the image-based logo takes precedence over the
-    /// built-in SVG mark and wordmark.
-    ///
-    /// When <see cref="DarkLogoPath"/> is not supplied, this asset is used
-    /// for both light and dark themes.
+    /// Optional explicit path or URL to the light theme logo asset.
+    /// Overrides standard DHCW light logo paths.
     /// </summary>
     [Parameter]
     public string? LogoPath { get; set; }
 
     /// <summary>
-    /// Path or URL to the logo asset used by the dark theme.
-    ///
-    /// When omitted, <see cref="LogoPath"/> is used for both themes.
-    /// This parameter has no effect when <see cref="LogoPath"/> is null.
+    /// Optional explicit path or URL to the dark theme logo asset.
+    /// Overrides standard DHCW dark logo paths.
     /// </summary>
     [Parameter]
     public string? DarkLogoPath { get; set; }
 
     /// <summary>
     /// The organisation or product name rendered by the built-in wordmark.
-    ///
-    /// This parameter applies when <see cref="LogoPath"/> is not supplied.
-    /// Defaults to <c>CymruBlazor</c>.
+    /// Defaults to <c>NHS Wales</c>.
     /// </summary>
     [Parameter]
-    public string Text { get; set; } = "CymruBlazor";
+    public string Text { get; set; } = "NHS Wales";
 
     /// <summary>
-    /// When set, the entire logo renders as a single anchor element.
-    /// Typically this points to the application's home route.
+    /// Destination route or URL. When non-null, renders the logo within an anchor element.
+    /// Defaults to root home route <c>"/"</c>.
     /// </summary>
     [Parameter]
-    public string? Href { get; set; }
+    public string? Href { get; set; } = "/";
 
     /// <summary>
-    /// Accessible label applied to the logo.
-    ///
-    /// When omitted, the label defaults to "<see cref="Text"/> home" for
-    /// linked logos and "<see cref="Text"/>" for non-linked logos.
+    /// Accessible label applied to the logo anchor or container element.
     /// </summary>
     [Parameter]
     public string? AriaLabel { get; set; }
 
     protected override string BaseCssClass => "cy-brand-logo";
+
+    private bool UseImageAssets =>
+        Variant is BrandLogoVariant.Auto or BrandLogoVariant.Light or BrandLogoVariant.Dark
+        || LogoPath is not null
+        || DarkLogoPath is not null;
 
     private bool ShowMark =>
         Variant is BrandLogoVariant.Full
@@ -112,7 +84,63 @@ public partial class CyBrandLogo : CyLayoutComponentBase
             or BrandLogoVariant.Stacked;
 
     private string ComputedAriaLabel =>
-        AriaLabel ?? (Href is not null ? $"{Text} home" : Text);
+        AriaLabel ?? (Href is not null ? $"{Text} Home" : Text);
+
+    private string LogoPathResolved
+    {
+        get
+        {
+            var useDark = Variant switch
+            {
+                BrandLogoVariant.Dark => true,
+                BrandLogoVariant.Light => false,
+                _ => ThemeService.IsDark
+            };
+
+            if (useDark && DarkLogoPath is not null)
+            {
+                return DarkLogoPath;
+            }
+
+            if (!useDark && LogoPath is not null)
+            {
+                return LogoPath;
+            }
+
+            return (useDark, SymbolOnly) switch
+            {
+                (true, true) => "images/icon-dhcw-dark.svg",
+                (true, false) => "images/logo-dhcw-dark.svg",
+                (false, true) => "images/icon-dhcw-light.svg",
+                (false, false) => "images/logo-dhcw-light.svg"
+            };
+        }
+    }
+
+    private string ComputedLinkClass =>
+        CssBuilder.Empty
+            .AddClass("inline-flex items-center gap-2 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-sr-focus-ring")
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .Build();
+
+    private string ComputedContainerClass =>
+        CssBuilder.Empty
+            .AddClass("inline-flex items-center")
+            .AddClass(BaseCssClass)
+            .AddClass(Class)
+            .Build();
+
+    private string ComputedImageClass =>
+        CssBuilder.Empty
+            .AddClass(SymbolOnly ? "h-8 w-auto" : "h-15 w-auto")
+            .AddClass("transition-opacity duration-150")
+            .Build();
+
+    protected override void OnInitialized()
+    {
+        ThemeService.OnChange += HandleThemeChanged;
+    }
 
     protected override string BuildCssClass()
     {
@@ -125,5 +153,15 @@ public partial class CyBrandLogo : CyLayoutComponentBase
             .AddClass($"cy-brand-logo--{variantSuffix}")
             .AddClass($"cy-brand-logo--{sizeSuffix}")
             .Build();
+    }
+
+    private void HandleThemeChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnChange -= HandleThemeChanged;
     }
 }

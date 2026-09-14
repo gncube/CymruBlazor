@@ -4,7 +4,8 @@
 @using CymruBlazor.Enums
 @using CymruBlazor.Demo.SharedComponents
 
-<CyPageHeader Title="CyBrandLogo" Subtitle="The built-in SVG mark/wordmark lockup, or a supplied image asset. Theme switching is CSS-only.">
+<CyPageHeader Title="CyBrandLogo"
+              Subtitle="NHS Wales and DHCW brand logo supporting automatic ThemeService switching, symbol icons, and custom image assets.">
     <Breadcrumb>
         <CyBreadcrumb>
             <CyBreadcrumbItem Text="Branding" />
@@ -14,9 +15,14 @@
 </CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
-    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
-    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
-    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)"
+            aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
+            aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
 @if (_activeTab == Tab.Examples)
@@ -25,12 +31,15 @@
 
         <span class="cb-panel-caption">Preview</span>
         <div class="cb-workbench-preview">
-            <CyBrandLogo Variant="_variant" Size="_size" Text="@_text" Href="@(_asLink ? "/" : null)" />
+            <CyBrandLogo Variant="_variant" SymbolOnly="_symbolOnly" Size="_size" Text="@_text"
+                         Href="@(_asLink ? "/" : null)" />
         </div>
 
         <div class="cb-playground-grid">
             <DemoPropertyControls>
-                <DemoPropertyToggleGroup Label="Variant" @bind-Value="_variant" Options="_variantOptions" TValue="BrandLogoVariant" />
+                <DemoPropertyToggleGroup Label="Variant" @bind-Value="_variant" Options="_variantOptions"
+                                         TValue="BrandLogoVariant" />
+                <DemoPropertySwitch Label="Symbol Only" @bind-Value="_symbolOnly" />
                 <DemoPropertyToggleGroup Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
                 <DemoPropertyTextInput Label="Text" @bind-Value="_text" />
                 <DemoPropertySwitch Label="As a home link (Href)" @bind-Value="_asLink" />
@@ -48,14 +57,12 @@
         </div>
 
         <div style="margin-top: var(--docs-section-gap);">
-            <h3>Image-based logo with a dark-theme asset</h3>
+            <h3>ThemeService Reactive Implementation</h3>
             <p class="cb-section-description">
-                When <code>LogoPath</code> is supplied, it takes precedence over the built-in lockup (the Variant
-                control above has no effect). Supply <code>DarkLogoPath</code> too, and both are rendered with CSS
-                showing/hiding the correct one under <code>[data-theme="dark"]</code> - no theme-change JavaScript
-                is triggered, unlike the header's own theme toggle elsewhere in this demo.
+                The component subscribes directly to <code>ThemeService.OnChange</code> and switches between standard NHS
+                Wales / DHCW light and dark assets automatically.
             </p>
-            <CyCodeBlock Code="@ImageLogoExampleCode" Language="razor" />
+            <CyCodeBlock Code="@ThemeServiceExampleCode" Language="razor" />
         </div>
 
     </div>
@@ -77,14 +84,21 @@ else
     private enum Tab { Examples, Api, Accessibility }
 
     private Tab _activeTab = Tab.Examples;
-    private BrandLogoVariant _variant = BrandLogoVariant.Full;
+    private BrandLogoVariant _variant = BrandLogoVariant.Auto;
+    private bool _symbolOnly;
     private ComponentSize _size = ComponentSize.Medium;
-    private string _text = "CymruBlazor";
-    private bool _asLink;
+    private string _text = "NHS Wales";
+    private bool _asLink = true;
 
     private readonly IReadOnlyList<BrandLogoVariant> _variantOptions =
     [
-        BrandLogoVariant.Full, BrandLogoVariant.Mark, BrandLogoVariant.Wordmark, BrandLogoVariant.Stacked
+        BrandLogoVariant.Auto,
+        BrandLogoVariant.Light,
+        BrandLogoVariant.Dark,
+        BrandLogoVariant.Full,
+        BrandLogoVariant.Mark,
+        BrandLogoVariant.Wordmark,
+        BrandLogoVariant.Stacked
     ];
 
     private readonly IReadOnlyList<ComponentSize> _sizeOptions =
@@ -96,32 +110,85 @@ else
         $"""
         <CyBrandLogo
             Variant="BrandLogoVariant.{_variant}"
+            SymbolOnly="{_symbolOnly.ToString().ToLowerInvariant()}"
             Size="ComponentSize.{_size}"
-            Text="{_text}"{(_asLink ? "\n    Href=\"/\"" : "")} />
+            Text="{_text}"{(_asLink ? "\n    Href=\"/\"" : "\n    Href=\"null\"")} />
         """;
 
-    private const string ImageLogoExampleCode =
+    private const string ThemeServiceExampleCode =
         """
-        <CyBrandLogo LogoPath="/images/logo-light.svg"
-                     DarkLogoPath="/images/logo-dark.svg"
-                     Href="/" />
+        @implements IDisposable
+        @inject ThemeService ThemeService
+
+        <a href="/"
+           class="inline-flex items-center gap-2 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-sr-focus-ring"
+           aria-label="NHS Wales Home">
+            <img src="@LogoPath"
+                 alt="NHS Wales Logo"
+                 class="@(SymbolOnly ? "h-8 w-auto" : "h-15 w-auto") transition-opacity duration-150" />
+        </a>
+
+        @code {
+            [Parameter]
+            public BrandLogoVariant Variant { get; set; } = BrandLogoVariant.Auto;
+
+            [Parameter]
+            public bool SymbolOnly { get; set; }
+
+            protected override void OnInitialized()
+            {
+                ThemeService.OnChange += HandleThemeChanged;
+            }
+
+            private string LogoPath
+            {
+                get
+                {
+                    var useDark = Variant switch
+                    {
+                        BrandLogoVariant.Dark => true,
+                        BrandLogoVariant.Light => false,
+                        _ => ThemeService.IsDark
+                    };
+
+                    return (useDark, SymbolOnly) switch
+                    {
+                        (true, true)   => "images/icon-dhcw-dark.svg",
+                        (true, false)  => "images/logo-dhcw-dark.svg",
+                        (false, true)  => "images/icon-dhcw-light.svg",
+                        (false, false) => "images/logo-dhcw-light.svg"
+                    };
+                }
+            }
+
+            private void HandleThemeChanged()
+            {
+                _ = InvokeAsync(StateHasChanged);
+            }
+
+            public void Dispose()
+            {
+                ThemeService.OnChange -= HandleThemeChanged;
+            }
+        }
         """;
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
     [
-        new("Variant", "BrandLogoVariant", "Full", "Which parts of the built-in lockup render: Full, Mark, Wordmark, or Stacked. No effect when LogoPath is set."),
-        new("Size", "ComponentSize", "Medium", "Overall sizing - mark/wordmark scale, or max height for image assets."),
-        new("LogoPath", "string?", "null", "Light-theme (or single) logo asset. Takes precedence over the built-in lockup when set."),
-        new("DarkLogoPath", "string?", "null", "Dark-theme logo asset. Falls back to LogoPath when omitted."),
-        new("Text", "string", "\"CymruBlazor\"", "Organisation/product name rendered by the built-in wordmark."),
-        new("Href", "string?", "null", "When set, renders the whole logo as a single anchor element."),
-        new("AriaLabel", "string?", "null", "Accessible label. Defaults to \"{Text} home\" (linked) or \"{Text}\" (unlinked).")
+        new("Variant", "BrandLogoVariant", "Auto", "Asset theme resolution mode (Auto, Light, Dark) or built-in lockup variant (Full, Mark, Wordmark, Stacked)."),
+        new("SymbolOnly", "bool", "false", "When true, displays the compact icon symbol instead of the full logo lockup."),
+        new("Size", "ComponentSize", "Medium", "Overall sizing - controls max height for image assets or built-in SVG mark."),
+        new("LogoPath", "string?", "null", "Optional custom path for the light theme logo asset. Defaults to NHS Wales / DHCW light logo."),
+        new("DarkLogoPath", "string?", "null", "Optional custom path for the dark theme logo asset. Defaults to NHS Wales / DHCW dark logo."),
+        new("Text", "string", "\"NHS Wales\"", "Organisation/product name rendered for aria-label or built-in wordmark."),
+        new("Href", "string?", "\"/\"", "When set, renders the logo inside an accessible anchor element pointing to the specified URL."),
+        new("AriaLabel", "string?", "null", "Accessible label. Defaults to \"{Text} Home\" (linked) or \"{Text}\" (unlinked).")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
-        new("Single labelled unit", "Renders as an <a> when Href is set, or a <span role=\"img\"> otherwise - either way the logo is exposed to assistive technology as one labelled unit rather than separate icon/text nodes."),
-        new("No redundant announcements", "The built-in SVG mark carries aria-hidden=\"true\" and image assets use empty alt text, since the accessible label is already provided at the wrapping element via aria-label."),
-        new("Theme-aware without JS", "Theme selection is CSS-only (data-theme), so the logo repaints correctly for high-contrast and dark themes without any additional wiring or a flash of the wrong asset.")
+        new("Single labelled unit", "Renders as an <a> when Href is set, or a <span role=\"img\"> otherwise - ensuring assistive technology receives a clear landmark."),
+        new("Focus indicators", "Features distinct focus rings using focus-visible:ring-2 focus-visible:ring-sr-focus-ring without suppressing default keyboard navigation."),
+        new("Theme-aware reactivity", "Subscribes cleanly to ThemeService.OnChange to refresh asset paths seamlessly when switching between light and dark modes.")
     ];
 }
