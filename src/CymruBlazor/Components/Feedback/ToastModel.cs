@@ -1,6 +1,6 @@
-namespace CymruBlazor.Components.Feedback;
-
 using Mediator;
+
+namespace CymruBlazor.Components.Feedback;
 
 /// <summary>
 /// Visual variant for toast notifications.

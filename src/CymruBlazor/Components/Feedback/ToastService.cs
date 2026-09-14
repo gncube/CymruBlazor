@@ -1,7 +1,7 @@
-namespace CymruBlazor.Components.Feedback;
-
 using System.Collections.Concurrent;
 using Mediator;
+
+namespace CymruBlazor.Components.Feedback;
 
 /// <summary>
 /// Default implementation of <see cref="IToastService"/> and Mediator handler for <see cref="ShowToastNotification"/>.
@@ -121,7 +121,7 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
             }
             catch (OperationCanceledException)
             {
-                // Task cancellation expected on explicit dismissal or disposal
+                // Expected on manual dismissal or disposal
             }
         });
     }

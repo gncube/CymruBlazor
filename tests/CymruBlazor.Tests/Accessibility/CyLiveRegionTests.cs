@@ -1,5 +1,3 @@
-namespace CymruBlazor.Tests.Accessibility;
-
 using Bunit;
 using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Accessibility;
@@ -7,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Shouldly;
 using Xunit;
+
+namespace CymruBlazor.Tests.Accessibility;
 
 public sealed class CyLiveRegionTests : BunitContext
 {

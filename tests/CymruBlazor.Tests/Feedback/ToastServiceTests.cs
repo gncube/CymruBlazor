@@ -1,8 +1,8 @@
-namespace CymruBlazor.Tests.Feedback;
-
 using CymruBlazor.Components.Feedback;
 using Shouldly;
 using Xunit;
+
+namespace CymruBlazor.Tests.Feedback;
 
 public sealed class ToastServiceTests
 {
