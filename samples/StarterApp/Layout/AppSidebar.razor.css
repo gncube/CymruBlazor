@@ -1,6 +1,5 @@
 /* =========================================================================
    SIDEBAR SECTION HEADINGS
-   Exact uppercase styling and left margin/padding aligned with Figma
    ========================================================================= */
 .sidebar-section-heading {
     font-size: 0.6875rem;
@@ -57,21 +56,12 @@
     font-weight: 600;
 }
 
-/* =========================================================================
-   STRICT OUTLINE SVG RENDERING
-   ========================================================================= */
+/* Sidebar Icon Sizing & Palette */
 ::deep svg.cy-icon {
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 20px !important;
-    fill: none !important;
-    stroke: currentColor !important;
-    stroke-width: 2px !important;
-    stroke-linecap: round !important;
-    stroke-linejoin: round !important;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
     color: #64748b;
-    display: inline-block;
-    flex-shrink: 0;
 }
 
 .sidebar-nav-link:hover ::deep svg.cy-icon,
@@ -120,9 +110,9 @@
 }
 
 ::deep .sidebar-nav-chevron {
-    width: 14px !important;
-    height: 14px !important;
-    min-width: 14px !important;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
     color: #94a3b8;
 }
 
@@ -163,9 +153,9 @@
 }
 
 ::deep .sidebar-submenu-icon {
-    width: 15px !important;
-    height: 15px !important;
-    min-width: 15px !important;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
     color: #94a3b8;
 }
 
