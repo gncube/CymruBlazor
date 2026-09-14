@@ -1,11 +1,11 @@
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Components.Feedback;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
-using CymruBlazor.Components.Feedback;
-using Mediator;
 
 namespace CymruBlazor.Extensions;
 
