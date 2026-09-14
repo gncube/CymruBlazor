@@ -1,11 +1,20 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using CymruBlazor.Components.Layout;
 
 namespace StarterApp.Layout;
 
 public partial class AppSidebar : ComponentBase
 {
+    private const string StorageKey = "cymru_sidebar_expanded_menus";
+
     private CySidebar? _sidebar;
+    private readonly HashSet<string> _expandedItemKeys = new(StringComparer.OrdinalIgnoreCase);
+    private bool _hasLoadedFromStorage;
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = default!;
 
     [Parameter]
     public bool Collapsed { get; set; }
@@ -24,14 +33,23 @@ public partial class AppSidebar : ComponentBase
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        SyncSubmenuExpandedState();
+        if (firstRender)
+        {
+            await LoadPersistedStateAsync();
+            SyncSubmenuExpandedState();
+            _hasLoadedFromStorage = true;
+            StateHasChanged();
+        }
     }
 
     protected override void OnParametersSet()
     {
-        SyncSubmenuExpandedState();
+        if (_hasLoadedFromStorage)
+        {
+            SyncSubmenuExpandedState();
+        }
     }
 
     private void SyncSubmenuExpandedState()
@@ -47,27 +65,82 @@ public partial class AppSidebar : ComponentBase
         {
             foreach (var item in section.Items)
             {
-                if (item.HasSubmenu && item.SubItems.Count > 0)
+                if (!item.HasSubmenu || item.SubItems.Count == 0)
                 {
-                    if (item.SubItems.Any(subItem => string.Equals(NormalizeHref(subItem.Href), normalizedActiveHref, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        item.IsExpanded = true;
-                    }
+                    continue;
+                }
+
+                var hasActiveChild = item.SubItems.Any(subItem =>
+                    string.Equals(NormalizeHref(subItem.Href), normalizedActiveHref, StringComparison.OrdinalIgnoreCase));
+
+                if (hasActiveChild || _expandedItemKeys.Contains(item.Key))
+                {
+                    item.IsExpanded = true;
+                    _expandedItemKeys.Add(item.Key);
                 }
             }
         }
     }
 
-    private static string NormalizeHref(string href) =>
-        href.TrimEnd('/').ToLowerInvariant();
-
-    private static void ToggleSubmenu(NavItemModel item)
+    private async Task ToggleSubmenuAsync(NavItemModel item)
     {
-        if (item.HasSubmenu)
+        if (!item.HasSubmenu)
         {
-            item.IsExpanded = !item.IsExpanded;
+            return;
+        }
+
+        item.IsExpanded = !item.IsExpanded;
+
+        if (item.IsExpanded)
+        {
+            _expandedItemKeys.Add(item.Key);
+        }
+        else
+        {
+            _expandedItemKeys.Remove(item.Key);
+        }
+
+        await PersistStateAsync();
+    }
+
+    private async Task LoadPersistedStateAsync()
+    {
+        try
+        {
+            var storedJson = await JsRuntime.InvokeAsync<string?>("localStorage.getItem", StorageKey);
+            if (!string.IsNullOrWhiteSpace(storedJson))
+            {
+                var keys = JsonSerializer.Deserialize<List<string>>(storedJson);
+                if (keys is not null)
+                {
+                    foreach (var key in keys)
+                    {
+                        _expandedItemKeys.Add(key);
+                    }
+                }
+            }
+        }
+        catch (JSException)
+        {
+            // Fallback gracefully when localStorage is inaccessible (e.g. strict privacy mode)
         }
     }
+
+    private async Task PersistStateAsync()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(_expandedItemKeys);
+            await JsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
+        }
+        catch (JSException)
+        {
+            // Suppress non-critical storage quota or privacy restrictions
+        }
+    }
+
+    private static string NormalizeHref(string href) =>
+        href.TrimEnd('/').ToLowerInvariant();
 
     private readonly IReadOnlyList<NavSectionModel> _menuSections =
     [
@@ -170,5 +243,6 @@ public partial class AppSidebar : ComponentBase
         public bool HasSubmenu { get; } = HasSubmenu;
         public bool IsExpanded { get; set; } = isExpanded;
         public IReadOnlyList<NavItemModel> SubItems { get; } = SubItems ?? [];
+        public string Key => $"{Label}:{Href}";
     }
 }

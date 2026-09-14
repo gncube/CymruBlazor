@@ -30,7 +30,7 @@
                         <button type="button"
                                 class="sidebar-nav-button @(isActive ? "sidebar-nav-button--active" : string.Empty) @(item.IsExpanded ? "sidebar-nav-button--expanded" : string.Empty)"
                                 aria-expanded="@item.IsExpanded"
-                                @onclick="() => ToggleSubmenu(item)">
+                                @onclick="() => ToggleSubmenuAsync(item)">
                             <CyIcon Name="@item.IconName" Size="20" Class="sidebar-nav-icon" />
                             <span class="sidebar-nav-text">@item.Label</span>
 
