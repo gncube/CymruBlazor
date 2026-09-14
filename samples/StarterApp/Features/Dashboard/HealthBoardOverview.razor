@@ -43,9 +43,9 @@
             <div class="hbo-card__header">
                 <div class="hbo-card__title-group">
                     <h2 class="hbo-card__title">My Appointments</h2>
-                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
                 </div>
-                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
 
             <div class="hbo-card__content">
@@ -98,9 +98,9 @@
             <div class="hbo-card__header">
                 <div class="hbo-card__title-group">
                     <h2 class="hbo-card__title">Inpatient Occupancy</h2>
-                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
                 </div>
-                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
             <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
 
@@ -128,9 +128,9 @@
             <div class="hbo-card__header">
                 <div class="hbo-card__title-group">
                     <h2 class="hbo-card__title">Waiting List</h2>
-                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
                 </div>
-                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
             <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
 
@@ -171,9 +171,9 @@
 
     private readonly IReadOnlyList<KpiMetric> _kpis =
     [
-        new("Appointments", "24", "+10%", true, "stethoscope", ComponentColour.Info),
-        new("Referrals", "8", "-5%", false, "arrow-down-up", ComponentColour.Success),
-        new("My Watchlist", "42", "-3%", false, "square-pen", ComponentColour.Warning),
+        new("Appointments", "24", "+10%", true, "appointment", ComponentColour.Info),
+        new("Referrals", "8", "-5%", false, "file-text", ComponentColour.Success),
+        new("My Watchlist", "42", "-3%", false, "clipboard-list", ComponentColour.Warning),
         new("Pending DALs", "24", "+9%", true, "bed", ComponentColour.Danger)
     ];
 
