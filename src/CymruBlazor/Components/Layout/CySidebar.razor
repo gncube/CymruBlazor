@@ -1,4 +1,5 @@
 @inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
 
 <aside
     id="@Id"
@@ -7,10 +8,29 @@
     data-collapse-mode="@CollapseModeAttribute"
     @attributes="AdditionalAttributes">
 
-    @if (Brand is not null && !EffectiveCollapsed)
+    @if (ShowHeader)
     {
-        <div class="cy-sidebar__brand">
-            @Brand
+        <div class="cy-sidebar__header">
+
+            @if (Brand is not null && !EffectiveCollapsed)
+            {
+                <div class="cy-sidebar__brand">
+                    @Brand
+                </div>
+            }
+
+            @if (CollapseMode != SidebarCollapseMode.Disabled)
+            {
+                <button
+                    type="button"
+                    class="cy-sidebar__toggle"
+                    @onclick="ToggleAsync"
+                    aria-expanded="@(!EffectiveCollapsed)"
+                    aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")">
+                    <CyIcon Name="@ToggleIconName" Size="16" />
+                </button>
+            }
+
         </div>
     }
 

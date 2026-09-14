@@ -1,11 +1,9 @@
 @namespace CymruBlazor.Components.Branding
 @inherits CyLayoutComponentBase
-@implements IDisposable
-@inject CymruBlazor.Components.Theming.ThemeService ThemeService
 
 @if (Href is not null)
 {
-    <a id="@Id" href="@Href" class="@ComputedLinkClass" style="@CssStyle" aria-label="@ComputedAriaLabel"
+    <a id="@Id" class="@ComputedLinkClass" style="@CssStyle" href="@Href" aria-label="@ComputedAriaLabel"
        @attributes="AdditionalAttributes">
         @RenderContent()
     </a>
@@ -20,9 +18,16 @@ else
 
 @code {
     private RenderFragment RenderContent() => @<text>
-        @if (UseImageAssets)
+        @if (EffectiveLogoPath is not null)
         {
-            <img src="@LogoPathResolved" alt="@ComputedAriaLabel" class="@ComputedImageClass" />
+            <img src="@EffectiveLogoPath" alt="@ComputedAriaLabel"
+                 class="@ComputedImageClass("cy-brand-logo__asset cy-brand-logo__asset--light")" />
+
+            @if (EffectiveDarkLogoPath is not null)
+            {
+                <img src="@EffectiveDarkLogoPath" alt="@ComputedAriaLabel"
+                     class="@ComputedImageClass("cy-brand-logo__asset cy-brand-logo__asset--dark")" />
+            }
         }
         else
         {

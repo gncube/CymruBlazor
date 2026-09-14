@@ -13,7 +13,8 @@
  *   CyGrid    -> cy-grid, cy-grid--cols-{n|auto}, cy-gap-{size},
  *                cy-grid--dense, cy-grid--auto-rows
  *   CySidebar -> cy-sidebar, cy-sidebar--left|right, cy-sidebar--sm|md|lg,
- *                cy-sidebar--compact|icon-only|collapsed, cy-sidebar__brand
+ *                cy-sidebar--compact|icon-only|collapsed, cy-sidebar__header,
+ *                cy-sidebar__brand, cy-sidebar__toggle
  *                (conventions: cy-sidebar__item, cy-sidebar__label,
  *                cy-sidebar__heading - see the Sidebar section below)
  *   CyCenter  -> cy-center, cy-center--horizontal|vertical,
@@ -284,13 +285,61 @@
 
 /*
  * CySidebar.Brand - optional lockup (e.g. <CyBrandLogo />) at the top
- * of the sidebar. Only ever rendered while expanded (see
- * CySidebar.razor.cs) - no CSS-based hiding is needed for the
- * collapsed states, this rule just styles it while visible.
+ * of the sidebar, paired with the expand/collapse chevron toggle in a
+ * shared header row. The brand is only ever rendered while expanded
+ * (see CySidebar.razor.cs) - the header row itself, and the toggle
+ * button within it, stay in the DOM through every collapse state so
+ * there is always a control to bring the sidebar back out.
  */
-.cy-sidebar__brand {
-  padding: var(--cymru-space-4);
+.cy-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-2);
+
+  padding: var(--cymru-space-2) var(--cymru-space-4);
   border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.cy-sidebar__brand {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cy-sidebar__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  width: 2rem;
+  height: 2rem;
+
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  background: transparent;
+  color: var(--cymru-color-text-muted);
+  cursor: pointer;
+}
+
+.cy-sidebar__toggle:hover {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.cy-sidebar__toggle:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+/*
+ * Once collapsed to either rail, the header only ever holds the toggle
+ * button (the brand is omitted from the DOM entirely) - centre it in
+ * the same way the collapsed nav items are centred.
+ */
+.cy-sidebar--compact .cy-sidebar__header,
+.cy-sidebar--icon-only .cy-sidebar__header {
+  justify-content: center;
+  padding-inline: var(--cymru-space-2);
 }
 
 /*

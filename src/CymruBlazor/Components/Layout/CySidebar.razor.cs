@@ -54,6 +54,31 @@ public partial class CySidebar : CyLayoutComponentBase
     private bool EffectiveCollapsed =>
         CollapseMode != SidebarCollapseMode.Disabled && Collapsed;
 
+    /// <summary>
+    /// Whether the top header row (brand lockup and/or the
+    /// expand/collapse chevron toggle) renders at all. The header still
+    /// renders while collapsed - with just the toggle button, no brand -
+    /// so there is always a control available to expand the sidebar
+    /// again, matching the reference NHS Wales sidebar design.
+    /// </summary>
+    private bool ShowHeader =>
+        (Brand is not null && !EffectiveCollapsed) || CollapseMode != SidebarCollapseMode.Disabled;
+
+    /// <summary>
+    /// The chevron icon used by the collapse/expand toggle button. Points
+    /// "into" the sidebar (towards the edge it collapses against) while
+    /// expanded, and "out" (towards the content it will reveal) while
+    /// collapsed - mirrored for a <see cref="SidebarPosition.Right"/>
+    /// sidebar.
+    /// </summary>
+    private string ToggleIconName => (Position, EffectiveCollapsed) switch
+    {
+        (SidebarPosition.Right, false) => "chevron-right",
+        (SidebarPosition.Right, true) => "chevron-left",
+        (_, false) => "chevron-left",
+        (_, true) => "chevron-right"
+    };
+
     private string CollapseModeAttribute => CollapseMode switch
     {
         SidebarCollapseMode.Compact => "compact",
