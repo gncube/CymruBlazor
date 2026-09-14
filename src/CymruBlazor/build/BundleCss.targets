@@ -26,13 +26,13 @@
   <Target Name="BundleCymruCss"
           BeforeTargets="AssignTargetPaths"
           Condition="'$(Configuration)' == 'Release'"
-          Inputs="wwwroot\css\cymrublazor.css"
-          Outputs="$(IntermediateOutputPath)css\cymrublazor.css">
+          Inputs="wwwroot/css/cymrublazor.css"
+          Outputs="$(IntermediateOutputPath)css/cymrublazor.css">
 
     <Message Text="CymruBlazor: bundling CSS stylesheets..." Importance="high" />
 
     <Exec
-        Command="dotnet run --project ..\..\tools\CymruBlazor.CssBundler\CymruBlazor.CssBundler.csproj -- wwwroot\css\cymrublazor.css $(IntermediateOutputPath)css\cymrublazor.css"
+        Command="dotnet run --project ../../tools/CymruBlazor.CssBundler/CymruBlazor.CssBundler.csproj -- wwwroot/css/cymrublazor.css $(IntermediateOutputPath)css/cymrublazor.css"
         WorkingDirectory="$(MSBuildProjectDirectory)"
         ContinueOnError="false" />
 
@@ -46,9 +46,9 @@
     README never need to know which version they got.
   -->
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <Content Remove="wwwroot\css\cymrublazor.css" />
-    <Content Include="$(IntermediateOutputPath)css\cymrublazor.css"
-             Link="wwwroot\css\cymrublazor.css"
+    <Content Remove="wwwroot/css/cymrublazor.css" />
+    <Content Include="$(IntermediateOutputPath)css/cymrublazor.css"
+             Link="wwwroot/css/cymrublazor.css"
              CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
