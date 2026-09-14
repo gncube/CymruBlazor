@@ -86,3 +86,33 @@
 @import "themes/default.css" layer(base);
 @import "themes/dark.css" layer(base);
 @import "themes/high-contrast.css" layer(base);
+
+
+/* =========================================================================
+   CyIcon Base Styles
+   Ensures line-art outline rendering by default across all consumers
+   ========================================================================= */
+.cy-icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    box-sizing: content-box;
+}
+
+.cy-icon path,
+.cy-icon circle,
+.cy-icon rect,
+.cy-icon line,
+.cy-icon polyline,
+.cy-icon polygon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: inherit;
+    stroke-linecap: inherit;
+    stroke-linejoin: inherit;
+}
