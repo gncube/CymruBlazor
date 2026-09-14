@@ -4,6 +4,8 @@ using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
+using CymruBlazor.Components.Feedback;
+using Mediator;
 
 namespace CymruBlazor.Extensions;
 
@@ -47,6 +49,12 @@ public static class ServiceCollectionExtensions
         // instance(s) - see ILiveRegionRegistry for why CyLiveRegion can't
         // safely implement INotificationHandler<> itself.
         services.AddScoped<ILiveRegionRegistry, LiveRegionRegistry>();
+
+        // Register toast notifications and the Mediator handler that lets
+        // ShowToastNotification be published through the pipeline below.
+        services.AddScoped<IToastService, ToastService>();
+        services.AddScoped<INotificationHandler<ShowToastNotification>>(
+            sp => (ToastService)sp.GetRequiredService<IToastService>());
 
         // Register the source-generated Mediator context pipeline
         services.AddMediator(options =>
