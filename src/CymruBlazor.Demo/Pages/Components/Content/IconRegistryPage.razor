@@ -5,7 +5,8 @@
 @inject IJSRuntime JSRuntime
 @inject IMediator Mediator
 
-<CyPageHeader Title="CyIcon" Subtitle="Renders a single named icon from IconRegistry, the static source of truth for every icon in CymruBlazor.">
+<CyPageHeader Title="CyIcon"
+              Subtitle="Renders a single named icon from IconRegistry, the static source of truth for every icon in CymruBlazor.">
     <Breadcrumb>
         <CyBreadcrumb>
             <CyBreadcrumbItem Text="Content" />
@@ -15,9 +16,14 @@
 </CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
-    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
-    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
-    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)"
+            aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
+            aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
 @if (_activeTab == Tab.Examples)
@@ -26,7 +32,9 @@
 
         <span class="cb-panel-caption">Preview</span>
         <div class="cb-workbench-preview">
-            <CyIcon Name="@_selectedIcon" Size="_size" Label="@(_asIconOnlyButton ? _selectedIcon : null)" />
+            <div class="cb-preview-icon-wrapper">
+                <CyIcon Name="@_selectedIcon" Size="_size" Label="@(_asIconOnlyButton ? _selectedIcon : null)" />
+            </div>
         </div>
 
         <div class="cb-playground-grid">
@@ -63,12 +71,8 @@
                     <label for="icon-search" class="cb-property-label">Search</label>
                     <div class="cb-icon-search-field">
                         <CyIcon Name="search" Size="16" />
-                        <input id="icon-search"
-                               class="cb-icon-search-input"
-                               type="text"
-                               placeholder="Search icons by name or domain..."
-                               value="@_searchText"
-                               @oninput="OnSearchInput" />
+                        <input id="icon-search" class="cb-icon-search-input" type="text"
+                               placeholder="Search icons by name or domain..." value="@_searchText" @oninput="OnSearchInput" />
                         @if (!string.IsNullOrEmpty(_searchText))
                         {
                             <button type="button" class="cb-icon-search-clear" aria-label="Clear search" @onclick="ClearSearch">
@@ -103,9 +107,10 @@
                         {
                             <button type="button"
                                     class="cb-icon-tile @(_selectedIcon == name ? "cb-icon-tile--active" : "") @(_copiedIconName == name ? "cb-icon-tile--copied" : "")"
-                                    title="@TileTitle(name)"
-                                    @onclick="() => SelectAndCopyAsync(name)">
-                                <CyIcon Name="@name" Size="_gallerySize" />
+                                    title="@TileTitle(name)" @onclick="() => SelectAndCopyAsync(name)">
+                                <span class="cb-icon-tile__graphic">
+                                    <CyIcon Name="@name" Size="_gallerySize" />
+                                </span>
                                 <code class="cb-icon-tile__name">@name</code>
                                 @if (_copiedIconName == name)
                                 {
@@ -134,7 +139,11 @@ else if (_activeTab == Tab.Api)
         </p>
         <table class="cb-api-table" aria-label="IconRegistry members">
             <thead>
-                <tr><th>Member</th><th>Signature</th><th>Description</th></tr>
+                <tr>
+                    <th>Member</th>
+                    <th>Signature</th>
+                    <th>Description</th>
+                </tr>
             </thead>
             <tbody>
                 <tr>
@@ -173,20 +182,18 @@ else
 
     private sealed record IconDomainGroup(string Domain, IReadOnlyList<string> Names);
 
-    // The registry's domain keys are an internal grouping detail (see
-    // IconRegistry.GetDomain remarks) - this maps each of the 11 real
-    // keys to the friendly heading shown in the gallery. Kept in sync
-    // manually since the registry doesn't expose display names itself.
+    // Maps each internal domain key to the official Figma Design System heading
     private static readonly Dictionary<string, string> FriendlyDomainNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        { "clinical", "Clinical records & data" },
-        { "clinical-actions", "Clinical actions & editing" },
+        { "clinical-actions", "Actions & editing" },
+        { "clinical", "Clinical controls & data" },
         { "comms", "Communication & messaging" },
-        { "data", "Data & analytics" },
+        { "data", "Data & statistics" },
+        { "device", "Device & hardware" },
         { "file", "Documents & files" },
-        { "location", "Location & organisation" },
-        { "nav", "Navigation & UI chrome" },
-        { "people", "Patient & people" },
+        { "location", "Locations & organisations" },
+        { "nav", "Navigation & UI controls" },
+        { "people", "Patients & people" },
         { "schedule", "Scheduling & appointments" },
         { "status", "Status & feedback" },
         { "ui", "UI & appearance" },
@@ -220,7 +227,7 @@ else
         _iconOptions = IconRegistry.AllNames.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
-    private string FriendlyDomainName(string domain) =>
+    private static string FriendlyDomainName(string domain) =>
         FriendlyDomainNames.TryGetValue(domain, out var friendly) ? friendly : domain;
 
     private IReadOnlyList<IconDomainGroup> FilteredGroups =>
@@ -276,10 +283,6 @@ else
         }
         catch (JSException)
         {
-            // navigator.clipboard is unavailable in some contexts (e.g.
-            // non-HTTPS origins, certain embedded webviews, or a denied
-            // permission) - the tile is still selected into the
-            // playground above even if the copy itself failed.
             _copiedIconName = null;
 
             await Mediator.Publish(new LiveRegionAnnouncement(
