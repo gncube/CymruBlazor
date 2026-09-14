@@ -1,7 +1,7 @@
-namespace StarterApp.Layout;
-
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Layout;
+
+namespace StarterApp.Layout;
 
 public partial class AppSidebar : ComponentBase
 {
@@ -61,7 +61,7 @@ public partial class AppSidebar : ComponentBase
     private static string NormalizeHref(string href) =>
         href.TrimEnd('/').ToLowerInvariant();
 
-    private void ToggleSubmenu(NavItemModel item)
+    private static void ToggleSubmenu(NavItemModel item)
     {
         if (item.HasSubmenu)
         {
@@ -154,32 +154,21 @@ public partial class AppSidebar : ComponentBase
         string Heading,
         IReadOnlyList<NavItemModel> Items);
 
-    public sealed class NavItemModel
+    public sealed class NavItemModel(
+        string label,
+        string href,
+        string iconName,
+        string? BadgeText = null,
+        bool HasSubmenu = false,
+        bool isExpanded = false,
+        IReadOnlyList<NavItemModel>? SubItems = null)
     {
-        public NavItemModel(
-            string label,
-            string href,
-            string iconName,
-            string? badgeText = null,
-            bool hasSubmenu = false,
-            bool isExpanded = false,
-            IReadOnlyList<NavItemModel>? subItems = null)
-        {
-            Label = label;
-            Href = href;
-            IconName = iconName;
-            BadgeText = badgeText;
-            HasSubmenu = hasSubmenu;
-            IsExpanded = isExpanded;
-            SubItems = subItems ?? [];
-        }
-
-        public string Label { get; }
-        public string Href { get; }
-        public string IconName { get; }
-        public string? BadgeText { get; }
-        public bool HasSubmenu { get; }
-        public bool IsExpanded { get; set; }
-        public IReadOnlyList<NavItemModel> SubItems { get; }
+        public string Label { get; } = label;
+        public string Href { get; } = href;
+        public string IconName { get; } = iconName;
+        public string? BadgeText { get; } = BadgeText;
+        public bool HasSubmenu { get; } = HasSubmenu;
+        public bool IsExpanded { get; set; } = isExpanded;
+        public IReadOnlyList<NavItemModel> SubItems { get; } = SubItems ?? [];
     }
 }
