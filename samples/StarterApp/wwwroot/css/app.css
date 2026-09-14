@@ -10,6 +10,15 @@
     color: red;
 }
 
+/* Global SVG icon outline enforcement for CymruBlazor icons */
+svg.cy-icon,
+.cy-icon,
+.cy-icon svg,
+svg.cy-icon *,
+.cy-icon * {
+    fill: none !important;
+}
+
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;

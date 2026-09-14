@@ -91,11 +91,13 @@
    CyIcon Base Styles
    Ensures line-art outline rendering by default across all consumers
    ========================================================================= */
+svg.cy-icon,
+.cy-icon svg,
 .cy-icon {
-    display: inline-block;
+    display: inline-flex;
     vertical-align: middle;
-    fill: none;
-    stroke: currentColor;
+    fill: none !important;
+    stroke: currentColor !important;
     stroke-width: 2px;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -103,14 +105,17 @@
     box-sizing: content-box;
 }
 
+svg.cy-icon *,
+.cy-icon svg *,
 .cy-icon path,
 .cy-icon circle,
 .cy-icon rect,
 .cy-icon line,
 .cy-icon polyline,
-.cy-icon polygon {
-    fill: none;
-    stroke: currentColor;
+.cy-icon polygon,
+.cy-icon ellipse {
+    fill: none !important;
+    stroke: currentColor !important;
     stroke-width: inherit;
     stroke-linecap: inherit;
     stroke-linejoin: inherit;
