@@ -1,0 +1,101 @@
+/* Sidebar Group Headers */
+::deep .cy-sidebar__heading {
+    font-size: 0.6875rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    color: var(--sidebar-muted, #64748b) !important;
+    padding: 1.15rem 1rem 0.35rem 1.15rem !important;
+    margin: 0 !important;
+    display: block;
+}
+
+/* Nav Link Item */
+::deep .app-shell__nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.5rem 1rem 0.5rem 1.15rem !important;
+    color: var(--sidebar-text, #334155) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    gap: 0.75rem !important;
+    border-radius: 6px !important;
+    margin: 0.1rem 0.5rem !important;
+    transition: background-color 0.12s ease-in-out, color 0.12s ease-in-out !important;
+}
+
+::deep .app-shell__nav-link:hover {
+    background-color: var(--sidebar-hover, #f1f5f9) !important;
+    color: var(--sidebar-text-hover, #0f172a) !important;
+}
+
+::deep .cy-sidebar__item--active,
+::deep .app-shell__nav-link--active {
+    background-color: var(--sidebar-active-bg, #eff6ff) !important;
+    color: var(--sidebar-primary, #0284c7) !important;
+    font-weight: 600 !important;
+}
+
+/* Strict Line-Art Outlines for CyIcon */
+::deep svg.cy-icon {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2px !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    color: var(--sidebar-icon, #64748b) !important;
+}
+
+::deep .app-shell__nav-link:hover svg.cy-icon,
+::deep .cy-sidebar__item--active svg.cy-icon,
+::deep .app-shell__nav-link--active svg.cy-icon {
+    color: var(--sidebar-primary, #0284c7) !important;
+}
+
+/* Nav Item Count Badges */
+::deep .app-shell__nav-badge {
+    margin-left: auto !important;
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+    padding: 0.125rem 0.45rem !important;
+    border-radius: 999px !important;
+    background-color: #1e3a8a !important;
+    color: #ffffff !important;
+}
+
+/* Submenu Chevrons */
+::deep .app-shell__nav-chevron {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    color: #94a3b8 !important;
+    margin-left: 0.25rem !important;
+}
+
+::deep .app-shell__nav-link:not(:has(.app-shell__nav-badge)) .app-shell__nav-chevron {
+    margin-left: auto !important;
+}
+
+/* Footer Section */
+::deep .app-shell__sidebar-footer {
+    margin-top: auto !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid var(--sidebar-border, #e2e8f0) !important;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"],
+.dark {
+    --sidebar-muted: #64748b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: rgba(2, 132, 199, 0.15);
+    --sidebar-primary: #38bdf8;
+    --sidebar-icon: #64748b;
+    --sidebar-border: #1e293b;
+}
