@@ -52,7 +52,8 @@ public partial class CyLiveRegion : CyComponentBase
         CssBuilder.Empty
             .AddClass(BaseCssClass)
             .AddClass(Class)
-            .AddClass("sr-only")
+            .AddClass("cy-visually-hidden")
+            .AddClass("u-sr-only")
             .Build();
 
     /// <inheritdoc />

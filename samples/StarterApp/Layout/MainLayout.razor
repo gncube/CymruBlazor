@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject IThemeService Theme
+@inject NavigationManager Navigation
 
 <CyThemeProvider>
 
@@ -10,82 +11,9 @@
              Gap="ComponentSize.Unspecified"
              Class="cy-stack--collapse-tablet app-shell">
 
-        <CySidebar @ref="_sidebar"
-                   @bind-Collapsed="_sidebarCollapsed"
-                   CollapseMode="SidebarCollapseMode.Compact"
-                   Width="SidebarWidth.Small"
-                   Class="app-shell__sidebar">
-
-            <Brand>
-                <CyBrandLogo Variant="BrandLogoVariant.Stacked"
-                             Text="NHS Wales"
-                             AriaLabel="GIG Cymru NHS Wales, Digital Health and Care Wales home"
-                             Size="ComponentSize.Large"
-                             Href="/" />
-            </Brand>
-
-            <ChildContent>
-
-                <span class="cy-sidebar__heading">Home</span>
-                <a href="/" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="dashboard" Size="20" />
-                    <span class="cy-sidebar__label">Dashboard</span>
-                </a>
-
-                <span class="cy-sidebar__heading">Patients</span>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="search" Size="20" />
-                    <span class="cy-sidebar__label">Patient search</span>
-                </a>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="contact" Size="20" />
-                    <span class="cy-sidebar__label">Demographics</span>
-                    <span class="app-shell__nav-badge" aria-label="20 pending">20</span>
-                </a>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="appointment" Size="20" />
-                    <span class="cy-sidebar__label">Appointments</span>
-                    <span class="app-shell__nav-badge" aria-label="20 today">20</span>
-                </a>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="clipboard-list" Size="20" />
-                    <span class="cy-sidebar__label">Watchlists</span>
-                </a>
-
-                <span class="cy-sidebar__heading">Clinical</span>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="specialist" Size="20" />
-                    <span class="cy-sidebar__label">Specialists</span>
-                </a>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="flask" Size="20" />
-                    <span class="cy-sidebar__label">Tests</span>
-                </a>
-
-                <span class="cy-sidebar__heading">Nursing</span>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="patient" Size="20" />
-                    <span class="cy-sidebar__label">Adults</span>
-                </a>
-                <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                    <CyIcon Name="carer" Size="20" />
-                    <span class="cy-sidebar__label">Paediatrics</span>
-                </a>
-
-                <div class="app-shell__sidebar-footer">
-                    <a href="/settings/account" class="cy-sidebar__item app-shell__nav-link">
-                        <CyIcon Name="settings" Size="20" />
-                        <span class="cy-sidebar__label">Settings</span>
-                    </a>
-                    <a href="#" class="cy-sidebar__item app-shell__nav-link">
-                        <CyIcon Name="logout" Size="20" />
-                        <span class="cy-sidebar__label">Log Out</span>
-                    </a>
-                </div>
-
-            </ChildContent>
-
-        </CySidebar>
+        <AppSidebar @ref="_sidebar"
+                    @bind-Collapsed="_sidebarCollapsed"
+                    ActiveHref="@_currentPath" />
 
         <div class="app-shell__content">
 
@@ -130,8 +58,9 @@
 </CyThemeProvider>
 
 @code {
-    private CySidebar? _sidebar;
+    private AppSidebar? _sidebar;
     private bool _sidebarCollapsed;
+    private string _currentPath = "/";
 
     private bool IsDark => Theme.CurrentTheme.Mode == ThemeMode.Dark;
 
@@ -140,6 +69,20 @@
     protected override void OnInitialized()
     {
         Theme.ThemeChanged += OnThemeChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+        UpdateCurrentPath();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateCurrentPath();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateCurrentPath()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        _currentPath = string.IsNullOrEmpty(relative) ? "/" : $"/{relative.Split('?')[0].TrimEnd('/')}";
     }
 
     private async Task ToggleSidebarAsync()
@@ -157,5 +100,6 @@
     public void Dispose()
     {
         Theme.ThemeChanged -= OnThemeChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

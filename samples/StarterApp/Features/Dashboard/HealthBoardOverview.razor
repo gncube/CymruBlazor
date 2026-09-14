@@ -23,7 +23,7 @@
             <div class="hbo-kpi-card hbo-kpi-card--@Slug(kpi.Colour)">
                 <div class="hbo-kpi-card__header">
                     <span class="hbo-kpi-card__label">@kpi.Label</span>
-                    <CyIcon Name="@kpi.Icon" Size="18" Class="hbo-kpi-card__icon" />
+                    <CyIcon Name="@kpi.Icon" Size="20" Class="hbo-kpi-card__icon" />
                 </div>
                 <div class="hbo-kpi-card__value">@kpi.Value</div>
                 <div class="hbo-kpi-card__delta hbo-kpi-card__delta--@(kpi.DeltaUp ? "up" : "down")">
@@ -172,7 +172,7 @@
     private readonly IReadOnlyList<KpiMetric> _kpis =
     [
         new("Appointments", "24", "+10%", true, "appointment", ComponentColour.Info),
-        new("Referrals", "8", "-5%", false, "file-text", ComponentColour.Success),
+        new("Referrals", "8", "-5%", false, "sort", ComponentColour.Success),
         new("My Watchlist", "42", "-3%", false, "clipboard-list", ComponentColour.Warning),
         new("Pending DALs", "24", "+9%", true, "bed", ComponentColour.Danger)
     ];

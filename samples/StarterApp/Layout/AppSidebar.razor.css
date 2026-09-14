@@ -1,0 +1,234 @@
+/* =========================================================================
+   SIDEBAR SECTION HEADINGS
+   ========================================================================= */
+.sidebar-section-heading {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 1.35rem 1rem 0.4rem 1.15rem;
+    margin: 0;
+    line-height: 1.2;
+    display: block;
+    user-select: none;
+}
+
+/* =========================================================================
+   NAVIGATION LINKS & BUTTONS
+   ========================================================================= */
+.sidebar-nav-entry {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-nav-link,
+.sidebar-nav-button {
+    display: flex;
+    align-items: center;
+    width: calc(100% - 1rem);
+    padding: 0.5rem 0.75rem 0.5rem 1.15rem;
+    margin: 0.075rem 0.5rem;
+    color: #334155;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: left;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    transition: background-color 0.12s ease-in-out, color 0.12s ease-in-out;
+}
+
+.sidebar-nav-link:hover,
+.sidebar-nav-button:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar-nav-link--active,
+.sidebar-nav-button--active {
+    background-color: #eff6ff;
+    color: #0284c7;
+    font-weight: 600;
+}
+
+/* Sidebar Icon Sizing & Palette */
+::deep svg.cy-icon {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    color: #64748b;
+}
+
+.sidebar-nav-link:hover ::deep svg.cy-icon,
+.sidebar-nav-button:hover ::deep svg.cy-icon,
+.sidebar-nav-link--active ::deep svg.cy-icon,
+.sidebar-nav-button--active ::deep svg.cy-icon {
+    color: #0284c7;
+}
+
+.sidebar-nav-text {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================================================
+   NAV BADGES & CHEVRON ROTATION
+   ========================================================================= */
+.sidebar-nav-badge {
+    margin-left: auto;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.45rem;
+    border-radius: 999px;
+    background-color: #1e3a8a;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.sidebar-nav-chevron-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    transition: transform 0.2s ease-in-out;
+}
+
+.sidebar-nav-button:has(.sidebar-nav-badge) .sidebar-nav-chevron-wrapper {
+    margin-left: 0.35rem;
+}
+
+.sidebar-nav-chevron-wrapper--open {
+    transform: rotate(180deg);
+}
+
+::deep .sidebar-nav-chevron {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    color: #94a3b8;
+}
+
+/* =========================================================================
+   EXPANDED SUBMENU
+   ========================================================================= */
+.sidebar-submenu {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2.35rem;
+    padding-right: 0.5rem;
+    margin: 0.15rem 0 0.35rem 0;
+    gap: 0.15rem;
+}
+
+.sidebar-submenu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    color: #475569;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.12s ease-in-out, color 0.12s ease-in-out;
+}
+
+.sidebar-submenu-link:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar-submenu-link--active {
+    background-color: #eff6ff;
+    color: #0284c7;
+    font-weight: 600;
+}
+
+::deep .sidebar-submenu-icon {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    color: #94a3b8;
+}
+
+/* =========================================================================
+   FOOTER SECTION (Settings, Log Out)
+   ========================================================================= */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* =========================================================================
+   DARK THEME PALETTE
+   ========================================================================= */
+[data-theme="dark"],
+.dark {
+    --sidebar-muted: #64748b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: rgba(2, 132, 199, 0.15);
+    --sidebar-primary: #38bdf8;
+    --sidebar-border: #1e293b;
+}
+
+[data-theme="dark"] .sidebar-section-heading,
+.dark .sidebar-section-heading {
+    color: #64748b;
+}
+
+[data-theme="dark"] .sidebar-nav-link,
+[data-theme="dark"] .sidebar-nav-button,
+.dark .sidebar-nav-link,
+.dark .sidebar-nav-button {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .sidebar-nav-link:hover,
+[data-theme="dark"] .sidebar-nav-button:hover,
+.dark .sidebar-nav-link:hover,
+.dark .sidebar-nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .sidebar-nav-link--active,
+[data-theme="dark"] .sidebar-nav-button--active,
+.dark .sidebar-nav-link--active,
+.dark .sidebar-nav-button--active {
+    background-color: rgba(2, 132, 199, 0.15);
+    color: #38bdf8;
+}
+
+[data-theme="dark"] .sidebar-submenu-link,
+.dark .sidebar-submenu-link {
+    color: #64748b;
+}
+
+[data-theme="dark"] .sidebar-submenu-link:hover,
+.dark .sidebar-submenu-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .sidebar-submenu-link--active,
+.dark .sidebar-submenu-link--active {
+    background-color: rgba(2, 132, 199, 0.15);
+    color: #38bdf8;
+}
+
+[data-theme="dark"] .sidebar-footer,
+.dark .sidebar-footer {
+    border-top-color: #1e293b;
+}

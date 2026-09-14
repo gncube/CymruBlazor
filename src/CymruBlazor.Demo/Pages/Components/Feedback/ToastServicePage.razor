@@ -1,0 +1,186 @@
+@page "/feedback/toast-service"
+@namespace CymruBlazor.Demo.Pages.Components.Feedback
+@using CymruBlazor.Components.Feedback
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+@using Mediator
+@inject IToastService ToastService
+@inject IMediator Mediator
+
+<CyPageHeader Title="IToastService"
+              Subtitle="Accessible toast notifications, shown from anywhere - a component, a service, or the Mediator pipeline.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Feedback" />
+            <CyBreadcrumbItem Text="Toast Service" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples"
+            aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility"
+            aria-selected="@(_activeTab == Tab.Accessibility)"
+            class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+        <p style="color: var(--docs-text-muted);">
+            The shell layout already hosts a single <code>CyToastContainer</code> (see
+            <code>MainLayout.razor</code>), wired to the real, app-wide <code>IToastService</code>.
+            The buttons below call it directly - watch the corner of the page.
+        </p>
+
+        <span class="cb-panel-caption">Try it - direct service call</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start;">
+            <CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Small" Wrap="true">
+                <button type="button" class="cb-demo-btn" @onclick="ShowSuccess">
+                    Show success
+                </button>
+                <button type="button" class="cb-demo-btn cb-demo-btn--secondary" @onclick="ShowInfo">
+                    Show info
+                </button>
+                <button type="button" class="cb-demo-btn cb-demo-btn--warning" @onclick="ShowWarning">
+                    Show warning
+                </button>
+                <button type="button" class="cb-demo-btn cb-demo-btn--danger" @onclick="ShowDanger">
+                    Show danger
+                </button>
+                <button type="button" class="cb-demo-btn cb-demo-btn--secondary" @onclick="() => ToastService.Clear()">
+                    Clear all
+                </button>
+            </CyStack>
+        </div>
+
+        <span class="cb-panel-caption">Generated code</span>
+        <CyCodeBlock Code="@DirectUsageCode" Language="razor" />
+
+        <span class="cb-panel-caption" style="margin-top: var(--cymru-space-4);">Try it - via Mediator</span>
+        <p style="color: var(--docs-text-muted);">
+            Services and components that would rather not take a direct dependency on
+            <code>IToastService</code> can publish <code>ShowToastNotification</code> instead -
+            <code>ToastService</code> itself is the Mediator handler that picks it up.
+        </p>
+        <div class="cb-workbench-preview" style="justify-content: flex-start;">
+            <button type="button" class="cb-demo-btn" @onclick="PublishViaMediator">
+                Publish ShowToastNotification
+            </button>
+        </div>
+
+        <span class="cb-panel-caption">Generated code</span>
+        <CyCodeBlock Code="@MediatorUsageCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Feedback/ToastService.cs"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+            IToastService members
+        </h3>
+        <DemoApiTable Parameters="_serviceApiDocs" />
+
+        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+            ToastVariant
+        </h3>
+        <p class="cb-section-description">Info, Success, Warning, Danger - controls the toast's colour and icon.</p>
+
+        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+            ShowToastNotification record
+        </h3>
+        <DemoApiTable Parameters="_notificationApiDocs" />
+
+        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+            CyToastContainer
+        </h3>
+        <p class="cb-section-description">
+            No parameters - a single instance renders whatever <code>IToastService.Toasts</code>
+            currently holds and re-renders on <code>OnChange</code>. Place one instance in your
+            shell layout, same as <code>CyLiveRegion</code>.
+        </p>
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private void ShowSuccess() => ToastService.Show("Changes saved.", ToastVariant.Success);
+
+    private void ShowInfo() => ToastService.Show("Heads up - this can't be undone.", ToastVariant.Info);
+
+    private void ShowWarning() => ToastService.Show("Your session expires soon.", ToastVariant.Warning);
+
+    private void ShowDanger() => ToastService.Show("Failed to save changes.", ToastVariant.Danger);
+
+    private async Task PublishViaMediator()
+    {
+        await Mediator.Publish(new ShowToastNotification("Code copied to clipboard.", ToastVariant.Info));
+    }
+
+    private const string DirectUsageCode =
+        """
+        // Program.cs
+        builder.Services.AddCymruBlazor();
+
+        // MainLayout.razor - hosts the container once, app-wide
+        <CyToastContainer />
+
+        // Anywhere in the app
+        @inject IToastService ToastService
+
+        <button @onclick="() => ToastService.Show("Changes saved.", ToastVariant.Success)">
+            Save
+        </button>
+        """;
+
+    private const string MediatorUsageCode =
+        """
+        @inject IMediator Mediator
+
+        await Mediator.Publish(
+            new ShowToastNotification("Code copied to clipboard.", ToastVariant.Info));
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _serviceApiDocs =
+    [
+        new("Show(string, ToastVariant, TimeSpan?)", "void", "Success / 4s", "Queues a toast. Throws ArgumentException for a null/empty/whitespace message."),
+        new("Remove(Guid)", "void", "-", "Dismisses a specific toast by id before its duration elapses."),
+        new("Clear()", "void", "-", "Dismisses every active toast immediately."),
+        new("Toasts", "IReadOnlyList<ToastNotification>", "-", "The current ordered list of active toasts, oldest first (max 5 - oldest is evicted first)."),
+        new("OnChange", "event Action?", "-", "Raised whenever Toasts changes. CyToastContainer subscribes to this to know when to re-render.")
+    ];
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _notificationApiDocs =
+    [
+        new("Message", "string", "-", "The text to display. Required."),
+        new("Variant", "ToastVariant", "Success", "Controls colour and icon."),
+        new("Duration", "TimeSpan?", "4 seconds", "Auto-dismiss delay. Pass TimeSpan.Zero to require manual dismissal.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Single, app-wide container", "One CyToastContainer instance (registered once in the shell layout) means toasts always render in the same landmark region, wherever in the app they were raised from."),
+        new("Dismissible without a mouse", "Every toast has a real, focusable close button rather than relying solely on the auto-dismiss timer, so keyboard and switch-device users aren't forced to wait it out."),
+        new("Bounded queue", "A hard cap of 5 concurrent toasts (oldest evicted first) keeps the notification region from becoming an overwhelming wall of text for assistive technology users.")
+    ];
+}

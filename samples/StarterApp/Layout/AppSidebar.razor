@@ -1,0 +1,91 @@
+<CySidebar @ref="_sidebar"
+           Collapsed="@Collapsed"
+           CollapsedChanged="@CollapsedChanged"
+           CollapseMode="SidebarCollapseMode.Compact"
+           Width="SidebarWidth.Small"
+           Class="app-shell__sidebar">
+
+    <Brand>
+        <CyBrandLogo Variant="BrandLogoVariant.Stacked"
+                     Text="NHS Wales"
+                     AriaLabel="GIG Cymru NHS Wales, Digital Health and Care Wales home"
+                     Size="ComponentSize.Large"
+                     Href="/" />
+    </Brand>
+
+    <ChildContent>
+
+        @foreach (var section in _menuSections)
+        {
+            <div class="sidebar-section-heading">@section.Heading</div>
+
+            @foreach (var item in section.Items)
+            {
+                var isActive = string.Equals(ActiveHref, item.Href, StringComparison.OrdinalIgnoreCase)
+                    || (item.Href == "/" && (string.IsNullOrEmpty(ActiveHref) || ActiveHref == "/"));
+
+                @if (item.HasSubmenu)
+                {
+                    <div class="sidebar-nav-entry">
+                        <button type="button"
+                                class="sidebar-nav-button @(isActive ? "sidebar-nav-button--active" : string.Empty) @(item.IsExpanded ? "sidebar-nav-button--expanded" : string.Empty)"
+                                aria-expanded="@item.IsExpanded"
+                                @onclick="() => ToggleSubmenuAsync(item)">
+                            <CyIcon Name="@item.IconName" Size="20" Class="sidebar-nav-icon" />
+                            <span class="sidebar-nav-text">@item.Label</span>
+
+                            @if (!string.IsNullOrWhiteSpace(item.BadgeText))
+                            {
+                                <span class="sidebar-nav-badge">@item.BadgeText</span>
+                            }
+
+                            <span class="sidebar-nav-chevron-wrapper @(item.IsExpanded ? "sidebar-nav-chevron-wrapper--open" : string.Empty)">
+                                <CyIcon Name="chevron-down" Size="14" Class="sidebar-nav-chevron" />
+                            </span>
+                        </button>
+
+                        @if (item.IsExpanded && item.SubItems.Count > 0)
+                        {
+                            <div class="sidebar-submenu">
+                                @foreach (var subItem in item.SubItems)
+                                {
+                                    var isSubActive = string.Equals(ActiveHref, subItem.Href, StringComparison.OrdinalIgnoreCase);
+                                    <a href="@subItem.Href"
+                                       class="sidebar-submenu-link @(isSubActive ? "sidebar-submenu-link--active" : string.Empty)">
+                                        <CyIcon Name="@subItem.IconName" Size="16" Class="sidebar-submenu-icon" />
+                                        <span class="sidebar-submenu-text">@subItem.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <a href="@item.Href"
+                       class="sidebar-nav-link @(isActive ? "sidebar-nav-link--active" : string.Empty)">
+                        <CyIcon Name="@item.IconName" Size="20" Class="sidebar-nav-icon" />
+                        <span class="sidebar-nav-text">@item.Label</span>
+
+                        @if (!string.IsNullOrWhiteSpace(item.BadgeText))
+                        {
+                            <span class="sidebar-nav-badge">@item.BadgeText</span>
+                        }
+                    </a>
+                }
+            }
+        }
+
+        <div class="sidebar-footer">
+            @foreach (var footerItem in FooterLinks)
+            {
+                <a href="@footerItem.Href" class="sidebar-nav-link">
+                    <CyIcon Name="@footerItem.IconName" Size="20" Class="sidebar-nav-icon" />
+                    <span class="sidebar-nav-text">@footerItem.Label</span>
+                </a>
+            }
+        </div>
+
+    </ChildContent>
+
+</CySidebar>
