@@ -2,137 +2,157 @@
 
 <PageTitle>Health Board Overview</PageTitle>
 
-<CyContainer Size="ContainerSize.Fluid" Class="hbo-page">
+<CyContainer Size="ContainerSize.Fluid" Class="hbo-container">
 
-    <CyBreadcrumb>
+    <CyBreadcrumb Class="hbo-breadcrumb">
         <CyBreadcrumbItem Text="Home" Href="/" />
         <CyBreadcrumbItem Text="Health Board Overview" />
     </CyBreadcrumb>
 
-    <CyStack Orientation="Orientation.Horizontal"
-             JustifyContent="JustifyContent.SpaceBetween"
-             AlignItems="AlignItems.Center"
-             Class="hbo-page-header">
-        <h1>Health Board Overview</h1>
-        <CyButton Variant="ComponentColour.Secondary">
-            Customize Dashboard <CyIcon Name="chevron-down" Size="16" />
+    <div class="hbo-header-row">
+        <h1 class="hbo-title">Health Board Overview</h1>
+        <CyButton Variant="ComponentColour.Secondary" Class="hbo-btn-customize">
+            Customize Dashboard <CyIcon Name="chevron-down" Size="14" Class="hbo-icon-end" />
         </CyButton>
-    </CyStack>
+    </div>
 
-    <CyGrid Columns="GridColumns.Four" Gap="GridGap.Medium" Class="hbo-kpi-grid">
+    <!-- 4-Column KPI Grid -->
+    <div class="hbo-kpi-grid">
         @foreach (var kpi in _kpis)
         {
-            <CyCard Class="@($"hbo-kpi-card hbo-kpi-card--{Slug(kpi.Colour)}")" Elevation="ComponentElevation.None">
-                <CyStack Orientation="Orientation.Horizontal"
-                         JustifyContent="JustifyContent.SpaceBetween"
-                         AlignItems="AlignItems.Start">
+            <div class="hbo-kpi-card hbo-kpi-card--@Slug(kpi.Colour)">
+                <div class="hbo-kpi-card__header">
                     <span class="hbo-kpi-card__label">@kpi.Label</span>
                     <CyIcon Name="@kpi.Icon" Size="18" Class="hbo-kpi-card__icon" />
-                </CyStack>
-                <p class="hbo-kpi-card__value">@kpi.Value</p>
-                <p class="hbo-kpi-card__delta">
-                    <CyIcon Name="@(kpi.DeltaUp ? "trend-up" : "trend-down")" Size="14" />
-                    <strong>@kpi.Delta</strong> <span class="hbo-kpi-card__delta-label">This month</span>
-                </p>
-            </CyCard>
+                </div>
+                <div class="hbo-kpi-card__value">@kpi.Value</div>
+                <div class="hbo-kpi-card__delta hbo-kpi-card__delta--@(kpi.DeltaUp ? "up" : "down")">
+                    <CyIcon Name="@(kpi.DeltaUp ? "trend-up" : "trend-down")" Size="13" />
+                    <span class="hbo-kpi-card__delta-text">@kpi.Delta</span>
+                    <span class="hbo-kpi-card__period">This month</span>
+                </div>
+            </div>
         }
-    </CyGrid>
+    </div>
 
-    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium" Class="hbo-widget-grid">
+    <!-- 3-Column Main Content Widgets -->
+    <div class="hbo-widget-grid">
 
-        <CyCard Class="hbo-widget-card">
-            <Header>
-                <CyStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
-                    <h2>My Appointments</h2>
-                    <a href="#" class="hbo-widget-card__view-all">View all <CyIcon Name="chevron-right" Size="14" /></a>
-                </CyStack>
-            </Header>
-            <ChildContent>
-                <CyTabs TabListAriaLabel="Select appointment day" @bind-ActiveTabId="_activeDayId" Class="hbo-day-tabs">
+        <!-- Column 1: My Appointments -->
+        <div class="hbo-card">
+            <div class="hbo-card__header">
+                <div class="hbo-card__title-group">
+                    <h2 class="hbo-card__title">My Appointments</h2>
+                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                </div>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+            </div>
+
+            <div class="hbo-card__content">
+                <div class="hbo-calendar-header">April 2026</div>
+
+                <div class="hbo-calendar-strip">
                     @foreach (var day in _appointmentDays)
                     {
-                        <CyTabPanel TabId="@day.TabId" Title="@day.Label">
-                            @if (day.Appointments.Count == 0)
-                            {
-                                <p class="hbo-empty">No appointments scheduled.</p>
-                            }
-                            else
-                            {
-                                <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Small">
-                                    @foreach (var appt in day.Appointments)
-                                    {
-                                        <div class="hbo-appointment-item">
-                                            <div class="hbo-appointment-item__bar hbo-appointment-item__bar--@Slug(appt.AccentColour)"></div>
-                                            <div class="hbo-appointment-item__body">
-                                                <p class="hbo-appointment-item__title">@appt.Clinic</p>
-                                                <p class="hbo-appointment-item__note">@appt.Note</p>
-                                            </div>
-                                            <div class="hbo-appointment-item__meta">
-                                                <span class="hbo-appointment-item__mode">@appt.Mode</span>
-                                                <CyBadge Variant="@appt.StatusColour">@appt.StatusLabel</CyBadge>
-                                            </div>
-                                        </div>
-                                    }
-                                </CyStack>
-                            }
-                        </CyTabPanel>
+                        var isSelected = day.TabId == _activeDayId;
+                        <button type="button"
+                                class="hbo-day-pill @(isSelected ? "hbo-day-pill--active" : string.Empty)"
+                                @onclick="() => SelectDay(day.TabId)">
+                            <span class="hbo-day-pill__name">@day.DayName</span>
+                            <span class="hbo-day-pill__number">@day.DayNumber</span>
+                        </button>
                     }
-                </CyTabs>
-            </ChildContent>
-        </CyCard>
+                </div>
 
-        <CyCard Class="hbo-widget-card">
-            <Header>
-                <CyStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
-                    <h2>Inpatient Occupancy</h2>
-                    <a href="#" class="hbo-widget-card__view-all">View all <CyIcon Name="chevron-right" Size="14" /></a>
-                </CyStack>
-                <p class="hbo-widget-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
-            </Header>
-            <ChildContent>
-                <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium">
+                <div class="hbo-appointment-list">
+                    @{
+                        var activeDay = _appointmentDays.FirstOrDefault(d => d.TabId == _activeDayId) ?? _appointmentDays[0];
+                    }
+                    @if (activeDay.Appointments.Count == 0)
+                    {
+                        <p class="hbo-empty-state">No appointments scheduled.</p>
+                    }
+                    else
+                    {
+                        @foreach (var appt in activeDay.Appointments)
+                        {
+                            <div class="hbo-appointment-item">
+                                <div class="hbo-appointment-item__accent hbo-appointment-item__accent--@Slug(appt.AccentColour)"></div>
+                                <div class="hbo-appointment-item__info">
+                                    <div class="hbo-appointment-item__clinic">@appt.Clinic</div>
+                                    <div class="hbo-appointment-item__location">@appt.Note</div>
+                                </div>
+                                <div class="hbo-appointment-item__badges">
+                                    <span class="hbo-mode-tag">@appt.Mode</span>
+                                    <CyBadge Variant="@appt.StatusColour" Class="hbo-status-badge">@appt.StatusLabel</CyBadge>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Inpatient Occupancy -->
+        <div class="hbo-card">
+            <div class="hbo-card__header">
+                <div class="hbo-card__title-group">
+                    <h2 class="hbo-card__title">Inpatient Occupancy</h2>
+                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                </div>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+            </div>
+            <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
+
+            <div class="hbo-card__content">
+                <div class="hbo-occupancy-list">
                     @foreach (var row in _occupancy)
                     {
                         <div class="hbo-occupancy-row">
-                            <div class="hbo-occupancy-row__label">
-                                <span>@row.Department</span>
-                                <span>@row.Percent%</span>
+                            <div class="hbo-occupancy-row__meta">
+                                <span class="hbo-occupancy-row__dept">@row.Department</span>
+                                <span class="hbo-occupancy-row__pct">@row.Percent%</span>
                             </div>
-                            <div class="hbo-occupancy-row__track">
-                                <div class="hbo-occupancy-row__fill hbo-occupancy-row__fill--@Slug(row.Colour)"
-                                     style="width:@(row.Percent)%"></div>
+                            <div class="hbo-progress-track">
+                                <div class="hbo-progress-fill hbo-progress-fill--@Slug(row.Colour)"
+                                     style="width: @(row.Percent)%"></div>
                             </div>
                         </div>
                     }
-                </CyStack>
-            </ChildContent>
-        </CyCard>
+                </div>
+            </div>
+        </div>
 
-        <CyCard Class="hbo-widget-card">
-            <Header>
-                <CyStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
-                    <h2>Waiting List</h2>
-                    <a href="#" class="hbo-widget-card__view-all">View all <CyIcon Name="chevron-right" Size="14" /></a>
-                </CyStack>
-                <p class="hbo-widget-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
-            </Header>
-            <ChildContent>
-                <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Small">
+        <!-- Column 3: Waiting List -->
+        <div class="hbo-card">
+            <div class="hbo-card__header">
+                <div class="hbo-card__title-group">
+                    <h2 class="hbo-card__title">Waiting List</h2>
+                    <CyIcon Name="info-circle" Size="15" Class="hbo-info-icon" />
+                </div>
+                <a href="#" class="hbo-card__action">View all <CyIcon Name="arrow-right" Size="13" /></a>
+            </div>
+            <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
+
+            <div class="hbo-card__content">
+                <div class="hbo-waiting-list">
                     @foreach (var row in _waitingList)
                     {
-                        <div class="hbo-waiting-row hbo-waiting-row--@Slug(row.Colour)">
-                            <div class="hbo-waiting-row__body">
-                                <p class="hbo-waiting-row__title">@row.Specialty</p>
-                                <p class="hbo-waiting-row__meta">@row.Waiting waiting &bull; Longest: @row.LongestWeeks weeks</p>
+                        <div class="hbo-waiting-item hbo-waiting-item--@Slug(row.Colour)">
+                            <div class="hbo-waiting-item__details">
+                                <div class="hbo-waiting-item__title">@row.Specialty</div>
+                                <div class="hbo-waiting-item__meta">
+                                    @row.Waiting waiting &bull; Longest: @row.LongestWeeks weeks
+                                </div>
                             </div>
-                            <CyBadge Variant="@row.Colour">@row.BreachLabel</CyBadge>
+                            <span class="hbo-breach-badge hbo-breach-badge--@Slug(row.Colour)">@row.BreachLabel</span>
                         </div>
                     }
-                </CyStack>
-            </ChildContent>
-        </CyCard>
+                </div>
+            </div>
+        </div>
 
-    </CyGrid>
+    </div>
 
 </CyContainer>
 
@@ -141,19 +161,19 @@
 
     private sealed record AppointmentItem(string Clinic, string Note, string Mode, string StatusLabel, ComponentColour StatusColour, ComponentColour AccentColour);
 
-    private sealed record AppointmentDay(string TabId, string Label, IReadOnlyList<AppointmentItem> Appointments);
+    private sealed record AppointmentDay(string TabId, string DayName, string DayNumber, IReadOnlyList<AppointmentItem> Appointments);
 
     private sealed record OccupancyRow(string Department, int Percent, ComponentColour Colour);
 
     private sealed record WaitingListRow(string Specialty, int Waiting, int LongestWeeks, string BreachLabel, ComponentColour Colour);
 
-    private string? _activeDayId;
+    private string _activeDayId = "mon-11";
 
     private readonly IReadOnlyList<KpiMetric> _kpis =
     [
-        new("Appointments", "24", "+10%", true, "appointment", ComponentColour.Info),
-        new("Referrals", "8", "-5%", false, "file-text", ComponentColour.Success),
-        new("My Watchlist", "42", "-3%", false, "clipboard-list", ComponentColour.Warning),
+        new("Appointments", "24", "+10%", true, "stethoscope", ComponentColour.Info),
+        new("Referrals", "8", "-5%", false, "arrow-down-up", ComponentColour.Success),
+        new("My Watchlist", "42", "-3%", false, "square-pen", ComponentColour.Warning),
         new("Pending DALs", "24", "+9%", true, "bed", ComponentColour.Danger)
     ];
 
@@ -177,29 +197,26 @@
 
     private readonly IReadOnlyList<AppointmentDay> _appointmentDays =
     [
-        new("mon-11", "Mon 11",
+        new("mon-11", "MON", "11",
         [
             new("ggh - Colposcopy Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info),
             new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success),
             new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info)
         ]),
-        new("tue-12", "Tue 12",
+        new("tue-12", "Tue", "12",
         [
             new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success)
         ]),
-        new("wed-13", "Wed 13", []),
-        new("thu-14", "Thu 14", []),
-        new("fri-15", "Fri 15",
+        new("wed-13", "Wed", "13", []),
+        new("thu-14", "Thu", "14", []),
+        new("fri-15", "Fri", "15",
         [
             new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info)
         ]),
-        new("sat-16", "Sat 16", [])
+        new("sat-16", "Sat", "16", [])
     ];
 
-    protected override void OnInitialized()
-    {
-        _activeDayId = _appointmentDays[0].TabId;
-    }
+    private void SelectDay(string dayTabId) => _activeDayId = dayTabId;
 
     private static string Slug(ComponentColour colour) => colour.ToString().ToLowerInvariant();
 }
