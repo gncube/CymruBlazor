@@ -16,7 +16,7 @@ namespace CymruBlazor.Tests.Components.Branding;
 /// Blazor/JS interop has finished initialising. These tests assert
 /// against that real contract.
 /// </summary>
-public sealed class CyBrandLogoTests : BunitContext
+public sealed class CyBrandLogoTests : TestContextBase
 {
     [Fact]
     public void WhenNoLogoPathIsSuppliedRendersDefaultLightAndDarkAssetPair()
