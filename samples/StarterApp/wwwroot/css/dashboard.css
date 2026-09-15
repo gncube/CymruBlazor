@@ -8,15 +8,34 @@
  */
 
 :root {
-  --hbo-shell-bg: #0f172a;
+  --hbo-shell-bg: #0b1329;
+  --hbo-card-bg: #131e36;
+  --hbo-card-border: #1e2c4d;
+  --hbo-kpi-bg: #026b86;
+  --hbo-track-bg: #1a253d;
 }
 
 [data-theme="dark"],
 .dark {
   --cymru-color-background: #0b1329;
-  --cymru-color-surface: #111c35;
+  --cymru-color-surface: #0f1a30;
   --cymru-color-border: #1e2c4a;
   --hbo-shell-bg: #0b1329;
+  --hbo-card-bg: #131e36;
+  --hbo-card-border: #1e2c4d;
+  --hbo-kpi-bg: #026b86;
+  --hbo-track-bg: #1a253d;
+}
+
+[data-theme="light"] {
+  --cymru-color-background: #f8fafc;
+  --cymru-color-surface: #ffffff;
+  --cymru-color-border: #e2e8f0;
+  --hbo-shell-bg: #f8fafc;
+  --hbo-card-bg: #ffffff;
+  --hbo-card-border: #e2e8f0;
+  --hbo-kpi-bg: #0284c7;
+  --hbo-track-bg: #e2e8f0;
 }
 
 html,
