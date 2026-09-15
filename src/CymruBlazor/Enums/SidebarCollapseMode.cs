@@ -18,11 +18,11 @@ public enum SidebarCollapseMode
 {
     /// <summary>
     /// Collapses to a narrow rail that keeps a short text label
-    /// stacked beneath each item's icon. The <c>CySidebar.Brand</c>
-    /// lockup is not rendered while collapsed - there isn't room for it
-    /// once section headings and item labels have shrunk to this width
-    /// - but the header row's expand/collapse chevron remains, centred
-    /// on its own. Consumers mark up each item's label with class
+    /// stacked beneath each item's icon. <c>CySidebar.Brand</c> still
+    /// renders - the header row's expand/collapse chevron sits beside
+    /// it - but there's little horizontal room left for anything wider
+    /// than an icon-sized mark; a full lockup with a wordmark will
+    /// overflow. Consumers mark up each item's label with class
     /// <c>cy-sidebar__label</c> and each item's row with
     /// <c>cy-sidebar__item</c> to get the icon-above-label layout for
     /// free; wrap group headings in <c>cy-sidebar__heading</c> so they
@@ -32,12 +32,12 @@ public enum SidebarCollapseMode
 
     /// <summary>
     /// Collapses to the narrowest possible rail: icons only, with item
-    /// labels and the <c>CySidebar.Brand</c> lockup both hidden (the
-    /// header row's chevron toggle still renders, centred, so the
-    /// sidebar can be expanded again). Labels marked with
-    /// <c>cy-sidebar__label</c> are hidden visually but remain in the
-    /// accessible tree (not <c>aria-hidden</c>) so screen reader users
-    /// still get the item's name.
+    /// labels hidden. <c>CySidebar.Brand</c> still renders alongside the
+    /// header's chevron toggle - same as <see cref="Compact"/>, there's
+    /// only room for an icon-sized mark, not a wordmark. Labels marked
+    /// with <c>cy-sidebar__label</c> are hidden visually but remain in
+    /// the accessible tree (not <c>aria-hidden</c>) so screen reader
+    /// users still get the item's name.
     /// </summary>
     IconOnly = 1,
 

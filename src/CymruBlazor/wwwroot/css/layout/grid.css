@@ -286,10 +286,13 @@
 /*
  * CySidebar.Brand - optional lockup (e.g. <CyBrandLogo />) at the top
  * of the sidebar, paired with the expand/collapse chevron toggle in a
- * shared header row. The brand is only ever rendered while expanded
- * (see CySidebar.razor.cs) - the header row itself, and the toggle
- * button within it, stay in the DOM through every collapse state so
- * there is always a control to bring the sidebar back out.
+ * shared header row. Brand always renders, in every collapse state
+ * (see CySidebar.razor.cs) - CySidebar has no way to know what's
+ * inside it, so it's up to the consumer's fragment to swap in
+ * something narrow (e.g. <CyBrandLogo SymbolOnly="@Collapsed" />) once
+ * collapsed. The rules below just handle the *layout* switch, from a
+ * side-by-side row while expanded to a stacked column once the rail
+ * narrows to Compact or IconOnly width.
  */
 .cy-sidebar__header {
   display: flex;
@@ -332,14 +335,23 @@
 }
 
 /*
- * Once collapsed to either rail, the header only ever holds the toggle
- * button (the brand is omitted from the DOM entirely) - centre it in
- * the same way the collapsed nav items are centred.
+ * Once collapsed to either rail, there's no longer room for the brand
+ * and the toggle side by side - stack them instead (brand's own
+ * content is expected to have shrunk to an icon-sized mark by now) and
+ * centre both, matching how the collapsed nav items centre themselves.
  */
 .cy-sidebar--compact .cy-sidebar__header,
 .cy-sidebar--icon-only .cy-sidebar__header {
+  flex-direction: column;
   justify-content: center;
   padding-inline: var(--cymru-space-2);
+}
+
+.cy-sidebar--compact .cy-sidebar__brand,
+.cy-sidebar--icon-only .cy-sidebar__brand {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
 }
 
 /*

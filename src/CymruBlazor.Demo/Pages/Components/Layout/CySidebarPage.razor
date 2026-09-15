@@ -25,9 +25,10 @@
         <p class="cb-section-description">
             Click the chevron in the sidebar's own header to cycle through its three
             visible states: <strong>Full</strong> &rarr; <strong>Compact</strong> &rarr;
-            <strong>Icon-only</strong> &rarr; back to Full. The toggle button, and hiding/showing
-            <code>Brand</code> as it collapses, are both built into <code>CySidebar</code> - this
-            page only supplies the target <code>CollapseMode</code> for each step.
+            <strong>Icon-only</strong> &rarr; back to Full. The toggle button is built into
+            <code>CySidebar</code> - this page just supplies the target <code>CollapseMode</code>
+            for each step, and swaps <code>Brand</code>'s own logo down to a small icon mark
+            (via <code>SymbolOnly="@@IsCollapsed"</code>) once there's no room for the full one.
         </p>
         <div class="cb-workbench-preview">
             <div style="display:flex; gap:0; height:220px; width:100%; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
@@ -35,7 +36,7 @@
                 {
                     <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
                         <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="false" Size="ComponentSize.Small" />
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" Size="ComponentSize.Small" />
                         </Brand>
                         <ChildContent>
                             <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
@@ -51,7 +52,7 @@
                 {
                     <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
                         <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="false" Size="ComponentSize.Small" />
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" Size="ComponentSize.Small" />
                         </Brand>
                         <ChildContent>
                             <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
@@ -173,7 +174,7 @@ else
             CollapseMode="SidebarCollapseMode.{EffectiveCollapseMode}"
             Collapsed="{IsCollapsed.ToString().ToLowerInvariant()}"
             CollapsedChanged="OnToggled">
-            <Brand><CyBrandLogo Variant="BrandLogoVariant.Auto" /></Brand>
+            <Brand><CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" /></Brand>
             <ChildContent>
                 <div class="cy-sidebar__item"><CyIcon Name="home" /><span class="cy-sidebar__label">Home</span></div>
             </ChildContent>
@@ -214,7 +215,7 @@ else
         new("Collapsed", "bool", "false", "Whether the sidebar is collapsed. Two-way bindable via @bind-Collapsed, or toggle programmatically with ToggleAsync()."),
         new("CollapsedChanged", "EventCallback<bool>", "-", "Raised when Collapsed changes, including via ToggleAsync() or clicking the built-in header chevron button."),
         new("CollapseMode", "SidebarCollapseMode", "Compact", "Appearance used while collapsed: Compact, IconOnly, Disabled, or Hidden."),
-        new("Brand", "RenderFragment?", "null", "Optional brand lockup (e.g. CyBrandLogo) rendered in the header row next to the chevron toggle. Omitted entirely (not just hidden) while collapsed."),
+        new("Brand", "RenderFragment?", "null", "Optional brand lockup (e.g. CyBrandLogo) rendered in the header row next to the chevron toggle. Always rendered, in every collapse state - swap in something narrower (e.g. SymbolOnly=\"@Collapsed\") yourself once collapsed."),
         new("ChildContent", "RenderFragment?", "null", "The sidebar's navigation content.")
     ];
 

@@ -170,6 +170,27 @@
 }
 
 /* =========================================================================
+   BRAND HEADER
+   (the logo + collapse/expand chevron row is CySidebar's own built-in
+   header - these rules just line its padding up with the nav items
+   below it and give the toggle button the same accent-blue hover as
+   the rest of the sidebar, light and dark)
+   ========================================================================= */
+.app-shell__sidebar ::deep .cy-sidebar__header {
+    padding-inline: 1.15rem;
+    min-height: 4.25rem;
+}
+
+.app-shell__sidebar ::deep .cy-sidebar__toggle {
+    color: #64748b;
+}
+
+.app-shell__sidebar ::deep .cy-sidebar__toggle:hover {
+    background-color: #f1f5f9;
+    color: #0284c7;
+}
+
+/* =========================================================================
    DARK THEME PALETTE
    ========================================================================= */
 [data-theme="dark"],
@@ -231,4 +252,20 @@
 [data-theme="dark"] .sidebar-footer,
 .dark .sidebar-footer {
     border-top-color: #1e293b;
+}
+
+[data-theme="dark"] .app-shell__sidebar ::deep .cy-sidebar__header,
+.dark .app-shell__sidebar ::deep .cy-sidebar__header {
+    border-block-end-color: #1e293b;
+}
+
+[data-theme="dark"] .app-shell__sidebar ::deep .cy-sidebar__toggle,
+.dark .app-shell__sidebar ::deep .cy-sidebar__toggle {
+    color: #64748b;
+}
+
+[data-theme="dark"] .app-shell__sidebar ::deep .cy-sidebar__toggle:hover,
+.dark .app-shell__sidebar ::deep .cy-sidebar__toggle:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #38bdf8;
 }

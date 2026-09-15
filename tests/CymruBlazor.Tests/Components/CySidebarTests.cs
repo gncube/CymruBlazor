@@ -154,16 +154,19 @@ public sealed class CySidebarTests : TestContextBase
     [InlineData(SidebarCollapseMode.Compact)]
     [InlineData(SidebarCollapseMode.IconOnly)]
     [InlineData(SidebarCollapseMode.Hidden)]
-    public void Should_Not_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
+    public void Should_Still_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
     {
-        // Act
+        // Act - CySidebar has no way to know what's inside Brand, so it
+        // always renders it; it's up to the consumer's own fragment to
+        // swap in something narrower (e.g. an icon-only logo mark) once
+        // collapsed - see CySidebar.Brand's XML doc.
         var cut = Render<CySidebar>(parameters => parameters
             .Add(p => p.CollapseMode, mode)
             .Add(p => p.Collapsed, true)
             .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
 
         // Assert
-        cut.FindAll(".cy-sidebar__brand").Count.ShouldBe(0);
+        cut.Find(".cy-sidebar__brand").TextContent.ShouldBe("Logo");
     }
 
     [Fact]
