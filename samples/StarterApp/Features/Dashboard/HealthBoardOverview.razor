@@ -11,9 +11,10 @@
 
     <div class="hbo-header-row">
         <h1 class="hbo-title">Health Board Overview</h1>
-        <CyButton Variant="ComponentColour.Secondary" Class="hbo-btn-customize">
-            Customize Dashboard <CyIcon Name="chevron-down" Size="14" Class="hbo-icon-end" />
-        </CyButton>
+        <button type="button" class="hbo-btn-customize">
+            <span>Customize Dashboard</span>
+            <CyIcon Name="chevron-down" Size="14" Class="hbo-icon-end" />
+        </button>
     </div>
 
     <!-- 4-Column KPI Grid -->
@@ -23,7 +24,7 @@
             <div class="hbo-kpi-card hbo-kpi-card--@Slug(kpi.Colour)">
                 <div class="hbo-kpi-card__header">
                     <span class="hbo-kpi-card__label">@kpi.Label</span>
-                    <CyIcon Name="@kpi.Icon" Size="20" Class="hbo-kpi-card__icon" />
+                    <CyIcon Name="@kpi.Icon" Size="18" Class="hbo-kpi-card__icon" />
                 </div>
                 <div class="hbo-kpi-card__value">@kpi.Value</div>
                 <div class="hbo-kpi-card__delta hbo-kpi-card__delta--@(kpi.DeltaUp ? "up" : "down")">
@@ -41,10 +42,7 @@
         <!-- Column 1: My Appointments -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">My Appointments</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">My Appointments</h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
 
@@ -58,7 +56,7 @@
                         <button type="button"
                                 class="hbo-day-pill @(isSelected ? "hbo-day-pill--active" : string.Empty)"
                                 @onclick="() => SelectDay(day.TabId)">
-                            <span class="hbo-day-pill__name">@day.DayName</span>
+                            <span class="hbo-day-pill__name">@day.DayName.ToUpperInvariant()</span>
                             <span class="hbo-day-pill__number">@day.DayNumber</span>
                         </button>
                     }
@@ -84,7 +82,7 @@
                                 </div>
                                 <div class="hbo-appointment-item__badges">
                                     <span class="hbo-mode-tag">@appt.Mode</span>
-                                    <CyBadge Variant="@appt.StatusColour" Class="hbo-status-badge">@appt.StatusLabel</CyBadge>
+                                    <span class="hbo-status-badge hbo-status-badge--@Slug(appt.StatusColour)">@appt.StatusLabel</span>
                                 </div>
                             </div>
                         }
@@ -96,10 +94,7 @@
         <!-- Column 2: Inpatient Occupancy -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">Inpatient Occupancy</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">Inpatient Occupancy</h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
             <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
@@ -126,10 +121,7 @@
         <!-- Column 3: Waiting List -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">Waiting List</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">Waiting List</h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
             <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
@@ -138,14 +130,15 @@
                 <div class="hbo-waiting-list">
                     @foreach (var row in _waitingList)
                     {
-                        <div class="hbo-waiting-item hbo-waiting-item--@Slug(row.Colour)">
+                        <div class="hbo-waiting-item">
+                            <div class="hbo-waiting-item__accent hbo-waiting-item__accent--@Slug(row.Colour)"></div>
                             <div class="hbo-waiting-item__details">
                                 <div class="hbo-waiting-item__title">@row.Specialty</div>
                                 <div class="hbo-waiting-item__meta">
                                     @row.Waiting waiting &bull; Longest: @row.LongestWeeks weeks
                                 </div>
                             </div>
-                            <span class="hbo-breach-badge hbo-breach-badge--@Slug(row.Colour)">@row.BreachLabel</span>
+                            <span class="hbo-breach-badge">@row.BreachLabel</span>
                         </div>
                     }
                 </div>
@@ -203,17 +196,17 @@
             new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success),
             new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info)
         ]),
-        new("tue-12", "Tue", "12",
+        new("tue-12", "TUE", "12",
         [
             new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success)
         ]),
-        new("wed-13", "Wed", "13", []),
-        new("thu-14", "Thu", "14", []),
-        new("fri-15", "Fri", "15",
+        new("wed-13", "WED", "13", []),
+        new("thu-14", "THU", "14", []),
+        new("fri-15", "FRI", "15",
         [
             new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info)
         ]),
-        new("sat-16", "Sat", "16", [])
+        new("sat-16", "SAT", "16", [])
     ];
 
     private void SelectDay(string dayTabId) => _activeDayId = dayTabId;

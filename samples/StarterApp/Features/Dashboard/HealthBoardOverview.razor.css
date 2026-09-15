@@ -1,47 +1,144 @@
-/* Layout & Container */
+/* ==========================================================================
+   Health Board Overview Dashboard Stylesheet
+   Directly matched to NHS Wales / DHCW dark Figma specification
+   ========================================================================== */
+
+:host,
 .hbo-container {
-    padding: 1.5rem 2rem 2.5rem;
-    max-width: 1400px;
+    --hbo-bg: #0b1329;
+    --hbo-card-bg: #14203d;
+    --hbo-card-border: #23355d;
+    --hbo-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --hbo-item-border: rgba(255, 255, 255, 0.08);
+    --hbo-track-bg: #1e2c4d;
+
+    --hbo-text-primary: #ffffff;
+    --hbo-text-secondary: #cbd5e1;
+    --hbo-text-muted: #8e9fb8;
+
+    --hbo-link: #38bdf8;
+    --hbo-link-hover: #7dd3fc;
+
+    /* Semantic Tints for KPI cards */
+    --hbo-info: #38bdf8;
+    --hbo-info-bg: #102644;
+    --hbo-info-border: #1e4570;
+
+    --hbo-success: #34d399;
+    --hbo-success-bg: #0d2c2c;
+    --hbo-success-border: #185343;
+
+    --hbo-warning: #fbbf24;
+    --hbo-warning-bg: #2d2616;
+    --hbo-warning-border: #59471d;
+
+    --hbo-danger: #f43f5e;
+    --hbo-danger-bg: #2f1725;
+    --hbo-danger-border: #5c203a;
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] .hbo-container {
+    --hbo-bg: #f8fafc;
+    --hbo-card-bg: #ffffff;
+    --hbo-card-border: #e2e8f0;
+    --hbo-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --hbo-item-border: #f1f5f9;
+    --hbo-track-bg: #f1f5f9;
+
+    --hbo-text-primary: #0f172a;
+    --hbo-text-secondary: #334155;
+    --hbo-text-muted: #64748b;
+
+    --hbo-link: #0284c7;
+    --hbo-link-hover: #0369a1;
+
+    --hbo-info: #0284c7;
+    --hbo-info-bg: #f0f9ff;
+    --hbo-info-border: #bae6fd;
+
+    --hbo-success: #16a34a;
+    --hbo-success-bg: #f0fdf4;
+    --hbo-success-border: #bbf7d0;
+
+    --hbo-warning: #d97706;
+    --hbo-warning-bg: #fffbeb;
+    --hbo-warning-border: #fde68a;
+
+    --hbo-danger: #e11d48;
+    --hbo-danger-bg: #fff1f2;
+    --hbo-danger-border: #fecdd3;
+}
+
+/* Container & Header */
+.hbo-container {
+    padding: 1.25rem 2rem 2.5rem;
+    max-width: 1480px;
     margin: 0 auto;
+    color: var(--hbo-text-primary);
 }
 
 .hbo-breadcrumb {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     font-size: 0.8125rem;
+}
+
+::deep .hbo-breadcrumb a,
+::deep .hbo-breadcrumb .cy-breadcrumb__item {
+    color: var(--hbo-text-muted);
+}
+
+::deep .hbo-breadcrumb .cy-breadcrumb__item--active {
+    color: var(--hbo-text-secondary);
 }
 
 .hbo-header-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .hbo-title {
-    font-size: 1.625rem;
+    font-size: 1.5rem;
     font-weight: 700;
+    letter-spacing: -0.015em;
     margin: 0;
-    color: var(--text-color, #0f172a);
+    color: var(--hbo-text-primary);
 }
 
 .hbo-btn-customize {
+    background: transparent;
+    border: 1px solid var(--hbo-card-border);
+    color: var(--hbo-link);
     border-radius: 6px;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 500;
-    padding: 0.45rem 0.9rem;
+    padding: 0.45rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hbo-btn-customize:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--hbo-link);
+    color: #ffffff;
 }
 
 .hbo-icon-end {
-    margin-left: 0.35rem;
+    margin-left: 0.4rem;
 }
 
-/* CyIcon layout alignment */
 ::deep .cy-icon {
     display: inline-flex;
     vertical-align: middle;
 }
 
-/* KPI Grid */
+/* ==========================================================================
+   KPI Cards (Top Grid)
+   ========================================================================== */
 .hbo-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -50,19 +147,20 @@
 }
 
 .hbo-kpi-card {
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.15rem 1.25rem;
     display: flex;
     flex-direction: column;
-    border: 1px solid transparent;
-    transition: box-shadow 0.15s ease-in-out;
+    border: 1px solid var(--hbo-card-border);
+    background-color: var(--hbo-card-bg);
+    box-shadow: var(--hbo-card-shadow);
 }
 
 .hbo-kpi-card__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.65rem;
 }
 
 .hbo-kpi-card__label {
@@ -71,21 +169,21 @@
 }
 
 .hbo-kpi-card__icon {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 .hbo-kpi-card__value {
-    font-size: 2rem;
+    font-size: 2.125rem;
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 0.6rem;
-    color: var(--text-color, #0f172a);
+    line-height: 1;
+    margin-bottom: 0.65rem;
+    color: var(--hbo-text-primary);
 }
 
 .hbo-kpi-card__delta {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
     font-size: 0.75rem;
 }
 
@@ -94,52 +192,58 @@
 }
 
 .hbo-kpi-card__period {
-    color: var(--text-muted, #64748b);
+    color: var(--hbo-text-muted);
     font-weight: 400;
 }
 
-/* KPI Color Variations - Light Mode */
+/* Semantic Tinted Variations for KPI Cards */
 .hbo-kpi-card--info {
-    background-color: #f0f7ff;
-    border-color: #d0e4ff;
+    background-color: var(--hbo-info-bg);
+    border-color: var(--hbo-info-border);
 }
 .hbo-kpi-card--info .hbo-kpi-card__label,
 .hbo-kpi-card--info .hbo-kpi-card__icon,
-.hbo-kpi-card--info .hbo-kpi-card__delta--up {
-    color: #0284c7;
+.hbo-kpi-card--info .hbo-kpi-card__delta--up,
+.hbo-kpi-card--info .hbo-kpi-card__delta-text {
+    color: var(--hbo-info);
 }
 
 .hbo-kpi-card--success {
-    background-color: #f0fdf4;
-    border-color: #bbf7d0;
+    background-color: var(--hbo-success-bg);
+    border-color: var(--hbo-success-border);
 }
 .hbo-kpi-card--success .hbo-kpi-card__label,
 .hbo-kpi-card--success .hbo-kpi-card__icon,
-.hbo-kpi-card--success .hbo-kpi-card__delta--down {
-    color: #16a34a;
+.hbo-kpi-card--success .hbo-kpi-card__delta--down,
+.hbo-kpi-card--success .hbo-kpi-card__delta-text {
+    color: var(--hbo-success);
 }
 
 .hbo-kpi-card--warning {
-    background-color: #fffbeb;
-    border-color: #fef08a;
+    background-color: var(--hbo-warning-bg);
+    border-color: var(--hbo-warning-border);
 }
 .hbo-kpi-card--warning .hbo-kpi-card__label,
 .hbo-kpi-card--warning .hbo-kpi-card__icon,
-.hbo-kpi-card--warning .hbo-kpi-card__delta--down {
-    color: #d97706;
+.hbo-kpi-card--warning .hbo-kpi-card__delta--down,
+.hbo-kpi-card--warning .hbo-kpi-card__delta-text {
+    color: var(--hbo-warning);
 }
 
 .hbo-kpi-card--danger {
-    background-color: #fff1f2;
-    border-color: #fecdd3;
+    background-color: var(--hbo-danger-bg);
+    border-color: var(--hbo-danger-border);
 }
 .hbo-kpi-card--danger .hbo-kpi-card__label,
 .hbo-kpi-card--danger .hbo-kpi-card__icon,
-.hbo-kpi-card--danger .hbo-kpi-card__delta--up {
-    color: #e11d48;
+.hbo-kpi-card--danger .hbo-kpi-card__delta--up,
+.hbo-kpi-card--danger .hbo-kpi-card__delta-text {
+    color: var(--hbo-danger);
 }
 
-/* Main Widget Grid */
+/* ==========================================================================
+   Widget Grid (Bottom 3 Cards)
+   ========================================================================== */
 .hbo-widget-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -147,11 +251,13 @@
 }
 
 .hbo-card {
-    background: var(--card-bg, #ffffff);
-    border: 1px solid var(--card-border, #e2e8f0);
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    background-color: var(--hbo-card-bg);
+    border: 1px solid var(--hbo-card-border);
+    border-radius: 8px;
+    padding: 1.25rem 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--hbo-card-shadow);
 }
 
 .hbo-card__header {
@@ -160,21 +266,11 @@
     align-items: center;
 }
 
-.hbo-card__title-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
 .hbo-card__title {
     font-size: 1.05rem;
     font-weight: 700;
     margin: 0;
-    color: var(--text-color, #0f172a);
-}
-
-.hbo-info-icon {
-    color: var(--text-muted, #94a3b8);
+    color: var(--hbo-text-primary);
 }
 
 .hbo-card__action {
@@ -183,28 +279,39 @@
     gap: 0.25rem;
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #0284c7;
+    color: var(--hbo-link);
     text-decoration: none;
+    transition: color 0.12s ease;
+}
+
+.hbo-card__action:hover {
+    color: var(--hbo-link-hover);
+    text-decoration: underline;
 }
 
 .hbo-card__subtitle {
     font-size: 0.75rem;
-    color: var(--text-muted, #64748b);
-    margin: 0.25rem 0 1rem;
+    color: var(--hbo-text-muted);
+    margin: 0.25rem 0 0.85rem;
 }
 
-/* Calendar & Appointments Widget */
+.hbo-card__content {
+    flex: 1;
+}
+
+/* Widget 1: My Appointments */
 .hbo-calendar-header {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-muted, #64748b);
-    margin: 0.85rem 0 0.5rem;
+    color: var(--hbo-text-muted);
+    margin: 0.65rem 0 0.5rem;
 }
 
 .hbo-calendar-strip {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    justify-content: space-between;
+    gap: 0.25rem;
+    margin-bottom: 1.1rem;
 }
 
 .hbo-day-pill {
@@ -213,98 +320,142 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.35rem 0.25rem;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
+    padding: 0.35rem 0.15rem;
+    border-radius: 6px;
+    height: 48px;
+    border: 1px solid transparent;
     background: transparent;
     cursor: pointer;
-    color: var(--text-color, #0f172a);
+    color: var(--hbo-text-secondary);
     transition: all 0.15s ease-in-out;
+}
+
+.hbo-day-pill:hover {
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .hbo-day-pill__name {
     font-size: 0.625rem;
-    text-transform: uppercase;
     font-weight: 600;
+    letter-spacing: 0.02em;
 }
 
 .hbo-day-pill__number {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.1;
+    margin-top: 0.1rem;
 }
 
 .hbo-day-pill--active {
-    background-color: #0f172a;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #0b1329;
+    border-color: #ffffff;
+}
+
+.hbo-day-pill--active .hbo-day-pill__name,
+.hbo-day-pill--active .hbo-day-pill__number {
+    color: #0b1329;
 }
 
 .hbo-appointment-list {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
 }
 
 .hbo-appointment-item {
     display: flex;
     align-items: center;
     position: relative;
-    padding-left: 0.75rem;
+    padding: 0.75rem 0 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--hbo-item-border);
+}
+
+.hbo-appointment-item:last-child {
+    border-bottom: none;
 }
 
 .hbo-appointment-item__accent {
     position: absolute;
     left: 0;
-    top: 0;
-    bottom: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
     width: 3px;
     border-radius: 2px;
 }
 
-.hbo-appointment-item__accent--info { background-color: #0284c7; }
-.hbo-appointment-item__accent--success { background-color: #16a34a; }
+.hbo-appointment-item__accent--info {
+    background-color: var(--hbo-info);
+}
+
+.hbo-appointment-item__accent--success {
+    background-color: var(--hbo-success);
+}
 
 .hbo-appointment-item__info {
     flex: 1;
     min-width: 0;
+    padding-right: 0.75rem;
 }
 
 .hbo-appointment-item__clinic {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--text-color, #0f172a);
+    color: var(--hbo-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hbo-appointment-item__location {
     font-size: 0.72rem;
-    color: var(--text-muted, #64748b);
+    color: var(--hbo-text-muted);
+    margin-top: 0.15rem;
 }
 
 .hbo-appointment-item__badges {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.25rem;
+    gap: 0.3rem;
 }
 
 .hbo-mode-tag {
     font-size: 0.6875rem;
-    color: var(--text-muted, #64748b);
+    color: var(--hbo-text-muted);
 }
 
 .hbo-status-badge {
     font-size: 0.6875rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 12px;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background-color: #1e293b;
+    color: #cbd5e1;
 }
 
-/* Inpatient Occupancy */
+.hbo-status-badge--success {
+    background-color: #164e63;
+    color: #a5f3fc;
+}
+
+.hbo-empty-state {
+    color: var(--hbo-text-muted);
+    font-size: 0.8125rem;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+/* Widget 2: Inpatient Occupancy */
 .hbo-occupancy-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.85rem;
+}
+
+.hbo-occupancy-row {
+    display: flex;
+    flex-direction: column;
 }
 
 .hbo-occupancy-row__meta {
@@ -313,12 +464,21 @@
     font-size: 0.75rem;
     font-weight: 500;
     margin-bottom: 0.35rem;
-    color: var(--text-color, #0f172a);
+    color: var(--hbo-text-secondary);
+}
+
+.hbo-occupancy-row__dept {
+    color: var(--hbo-text-secondary);
+}
+
+.hbo-occupancy-row__pct {
+    color: var(--hbo-text-primary);
+    font-weight: 600;
 }
 
 .hbo-progress-track {
-    height: 8px;
-    background: var(--track-bg, #f1f5f9);
+    height: 7px;
+    background: var(--hbo-track-bg);
     border-radius: 999px;
     overflow: hidden;
 }
@@ -328,15 +488,22 @@
     border-radius: 999px;
 }
 
-.hbo-progress-fill--danger { background-color: #e11d48; }
-.hbo-progress-fill--warning { background-color: #eab308; }
-.hbo-progress-fill--info { background-color: #38bdf8; }
+.hbo-progress-fill--danger {
+    background-color: #e11d48;
+}
 
-/* Waiting List */
+.hbo-progress-fill--warning {
+    background-color: #eab308;
+}
+
+.hbo-progress-fill--info {
+    background-color: #38bdf8;
+}
+
+/* Widget 3: Waiting List */
 .hbo-waiting-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
 }
 
 .hbo-waiting-item {
@@ -344,103 +511,85 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
-    padding: 0.6rem 0.5rem 0.6rem 0.75rem;
-    border-left: 3px solid transparent;
+    padding: 0.75rem 0 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--hbo-item-border);
 }
 
-.hbo-waiting-item--danger { border-left-color: #e11d48; }
-.hbo-waiting-item--warning { border-left-color: #eab308; }
+.hbo-waiting-item:last-child {
+    border-bottom: none;
+}
+
+.hbo-waiting-item__accent {
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 3px;
+    border-radius: 2px;
+}
+
+.hbo-waiting-item__accent--danger {
+    background-color: #e11d48;
+}
+
+.hbo-waiting-item__accent--warning {
+    background-color: #eab308;
+}
+
+.hbo-waiting-item__details {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0.75rem;
+}
 
 .hbo-waiting-item__title {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--text-color, #0f172a);
+    color: var(--hbo-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hbo-waiting-item__meta {
     font-size: 0.72rem;
-    color: var(--text-muted, #64748b);
+    color: var(--hbo-text-muted);
+    margin-top: 0.15rem;
 }
 
 .hbo-breach-badge {
     font-size: 0.6875rem;
     font-weight: 600;
-    padding: 0.2rem 0.55rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 999px;
+    white-space: nowrap;
     background-color: #881337;
-    color: #ffe4e6;
+    color: #fecdd3;
 }
 
-/* Dark Theme Adjustments */
-[data-theme="dark"],
-.dark {
-    --text-color: #f8fafc;
-    --text-muted: #94a3b8;
-    --card-bg: #111b33;
-    --card-border: #1e293b;
-    --track-bg: #1e293b;
+/* Responsive */
+@media (max-width: 1200px) {
+    .hbo-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .hbo-widget-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-[data-theme="dark"] .hbo-title,
-.dark .hbo-title {
-    color: #ffffff;
-}
-
-[data-theme="dark"] .hbo-day-pill--active,
-.dark .hbo-day-pill--active {
-    background-color: #ffffff;
-    color: #0b1329;
-}
-
-[data-theme="dark"] .hbo-kpi-card--info,
-.dark .hbo-kpi-card--info {
-    background: rgba(14, 165, 233, 0.08);
-    border-color: rgba(14, 165, 233, 0.25);
-}
-[data-theme="dark"] .hbo-kpi-card--info .hbo-kpi-card__label,
-[data-theme="dark"] .hbo-kpi-card--info .hbo-kpi-card__icon,
-.dark .hbo-kpi-card--info .hbo-kpi-card__label,
-.dark .hbo-kpi-card--info .hbo-kpi-card__icon {
-    color: #38bdf8;
-}
-
-[data-theme="dark"] .hbo-kpi-card--success,
-.dark .hbo-kpi-card--success {
-    background: rgba(16, 185, 129, 0.08);
-    border-color: rgba(16, 185, 129, 0.25);
-}
-[data-theme="dark"] .hbo-kpi-card--success .hbo-kpi-card__label,
-[data-theme="dark"] .hbo-kpi-card--success .hbo-kpi-card__icon,
-.dark .hbo-kpi-card--success .hbo-kpi-card__label,
-.dark .hbo-kpi-card--success .hbo-kpi-card__icon {
-    color: #34d399;
-}
-
-[data-theme="dark"] .hbo-kpi-card--warning,
-.dark .hbo-kpi-card--warning {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.25);
-}
-[data-theme="dark"] .hbo-kpi-card--warning .hbo-kpi-card__label,
-[data-theme="dark"] .hbo-kpi-card--warning .hbo-kpi-card__icon,
-.dark .hbo-kpi-card--warning .hbo-kpi-card__label,
-.dark .hbo-kpi-card--warning .hbo-kpi-card__icon {
-    color: #fbbf24;
-}
-
-[data-theme="dark"] .hbo-kpi-card--danger,
-.dark .hbo-kpi-card--danger {
-    background: rgba(244, 63, 94, 0.08);
-    border-color: rgba(244, 63, 94, 0.25);
-}
-[data-theme="dark"] .hbo-kpi-card--danger .hbo-kpi-card__label,
-[data-theme="dark"] .hbo-kpi-card--danger .hbo-kpi-card__icon,
-.dark .hbo-kpi-card--danger .hbo-kpi-card__label,
-.dark .hbo-kpi-card--danger .hbo-kpi-card__icon {
-    color: #fb7185;
-}
-
-[data-theme="dark"] .hbo-kpi-card__value,
-.dark .hbo-kpi-card__value {
-    color: #ffffff;
+@media (max-width: 640px) {
+    .hbo-container {
+        padding: 1rem;
+    }
+    .hbo-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    .hbo-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    .hbo-calendar-strip {
+        overflow-x: auto;
+    }
 }
