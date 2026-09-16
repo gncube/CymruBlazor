@@ -13,7 +13,8 @@
  *   CyGrid    -> cy-grid, cy-grid--cols-{n|auto}, cy-gap-{size},
  *                cy-grid--dense, cy-grid--auto-rows
  *   CySidebar -> cy-sidebar, cy-sidebar--left|right, cy-sidebar--sm|md|lg,
- *                cy-sidebar--compact|icon-only|collapsed, cy-sidebar__brand
+ *                cy-sidebar--compact|icon-only|collapsed, cy-sidebar__header,
+ *                cy-sidebar__brand, cy-sidebar__toggle
  *                (conventions: cy-sidebar__item, cy-sidebar__label,
  *                cy-sidebar__heading - see the Sidebar section below)
  *   CyCenter  -> cy-center, cy-center--horizontal|vertical,
@@ -284,13 +285,73 @@
 
 /*
  * CySidebar.Brand - optional lockup (e.g. <CyBrandLogo />) at the top
- * of the sidebar. Only ever rendered while expanded (see
- * CySidebar.razor.cs) - no CSS-based hiding is needed for the
- * collapsed states, this rule just styles it while visible.
+ * of the sidebar, paired with the expand/collapse chevron toggle in a
+ * shared header row. Brand always renders, in every collapse state
+ * (see CySidebar.razor.cs) - CySidebar has no way to know what's
+ * inside it, so it's up to the consumer's fragment to swap in
+ * something narrow (e.g. <CyBrandLogo SymbolOnly="@Collapsed" />) once
+ * collapsed. The rules below just handle the *layout* switch, from a
+ * side-by-side row while expanded to a stacked column once the rail
+ * narrows to Compact or IconOnly width.
  */
-.cy-sidebar__brand {
-  padding: var(--cymru-space-4);
+.cy-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-2);
+
+  padding: var(--cymru-space-2) var(--cymru-space-4);
   border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.cy-sidebar__brand {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cy-sidebar__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  width: 2rem;
+  height: 2rem;
+
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  background: transparent;
+  color: var(--cymru-color-text-muted);
+  cursor: pointer;
+}
+
+.cy-sidebar__toggle:hover {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.cy-sidebar__toggle:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+/*
+ * Once collapsed to either rail, there's no longer room for the brand
+ * and the toggle side by side - stack them instead (brand's own
+ * content is expected to have shrunk to an icon-sized mark by now) and
+ * centre both, matching how the collapsed nav items centre themselves.
+ */
+.cy-sidebar--compact .cy-sidebar__header,
+.cy-sidebar--icon-only .cy-sidebar__header {
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: var(--cymru-space-2);
+}
+
+.cy-sidebar--compact .cy-sidebar__brand,
+.cy-sidebar--icon-only .cy-sidebar__brand {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
 }
 
 /*

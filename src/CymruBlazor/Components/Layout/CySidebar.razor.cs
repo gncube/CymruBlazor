@@ -33,13 +33,15 @@ public partial class CySidebar : CyLayoutComponentBase
 
     /// <summary>
     /// Optional brand lockup (e.g. <c>&lt;CyBrandLogo /&gt;</c>) rendered
-    /// at the top of the sidebar, above <c>ChildContent</c>/the
-    /// rest of the sidebar's markup. Only rendered while the sidebar is
-    /// fully expanded (<see cref="EffectiveCollapsed"/> is
-    /// <see langword="false"/>) - once collapsed, in any
-    /// <see cref="SidebarCollapseMode"/>, there is no longer room for it
-    /// and it is omitted entirely (not just visually hidden), matching
-    /// the reference NHS Wales sidebar design.
+    /// at the top of the sidebar, above <c>ChildContent</c>/the rest of
+    /// the sidebar's markup, alongside the collapse/expand chevron
+    /// toggle. Always rendered, in every <see cref="SidebarCollapseMode"/>
+    /// - CySidebar doesn't swap or hide it based on
+    /// <see cref="EffectiveCollapsed"/>, since it has no way to know
+    /// what's inside. Consumers who want a full lockup while expanded
+    /// and a small icon mark while collapsed (the common pattern) branch
+    /// on their own <c>Collapsed</c> value inside this fragment, e.g.
+    /// <c>&lt;CyBrandLogo SymbolOnly="@Collapsed" /&gt;</c>.
     /// </summary>
     [Parameter]
     public RenderFragment? Brand { get; set; }
@@ -53,6 +55,28 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     private bool EffectiveCollapsed =>
         CollapseMode != SidebarCollapseMode.Disabled && Collapsed;
+
+    /// <summary>
+    /// Whether the top header row (brand lockup and/or the
+    /// expand/collapse chevron toggle) renders at all.
+    /// </summary>
+    private bool ShowHeader =>
+        Brand is not null || CollapseMode != SidebarCollapseMode.Disabled;
+
+    /// <summary>
+    /// The chevron icon used by the collapse/expand toggle button. Points
+    /// "into" the sidebar (towards the edge it collapses against) while
+    /// expanded, and "out" (towards the content it will reveal) while
+    /// collapsed - mirrored for a <see cref="SidebarPosition.Right"/>
+    /// sidebar.
+    /// </summary>
+    private string ToggleIconName => (Position, EffectiveCollapsed) switch
+    {
+        (SidebarPosition.Right, false) => "chevron-right",
+        (SidebarPosition.Right, true) => "chevron-left",
+        (_, false) => "chevron-left",
+        (_, true) => "chevron-right"
+    };
 
     private string CollapseModeAttribute => CollapseMode switch
     {

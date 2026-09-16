@@ -1,30 +1,42 @@
 namespace CymruBlazor.Enums;
 
 /// <summary>
-/// Specifies which parts of the <c>CyBrandLogo</c> lockup are rendered.
+/// Specifies the display variant or theme mode for brand logos.
 /// </summary>
 public enum BrandLogoVariant
 {
     /// <summary>
-    /// Icon mark followed by the wordmark, side by side. The default -
-    /// suitable for a top navigation bar with enough horizontal space.
+    /// Automatically determines the asset or styling based on ambient theme settings.
     /// </summary>
-    Full = 0,
+    Auto = 0,
 
     /// <summary>
-    /// Icon mark only, no text. Suitable for a collapsed/rail sidebar or
-    /// a small-viewport header where horizontal space is constrained.
+    /// Forces light theme logo styling or assets.
     /// </summary>
-    Mark = 1,
+    Light = 1,
 
     /// <summary>
-    /// Wordmark text only, no icon mark.
+    /// Forces dark theme logo styling or assets.
     /// </summary>
-    Wordmark = 2,
+    Dark = 2,
 
     /// <summary>
-    /// Icon mark above the wordmark. Suitable for a vertical sidebar
-    /// header or a centred splash/login screen.
+    /// Full logo lockup including mark and wordmark.
     /// </summary>
-    Stacked = 3
+    Full = 3,
+
+    /// <summary>
+    /// Standalone mark / icon symbol only.
+    /// </summary>
+    Mark = 4,
+
+    /// <summary>
+    /// Text wordmark only.
+    /// </summary>
+    Wordmark = 5,
+
+    /// <summary>
+    /// Stacked lockup layout.
+    /// </summary>
+    Stacked = 6
 }

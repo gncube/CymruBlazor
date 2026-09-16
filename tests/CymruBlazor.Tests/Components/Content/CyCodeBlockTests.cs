@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 using Moq;
 using Mediator;
 using CymruBlazor.Components.Content;
+using CymruBlazor.Components.Feedback;
 using CymruBlazor.Enums;
 using CymruBlazor.Accessibility.Notifications;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,6 +90,15 @@ public sealed class CyCodeBlockTests : TestContextBase
                 a.Politeness == LiveRegionPoliteness.Polite),
             It.IsAny<CancellationToken>()),
             Times.Once));
+
+        // ... and a toast alongside it, for sighted users who aren't
+        // watching the button (or have already looked away).
+        cut.WaitForAssertion(() => _mediatorMock.Verify(m => m.Publish(
+            It.Is<ShowToastNotification>(n =>
+                n.Message == "Code copied to clipboard." &&
+                n.Variant == ToastVariant.Success),
+            It.IsAny<CancellationToken>()),
+            Times.Once));
     }
 
     [Fact]
@@ -111,5 +121,39 @@ public sealed class CyCodeBlockTests : TestContextBase
                 a.Politeness == LiveRegionPoliteness.Assertive),
             It.IsAny<CancellationToken>()),
             Times.Once);
+
+        _mediatorMock.Verify(m => m.Publish(
+            It.Is<ShowToastNotification>(n =>
+                n.Message == "Copying to clipboard failed." &&
+                n.Variant == ToastVariant.Danger),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_Not_Publish_Toast_When_ShowCopyToast_Is_False()
+    {
+        // Arrange
+        JSInterop.SetupVoid("navigator.clipboard.writeText", "var x = 1;")
+            .SetVoidResult();
+
+        var cut = Render<CyCodeBlock>(parameters => parameters
+            .Add(p => p.Code, "var x = 1;")
+            .Add(p => p.ShowCopyToast, false));
+
+        // Act
+        await cut.Find(".cy-code-block__copy").ClickAsync(new());
+
+        // Assert - the live-region announcement (accessibility) still
+        // fires; only the visual toast is suppressed.
+        cut.WaitForAssertion(() => _mediatorMock.Verify(m => m.Publish(
+            It.IsAny<LiveRegionAnnouncement>(),
+            It.IsAny<CancellationToken>()),
+            Times.Once));
+
+        _mediatorMock.Verify(m => m.Publish(
+            It.IsAny<ShowToastNotification>(),
+            It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

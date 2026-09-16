@@ -23,6 +23,15 @@ public partial class AppSidebar : ComponentBase
     public EventCallback<bool> CollapsedChanged { get; set; }
 
     [Parameter]
+    public bool MobileOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> MobileOpenChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigate { get; set; }
+
+    [Parameter]
     public string ActiveHref { get; set; } = "/";
 
     public async Task ToggleAsync()
@@ -30,6 +39,41 @@ public partial class AppSidebar : ComponentBase
         if (_sidebar is not null)
         {
             await _sidebar.ToggleAsync();
+        }
+    }
+
+    public async Task ToggleMobileAsync()
+    {
+        MobileOpen = !MobileOpen;
+        await MobileOpenChanged.InvokeAsync(MobileOpen);
+        StateHasChanged();
+    }
+
+    public async Task CloseMobileAsync()
+    {
+        if (MobileOpen)
+        {
+            MobileOpen = false;
+            await MobileOpenChanged.InvokeAsync(false);
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleCloseMobileAsync()
+    {
+        await CloseMobileAsync();
+    }
+
+    private async Task HandleNavClickAsync()
+    {
+        if (OnNavigate.HasDelegate)
+        {
+            await OnNavigate.InvokeAsync();
+        }
+
+        if (MobileOpen)
+        {
+            await CloseMobileAsync();
         }
     }
 

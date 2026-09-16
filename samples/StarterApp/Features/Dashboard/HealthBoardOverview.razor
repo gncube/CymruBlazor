@@ -2,19 +2,21 @@
 
 <PageTitle>Health Board Overview</PageTitle>
 
-<CyContainer Size="ContainerSize.Fluid" Class="hbo-container">
+<CyContainer Size="ContainerSize.Fluid">
+    <div class="hbo-container">
 
-    <CyBreadcrumb Class="hbo-breadcrumb">
-        <CyBreadcrumbItem Text="Home" Href="/" />
-        <CyBreadcrumbItem Text="Health Board Overview" />
-    </CyBreadcrumb>
+        <CyBreadcrumb Class="hbo-breadcrumb">
+            <CyBreadcrumbItem Text="Home" Href="/" />
+            <CyBreadcrumbItem Text="Health Board Overview" />
+        </CyBreadcrumb>
 
-    <div class="hbo-header-row">
-        <h1 class="hbo-title">Health Board Overview</h1>
-        <CyButton Variant="ComponentColour.Secondary" Class="hbo-btn-customize">
-            Customize Dashboard <CyIcon Name="chevron-down" Size="14" Class="hbo-icon-end" />
-        </CyButton>
-    </div>
+        <div class="hbo-header-row">
+            <h1 class="hbo-title">Health Board Overview</h1>
+            <button type="button" class="hbo-btn-customize">
+                <span>Customize Dashboard</span>
+                <CyIcon Name="chevron-down" Size="14" Class="hbo-icon-end" />
+            </button>
+        </div>
 
     <!-- 4-Column KPI Grid -->
     <div class="hbo-kpi-grid">
@@ -23,7 +25,7 @@
             <div class="hbo-kpi-card hbo-kpi-card--@Slug(kpi.Colour)">
                 <div class="hbo-kpi-card__header">
                     <span class="hbo-kpi-card__label">@kpi.Label</span>
-                    <CyIcon Name="@kpi.Icon" Size="20" Class="hbo-kpi-card__icon" />
+                    <CyIcon Name="@kpi.Icon" Size="18" Class="hbo-kpi-card__icon" />
                 </div>
                 <div class="hbo-kpi-card__value">@kpi.Value</div>
                 <div class="hbo-kpi-card__delta hbo-kpi-card__delta--@(kpi.DeltaUp ? "up" : "down")">
@@ -41,10 +43,10 @@
         <!-- Column 1: My Appointments -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">My Appointments</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">
+                    My Appointments
+                    <CyIcon Name="info" Size="14" Class="hbo-info-icon" />
+                </h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
 
@@ -84,7 +86,7 @@
                                 </div>
                                 <div class="hbo-appointment-item__badges">
                                     <span class="hbo-mode-tag">@appt.Mode</span>
-                                    <CyBadge Variant="@appt.StatusColour" Class="hbo-status-badge">@appt.StatusLabel</CyBadge>
+                                    <span class="hbo-status-badge hbo-status-badge--@Slug(appt.StatusColour)">@appt.StatusLabel</span>
                                 </div>
                             </div>
                         }
@@ -96,13 +98,13 @@
         <!-- Column 2: Inpatient Occupancy -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">Inpatient Occupancy</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">
+                    Inpatient Occupancy
+                    <CyIcon Name="info" Size="14" Class="hbo-info-icon" />
+                </h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
-            <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
+            <p class="hbo-card__subtitle">Cardiff and Vale UHB - Updated Daily</p>
 
             <div class="hbo-card__content">
                 <div class="hbo-occupancy-list">
@@ -120,25 +122,31 @@
                         </div>
                     }
                 </div>
+
+                <div class="hbo-occupancy-legend">
+                    <span class="hbo-legend-box"></span>
+                    <span class="hbo-legend-text">Legend</span>
+                </div>
             </div>
         </div>
 
         <!-- Column 3: Waiting List -->
         <div class="hbo-card">
             <div class="hbo-card__header">
-                <div class="hbo-card__title-group">
-                    <h2 class="hbo-card__title">Waiting List</h2>
-                    <CyIcon Name="info" Size="15" Class="hbo-info-icon" />
-                </div>
+                <h2 class="hbo-card__title">
+                    Waiting List
+                    <CyIcon Name="info" Size="14" Class="hbo-info-icon" />
+                </h2>
                 <a href="#" class="hbo-card__action">View all <CyIcon Name="chevron-right" Size="13" /></a>
             </div>
-            <p class="hbo-card__subtitle">Cardiff and Vale UHB &middot; Updated Daily</p>
+            <p class="hbo-card__subtitle">Cardiff and Vale UHB - Updated Daily</p>
 
             <div class="hbo-card__content">
                 <div class="hbo-waiting-list">
                     @foreach (var row in _waitingList)
                     {
-                        <div class="hbo-waiting-item hbo-waiting-item--@Slug(row.Colour)">
+                        <div class="hbo-waiting-item">
+                            <div class="hbo-waiting-item__accent hbo-waiting-item__accent--@Slug(row.Colour)"></div>
                             <div class="hbo-waiting-item__details">
                                 <div class="hbo-waiting-item__title">@row.Specialty</div>
                                 <div class="hbo-waiting-item__meta">
@@ -154,6 +162,30 @@
 
     </div>
 
+    <!-- Quick Actions Section -->
+    <div class="hbo-quick-actions-section">
+        <h2 class="hbo-quick-actions-title">Quick Actions</h2>
+        <div class="hbo-quick-actions-grid">
+            <button type="button" class="hbo-quick-action-card">
+                <CyIcon Name="patient" Size="18" Class="hbo-quick-action-card__icon" />
+                <span class="hbo-quick-action-card__label">Add new patient</span>
+            </button>
+            <button type="button" class="hbo-quick-action-card">
+                <CyIcon Name="file-text" Size="18" Class="hbo-quick-action-card__icon" />
+                <span class="hbo-quick-action-card__label">Create clinical note</span>
+            </button>
+            <button type="button" class="hbo-quick-action-card">
+                <CyIcon Name="hospital" Size="18" Class="hbo-quick-action-card__icon" />
+                <span class="hbo-quick-action-card__label">Add new attendance</span>
+            </button>
+            <button type="button" class="hbo-quick-action-card">
+                <CyIcon Name="flask" Size="18" Class="hbo-quick-action-card__icon" />
+                <span class="hbo-quick-action-card__label">View Test Results</span>
+            </button>
+        </div>
+    </div>
+
+    </div>
 </CyContainer>
 
 @code {
@@ -172,7 +204,7 @@
     private readonly IReadOnlyList<KpiMetric> _kpis =
     [
         new("Appointments", "24", "+10%", true, "appointment", ComponentColour.Info),
-        new("Referrals", "8", "-5%", false, "sort", ComponentColour.Success),
+        new("Referrals", "8", "-5%", false, "arrow-down-up", ComponentColour.Success),
         new("My Watchlist", "42", "-3%", false, "clipboard-list", ComponentColour.Warning),
         new("Pending DALs", "24", "+9%", true, "bed", ComponentColour.Danger)
     ];
@@ -189,19 +221,22 @@
 
     private readonly IReadOnlyList<WaitingListRow> _waitingList =
     [
-        new("Trauma & Orthopaedics", 272, 41, "36 wk breach", ComponentColour.Danger),
-        new("Ophthalmology", 272, 41, "36 wk breach", ComponentColour.Danger),
+        new("Trauma & Orthopaedics", 272, 41, "Status", ComponentColour.Danger),
+        new("Ophthalmology", 272, 41, "Status", ComponentColour.Danger),
         new("ENT", 272, 41, "36 wk breach", ComponentColour.Warning),
-        new("General Surgery", 272, 41, "36 wk breach", ComponentColour.Warning)
+        new("General Surgery", 272, 41, "36 wk breach", ComponentColour.Warning),
+        new("Dermatology", 272, 41, "Within target", ComponentColour.Info)
     ];
 
     private readonly IReadOnlyList<AppointmentDay> _appointmentDays =
     [
-        new("mon-11", "MON", "11",
+        new("mon-11", "Mon", "11",
         [
             new("ggh - Colposcopy Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info),
             new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success),
-            new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info)
+            new("Paediatric Clinic", "Hospital location here", "Physical", "Status", ComponentColour.Info, ComponentColour.Info),
+            new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success),
+            new("ggh - Colposcopy Clinic", "Telephone Call", "Virtual", "Follow Up", ComponentColour.Success, ComponentColour.Success)
         ]),
         new("tue-12", "Tue", "12",
         [

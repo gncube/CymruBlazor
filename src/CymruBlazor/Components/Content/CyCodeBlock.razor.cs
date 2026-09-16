@@ -4,6 +4,7 @@ using Mediator;
 using CymruBlazor.Accessibility.Notifications;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Components.Feedback;
 
 namespace CymruBlazor.Components.Content;
 
@@ -16,13 +17,18 @@ namespace CymruBlazor.Components.Content;
 /// "minimise JavaScript" principle (see PROMPT.md), this is a single
 /// interop call to a built-in browser API, not a custom JS module.
 ///
-/// The "Copied"/"Copy failed" confirmation is both a visual button-label
-/// swap (for sighted mouse users watching the button they just clicked)
-/// and a screen-reader announcement published through the Mediator
-/// pipeline to any <see cref="CymruBlazor.Components.Accessibility.CyLiveRegion"/>
-/// registered in the app - a screen reader user who has already moved
-/// focus away from the button would otherwise never learn the copy
-/// succeeded.
+/// The "Copied"/"Copy failed" confirmation is a visual button-label swap
+/// (for sighted mouse users watching the button they just clicked), a
+/// screen-reader announcement published through the Mediator pipeline to
+/// any <see cref="CymruBlazor.Components.Accessibility.CyLiveRegion"/>
+/// registered in the app, and a toast published the same way to whatever
+/// <see cref="CyToastContainer"/> the host app has mounted - a screen
+/// reader user (or a sighted user who has looked away) would otherwise
+/// never learn the copy succeeded or failed. Publishing
+/// <see cref="ShowToastNotification"/> through <see cref="IMediator"/>
+/// rather than injecting <see cref="IToastService"/> directly keeps
+/// CyCodeBlock decoupled from the concrete toast implementation, exactly
+/// like the existing <see cref="LiveRegionAnnouncement"/> call below.
 /// </summary>
 public partial class CyCodeBlock : CyComponentBase
 {
@@ -67,6 +73,16 @@ public partial class CyCodeBlock : CyComponentBase
     [Parameter]
     public LiveRegionPoliteness AnnouncementPoliteness { get; set; } = LiveRegionPoliteness.Polite;
 
+    /// <summary>
+    /// When <see langword="false"/>, suppresses the toast notification
+    /// published on copy (success or failure) - the screen-reader live
+    /// region announcement and the visual button-label swap still
+    /// happen regardless. Useful when a page already renders several
+    /// code blocks and a toast per click would be noisy.
+    /// </summary>
+    [Parameter]
+    public bool ShowCopyToast { get; set; } = true;
+
     protected override string BaseCssClass => "cy-code-block";
 
     private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? "Code" : Language;
@@ -85,6 +101,13 @@ public partial class CyCodeBlock : CyComponentBase
             await Mediator.Publish(new LiveRegionAnnouncement(
                 "Code copied to clipboard.",
                 AnnouncementPoliteness));
+
+            if (ShowCopyToast)
+            {
+                await Mediator.Publish(new ShowToastNotification(
+                    "Code copied to clipboard.",
+                    ToastVariant.Success));
+            }
         }
         catch (JSException)
         {
@@ -97,6 +120,13 @@ public partial class CyCodeBlock : CyComponentBase
             await Mediator.Publish(new LiveRegionAnnouncement(
                 "Copying to clipboard failed.",
                 LiveRegionPoliteness.Assertive));
+
+            if (ShowCopyToast)
+            {
+                await Mediator.Publish(new ShowToastNotification(
+                    "Copying to clipboard failed.",
+                    ToastVariant.Danger));
+            }
         }
 
         StateHasChanged();

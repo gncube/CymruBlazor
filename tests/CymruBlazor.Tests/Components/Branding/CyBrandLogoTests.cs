@@ -1,84 +1,97 @@
-using Xunit;
-using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Branding;
 using CymruBlazor.Enums;
+using Shouldly;
+using Xunit;
 
 namespace CymruBlazor.Tests.Components.Branding;
 
+/// <summary>
+/// CyBrandLogo's theme handling is CSS-only (see branding.css,
+/// "[data-theme]" selectors) rather than driven by <c>IThemeService</c>:
+/// both the light and dark assets render into the DOM together, tagged
+/// "cy-brand-logo__asset--light"/"--dark", and it's the ambient
+/// "data-theme" attribute set by the theme provider that decides which
+/// one is actually visible. This keeps the logo correct even before
+/// Blazor/JS interop has finished initialising. These tests assert
+/// against that real contract.
+/// </summary>
 public sealed class CyBrandLogoTests : TestContextBase
 {
     [Fact]
-    public void Should_Render_Mark_And_Wordmark_By_Default()
+    public void WhenNoLogoPathIsSuppliedRendersDefaultLightAndDarkAssetPair()
     {
-        // Act
-        var cut = Render<CyBrandLogo>();
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Variant, BrandLogoVariant.Auto)
+            .Add(p => p.SymbolOnly, false));
 
-        // Assert
-        cut.FindAll("svg.cy-brand-logo__mark").Count.ShouldBe(1);
-        cut.Find("span.cy-brand-logo__wordmark").TextContent.ShouldBe("CymruBlazor");
+        var lightImg = cut.Find("img.cy-brand-logo__asset--light");
+        lightImg.GetAttribute("src").ShouldBe("images/logo-dhcw-light.svg");
+        lightImg.GetAttribute("class")!.ShouldContain("h-15");
+
+        var darkImg = cut.Find("img.cy-brand-logo__asset--dark");
+        darkImg.GetAttribute("src").ShouldBe("images/logo-dhcw-dark.svg");
+        darkImg.GetAttribute("class")!.ShouldContain("h-15");
     }
 
     [Fact]
-    public void Should_Render_As_Span_When_Href_Is_Not_Set()
+    public void WhenSymbolOnlyIsTrueResolvesIconAssetPair()
     {
-        // Act
-        var cut = Render<CyBrandLogo>();
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Variant, BrandLogoVariant.Auto)
+            .Add(p => p.SymbolOnly, true));
 
-        // Assert
-        cut.Find("*").TagName.ShouldBe("SPAN");
+        var lightImg = cut.Find("img.cy-brand-logo__asset--light");
+        lightImg.GetAttribute("src").ShouldBe("images/icon-dhcw-light.svg");
+        lightImg.GetAttribute("class")!.ShouldContain("h-8");
+
+        var darkImg = cut.Find("img.cy-brand-logo__asset--dark");
+        darkImg.GetAttribute("src").ShouldBe("images/icon-dhcw-dark.svg");
+        darkImg.GetAttribute("class")!.ShouldContain("h-8");
     }
 
     [Fact]
-    public void Should_Render_As_Link_When_Href_Is_Set()
+    public void WhenLogoPathIsSuppliedWithoutDarkLogoPathOnlyOneAssetRenders()
     {
-        // Act
         var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Href, "/"));
+            .Add(p => p.LogoPath, "/images/logo-light.svg"));
 
-        // Assert
-        var anchor = cut.Find("a");
-        anchor.GetAttribute("href").ShouldBe("/");
-    }
+        var img = cut.Find("img.cy-brand-logo__asset--light");
+        img.GetAttribute("src").ShouldBe("/images/logo-light.svg");
 
-    [Theory]
-    [InlineData(BrandLogoVariant.Mark, true, false)]
-    [InlineData(BrandLogoVariant.Wordmark, false, true)]
-    [InlineData(BrandLogoVariant.Full, true, true)]
-    public void Should_Render_Only_The_Requested_Variant_Parts(
-        BrandLogoVariant variant,
-        bool expectMark,
-        bool expectWordmark)
-    {
-        // Act
-        var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Variant, variant));
-
-        // Assert
-        cut.FindAll("svg.cy-brand-logo__mark").Count.ShouldBe(expectMark ? 1 : 0);
-        cut.FindAll("span.cy-brand-logo__wordmark").Count.ShouldBe(expectWordmark ? 1 : 0);
+        // No DarkLogoPath supplied and Variant isn't a themed one, so
+        // EffectiveDarkLogoPath is null - no dark asset is rendered at
+        // all, meaning the light asset stays visible under [data-theme]
+        // dark automatically (see branding.css comments), without a
+        // second image ever having existed in the DOM to hide.
+        cut.FindAll("img.cy-brand-logo__asset--dark").Count.ShouldBe(0);
     }
 
     [Fact]
-    public void Should_Expose_Accessible_Label_For_Mark_Only_Variant()
+    public void WhenLogoPathAndDarkLogoPathAreBothSuppliedBothAssetsRender()
     {
-        // Act
         var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Variant, BrandLogoVariant.Mark)
-            .Add(p => p.Text, "DHCW"));
+            .Add(p => p.LogoPath, "/images/logo-light.svg")
+            .Add(p => p.DarkLogoPath, "/images/logo-dark.svg"));
 
-        // Assert
-        cut.Find("*").GetAttribute("aria-label").ShouldBe("DHCW");
+        cut.Find("img.cy-brand-logo__asset--light").GetAttribute("src")
+            .ShouldBe("/images/logo-light.svg");
+
+        cut.Find("img.cy-brand-logo__asset--dark").GetAttribute("src")
+            .ShouldBe("/images/logo-dark.svg");
     }
 
     [Fact]
-    public void Should_Apply_Size_Modifier_Class()
+    public void WhenNoLogoPathAndVariantIsFullRendersBuiltInLockupInstead()
     {
-        // Act
         var cut = Render<CyBrandLogo>(parameters => parameters
-            .Add(p => p.Size, ComponentSize.Large));
+            .Add(p => p.Variant, BrandLogoVariant.Full)
+            .Add(p => p.Text, "CymruBlazor"));
 
-        // Assert
-        cut.Find("*").ClassList.ShouldContain("cy-brand-logo--large");
+        // Full/Mark/Wordmark/Stacked are the built-in SVG lockup
+        // variants, not image-asset theme modes - with no LogoPath
+        // supplied, no <img> renders at all.
+        cut.FindAll("img").Count.ShouldBe(0);
+        cut.Find(".cy-brand-logo__wordmark").TextContent.ShouldBe("CymruBlazor");
     }
 }

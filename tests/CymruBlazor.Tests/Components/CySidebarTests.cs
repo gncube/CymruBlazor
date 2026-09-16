@@ -154,15 +154,100 @@ public sealed class CySidebarTests : TestContextBase
     [InlineData(SidebarCollapseMode.Compact)]
     [InlineData(SidebarCollapseMode.IconOnly)]
     [InlineData(SidebarCollapseMode.Hidden)]
-    public void Should_Not_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
+    public void Should_Still_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
     {
-        // Act
+        // Act - CySidebar has no way to know what's inside Brand, so it
+        // always renders it; it's up to the consumer's own fragment to
+        // swap in something narrower (e.g. an icon-only logo mark) once
+        // collapsed - see CySidebar.Brand's XML doc.
         var cut = Render<CySidebar>(parameters => parameters
             .Add(p => p.CollapseMode, mode)
             .Add(p => p.Collapsed, true)
             .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
 
         // Assert
+        cut.Find(".cy-sidebar__brand").TextContent.ShouldBe("Logo");
+    }
+
+    [Fact]
+    public void Should_Render_Toggle_Button_Alongside_Brand_When_Expanded()
+    {
+        // Act
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.Collapsed, false)
+            .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
+
+        // Assert
+        cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(1);
+        cut.Find(".cy-sidebar__header").TextContent.ShouldContain("Logo");
+    }
+
+    [Theory]
+    [InlineData(SidebarCollapseMode.Compact)]
+    [InlineData(SidebarCollapseMode.IconOnly)]
+    [InlineData(SidebarCollapseMode.Hidden)]
+    public void Should_Still_Render_Toggle_Button_When_Collapsed(SidebarCollapseMode mode)
+    {
+        // Act - even with no Brand supplied at all, the toggle survives
+        // collapse so there's always a way back to expanded.
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.CollapseMode, mode)
+            .Add(p => p.Collapsed, true));
+
+        // Assert
+        cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(1);
         cut.FindAll(".cy-sidebar__brand").Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void Should_Not_Render_Toggle_Button_When_CollapseMode_Is_Disabled_And_No_Brand()
+    {
+        // Act
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.CollapseMode, SidebarCollapseMode.Disabled)
+            .Add(p => p.Collapsed, false));
+
+        // Assert - nothing to toggle and nothing to show, so no header
+        // row renders at all.
+        cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(0);
+        cut.FindAll(".cy-sidebar__header").Count.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(SidebarPosition.Left, false, "m15 18-6-6 6-6")]
+    [InlineData(SidebarPosition.Left, true, "m9 18 6-6-6-6")]
+    [InlineData(SidebarPosition.Right, false, "m9 18 6-6-6-6")]
+    [InlineData(SidebarPosition.Right, true, "m15 18-6-6 6-6")]
+    public void Toggle_Button_Icon_Points_Towards_The_Expand_Direction(
+        SidebarPosition position, bool collapsed, string expectedPathData)
+    {
+        // Act
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.Position, position)
+            .Add(p => p.Collapsed, collapsed));
+
+        // Assert - chevron-left is "m15 18-6-6 6-6", chevron-right is
+        // "m9 18 6-6-6-6" (see IconRegistry) - comparing the rendered
+        // path data is a stand-in for asserting the icon *name*, since
+        // CyIcon doesn't expose that as a DOM attribute.
+        cut.Find(".cy-sidebar__toggle svg path").GetAttribute("d")
+            .ShouldBe(expectedPathData);
+    }
+
+    [Fact]
+    public async Task Clicking_Toggle_Button_Should_Flip_Collapsed()
+    {
+        // Arrange
+        var collapsedValue = false;
+
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.Collapsed, false)
+            .Add(p => p.CollapsedChanged, value => collapsedValue = value));
+
+        // Act
+        await cut.Find(".cy-sidebar__toggle").ClickAsync(new());
+
+        // Assert
+        collapsedValue.ShouldBeTrue();
     }
 }

@@ -9,7 +9,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CymruBlazor.AccessibilityTests/CymruBlazor.AccessibilityTests.csproj" />
-    <Project Path="tests/CymruBlazor.ApprovalTests/CymruBlazor.ApprovalTests.csproj" />
     <Project Path="tests/CymruBlazor.Tests/CymruBlazor.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">

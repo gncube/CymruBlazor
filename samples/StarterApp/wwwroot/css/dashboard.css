@@ -7,9 +7,42 @@
  * theme changes driven by CyThemeProvider - no colour is hardcoded.
  */
 
+:root {
+  --hbo-shell-bg: #0b1329;
+  --hbo-card-bg: #131e36;
+  --hbo-card-border: #1e2c4d;
+  --hbo-kpi-bg: #026b86;
+  --hbo-track-bg: #1a253d;
+}
+
+[data-theme="dark"],
+.dark {
+  --cymru-color-background: #0b1329;
+  --cymru-color-surface: #0f1a30;
+  --cymru-color-border: #1e2c4a;
+  --hbo-shell-bg: #0b1329;
+  --hbo-card-bg: #131e36;
+  --hbo-card-border: #1e2c4d;
+  --hbo-kpi-bg: #026b86;
+  --hbo-track-bg: #1a253d;
+}
+
+[data-theme="light"] {
+  --cymru-color-background: #f8fafc;
+  --cymru-color-surface: #ffffff;
+  --cymru-color-border: #e2e8f0;
+  --hbo-shell-bg: #f8fafc;
+  --hbo-card-bg: #ffffff;
+  --hbo-card-border: #e2e8f0;
+  --hbo-kpi-bg: #0284c7;
+  --hbo-track-bg: #e2e8f0;
+}
+
 html,
 body {
-  background-color: var(--cymru-color-background);
+  background-color: var(--hbo-shell-bg, var(--cymru-color-background));
+  margin: 0;
+  padding: 0;
 }
 
 /* ==========================================================================
@@ -19,6 +52,7 @@ body {
 .app-shell {
   min-height: 100vh;
   align-items: stretch;
+  background-color: var(--hbo-shell-bg, var(--cymru-color-background));
 }
 
 .app-shell__content {
@@ -26,16 +60,18 @@ body {
   flex-direction: column;
   flex: 1 1 auto;
   min-width: 0;
+  background-color: var(--hbo-shell-bg, var(--cymru-color-background));
 }
 
 .app-shell__main {
   flex: 1 1 auto;
-  padding: var(--cymru-space-6);
-  background-color: var(--cymru-color-background);
+  padding: var(--cymru-space-4) var(--cymru-space-6);
+  background-color: var(--hbo-shell-bg, var(--cymru-color-background));
 }
 
 .app-shell__header {
   border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  background-color: var(--cymru-color-surface);
 }
 
 .app-shell__icon-button {
@@ -105,246 +141,101 @@ body {
   gap: var(--cymru-space-1);
 }
 
+.mobile-nav__link,
+.mobile-nav__button {
+  text-decoration: none !important;
+}
+
+.mobile-nav__link:hover,
+.mobile-nav__button:hover {
+  text-decoration: none !important;
+}
+
 /* ==========================================================================
-   Health Board Overview page
+   Mobile Sidebar Drawer (Global fallback guaranteeing visibility)
    ========================================================================== */
-
-.hbo-page {
-  padding-block: var(--cymru-space-6);
+.app-sidebar-drawer {
+  display: contents;
 }
 
-.hbo-page > .cy-breadcrumb {
-  margin-block-end: var(--cymru-space-4);
+@media (max-width: 47.99rem) {
+  .app-sidebar-drawer {
+    display: none !important;
+  }
+
+  .app-sidebar-drawer.app-sidebar-drawer--open {
+    display: block !important;
+    position: fixed !important;
+    inset-block: 0 !important;
+    inset-inline-start: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: min(18.5rem, 85vw) !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 1000 !important;
+    background-color: var(--cymru-color-surface, #ffffff) !important;
+    border-inline-end: 1px solid var(--cymru-color-border, #cbd5e1) !important;
+    border-block-end: none !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    animation: sidebar-slide-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .app-sidebar-drawer.app-sidebar-drawer--open .cy-sidebar {
+    width: 100% !important;
+    min-height: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+
+  .app-sidebar__brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .app-sidebar__mobile-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-left: auto;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cymru-color-text-muted, #64748b);
+    cursor: pointer;
+  }
+
+  .app-sidebar__mobile-close:hover {
+    background-color: var(--cymru-color-surface-alt, #f1f5f9);
+    color: var(--cymru-color-primary, #0284c7);
+  }
 }
 
-.hbo-page-header {
-  margin-block-end: var(--cymru-space-6);
+[data-theme="dark"] .app-sidebar-drawer.app-sidebar-drawer--open,
+.dark .app-sidebar-drawer.app-sidebar-drawer--open {
+  background-color: var(--cymru-color-surface, #0f1a30) !important;
+  border-inline-end-color: var(--cymru-color-border, #1e2c4d) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6) !important;
 }
 
-.hbo-page-header h1 {
-  margin: 0;
+[data-theme="dark"] .app-sidebar__mobile-close,
+.dark .app-sidebar__mobile-close {
+  color: #94a3b8;
 }
 
-/* KPI cards */
-
-.hbo-kpi-card {
-  padding: var(--cymru-space-5);
-  border: none;
+[data-theme="dark"] .app-sidebar__mobile-close:hover,
+.dark .app-sidebar__mobile-close:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #38bdf8;
 }
 
-.hbo-kpi-card__label {
-  font-weight: 600;
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
 
-.hbo-kpi-card__value {
-  margin: var(--cymru-space-3) 0 var(--cymru-space-1);
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.hbo-kpi-card__delta {
-  display: flex;
-  align-items: center;
-  gap: var(--cymru-space-1);
-  margin: 0;
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
-
-.hbo-kpi-card__delta-label {
-  color: var(--cymru-color-text-muted);
-  font-weight: 400;
-}
-
-.hbo-kpi-card--info {
-  background-color: var(--cymru-color-info-background);
-  color: var(--cymru-color-info);
-}
-
-.hbo-kpi-card--success {
-  background-color: var(--cymru-color-success-background);
-  color: var(--cymru-color-success);
-}
-
-.hbo-kpi-card--warning {
-  background-color: var(--cymru-color-warning-background);
-  color: var(--cymru-color-text);
-}
-
-.hbo-kpi-card--danger {
-  background-color: var(--cymru-color-danger-background);
-  color: var(--cymru-color-danger);
-}
-
-.hbo-kpi-card .hbo-kpi-card__value,
-.hbo-kpi-card .hbo-kpi-card__delta-label {
-  color: var(--cymru-color-text);
-}
-
-/* Widget cards (My Appointments / Inpatient Occupancy / Waiting List) */
-
-.hbo-widget-card h2 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-.hbo-widget-card__view-all {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--cymru-space-1);
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-  color: var(--cymru-color-link);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.hbo-widget-card__view-all:hover {
-  text-decoration: underline;
-}
-
-.hbo-widget-card__subtitle {
-  margin: var(--cymru-space-1) 0 0;
-  color: var(--cymru-color-text-muted);
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
-
-.hbo-empty {
-  color: var(--cymru-color-text-muted);
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
-
-/* Day tabs inside My Appointments */
-
-.hbo-day-tabs .cy-tabs__list {
-  overflow-x: auto;
-  margin-block-end: var(--cymru-space-4);
-}
-
-/* Appointment list */
-
-.hbo-appointment-item {
-  display: flex;
-  align-items: stretch;
-  gap: var(--cymru-space-3);
-  padding-block: var(--cymru-space-2);
-  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
-}
-
-.hbo-appointment-item:last-child {
-  border-block-end: none;
-}
-
-.hbo-appointment-item__bar {
-  flex: 0 0 auto;
-  width: 4px;
-  border-radius: var(--cymru-radius-pill);
-  background-color: var(--cymru-color-info);
-}
-
-.hbo-appointment-item__bar--success {
-  background-color: var(--cymru-color-success);
-}
-
-.hbo-appointment-item__bar--warning {
-  background-color: var(--cymru-color-warning);
-}
-
-.hbo-appointment-item__bar--danger {
-  background-color: var(--cymru-color-danger);
-}
-
-.hbo-appointment-item__body {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.hbo-appointment-item__title {
-  margin: 0;
-  font-weight: 600;
-}
-
-.hbo-appointment-item__note {
-  margin: 0;
-  color: var(--cymru-color-text-muted);
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
-
-.hbo-appointment-item__meta {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--cymru-space-1);
-}
-
-.hbo-appointment-item__mode {
-  color: var(--cymru-color-text-muted);
-  font-size: var(--cymru-font-size-xs, 0.75rem);
-}
-
-/* Occupancy bars */
-
-.hbo-occupancy-row__label {
-  display: flex;
-  justify-content: space-between;
-  margin-block-end: var(--cymru-space-1);
-  font-size: var(--cymru-font-size-sm, 0.875rem);
-}
-
-.hbo-occupancy-row__track {
-  height: 0.5rem;
-  border-radius: var(--cymru-radius-pill);
-  background-color: var(--cymru-color-surface-alt);
-  overflow: hidden;
-}
-
-.hbo-occupancy-row__fill {
-  height: 100%;
-  border-radius: var(--cymru-radius-pill);
-  background-color: var(--cymru-color-info);
-}
-
-.hbo-occupancy-row__fill--warning {
-  background-color: var(--cymru-color-warning);
-}
-
-.hbo-occupancy-row__fill--danger {
-  background-color: var(--cymru-color-danger);
-}
-
-.hbo-occupancy-row__fill--success {
-  background-color: var(--cymru-color-success);
-}
-
-/* Waiting list */
-
-.hbo-waiting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--cymru-space-3);
-  padding: var(--cymru-space-3);
-  border-inline-start: 4px solid var(--cymru-color-danger);
-  background-color: var(--cymru-color-surface-alt);
-  border-radius: var(--cymru-radius-sm);
-}
-
-.hbo-waiting-row--warning {
-  border-inline-start-color: var(--cymru-color-warning);
-}
-
-.hbo-waiting-row__body {
-  min-width: 0;
-}
-
-.hbo-waiting-row__title {
-  margin: 0;
-  font-weight: 600;
-}
-
-.hbo-waiting-row__meta {
-  margin: 0;
-  color: var(--cymru-color-text-muted);
-  font-size: var(--cymru-font-size-xs, 0.75rem);
-}

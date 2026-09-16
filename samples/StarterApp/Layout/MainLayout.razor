@@ -2,18 +2,28 @@
 @implements IDisposable
 @inject IThemeService Theme
 @inject NavigationManager Navigation
+@using StarterApp.Layout
+@using StarterApp.Layout.Models
 
-<CyThemeProvider>
+<CyThemeProvider InitialTheme="ThemeMode.Dark">
 
     <CySkipLink />
 
-    <CyStack Orientation="Orientation.Horizontal"
-             Gap="ComponentSize.Unspecified"
-             Class="cy-stack--collapse-tablet app-shell">
+    <div class="app-shell">
+
+        @if (_mobileSidebarOpen)
+        {
+            <div class="app-shell__backdrop"
+                 @onclick="CloseMobileSidebar"
+                 aria-hidden="true"></div>
+        }
 
         <AppSidebar @ref="_sidebar"
                     @bind-Collapsed="_sidebarCollapsed"
-                    ActiveHref="@_currentPath" />
+                    MobileOpen="@_mobileSidebarOpen"
+                    MobileOpenChanged="@(open => _mobileSidebarOpen = open)"
+                    ActiveHref="@_currentPath"
+                    OnNavigate="CloseMobileSidebar" />
 
         <div class="app-shell__content">
 
@@ -21,9 +31,9 @@
                 <Brand>
                     <button type="button"
                             class="app-shell__icon-button"
-                            aria-expanded="@(!_sidebarCollapsed)"
-                            aria-label="@(_sidebarCollapsed ? "Expand navigation" : "Collapse navigation")"
-                            title="@(_sidebarCollapsed ? "Expand navigation" : "Collapse navigation")"
+                            aria-expanded="@(_mobileSidebarOpen || !_sidebarCollapsed)"
+                            aria-label="@((_mobileSidebarOpen || !_sidebarCollapsed) ? "Collapse navigation" : "Expand navigation")"
+                            title="@((_mobileSidebarOpen || !_sidebarCollapsed) ? "Collapse navigation" : "Expand navigation")"
                             @onclick="ToggleSidebarAsync">
                         <CyIcon Name="menu" Size="20" />
                     </button>
@@ -44,7 +54,12 @@
                 @Body
             </main>
 
+            <MobileNavMenu ActiveHref="@_currentPath"
+                           Variant="MobileNavVariant.ActionCenter"
+                           OnMoreClick="ToggleSidebarAsync" />
+
             <CyFooter Background="ComponentColour.Primary"
+                      Class="app-shell__footer"
                       Copyright="@($"\u00a9 {DateTime.UtcNow.Year} GIG Cymru NHS Wales \u00b7 Digital Health and Care Wales")">
                 <a href="#">Accessibility</a>
                 <a href="#">Privacy</a>
@@ -53,13 +68,14 @@
 
         </div>
 
-    </CyStack>
+    </div>
 
 </CyThemeProvider>
 
 @code {
     private AppSidebar? _sidebar;
     private bool _sidebarCollapsed;
+    private bool _mobileSidebarOpen;
     private string _currentPath = "/";
 
     private bool IsDark => Theme.CurrentTheme.Mode == ThemeMode.Dark;
@@ -76,6 +92,7 @@
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         UpdateCurrentPath();
+        _mobileSidebarOpen = false;
         InvokeAsync(StateHasChanged);
     }
 
@@ -87,10 +104,18 @@
 
     private async Task ToggleSidebarAsync()
     {
+        _mobileSidebarOpen = !_mobileSidebarOpen;
+
         if (_sidebar is not null)
         {
             await _sidebar.ToggleAsync();
         }
+    }
+
+    private void CloseMobileSidebar()
+    {
+        _mobileSidebarOpen = false;
+        StateHasChanged();
     }
 
     private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();

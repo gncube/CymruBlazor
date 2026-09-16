@@ -1,0 +1,62 @@
+@namespace StarterApp.Layout
+@using Microsoft.AspNetCore.Components.Routing
+@using CymruBlazor.Components.Layout
+@using StarterApp.Layout.Models
+
+<nav class="mobile-nav" aria-label="Mobile Navigation">
+    <ul class="mobile-nav__list" role="menubar">
+        @foreach (var item in GetNavigationItems())
+        {
+            <li class="mobile-nav__item @(item.IsAction && item.ActionKey == "search" ? "mobile-nav__item--action" : string.Empty)"
+                role="none">
+                @if (item.IsAction && item.ActionKey == "search" && Variant == MobileNavVariant.ActionCenter)
+                {
+                    <button type="button"
+                            class="mobile-nav__action-button"
+                            aria-label="@item.Label"
+                            @onclick="HandleActionClickAsync">
+                        <span class="mobile-nav__icon-wrapper">
+                            <CyIcon Name="@item.IconName" />
+                            @if (item.BadgeCount is > 0)
+                            {
+                                <span class="mobile-nav__badge" aria-hidden="true">@(item.BadgeCount > 99 ? "99+" : item.BadgeCount.Value.ToString())</span>
+                            }
+                        </span>
+                        <span class="mobile-nav__label mobile-nav__label--sr-only">@item.Label</span>
+                    </button>
+                }
+                else if (item.IsAction && item.ActionKey == "more")
+                {
+                    <button type="button"
+                            class="mobile-nav__link mobile-nav__button"
+                            aria-label="@item.Label"
+                            @onclick="HandleMoreClickAsync">
+                        <span class="mobile-nav__icon-wrapper">
+                            <CyIcon Name="@item.IconName" />
+                            @if (item.BadgeCount is > 0)
+                            {
+                                <span class="mobile-nav__badge" aria-hidden="true">@(item.BadgeCount > 99 ? "99+" : item.BadgeCount.Value.ToString())</span>
+                            }
+                        </span>
+                        <span class="mobile-nav__label">@item.Label</span>
+                    </button>
+                }
+                else if (!string.IsNullOrEmpty(item.Href))
+                {
+                    <NavLink href="@item.Href"
+                             class="mobile-nav__link"
+                             Match="@(item.Href == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix)">
+                        <span class="mobile-nav__icon-wrapper">
+                            <CyIcon Name="@item.IconName" />
+                            @if (item.BadgeCount is > 0)
+                            {
+                                <span class="mobile-nav__badge" aria-hidden="true">@(item.BadgeCount > 99 ? "99+" : item.BadgeCount.Value.ToString())</span>
+                            }
+                        </span>
+                        <span class="mobile-nav__label">@item.Label</span>
+                    </NavLink>
+                }
+            </li>
+        }
+    </ul>
+</nav>
