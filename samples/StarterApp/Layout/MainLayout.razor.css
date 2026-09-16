@@ -1,10 +1,39 @@
 /* =========================================================================
-   MOBILE NAV <-> FOOTER SWAP
+   APP SHELL LAYOUT
+   ========================================================================= */
+.app-shell {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.app-shell__backdrop {
+    display: none;
+}
+
+/* =========================================================================
+   MOBILE NAV <-> FOOTER SWAP & MOBILE DRAWER
    Below the phone breakpoint, MobileNavMenu (a fixed bottom bar - see
    MobileNavMenu.razor.css) takes over from CyFooter, which would
    otherwise sit underneath it and mostly go unseen/unreachable.
    ========================================================================= */
 @media (max-width: 47.99rem) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .app-shell__backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        animation: backdrop-fade-in 0.2s ease-in-out;
+    }
+
     /* CyFooter is a child component, so its root element only carries
        the "app-shell__footer" class passed via Class="..." - not this
        file's scope attribute - hence ::deep is required to reach it. */
@@ -17,6 +46,15 @@
        space for the fixed mobile-nav bar so the last bit of scrollable
        page content isn't hidden behind it. */
     .app-shell__main {
-        padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+@keyframes backdrop-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
