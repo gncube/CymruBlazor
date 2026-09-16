@@ -42,6 +42,7 @@ jobs:
           dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj
           -c Release
           -o ./demo-publish
+          --no-restore
 
       - name: Rewrite base href for GitHub Pages project site
         # GitHub Pages serves this repo at /<repo-name>/, but the Demo app
