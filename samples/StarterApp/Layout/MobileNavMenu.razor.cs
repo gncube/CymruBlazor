@@ -45,19 +45,34 @@ public sealed partial class MobileNavMenu : ComponentBase, IDisposable
             MobileNavVariant.ActionCenter =>
             [
                 new("Home", "home", Href: "/"),
-                new("Patients", "user", Href: "/patients"),
+                new("Patients", ResolveIconName("patients"), Href: "/patients"),
                 new("Search", "search", IsAction: true, ActionKey: "search"),
-                new("Diary", "calendar", Href: "/diary", BadgeCount: DiaryBadgeCount),
-                new("More", "dots-horizontal", IsAction: true, ActionKey: "more")
+                new("Diary", ResolveIconName("diary"), Href: "/diary", BadgeCount: DiaryBadgeCount),
+                new("More", ResolveIconName("more"), IsAction: true, ActionKey: "more")
             ],
             _ =>
             [
                 new("Home", "home", Href: "/"),
-                new("Diary", "calendar", Href: "/diary", BadgeCount: DiaryBadgeCount),
-                new("Patients", "user", Href: "/patients"),
-                new("Messages", "message-square", Href: "/messages", BadgeCount: MessagesBadgeCount),
-                new("More", "dots-horizontal", IsAction: true, ActionKey: "more")
+                new("Diary", ResolveIconName("diary"), Href: "/diary", BadgeCount: DiaryBadgeCount),
+                new("Patients", ResolveIconName("patients"), Href: "/patients"),
+                new("Messages", ResolveIconName("messages"), Href: "/messages", BadgeCount: MessagesBadgeCount),
+                new("More", ResolveIconName("more"), IsAction: true, ActionKey: "more")
             ]
+        };
+
+    private static string ResolveIconName(string role) =>
+        role switch
+        {
+            // Maps navigation targets to names that actually exist in
+            // IconRegistry.AllNames - "users", "calendar-days",
+            // "more-horizontal" and "message-square" all threw
+            // ArgumentException at render time because CymruBlazor's
+            // registry uses these names instead.
+            "patients" => "patient",
+            "diary" => "appointment",
+            "more" => "more",
+            "messages" => "message",
+            _ => "info"
         };
 
     private Task HandleActionClickAsync() =>

@@ -1,0 +1,22 @@
+/* =========================================================================
+   MOBILE NAV <-> FOOTER SWAP
+   Below the phone breakpoint, MobileNavMenu (a fixed bottom bar - see
+   MobileNavMenu.razor.css) takes over from CyFooter, which would
+   otherwise sit underneath it and mostly go unseen/unreachable.
+   ========================================================================= */
+@media (max-width: 47.99rem) {
+    /* CyFooter is a child component, so its root element only carries
+       the "app-shell__footer" class passed via Class="..." - not this
+       file's scope attribute - hence ::deep is required to reach it. */
+    ::deep .app-shell__footer {
+        display: none;
+    }
+
+    /* <main id="main-content"> is written directly in this file, so it
+       already carries the scope attribute and needs no ::deep. Reserves
+       space for the fixed mobile-nav bar so the last bit of scrollable
+       page content isn't hidden behind it. */
+    .app-shell__main {
+        padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+}
