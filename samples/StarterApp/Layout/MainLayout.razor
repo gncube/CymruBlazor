@@ -2,6 +2,8 @@
 @implements IDisposable
 @inject IThemeService Theme
 @inject NavigationManager Navigation
+@using StarterApp.Layout
+@using StarterApp.Layout.Models
 
 <CyThemeProvider InitialTheme="ThemeMode.Dark">
 
@@ -43,6 +45,10 @@
             <main id="main-content" class="app-shell__main" tabindex="-1">
                 @Body
             </main>
+
+            <MobileNavMenu ActiveHref="@_currentPath"
+                           Variant="MobileNavVariant.ActionCenter"
+                           OnMoreClick="ToggleSidebarAsync" />
 
             <CyFooter Background="ComponentColour.Primary"
                       Copyright="@($"\u00a9 {DateTime.UtcNow.Year} GIG Cymru NHS Wales \u00b7 Digital Health and Care Wales")">
