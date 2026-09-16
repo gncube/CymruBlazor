@@ -1,11 +1,9 @@
 name: Publish Demo
 
-# Deploys the Demo Blazor WebAssembly app to GitHub Pages as the project's
-# living documentation site (see PRD.md section 7, "Documentation Strategy").
-#
-# Runs after a successful push to main, and can also be triggered manually.
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -18,6 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
@@ -26,6 +25,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,11 +35,38 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Resolve Workflow Run ID
+        id: run-id
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Fetching latest successful CI run ID..."
+            latest_id=$(gh run list \
+              --workflow "ci.yml" \
+              --branch main \
+              --status success \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId')
+
+            if [ -z "$latest_id" ] || [ "$latest_id" = "null" ]; then
+              echo "::error::Could not find a successful CI run on main to download the artifact from."
+              exit 1
+            fi
+
+            echo "id=${latest_id}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Download NuGet package
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
           path: ./artifacts
+          run-id: ${{ steps.run-id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify local package
         shell: bash
@@ -58,10 +85,6 @@ jobs:
           --no-restore
 
       - name: Rewrite base href for GitHub Pages project site
-        # GitHub Pages serves this repo at /<repo-name>/, but the Demo app
-        # is built assuming it's hosted at the domain root ("/"). Rewrite
-        # the <base> tag so relative asset/API/CSS references resolve
-        # correctly once deployed.
         run: |
           sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' \
             ./demo-publish/wwwroot/index.html
