@@ -4,6 +4,8 @@ param(
   [string[]]$Targets = @(
     ".github",
     ".vscode",
+    "artifacts",
+    "demo-publish",
     "plan",
     "samples",
     "src",
@@ -14,6 +16,7 @@ param(
     "Directory.Build.props",
     "Directory.Build.targets",
     "Directory.Packages.props",
+    "*.config",
     "*.yml",
     "*.md",
     "*.ps1",

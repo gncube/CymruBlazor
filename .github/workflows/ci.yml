@@ -47,7 +47,14 @@ jobs:
           -o ./artifacts
 
       - name: Restore solution
-        run: dotnet restore CymruBlazor.slnx
+        # Use NuGet.CI.Config here too: the repo's default nuget.config
+        # points a local feed at ./artifacts, which this workflow happens
+        # to create earlier (via Pack) - but that ordering is fragile.
+        # Restoring against NuGet.CI.Config removes the dependency
+        # entirely and matches what release.yml now does.
+        run: >
+          dotnet restore CymruBlazor.slnx
+          --configfile NuGet.CI.Config
 
       - name: Build
         run: dotnet build CymruBlazor.slnx -c Release --no-restore

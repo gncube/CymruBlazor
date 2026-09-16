@@ -59,7 +59,13 @@ jobs:
       # ------------------------------------------------------------------
 
       - name: Restore
-        run: dotnet restore CymruBlazor.slnx
+        # Use NuGet.CI.Config, not the repo's default nuget.config: the
+        # default config points a local feed at ./artifacts, which only
+        # exists after Pack runs below. Restoring against it here (before
+        # Pack) fails with NU1301 for every project in the solution.
+        run: >
+          dotnet restore CymruBlazor.slnx
+          --configfile NuGet.CI.Config
 
       - name: Build
         run: dotnet build CymruBlazor.slnx -c Release --no-restore
