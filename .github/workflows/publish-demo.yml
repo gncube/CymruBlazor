@@ -29,19 +29,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: '10.0.x'
 
-      - name: Publish Demo (Release)
-        run: >
-          dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj
-          -c Release
-          -o ./demo-publish
+      - name: Download NuGet package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+
+      - name: Verify local package
+        shell: bash
+        run: |
+          test -d ./artifacts
+          find ./artifacts -maxdepth 1 -type f -print
+
+      - name: Restore Demo
+        run: dotnet restore src/CymruBlazor.Demo/CymruBlazor.Demo.csproj \
+          --configfile ./nuget.config
+
+      - name: Publish Demo
+        run: dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj \
+          -c Release \
+          -o ./demo-publish \
           --no-restore
 
       - name: Rewrite base href for GitHub Pages project site
