@@ -28,11 +28,26 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Install GitVersion
-        run: dotnet tool install --global GitVersion.Tool
+      - name: Restore CymruBlazor source
+        run: >
+          dotnet restore src/CymruBlazor/CymruBlazor.csproj
+          --configfile NuGet.CI.Config
 
-      - name: Restore
-        run: dotnet restore CymruBlazor.slnx --configfile NuGet.CI.Config
+      - name: Build CymruBlazor source
+        run: >
+          dotnet build src/CymruBlazor/CymruBlazor.csproj
+          -c Release
+          --no-restore
+
+      - name: Pack CymruBlazor
+        run: >
+          dotnet pack src/CymruBlazor/CymruBlazor.csproj
+          -c Release
+          --no-build
+          -o ./artifacts
+
+      - name: Restore solution
+        run: dotnet restore CymruBlazor.slnx
 
       - name: Build
         run: dotnet build CymruBlazor.slnx -c Release --no-restore
@@ -62,12 +77,6 @@ jobs:
           name: test-results
           path: ./TestResults
           retention-days: 14
-
-      - name: Pack (verification only - not published from CI)
-        run: >
-          dotnet pack src/CymruBlazor/CymruBlazor.csproj -c Release
-          --no-build
-          -o ./artifacts
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
