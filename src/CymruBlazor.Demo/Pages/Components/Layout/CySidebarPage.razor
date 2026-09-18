@@ -67,79 +67,75 @@
                     <div style="margin-top:var(--cymru-space-1);">Mobile Drawer Open: <strong>@_mobileOpen</strong></div>
 
                     <div style="margin-top:var(--cymru-space-4); display:flex; flex-wrap:wrap; gap:0.5rem;">
-                        <button type="button" class="cymru-btn" @onclick="() => _sidebarRef?.CycleNextAsync()">Cycle
-                            Next</button>
-                            <button type="button" class="cymru-btn" @onclick="() => _sidebarRef?.ExpandAsync()">Expand</button>
-                            <button type="button" class="cymru-btn"
-                                    @onclick="() => _sidebarRef?.SetStateAsync(SidebarState.IconOnly)">Icon Only</button>
-                            <button type="button" class="cymru-btn"
-                                    @onclick="() => _sidebarRef?.SetStateAsync(SidebarState.Hidden)">Hide</button>
-                            <button type="button" class="cymru-btn" @onclick="() => _mobileOpen = !_mobileOpen">Toggle Mobile
-                                Drawer</button>
+                        <button type="button" class="cymru-btn" @onclick="CycleSidebarAsync">Cycle Next</button>
+                        <button type="button" class="cymru-btn" @onclick="ExpandSidebarAsync">Expand</button>
+                        <button type="button" class="cymru-btn" @onclick="SetIconOnlyAsync">Icon Only</button>
+                        <button type="button" class="cymru-btn" @onclick="SetHiddenAsync">Hide</button>
+                        <button type="button" class="cymru-btn" @onclick="ToggleDrawer">Toggle Mobile Drawer</button>
+                    </div>
+                </div>
+                @if (_position == SidebarPosition.Right)
+                {
+                    <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
+                               @bind-State="_state" @bind-MobileOpen="_mobileOpen">
+                        <Brand>
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
+                                         Size="ComponentSize.Small" />
+                        </Brand>
+                        <ChildContent>
+                            <div class="cy-sidebar__item">
+                                <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
                             </div>
-                        </div>
-                        @if (_position == SidebarPosition.Right)
-                        {
-                            <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
-                                       @bind-State="_state" @bind-MobileOpen="_mobileOpen">
-                                <Brand>
-                                    <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
-                                                 Size="ComponentSize.Small" />
-                                </Brand>
-                                <ChildContent>
-                                    <div class="cy-sidebar__item">
-                                        <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
-                                    </div>
-                                    <div class="cy-sidebar__item">
-                                        <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
-                                    </div>
-                                </ChildContent>
-                            </CySidebar>
-                        }
-                    </div>
-                </div>
-
-                <div class="cb-playground-grid">
-                    <DemoPropertyControls>
-                        <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions"
-                                                 TValue="SidebarPosition" />
-                        <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
-                    </DemoPropertyControls>
-
-                    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-                        <span class="cb-panel-caption">Generated code</span>
-                        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
-                        <a class="cb-open-in-github"
-                           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CySidebar.razor"
-                           target="_blank" rel="noopener noreferrer">
-                            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
-                        </a>
-                    </div>
-                </div>
-
-                <p class="cb-section-description" style="margin-top:1.5rem;">
-                    <code>CySidebar</code> supports composable multi-state cycling via the <code>States</code> parameter.
-                    By binding
-                    <code>[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]</code>,
-                    clicking the header toggle advances automatically through each configured state or can be driven
-                    programmatically via <code>CycleNextAsync()</code>.
-                </p>
-                <CyCodeBlock Code="@MultiStateRecipeCode" Language="csharp" />
-
+                            <div class="cy-sidebar__item">
+                                <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
+                            </div>
+                        </ChildContent>
+                    </CySidebar>
+                }
             </div>
-        }
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions"
+                                         TValue="SidebarPosition" />
+                <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CySidebar.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            <code>CySidebar</code> supports composable multi-state cycling via the <code>States</code> parameter.
+            By binding
+            <code>[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]</code>,
+            clicking the header toggle advances automatically through each configured state or can be driven
+            programmatically via <code>CycleNextAsync()</code>.
+        </p>
+        <CyCodeBlock Code="@MultiStateRecipeCode" Language="csharp" />
+
+    </div>
+}
 else if (_activeTab == Tab.Api)
-        {
-            <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-                <DemoApiTable Parameters="_apiDocs" />
-            </div>
-        }
-        else
-        {
-            <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-                <DemoAccessibilityChecklist Items="_a11yItems" />
-            </div>
-        }
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
 
 @code {
     private enum Tab { Examples, Api, Accessibility }
@@ -168,6 +164,43 @@ else if (_activeTab == Tab.Api)
     [
         SidebarWidth.Small, SidebarWidth.Medium, SidebarWidth.Large
     ];
+
+    private async Task CycleSidebarAsync()
+    {
+        if (_sidebarRef is not null)
+        {
+            await _sidebarRef.CycleNextAsync();
+        }
+    }
+
+    private async Task ExpandSidebarAsync()
+    {
+        if (_sidebarRef is not null)
+        {
+            await _sidebarRef.ExpandAsync();
+        }
+    }
+
+    private async Task SetIconOnlyAsync()
+    {
+        if (_sidebarRef is not null)
+        {
+            await _sidebarRef.SetStateAsync(SidebarState.IconOnly);
+        }
+    }
+
+    private async Task SetHiddenAsync()
+    {
+        if (_sidebarRef is not null)
+        {
+            await _sidebarRef.SetStateAsync(SidebarState.Hidden);
+        }
+    }
+
+    private void ToggleDrawer()
+    {
+        _mobileOpen = !_mobileOpen;
+    }
 
     private string GeneratedCode =>
         $"""
