@@ -11,8 +11,6 @@ namespace CymruBlazor.Components.Layout;
 public partial class CySidebar : CyLayoutComponentBase
 {
     private SidebarState _state = SidebarState.Expanded;
-    private bool _legacyCollapsed;
-    private SidebarCollapseMode _legacyCollapseMode = SidebarCollapseMode.Compact;
 
     /// <summary>
     /// Gets or sets the list of states through which the sidebar cycles.
@@ -75,16 +73,13 @@ public partial class CySidebar : CyLayoutComponentBase
     [Parameter]
     public SidebarWidth Width { get; set; } = SidebarWidth.Medium;
 
+#pragma warning disable BL0007, CS0618
     /// <summary>
     /// Legacy parameter indicating whether the sidebar is collapsed.
     /// </summary>
     [Obsolete("Use States and State instead.", error: false)]
     [Parameter]
-    public bool Collapsed
-    {
-        get => EffectiveCollapsed;
-        set => _legacyCollapsed = value;
-    }
+    public bool Collapsed { get; set; }
 
     /// <summary>
     /// Legacy event callback invoked when <see cref="Collapsed"/> changes.
@@ -98,11 +93,8 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     [Obsolete("Use States and State instead.", error: false)]
     [Parameter]
-    public SidebarCollapseMode CollapseMode
-    {
-        get => _legacyCollapseMode;
-        set => _legacyCollapseMode = value;
-    }
+    public SidebarCollapseMode CollapseMode { get; set; } = SidebarCollapseMode.Compact;
+#pragma warning restore BL0007, CS0618
 
     /// <summary>
     /// Optional brand lockup rendered at the top of the sidebar.
@@ -120,8 +112,10 @@ public partial class CySidebar : CyLayoutComponentBase
     /// <summary>
     /// Resolves whether the top header row renders at all.
     /// </summary>
+#pragma warning disable CS0618
     private bool ShowHeader =>
-        MobileOpen || Brand is not null || _legacyCollapseMode != SidebarCollapseMode.NonCollapsible;
+        MobileOpen || Brand is not null || CollapseMode != SidebarCollapseMode.NonCollapsible;
+#pragma warning restore CS0618
 
     /// <summary>
     /// The chevron icon used by the collapse/expand toggle button.
@@ -144,20 +138,22 @@ public partial class CySidebar : CyLayoutComponentBase
     /// <summary>
     /// Legacy HTML attribute value for styling compatibility.
     /// </summary>
+#pragma warning disable CS0618
     public string CollapseModeAttribute => _state switch
     {
         SidebarState.Compact => "compact",
         SidebarState.IconOnly => "icon-only",
         SidebarState.Hidden => "hidden",
-        _ => _legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled
+        _ => CollapseMode == SidebarCollapseMode.NonCollapsible
             ? "disabled"
-            : _legacyCollapseMode switch
+            : CollapseMode switch
             {
                 SidebarCollapseMode.IconOnly => "icon-only",
                 SidebarCollapseMode.Hidden => "hidden",
                 _ => "compact"
             }
     };
+#pragma warning restore CS0618
 
     /// <inheritdoc />
     public override async Task SetParametersAsync(ParameterView parameters)
@@ -186,7 +182,7 @@ public partial class CySidebar : CyLayoutComponentBase
             .Build();
 
     /// <inheritdoc />
-    protected override string? BuildCssStyle()
+    protected override string BuildCssStyle()
     {
         var customBreakpoint = !string.IsNullOrWhiteSpace(MobileBreakpoint)
             ? $"--cy-sidebar-mobile-breakpoint: {MobileBreakpoint}"
@@ -194,7 +190,7 @@ public partial class CySidebar : CyLayoutComponentBase
 
         if (string.IsNullOrWhiteSpace(Style))
         {
-            return customBreakpoint;
+            return customBreakpoint ?? string.Empty;
         }
 
         if (string.IsNullOrWhiteSpace(customBreakpoint))
@@ -231,10 +227,12 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     public async Task CycleNextAsync()
     {
-        if (States.Count == 0 || _legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
+#pragma warning disable CS0618
+        if (States.Count == 0 || CollapseMode == SidebarCollapseMode.NonCollapsible)
         {
             return;
         }
+#pragma warning restore CS0618
 
         var currentIndex = -1;
         for (var i = 0; i < States.Count; i++)
@@ -282,10 +280,12 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     public async Task ToggleAsync()
     {
-        if (_legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
+#pragma warning disable CS0618
+        if (CollapseMode == SidebarCollapseMode.NonCollapsible)
         {
             return;
         }
+#pragma warning restore CS0618
 
         if (States.Count > 1)
         {
@@ -293,9 +293,11 @@ public partial class CySidebar : CyLayoutComponentBase
             return;
         }
 
+#pragma warning disable CS0618
         var targetState = _state == SidebarState.Expanded
-            ? ResolveCollapsedStateFromLegacyMode(_legacyCollapseMode)
+            ? ResolveCollapsedStateFromLegacyMode(CollapseMode)
             : SidebarState.Expanded;
+#pragma warning restore CS0618
 
         await ApplyStateChangeAsync(targetState);
     }
@@ -303,8 +305,10 @@ public partial class CySidebar : CyLayoutComponentBase
     private async Task ApplyStateChangeAsync(SidebarState newState)
     {
         _state = newState;
-        _legacyCollapsed = EffectiveCollapsed;
-        _legacyCollapseMode = MapStateToCollapseMode(newState);
+
+#pragma warning disable CS0618
+        Collapsed = EffectiveCollapsed;
+        CollapseMode = MapStateToCollapseMode(newState);
 
         if (StateChanged.HasDelegate)
         {
@@ -313,8 +317,9 @@ public partial class CySidebar : CyLayoutComponentBase
 
         if (CollapsedChanged.HasDelegate)
         {
-            await CollapsedChanged.InvokeAsync(_legacyCollapsed);
+            await CollapsedChanged.InvokeAsync(Collapsed);
         }
+#pragma warning restore CS0618
 
         StateHasChanged();
     }
@@ -322,31 +327,34 @@ public partial class CySidebar : CyLayoutComponentBase
     private void SynchronizeCompatibilityParameters(ParameterView parameters)
     {
         var hasState = parameters.TryGetValue<SidebarState>(nameof(State), out _);
+
+#pragma warning disable CS0618
         var hasCollapsed = parameters.TryGetValue<bool>(nameof(Collapsed), out _);
         var hasCollapseMode = parameters.TryGetValue<SidebarCollapseMode>(nameof(CollapseMode), out _);
 
         if (hasState)
         {
-            _legacyCollapsed = EffectiveCollapsed;
-            _legacyCollapseMode = MapStateToCollapseMode(_state);
+            Collapsed = EffectiveCollapsed;
+            CollapseMode = MapStateToCollapseMode(_state);
             return;
         }
 
         if (hasCollapsed || hasCollapseMode)
         {
-            if (_legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
+            if (CollapseMode == SidebarCollapseMode.NonCollapsible)
             {
                 _state = SidebarState.Expanded;
-                _legacyCollapsed = false;
+                Collapsed = false;
                 return;
             }
 
-            _state = _legacyCollapsed
-                ? ResolveCollapsedStateFromLegacyMode(_legacyCollapseMode)
+            _state = Collapsed
+                ? ResolveCollapsedStateFromLegacyMode(CollapseMode)
                 : SidebarState.Expanded;
 
-            _legacyCollapsed = EffectiveCollapsed;
+            Collapsed = EffectiveCollapsed;
         }
+#pragma warning restore CS0618
     }
 
     private static SidebarState ResolveCollapsedStateFromLegacyMode(SidebarCollapseMode mode) => mode switch

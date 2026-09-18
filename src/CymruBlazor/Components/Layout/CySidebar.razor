@@ -38,7 +38,7 @@
                     </svg>
                 </button>
             }
-            else if (CollapseMode != SidebarCollapseMode.NonCollapsible)
+            else if (ShowCycleOrToggle)
             {
                 <button type="button" class="cy-sidebar__toggle"
                         @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
@@ -55,3 +55,10 @@
     @ChildContent
 
 </aside>
+
+@code {
+#pragma warning disable CS0618
+    private bool ShowCycleOrToggle => CollapseMode != SidebarCollapseMode.NonCollapsible;
+#pragma warning restore CS0618
+
+}
