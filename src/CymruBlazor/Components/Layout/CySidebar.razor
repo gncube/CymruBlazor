@@ -1,12 +1,8 @@
 @inherits CyLayoutComponentBase
 @using CymruBlazor.Components.Content
 
-<aside
-    id="@Id"
-    class="@CssClass"
-    style="@CssStyle"
-    data-collapse-mode="@CollapseModeAttribute"
-    @attributes="AdditionalAttributes">
+<aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute"
+       @attributes="AdditionalAttributes">
 
     @if (ShowHeader)
     {
@@ -21,12 +17,10 @@
 
             @if (CollapseMode != SidebarCollapseMode.Disabled)
             {
-                <button
-                    type="button"
-                    class="cy-sidebar__toggle"
-                    @onclick="ToggleAsync"
-                    aria-expanded="@(!EffectiveCollapsed)"
-                    aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")">
+                <button type="button" class="cy-sidebar__toggle"
+                        @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
+                        aria-expanded="@(!EffectiveCollapsed)"
+                        aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")">
                     <CyIcon Name="@ToggleIconName" Size="16" />
                 </button>
             }

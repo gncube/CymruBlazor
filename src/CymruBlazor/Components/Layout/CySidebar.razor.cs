@@ -152,6 +152,57 @@ public partial class CySidebar : CyLayoutComponentBase
             .Build();
 
     /// <summary>
+    /// Cycles forward to the next state configured in <see cref="States"/>, wrapping around to the first entry.
+    /// </summary>
+    public async Task CycleNextAsync()
+    {
+        if (States.Count == 0 || _legacyCollapseMode == SidebarCollapseMode.Disabled)
+        {
+            return;
+        }
+
+        var currentIndex = -1;
+        for (var i = 0; i < States.Count; i++)
+        {
+            if (States[i] == _state)
+            {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        var nextIndex = currentIndex >= 0 ? (currentIndex + 1) % States.Count : 0;
+        await ApplyStateChangeAsync(States[nextIndex]);
+    }
+
+    /// <summary>
+    /// Sets the active sidebar state to the primary expanded state (<c>States[0]</c>).
+    /// </summary>
+    public async Task ExpandAsync()
+    {
+        if (States.Count == 0)
+        {
+            return;
+        }
+
+        await ApplyStateChangeAsync(States[0]);
+    }
+
+    /// <summary>
+    /// Sets the active sidebar state to the specified <paramref name="state"/> if present in <see cref="States"/>.
+    /// </summary>
+    /// <param name="state">The target sidebar state.</param>
+    public async Task SetStateAsync(SidebarState state)
+    {
+        if (!States.Contains(state))
+        {
+            return;
+        }
+
+        await ApplyStateChangeAsync(state);
+    }
+
+    /// <summary>
     /// Programmatically toggles the collapsed state of the sidebar.
     /// </summary>
     public async Task ToggleAsync()
@@ -161,12 +212,24 @@ public partial class CySidebar : CyLayoutComponentBase
             return;
         }
 
+        if (States.Count > 1)
+        {
+            await CycleNextAsync();
+            return;
+        }
+
         var targetState = _state == SidebarState.Expanded
             ? ResolveCollapsedStateFromLegacyMode(_legacyCollapseMode)
             : SidebarState.Expanded;
 
-        _state = targetState;
+        await ApplyStateChangeAsync(targetState);
+    }
+
+    private async Task ApplyStateChangeAsync(SidebarState newState)
+    {
+        _state = newState;
         _legacyCollapsed = EffectiveCollapsed;
+        _legacyCollapseMode = MapStateToCollapseMode(newState);
 
         if (StateChanged.HasDelegate)
         {
