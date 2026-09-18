@@ -156,10 +156,6 @@ public sealed class CySidebarTests : TestContextBase
     [InlineData(SidebarCollapseMode.Hidden)]
     public void Should_Still_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
     {
-        // Act - CySidebar has no way to know what's inside Brand, so it
-        // always renders it; it's up to the consumer's own fragment to
-        // swap in something narrower (e.g. an icon-only logo mark) once
-        // collapsed - see CySidebar.Brand's XML doc.
         var cut = Render<CySidebar>(parameters => parameters
             .Add(p => p.CollapseMode, mode)
             .Add(p => p.Collapsed, true)
@@ -188,8 +184,6 @@ public sealed class CySidebarTests : TestContextBase
     [InlineData(SidebarCollapseMode.Hidden)]
     public void Should_Still_Render_Toggle_Button_When_Collapsed(SidebarCollapseMode mode)
     {
-        // Act - even with no Brand supplied at all, the toggle survives
-        // collapse so there's always a way back to expanded.
         var cut = Render<CySidebar>(parameters => parameters
             .Add(p => p.CollapseMode, mode)
             .Add(p => p.Collapsed, true));
@@ -207,8 +201,7 @@ public sealed class CySidebarTests : TestContextBase
             .Add(p => p.CollapseMode, SidebarCollapseMode.Disabled)
             .Add(p => p.Collapsed, false));
 
-        // Assert - nothing to toggle and nothing to show, so no header
-        // row renders at all.
+        // Assert
         cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(0);
         cut.FindAll(".cy-sidebar__header").Count.ShouldBe(0);
     }
@@ -226,10 +219,6 @@ public sealed class CySidebarTests : TestContextBase
             .Add(p => p.Position, position)
             .Add(p => p.Collapsed, collapsed));
 
-        // Assert - chevron-left is "m15 18-6-6 6-6", chevron-right is
-        // "m9 18 6-6-6-6" (see IconRegistry) - comparing the rendered
-        // path data is a stand-in for asserting the icon *name*, since
-        // CyIcon doesn't expose that as a DOM attribute.
         cut.Find(".cy-sidebar__toggle svg path").GetAttribute("d")
             .ShouldBe(expectedPathData);
     }
@@ -249,5 +238,139 @@ public sealed class CySidebarTests : TestContextBase
 
         // Assert
         collapsedValue.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task CycleNextAsyncShouldCycleAcrossConfiguredStates()
+    {
+        // Arrange - 4-state cycling (TEST-001)
+        var observedStates = new List<SidebarState>();
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden])
+            .Add(p => p.State, SidebarState.Expanded)
+            .Add(p => p.StateChanged, s => observedStates.Add(s)));
+
+        // Act & Assert cycle 1: Expanded -> Compact
+        await cut.InvokeAsync(async () => await cut.Instance.CycleNextAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+
+        // Act & Assert cycle 2: Compact -> IconOnly
+        await cut.InvokeAsync(async () => await cut.Instance.CycleNextAsync());
+        cut.Instance.State.ShouldBe(SidebarState.IconOnly);
+
+        // Act & Assert cycle 3: IconOnly -> Hidden
+        await cut.InvokeAsync(async () => await cut.Instance.CycleNextAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Hidden);
+
+        // Act & Assert cycle 4: Hidden -> Expanded (wrap around)
+        await cut.InvokeAsync(async () => await cut.Instance.CycleNextAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+
+        observedStates.ShouldBe([SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden, SidebarState.Expanded]);
+    }
+
+    [Fact]
+    public async Task ExpandAsyncShouldResetStateToPrimaryState()
+    {
+        // Arrange - (TEST-004)
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Compact, SidebarState.Hidden])
+            .Add(p => p.State, SidebarState.Hidden));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.ExpandAsync());
+
+        // Assert
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+        cut.Instance.EffectiveCollapsed.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task SetStateAsyncShouldAssignValidStateOnly()
+    {
+        // Arrange
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Compact])
+            .Add(p => p.State, SidebarState.Expanded));
+
+        // Act - Attempt invalid state not in States
+        await cut.InvokeAsync(async () => await cut.Instance.SetStateAsync(SidebarState.Hidden));
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+
+        // Act - Attempt valid state
+        await cut.InvokeAsync(async () => await cut.Instance.SetStateAsync(SidebarState.Compact));
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+    }
+
+    [Fact]
+    public void HiddenStateShouldRenderRevealHandleOutsideClippedLayout()
+    {
+        // Arrange - (TEST-003)
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.State, SidebarState.Hidden));
+
+        // Assert
+        var revealHandle = cut.Find(".cy-sidebar__reveal-handle");
+        revealHandle.ShouldNotBeNull();
+        revealHandle.GetAttribute("aria-label").ShouldBe("Reveal sidebar");
+
+        var header = cut.Find(".cy-sidebar__header");
+        header.GetAttribute("aria-hidden").ShouldBe("true");
+        header.GetAttribute("tabindex").ShouldBe("-1");
+    }
+
+    [Fact]
+    public async Task RevealHandleClickShouldInvokeExpandAsync()
+    {
+        // Arrange - (TEST-004)
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Hidden])
+            .Add(p => p.State, SidebarState.Hidden));
+
+        // Act
+        await cut.Find(".cy-sidebar__reveal-handle").ClickAsync(new());
+
+        // Assert
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+        cut.FindAll(".cy-sidebar__reveal-handle").Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task MobileOpenShouldRenderBackdropAndCloseButtonExclusively()
+    {
+        // Arrange - (TEST-005)
+        var mobileOpenState = true;
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.MobileOpen, true)
+            .Add(p => p.ShowMobileBackdrop, true)
+            .Add(p => p.MobileOpenChanged, v => mobileOpenState = v));
+
+        // Assert presence of mobile drawer elements
+        cut.FindAll(".cy-sidebar__backdrop").Count.ShouldBe(1);
+        cut.FindAll(".cy-sidebar__close").Count.ShouldBe(1);
+        cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(0);
+
+        // Act - Click mobile close button
+        await cut.Find(".cy-sidebar__close").ClickAsync(new());
+
+        // Assert
+        mobileOpenState.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ClickingBackdropShouldCloseMobileDrawer()
+    {
+        // Arrange
+        var mobileOpenState = true;
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.MobileOpen, true)
+            .Add(p => p.ShowMobileBackdrop, true)
+            .Add(p => p.MobileOpenChanged, v => mobileOpenState = v));
+
+        // Act
+        await cut.Find(".cy-sidebar__backdrop").ClickAsync(new());
+
+        // Assert
+        mobileOpenState.ShouldBeFalse();
     }
 }
