@@ -121,7 +121,7 @@ public partial class CySidebar : CyLayoutComponentBase
     /// Resolves whether the top header row renders at all.
     /// </summary>
     private bool ShowHeader =>
-        MobileOpen || Brand is not null || _legacyCollapseMode != SidebarCollapseMode.Disabled;
+        MobileOpen || Brand is not null || _legacyCollapseMode != SidebarCollapseMode.NonCollapsible;
 
     /// <summary>
     /// The chevron icon used by the collapse/expand toggle button.
@@ -149,7 +149,7 @@ public partial class CySidebar : CyLayoutComponentBase
         SidebarState.Compact => "compact",
         SidebarState.IconOnly => "icon-only",
         SidebarState.Hidden => "hidden",
-        _ => _legacyCollapseMode == SidebarCollapseMode.Disabled
+        _ => _legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled
             ? "disabled"
             : _legacyCollapseMode switch
             {
@@ -231,7 +231,7 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     public async Task CycleNextAsync()
     {
-        if (States.Count == 0 || _legacyCollapseMode == SidebarCollapseMode.Disabled)
+        if (States.Count == 0 || _legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
         {
             return;
         }
@@ -282,7 +282,7 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     public async Task ToggleAsync()
     {
-        if (_legacyCollapseMode == SidebarCollapseMode.Disabled)
+        if (_legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
         {
             return;
         }
@@ -334,7 +334,7 @@ public partial class CySidebar : CyLayoutComponentBase
 
         if (hasCollapsed || hasCollapseMode)
         {
-            if (_legacyCollapseMode == SidebarCollapseMode.Disabled)
+            if (_legacyCollapseMode is SidebarCollapseMode.NonCollapsible or SidebarCollapseMode.Disabled)
             {
                 _state = SidebarState.Expanded;
                 _legacyCollapsed = false;

@@ -35,7 +35,7 @@
                     <CyIcon Name="x" Size="16" />
                 </button>
             }
-            else if (CollapseMode != SidebarCollapseMode.Disabled)
+            else if (CollapseMode != SidebarCollapseMode.NonCollapsible)
             {
                 <button type="button" class="cy-sidebar__toggle"
                         @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
