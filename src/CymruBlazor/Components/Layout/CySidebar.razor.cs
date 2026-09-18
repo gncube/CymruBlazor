@@ -5,8 +5,8 @@ using CymruBlazor.Components.Core;
 namespace CymruBlazor.Components.Layout;
 
 /// <summary>
-/// Provides a collapsible, responsive sidebar layout component supporting multi-state cycling
-/// and legacy two-state collapse modes.
+/// Provides a collapsible, responsive sidebar layout component supporting multi-state cycling,
+/// legacy two-state collapse modes, and mobile off-canvas drawer presentation.
 /// </summary>
 public partial class CySidebar : CyLayoutComponentBase
 {
@@ -36,6 +36,32 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<SidebarState> StateChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the responsive mobile off-canvas drawer is open.
+    /// </summary>
+    [Parameter]
+    public bool MobileOpen { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when <see cref="MobileOpen"/> changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> MobileOpenChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the CSS media query breakpoint below which mobile drawer layout rules apply.
+    /// Defaults to <c>47.99rem</c>.
+    /// </summary>
+    [Parameter]
+    public string MobileBreakpoint { get; set; } = "47.99rem";
+
+    /// <summary>
+    /// Gets or sets whether the dismissible backdrop overlay is rendered when <see cref="MobileOpen"/> is true.
+    /// Defaults to <see langword="true"/>.
+    /// </summary>
+    [Parameter]
+    public bool ShowMobileBackdrop { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the position of the sidebar relative to the page content.
@@ -95,7 +121,7 @@ public partial class CySidebar : CyLayoutComponentBase
     /// Resolves whether the top header row renders at all.
     /// </summary>
     private bool ShowHeader =>
-        Brand is not null || _legacyCollapseMode != SidebarCollapseMode.Disabled;
+        MobileOpen || Brand is not null || _legacyCollapseMode != SidebarCollapseMode.Disabled;
 
     /// <summary>
     /// The chevron icon used by the collapse/expand toggle button.
@@ -156,7 +182,35 @@ public partial class CySidebar : CyLayoutComponentBase
             .AddClass("cy-sidebar--compact", _state == SidebarState.Compact)
             .AddClass("cy-sidebar--icon-only", _state == SidebarState.IconOnly)
             .AddClass("cy-sidebar--collapsed", _state == SidebarState.Hidden)
+            .AddClass("cy-sidebar--mobile-open", MobileOpen)
             .Build();
+
+    /// <inheritdoc />
+    protected override string BuildCssStyle() =>
+        CssBuilder.Empty
+            .AddStyle(Style)
+            .AddStyle($"--cy-sidebar-mobile-breakpoint: {MobileBreakpoint}", !string.IsNullOrWhiteSpace(MobileBreakpoint))
+            .Build();
+
+    /// <summary>
+    /// Closes the mobile off-canvas drawer and dispatches state change events.
+    /// </summary>
+    public async Task CloseMobileDrawerAsync()
+    {
+        if (!MobileOpen)
+        {
+            return;
+        }
+
+        MobileOpen = false;
+
+        if (MobileOpenChanged.HasDelegate)
+        {
+            await MobileOpenChanged.InvokeAsync(false);
+        }
+
+        StateHasChanged();
+    }
 
     /// <summary>
     /// Cycles forward to the next state configured in <see cref="States"/>, wrapping around to the first entry.
