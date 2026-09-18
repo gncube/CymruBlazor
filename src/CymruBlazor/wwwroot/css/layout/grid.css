@@ -276,11 +276,27 @@
   width: 22rem;
 }
 
+/*
+ * Hidden state. The aside itself collapses to zero width, but it must be
+ * the containing block for .cy-sidebar__reveal-handle (position: relative)
+ * and must NOT clip it (overflow: visible) - otherwise the handle is either
+ * placed against some distant ancestor (off-screen, causing a horizontal
+ * scrollbar) or clipped by the very box it is meant to escape from. Every
+ * other child is display: none, which removes the header, brand and nav
+ * links from layout, the tab order and the accessibility tree, so there is
+ * nothing invisible left to Tab into. (Not applied while the mobile drawer
+ * is open - the drawer always shows its full contents.)
+ */
 .cy-sidebar--collapsed {
+  position: relative;
   flex-basis: 0;
   width: 0;
-  overflow: hidden;
+  overflow: visible;
   border-width: 0;
+}
+
+.cy-sidebar--collapsed:not(.cy-sidebar--mobile-open) > :not(.cy-sidebar__reveal-handle) {
+  display: none;
 }
 
 /*
@@ -435,33 +451,33 @@
     height: 2rem;
     padding: 0;
     margin: 0;
-    border: 1px solid var(--cy-color-border, #e2e8f0);
+    border: 1px solid var(--cymru-color-border, #e2e8f0);
     border-inline-start: none;
-    border-start-end-radius: var(--cy-radius-md, 0.375rem);
-    border-end-end-radius: var(--cy-radius-md, 0.375rem);
-    background-color: var(--cy-color-surface, #ffffff);
-    color: var(--cy-color-text, #1e293b);
+    border-start-end-radius: var(--cymru-radius-md, 0.375rem);
+    border-end-end-radius: var(--cymru-radius-md, 0.375rem);
+    background-color: var(--cymru-color-surface, #ffffff);
+    color: var(--cymru-color-text, #1e293b);
     cursor: pointer;
-    box-shadow: var(--cy-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+    box-shadow: var(--cymru-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .cy-sidebar--right .cy-sidebar__reveal-handle {
     inset-inline-start: auto;
     inset-inline-end: 100%;
-    border-inline-start: 1px solid var(--cy-color-border, #e2e8f0);
+    border-inline-start: 1px solid var(--cymru-color-border, #e2e8f0);
     border-inline-end: none;
     border-start-end-radius: 0;
     border-end-end-radius: 0;
-    border-start-start-radius: var(--cy-radius-md, 0.375rem);
-    border-end-start-radius: var(--cy-radius-md, 0.375rem);
+    border-start-start-radius: var(--cymru-radius-md, 0.375rem);
+    border-end-start-radius: var(--cymru-radius-md, 0.375rem);
 }
 
 .cy-sidebar__reveal-handle:hover,
 .cy-sidebar__reveal-handle:focus-visible {
-    background-color: var(--cy-color-surface-hover, #f1f5f9);
-    color: var(--cy-color-primary, #0284c7);
-    outline: 2px solid var(--cy-color-focus, #38bdf8);
+    background-color: var(--cymru-color-surface-alt, #f1f5f9);
+    color: var(--cymru-color-primary, #0284c7);
+    outline: 2px solid var(--cymru-color-focus, #38bdf8);
     outline-offset: 1px;
 }
 
@@ -483,19 +499,19 @@
     height: 2rem;
     padding: 0;
     margin-inline-start: auto;
-    border: 1px solid var(--cy-color-border, #e2e8f0);
-    border-radius: var(--cy-radius-md, 0.375rem);
-    background-color: var(--cy-color-surface, #ffffff);
-    color: var(--cy-color-text, #1e293b);
+    border: 1px solid var(--cymru-color-border, #e2e8f0);
+    border-radius: var(--cymru-radius-md, 0.375rem);
+    background-color: var(--cymru-color-surface, #ffffff);
+    color: var(--cymru-color-text, #1e293b);
     cursor: pointer;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .cy-sidebar__close:hover,
 .cy-sidebar__close:focus-visible {
-    background-color: var(--cy-color-surface-hover, #f1f5f9);
-    color: var(--cy-color-danger, #ef4444);
-    outline: 2px solid var(--cy-color-focus, #38bdf8);
+    background-color: var(--cymru-color-surface-alt, #f1f5f9);
+    color: var(--cymru-color-danger, #ef4444);
+    outline: 2px solid var(--cymru-color-focus, #38bdf8);
     outline-offset: 1px;
 }
 
@@ -524,7 +540,32 @@
     .cy-sidebar--mobile-open.cy-sidebar--left,
     .cy-sidebar--mobile-open.cy-sidebar--right {
         transform: translateX(0);
-        box-shadow: var(--cy-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1));
+        box-shadow: var(--cymru-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1));
+    }
+
+    /* A closed drawer is off-canvas, so it must also leave the tab order and
+       accessibility tree. visibility flips after the slide-out finishes. */
+    .cy-sidebar:not(.cy-sidebar--mobile-open) {
+        visibility: hidden;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.25s;
+    }
+
+    .cy-sidebar--mobile-open {
+        visibility: visible;
+    }
+
+    /* State=Hidden describes the desktop rail; an open drawer always shows
+       its full contents. */
+    .cy-sidebar--mobile-open.cy-sidebar--collapsed {
+        flex-basis: auto;
+        width: 100%;
+        overflow: auto;
+    }
+
+    /* The reveal handle is a desktop affordance; on mobile the consumer's
+       own control opens the drawer via MobileOpen. */
+    .cy-sidebar__reveal-handle {
+        display: none;
     }
 }
 
@@ -549,6 +590,13 @@
   .cy-sidebar--right {
     border-inline-start: 0;
     border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  }
+
+  /* Declared after the rules above so Hidden still wins the cascade tie. */
+  .cy-sidebar--collapsed {
+    flex-basis: 0;
+    width: 0;
+    border-width: 0;
   }
 }
 
