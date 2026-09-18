@@ -1,8 +1,11 @@
 @page "/layouts/sidebar"
 @namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Layout
 @using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
 
-<CyPageHeader Title="CySidebar" Subtitle="A collapsible, responsive sidebar panel.">
+<CyPageHeader Title="CySidebar"
+              Subtitle="A composable, responsive sidebar layout component supporting multi-state cycling and mobile drawer presentation.">
     <Breadcrumb>
         <CyBreadcrumb>
             <CyBreadcrumbItem Text="Layout" Href="/layouts" />
@@ -12,9 +15,14 @@
 </CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
-    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
-    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
-    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)"
+            aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api"
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
+            aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
 @if (_activeTab == Tab.Examples)
@@ -23,138 +31,133 @@
 
         <span class="cb-panel-caption">Preview</span>
         <p class="cb-section-description">
-            Click the chevron in the sidebar's own header to cycle through its three
-            visible states: <strong>Full</strong> &rarr; <strong>Compact</strong> &rarr;
-            <strong>Icon-only</strong> &rarr; back to Full. The toggle button is built into
-            <code>CySidebar</code> - this page just supplies the target <code>CollapseMode</code>
-            for each step, and swaps <code>Brand</code>'s own logo down to a small icon mark
-            (via <code>SymbolOnly="@@IsCollapsed"</code>) once there's no room for the full one.
+            Click the chevron in the sidebar header to advance cyclically through the configured <code>States</code>
+            sequence:
+            <strong>Expanded</strong> &rarr; <strong>Compact</strong> &rarr; <strong>IconOnly</strong> &rarr;
+            <strong>Hidden</strong> &rarr; back to Expanded.
+            When in the <code>Hidden</code> state, an exterior reveal handle button is positioned along the outer edge to
+            restore the sidebar view without creating a keyboard focus trap.
         </p>
+
         <div class="cb-workbench-preview">
-            <div style="display:flex; gap:0; height:220px; width:100%; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
+            <div
+                style="display:flex; gap:0; min-height:260px; width:100%; position:relative; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
                 @if (_position == SidebarPosition.Left)
                 {
-                    <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
+                    <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
+                               @bind-State="_state" @bind-MobileOpen="_mobileOpen">
                         <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" Size="ComponentSize.Small" />
+                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
+                                         Size="ComponentSize.Small" />
                         </Brand>
                         <ChildContent>
-                            <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
-                            <div class="cy-sidebar__item"><CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span></div>
+                            <div class="cy-sidebar__item">
+                                <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
+                            </div>
+                            <div class="cy-sidebar__item">
+                                <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
+                            </div>
                         </ChildContent>
                     </CySidebar>
                 }
-                <div style="flex:1; padding:var(--cymru-space-4); font-size:var(--cymru-font-size-sm); color:var(--cymru-color-text-muted);">
-                    Main content area
-                    <div style="margin-top:var(--cymru-space-2);">Current state: <strong>@_displayState</strong></div>
+                <div
+                    style="flex:1; padding:var(--cymru-space-4); font-size:var(--cymru-font-size-sm); color:var(--cymru-color-text-muted); background:var(--cymru-color-surface-subtle);">
+                    <div>Main content area</div>
+                    <div style="margin-top:var(--cymru-space-2);">Current State: <strong>@_state</strong></div>
+                    <div style="margin-top:var(--cymru-space-1);">Mobile Drawer Open: <strong>@_mobileOpen</strong></div>
+
+                    <div style="margin-top:var(--cymru-space-4); display:flex; flex-wrap:wrap; gap:0.5rem;">
+                        <button type="button" class="cymru-btn" @onclick="() => _sidebarRef?.CycleNextAsync()">Cycle
+                            Next</button>
+                            <button type="button" class="cymru-btn" @onclick="() => _sidebarRef?.ExpandAsync()">Expand</button>
+                            <button type="button" class="cymru-btn"
+                                    @onclick="() => _sidebarRef?.SetStateAsync(SidebarState.IconOnly)">Icon Only</button>
+                            <button type="button" class="cymru-btn"
+                                    @onclick="() => _sidebarRef?.SetStateAsync(SidebarState.Hidden)">Hide</button>
+                            <button type="button" class="cymru-btn" @onclick="() => _mobileOpen = !_mobileOpen">Toggle Mobile
+                                Drawer</button>
+                            </div>
+                        </div>
+                        @if (_position == SidebarPosition.Right)
+                        {
+                            <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
+                                       @bind-State="_state" @bind-MobileOpen="_mobileOpen">
+                                <Brand>
+                                    <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
+                                                 Size="ComponentSize.Small" />
+                                </Brand>
+                                <ChildContent>
+                                    <div class="cy-sidebar__item">
+                                        <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
+                                    </div>
+                                    <div class="cy-sidebar__item">
+                                        <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
+                                    </div>
+                                </ChildContent>
+                            </CySidebar>
+                        }
+                    </div>
                 </div>
-                @if (_position == SidebarPosition.Right)
-                {
-                    <CySidebar Position="_position" Width="_width" Collapsed="IsCollapsed" CollapseMode="EffectiveCollapseMode" CollapsedChanged="OnToggled">
-                        <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" Size="ComponentSize.Small" />
-                        </Brand>
-                        <ChildContent>
-                            <div class="cy-sidebar__item"><CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span></div>
-                            <div class="cy-sidebar__item"><CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span></div>
-                        </ChildContent>
-                    </CySidebar>
-                }
+
+                <div class="cb-playground-grid">
+                    <DemoPropertyControls>
+                        <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions"
+                                                 TValue="SidebarPosition" />
+                        <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
+                    </DemoPropertyControls>
+
+                    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                        <span class="cb-panel-caption">Generated code</span>
+                        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+                        <a class="cb-open-in-github"
+                           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CySidebar.razor"
+                           target="_blank" rel="noopener noreferrer">
+                            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <p class="cb-section-description" style="margin-top:1.5rem;">
+                    <code>CySidebar</code> supports composable multi-state cycling via the <code>States</code> parameter.
+                    By binding
+                    <code>[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]</code>,
+                    clicking the header toggle advances automatically through each configured state or can be driven
+                    programmatically via <code>CycleNextAsync()</code>.
+                </p>
+                <CyCodeBlock Code="@MultiStateRecipeCode" Language="csharp" />
+
             </div>
-        </div>
-
-        <div class="cb-playground-grid">
-            <DemoPropertyControls>
-                <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions" TValue="SidebarPosition" />
-                <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
-            </DemoPropertyControls>
-
-            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-                <span class="cb-panel-caption">Generated code</span>
-                <CyCodeBlock Code="@GeneratedCode" Language="razor" />
-                <a class="cb-open-in-github"
-                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CySidebar.razor"
-                   target="_blank" rel="noopener noreferrer">
-                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
-                </a>
-            </div>
-        </div>
-
-        <p class="cb-section-description" style="margin-top:1.5rem;">
-            <code>CySidebar</code> only exposes a single on/off <code>Collapsed</code> switch and a
-            fixed <code>CollapseMode</code> for what "collapsed" looks like - cycling through
-            <em>three</em> visible states, as above, is a thin pattern the host page builds on top:
-            treat every <code>CollapsedChanged</code> firing as "advance to the next step" rather than
-            reading the bool it carries, and hand the sidebar back whichever <code>CollapseMode</code>
-            that step calls for.
-        </p>
-        <CyCodeBlock Code="@CycleRecipeCode" Language="csharp" />
-
-        <p class="cb-section-description" style="margin-top:1.5rem;">
-            <code>CollapseMode.Disabled</code> ignores <code>Collapsed</code> entirely (always renders expanded) -
-            use it for a permanent, structural navigation rail, and note it also removes the header's chevron
-            button entirely (there'd be nothing for it to do). <code>Hidden</code> collapses to zero width with
-            <code>overflow: hidden</code>, the most extreme "fully hidden" state; <code>Compact</code>/<code>IconOnly</code>
-            (cycled through above) keep a visible icon rail instead.
-        </p>
-
-    </div>
-}
+        }
 else if (_activeTab == Tab.Api)
-{
-    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-        <DemoApiTable Parameters="_apiDocs" />
-    </div>
-}
-else
-{
-    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-        <DemoAccessibilityChecklist Items="_a11yItems" />
-    </div>
-}
+        {
+            <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+                <DemoApiTable Parameters="_apiDocs" />
+            </div>
+        }
+        else
+        {
+            <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+                <DemoAccessibilityChecklist Items="_a11yItems" />
+            </div>
+        }
 
 @code {
     private enum Tab { Examples, Api, Accessibility }
 
-    /// <summary>
-    /// The three visible states this page cycles the sidebar through by
-    /// treating every <c>CollapsedChanged</c> firing (i.e. every click of
-    /// CySidebar's own built-in header chevron) as "advance one step" -
-    /// see <see cref="OnToggled"/>.
-    /// </summary>
-    private enum SidebarDisplayState { Full, Compact, IconOnly }
-
     private Tab _activeTab = Tab.Examples;
+    private CySidebar? _sidebarRef;
     private SidebarPosition _position = SidebarPosition.Left;
     private SidebarWidth _width = SidebarWidth.Medium;
-    private SidebarDisplayState _displayState = SidebarDisplayState.Full;
+    private SidebarState _state = SidebarState.Expanded;
+    private bool _mobileOpen;
 
-    private bool IsCollapsed => _displayState != SidebarDisplayState.Full;
-
-    private SidebarCollapseMode EffectiveCollapseMode => _displayState switch
-    {
-        SidebarDisplayState.IconOnly => SidebarCollapseMode.IconOnly,
-        _ => SidebarCollapseMode.Compact
-    };
-
-    /// <summary>
-    /// Wired to CySidebar's <c>CollapsedChanged</c>. The bool it carries
-    /// (whatever CySidebar's own <c>ToggleAsync</c> flipped its local
-    /// <c>Collapsed</c> to) is deliberately ignored - this page owns a
-    /// three-step state machine instead of a two-way on/off switch, so
-    /// every callback just means "the chevron was clicked, advance the
-    /// cycle" and this method recomputes <c>Collapsed</c>/<c>CollapseMode</c>
-    /// from <see cref="_displayState"/> and hands them straight back down.
-    /// </summary>
-    private void OnToggled(bool _)
-    {
-        _displayState = _displayState switch
-        {
-            SidebarDisplayState.Full => SidebarDisplayState.Compact,
-            SidebarDisplayState.Compact => SidebarDisplayState.IconOnly,
-            _ => SidebarDisplayState.Full
-        };
-    }
+    private static readonly IReadOnlyList<SidebarState> _cyclingStates =
+    [
+        SidebarState.Expanded,
+        SidebarState.Compact,
+        SidebarState.IconOnly,
+        SidebarState.Hidden
+    ];
 
     private readonly IReadOnlyList<SidebarPosition> _positionOptions =
     [
@@ -171,59 +174,61 @@ else
         <CySidebar
             Position="SidebarPosition.{_position}"
             Width="SidebarWidth.{_width}"
-            CollapseMode="SidebarCollapseMode.{EffectiveCollapseMode}"
-            Collapsed="{IsCollapsed.ToString().ToLowerInvariant()}"
-            CollapsedChanged="OnToggled">
-            <Brand><CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="IsCollapsed" /></Brand>
+            States="[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]"
+            @bind-State="_state"
+            @bind-MobileOpen="_mobileOpen">
+            <Brand>
+                <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)" />
+            </Brand>
             <ChildContent>
                 <div class="cy-sidebar__item"><CyIcon Name="home" /><span class="cy-sidebar__label">Home</span></div>
+                <div class="cy-sidebar__item"><CyIcon Name="appointment" /><span class="cy-sidebar__label">Appointments</span></div>
             </ChildContent>
         </CySidebar>
         """;
 
-    private const string CycleRecipeCode =
+    private const string MultiStateRecipeCode =
         """
-        private enum SidebarDisplayState { Full, Compact, IconOnly }
+        // In your component or page:
+        private CySidebar? _sidebar;
+        private SidebarState _state = SidebarState.Expanded;
+        private bool _mobileOpen;
 
-        private SidebarDisplayState _displayState = SidebarDisplayState.Full;
+        private readonly IReadOnlyList<SidebarState> _states =
+        [
+            SidebarState.Expanded,
+            SidebarState.Compact,
+            SidebarState.IconOnly,
+            SidebarState.Hidden
+        ];
 
-        private bool IsCollapsed => _displayState != SidebarDisplayState.Full;
-
-        private SidebarCollapseMode EffectiveCollapseMode => _displayState switch
-        {
-            SidebarDisplayState.IconOnly => SidebarCollapseMode.IconOnly,
-            _ => SidebarCollapseMode.Compact
-        };
-
-        // Wired to CySidebar's CollapsedChanged - ignore the bool it
-        // carries and just advance the cycle.
-        private void OnToggled(bool _)
-        {
-            _displayState = _displayState switch
-            {
-                SidebarDisplayState.Full => SidebarDisplayState.Compact,
-                SidebarDisplayState.Compact => SidebarDisplayState.IconOnly,
-                _ => SidebarDisplayState.Full
-            };
-        }
+        // Programmatic progression:
+        private async Task OnCycleClicked() => await (_sidebar?.CycleNextAsync() ?? Task.CompletedTask);
+        private async Task OnExpandClicked() => await (_sidebar?.ExpandAsync() ?? Task.CompletedTask);
         """;
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
     [
+        new("States", "IReadOnlyList<SidebarState>", "[Expanded, Compact]", "List of states through which the sidebar cycles when toggled."),
+        new("State", "SidebarState", "Expanded", "Active display state: Expanded, Compact, IconOnly, or Hidden. Two-way bindable via @bind-State."),
+        new("StateChanged", "EventCallback<SidebarState>", "-", "Raised when State changes."),
+        new("MobileOpen", "bool", "false", "Whether the responsive off-canvas drawer is open. Two-way bindable via @bind-MobileOpen."),
+        new("MobileOpenChanged", "EventCallback<bool>", "-", "Raised when MobileOpen changes."),
+        new("MobileBreakpoint", "string", "47.99rem", "CSS media query breakpoint below which off-canvas drawer rules apply."),
+        new("ShowMobileBackdrop", "bool", "true", "Whether the dismissible overlay backdrop is rendered while MobileOpen is true."),
         new("Position", "SidebarPosition", "Left", "Which edge the sidebar docks to: Left or Right."),
         new("Width", "SidebarWidth", "Medium", "Expanded width: Small, Medium, or Large."),
-        new("Collapsed", "bool", "false", "Whether the sidebar is collapsed. Two-way bindable via @bind-Collapsed, or toggle programmatically with ToggleAsync()."),
-        new("CollapsedChanged", "EventCallback<bool>", "-", "Raised when Collapsed changes, including via ToggleAsync() or clicking the built-in header chevron button."),
-        new("CollapseMode", "SidebarCollapseMode", "Compact", "Appearance used while collapsed: Compact, IconOnly, Disabled, or Hidden."),
-        new("Brand", "RenderFragment?", "null", "Optional brand lockup (e.g. CyBrandLogo) rendered in the header row next to the chevron toggle. Always rendered, in every collapse state - swap in something narrower (e.g. SymbolOnly=\"@Collapsed\") yourself once collapsed."),
-        new("ChildContent", "RenderFragment?", "null", "The sidebar's navigation content.")
+        new("Brand", "RenderFragment?", "null", "Optional brand lockup rendered in the header row."),
+        new("ChildContent", "RenderFragment?", "null", "The navigation items rendered in the sidebar."),
+        new("Collapsed (Obsolete)", "bool", "false", "Legacy collapsed flag. Deprecated in favor of States and State."),
+        new("CollapseMode (Obsolete)", "SidebarCollapseMode", "Compact", "Legacy appearance mode. Deprecated in favor of States and State.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
-        new("Complementary landmark", "Renders as <aside>, a complementary landmark - screen readers announce it as a separate navigation region."),
-        new("Built-in, labelled toggle", "CySidebar renders its own chevron button in the header row (unless CollapseMode is Disabled), with aria-expanded reflecting the current state and an aria-label of \"Expand sidebar\"/\"Collapse sidebar\" - consumers don't need to build their own trigger."),
-        new("Labels survive IconOnly", "Item labels stay in the accessible tree (not aria-hidden) even in CollapseMode.IconOnly, where they're only hidden visually."),
-        new("Transform, not display:none", "On mobile, the collapsed sidebar animates via transform: translateX rather than display: none, so it stays predictable for assistive tech during the transition.")
+        new("Complementary landmark", "Renders as an <aside> landmark for assistive technology navigation."),
+        new("Keyboard escape from Hidden state", "When in the Hidden state, an exterior reveal handle (.cy-sidebar__reveal-handle) is rendered with aria-label=\"Reveal sidebar\", preventing keyboard focus traps."),
+        new("Inert hidden content", "When Hidden, zero-width clipped internal header elements receive aria-hidden=\"true\" and tabindex=\"-1\" so screen readers bypass inaccessible controls."),
+        new("Accessible mobile drawer", "The off-canvas mobile drawer renders a mutually exclusive close button with aria-label=\"Close sidebar\" and a backdrop overlay marked aria-hidden=\"true\".")
     ];
 }

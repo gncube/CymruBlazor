@@ -1,4 +1,3 @@
-
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject IThemeService Theme
@@ -13,73 +12,67 @@
             <div class="app-shell__topbar-actions">
                 <label class="app-shell__collapse-mode-label">
                     Sidebar
-                    <select class="app-shell__collapse-mode-select" @bind="_collapseMode">
+                    <select class="app-shell__collapse-mode-select" value="@_collapseMode"
+                            @onchange="OnCollapseModeChanged">
                         <option value="@SidebarCollapseMode.Compact">Compact (icon + label)</option>
                         <option value="@SidebarCollapseMode.IconOnly">Icon only</option>
-                        <option value="@SidebarCollapseMode.Disabled">Disabled (always expanded)</option>
+                        <option value="@SidebarCollapseMode.NonCollapsible">Non-collapsible</option>
                         <option value="@SidebarCollapseMode.Hidden">Hidden (fully collapsible)</option>
                     </select>
                 </label>
 
                 <CyLanguageToggle @bind-CurrentLanguage="_language" />
 
-                <button type="button"
-                        class="app-shell__theme-switch"
-                        role="switch"
-                        aria-checked="@(Theme.CurrentTheme.Mode == ThemeMode.Dark)"
-                        aria-label="@ThemeLabel"
-                        title="@ThemeLabel"
-                        @onclick="ToggleThemeAsync">
+                <button type="button" class="app-shell__theme-switch" role="switch"
+                        aria-checked="@(Theme.CurrentTheme.Mode == ThemeMode.Dark)" aria-label="@ThemeLabel"
+                        title="@ThemeLabel" @onclick="ToggleThemeAsync">
                     <span class="app-shell__theme-switch-thumb">
                         @if (Theme.CurrentTheme.Mode == ThemeMode.Dark)
                         {
-                            <!-- Lucide "moon" - kept inline (not in IconRegistry) so this stays a self-contained sample control. -->
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <!-- Lucide "moon" - kept inline so this remains a self-contained sample control -->
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                             </svg>
                         }
                         else
                         {
                             <!-- Lucide "sun" -->
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="4" />
-                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                                <path
+                                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
                             </svg>
                         }
                     </span>
                 </button>
 
-                <button type="button" class="app-shell__user-menu" aria-label="Account menu for Dr. A. Rhys" title="Dr. A. Rhys">
+                <button type="button" class="app-shell__user-menu" aria-label="Account menu for Dr. A. Rhys"
+                        title="Dr. A. Rhys">
                     AR
                 </button>
             </div>
         </header>
 
         <div class="app-shell__body">
-            <CySidebar @ref="_navSidebar"
-                       @bind-Collapsed="_navCollapsed"
-                       CollapseMode="_collapseMode"
-                       Width="SidebarWidth.Small"
-                       Class="app-shell__nav-sidebar">
+            <CySidebar @ref="_navSidebar" @bind-State="_sidebarState" States="_navStates" @bind-MobileOpen="_mobileOpen"
+                       Width="SidebarWidth.Small" Class="app-shell__nav-sidebar">
 
                 <Brand>
-                    <CyBrandLogo LogoPath="/images/logo-dhcw-light.svg"
-                                 DarkLogoPath="/images/logo-dhcw-dark.svg"
-                                 Href="/"
-                                 Text="DHCW"
-                                 AriaLabel="DHCW dashboard"
-                                 Variant="BrandLogoVariant.Full"
-                                 Size="ComponentSize.ExtraLarge" />
+                    <CyBrandLogo LogoPath="/images/logo-dhcw-light.svg" DarkLogoPath="/images/logo-dhcw-dark.svg"
+                                 Href="/" Text="DHCW" AriaLabel="DHCW dashboard" Variant="BrandLogoVariant.Full"
+                                 SymbolOnly="@(_sidebarState != SidebarState.Expanded)" Size="ComponentSize.ExtraLarge" />
                 </Brand>
 
                 <ChildContent>
                     <div class="app-shell__nav-sidebar-toggle-row">
-                        <button type="button"
-                                class="cymru-btn app-shell__sidebar-toggle"
-                                aria-expanded="@(!_navCollapsed)"
-                                aria-label="@(_navCollapsed ? "Expand navigation" : "Collapse navigation")"
-                                @onclick="ToggleNavSidebar">
-                            <CyIcon Name="@(_navCollapsed ? "chevron-right" : "chevron-left")" Size="16" />
+                        <button type="button" class="cymru-btn app-shell__sidebar-toggle"
+                                aria-expanded="@(_sidebarState == SidebarState.Expanded)"
+                                aria-label="@(_sidebarState == SidebarState.Expanded ? "Cycle next navigation state" : "Expand navigation")"
+                                @onclick="AdvanceSidebarStateAsync">
+                            <CyIcon Name="@(_sidebarState == SidebarState.Expanded ? "chevron-left" : "chevron-right")"
+                                    Size="16" />
                         </button>
                     </div>
 
@@ -98,12 +91,11 @@
                         }
                     </nav>
 
-                    <button type="button"
-                            class="app-shell__nav-group-toggle"
-                            aria-expanded="@_wardsExpanded"
+                    <button type="button" class="app-shell__nav-group-toggle" aria-expanded="@_wardsExpanded"
                             @onclick="() => _wardsExpanded = !_wardsExpanded">
                         Wards
-                        <span class="app-shell__nav-group-chevron @(_wardsExpanded ? "" : "app-shell__nav-group-chevron--collapsed")">
+                        <span
+                            class="app-shell__nav-group-chevron @(_wardsExpanded ? "" : "app-shell__nav-group-chevron--collapsed")">
                             <CyIcon Name="chevron-down" Size="14" />
                         </span>
                     </button>
@@ -166,21 +158,45 @@
         new("Paediatrics", "carer", Badge: 12)
     ];
 
+    private static readonly IReadOnlyList<SidebarState> _navStates =
+    [
+        SidebarState.Expanded,
+        SidebarState.Compact,
+        SidebarState.IconOnly,
+        SidebarState.Hidden
+    ];
+
     private CySidebar? _navSidebar;
-    private bool _navCollapsed;
-    private bool _wardsExpanded = true;
+    private SidebarState _sidebarState = SidebarState.Expanded;
     private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
+    private bool _mobileOpen;
+    private bool _wardsExpanded = true;
     private AppLanguage _language = AppLanguage.English;
 
     protected override void OnInitialized() => Theme.ThemeChanged += OnThemeChanged;
 
     private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
 
-    private async Task ToggleNavSidebar()
+    private async Task AdvanceSidebarStateAsync()
     {
         if (_navSidebar is not null)
         {
-            await _navSidebar.ToggleAsync();
+            await _navSidebar.CycleNextAsync();
+        }
+    }
+
+    private void OnCollapseModeChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<SidebarCollapseMode>(e.Value?.ToString(), out var parsedMode))
+        {
+            _collapseMode = parsedMode;
+            _sidebarState = parsedMode switch
+            {
+                SidebarCollapseMode.IconOnly => SidebarState.IconOnly,
+                SidebarCollapseMode.Hidden => SidebarState.Hidden,
+                SidebarCollapseMode.NonCollapsible => SidebarState.Expanded,
+                _ => SidebarState.Compact
+            };
         }
     }
 
@@ -196,4 +212,3 @@
 
     public void Dispose() => Theme.ThemeChanged -= OnThemeChanged;
 }
-

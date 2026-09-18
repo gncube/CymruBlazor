@@ -1,16 +1,26 @@
 @inherits CyLayoutComponentBase
 @using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
 
-<aside
-    id="@Id"
-    class="@CssClass"
-    style="@CssStyle"
-    data-collapse-mode="@CollapseModeAttribute"
-    @attributes="AdditionalAttributes">
+@if (MobileOpen && ShowMobileBackdrop)
+{
+    <div class="cy-sidebar__backdrop" @onclick="CloseMobileDrawerAsync" aria-hidden="true"></div>
+}
+
+<aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute"
+       @attributes="AdditionalAttributes">
+
+    @if (State == SidebarState.Hidden && !MobileOpen)
+    {
+        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="Reveal sidebar">
+            <CyIcon Name="@RevealIconName" Size="16" />
+        </button>
+    }
 
     @if (ShowHeader)
     {
-        <div class="cy-sidebar__header">
+        <div class="cy-sidebar__header" aria-hidden="@(State == SidebarState.Hidden && !MobileOpen ? "true" : null)"
+             tabindex="@(State == SidebarState.Hidden && !MobileOpen ? "-1" : null)">
 
             @if (Brand is not null)
             {
@@ -19,14 +29,22 @@
                 </div>
             }
 
-            @if (CollapseMode != SidebarCollapseMode.Disabled)
+            @if (MobileOpen)
             {
-                <button
-                    type="button"
-                    class="cy-sidebar__toggle"
-                    @onclick="ToggleAsync"
-                    aria-expanded="@(!EffectiveCollapsed)"
-                    aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")">
+                <button type="button" class="cy-sidebar__close" @onclick="CloseMobileDrawerAsync" aria-label="Close sidebar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            }
+            else if (CollapseMode != SidebarCollapseMode.NonCollapsible)
+            {
+                <button type="button" class="cy-sidebar__toggle"
+                        @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
+                        aria-expanded="@(!EffectiveCollapsed)"
+                        aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")"
+                        tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
                     <CyIcon Name="@ToggleIconName" Size="16" />
                 </button>
             }
