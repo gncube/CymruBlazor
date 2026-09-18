@@ -78,7 +78,7 @@ public sealed class DashboardMainLayoutTests : TestContextBase
     [Theory]
     [InlineData(SidebarCollapseMode.Compact)]
     [InlineData(SidebarCollapseMode.IconOnly)]
-    [InlineData(SidebarCollapseMode.Disabled)]
+    [InlineData(SidebarCollapseMode.NonCollapsible)]
     [InlineData(SidebarCollapseMode.Hidden)]
     public void Should_Render_Without_Throwing_In_Every_CollapseMode(
         SidebarCollapseMode mode)

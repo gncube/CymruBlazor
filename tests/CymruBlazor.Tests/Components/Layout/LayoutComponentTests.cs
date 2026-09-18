@@ -10,6 +10,7 @@ public sealed class LayoutComponentTests : TestContextBase
     [Fact]
     public async Task CySidebar_ToggleAsync_InvertsCollapsedState()
     {
+#pragma warning disable CS0618
         // Arrange
         var eventFired = false;
         var cut = Render<CySidebar>(parameters => parameters
@@ -22,5 +23,6 @@ public sealed class LayoutComponentTests : TestContextBase
         // Assert
         cut.Instance.Collapsed.ShouldBeTrue();
         eventFired.ShouldBeTrue();
+#pragma warning restore CS0618
     }
 }
