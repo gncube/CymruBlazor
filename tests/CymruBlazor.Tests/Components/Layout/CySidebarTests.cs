@@ -5,7 +5,7 @@ using CymruBlazor.Components.Layout;
 using CymruBlazor.Enums;
 using Microsoft.AspNetCore.Components;
 
-namespace CymruBlazor.Tests.Components;
+namespace CymruBlazor.Tests.Components.Layout;
 
 public sealed class CySidebarTests : TestContextBase
 {
