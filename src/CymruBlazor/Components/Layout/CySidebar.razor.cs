@@ -186,11 +186,25 @@ public partial class CySidebar : CyLayoutComponentBase
             .Build();
 
     /// <inheritdoc />
-    protected override string BuildCssStyle() =>
-        CssBuilder.Empty
-            .AddStyle(Style)
-            .AddStyle($"--cy-sidebar-mobile-breakpoint: {MobileBreakpoint}", !string.IsNullOrWhiteSpace(MobileBreakpoint))
-            .Build();
+    protected override string? BuildCssStyle()
+    {
+        var customBreakpoint = !string.IsNullOrWhiteSpace(MobileBreakpoint)
+            ? $"--cy-sidebar-mobile-breakpoint: {MobileBreakpoint}"
+            : null;
+
+        if (string.IsNullOrWhiteSpace(Style))
+        {
+            return customBreakpoint;
+        }
+
+        if (string.IsNullOrWhiteSpace(customBreakpoint))
+        {
+            return Style;
+        }
+
+        var trimmedStyle = Style.TrimEnd(';', ' ');
+        return $"{trimmedStyle}; {customBreakpoint};";
+    }
 
     /// <summary>
     /// Closes the mobile off-canvas drawer and dispatches state change events.
