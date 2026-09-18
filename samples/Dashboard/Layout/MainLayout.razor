@@ -10,9 +10,16 @@
             <span class="app-shell__topbar-title">Dashboard</span>
 
             <div class="app-shell__topbar-actions">
-                <div class="app-shell__sidebar-state-badge" aria-live="polite">
-                    <span class="u-sr-only">Sidebar state: </span>@_sidebarState
-                </div>
+                <label class="app-shell__collapse-mode-label">
+                    Sidebar
+                    <select class="app-shell__collapse-mode-select" value="@_collapseMode"
+                            @onchange="OnCollapseModeChanged">
+                        <option value="@SidebarCollapseMode.Compact">Compact (icon + label)</option>
+                        <option value="@SidebarCollapseMode.IconOnly">Icon only</option>
+                        <option value="@SidebarCollapseMode.NonCollapsible">Non-collapsible</option>
+                        <option value="@SidebarCollapseMode.Hidden">Hidden (fully collapsible)</option>
+                    </select>
+                </label>
 
                 <CyLanguageToggle @bind-CurrentLanguage="_language" />
 
@@ -161,6 +168,7 @@
 
     private CySidebar? _navSidebar;
     private SidebarState _sidebarState = SidebarState.Expanded;
+    private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
     private bool _mobileOpen;
     private bool _wardsExpanded = true;
     private AppLanguage _language = AppLanguage.English;
@@ -174,6 +182,21 @@
         if (_navSidebar is not null)
         {
             await _navSidebar.CycleNextAsync();
+        }
+    }
+
+    private void OnCollapseModeChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<SidebarCollapseMode>(e.Value?.ToString(), out var parsedMode))
+        {
+            _collapseMode = parsedMode;
+            _sidebarState = parsedMode switch
+            {
+                SidebarCollapseMode.IconOnly => SidebarState.IconOnly,
+                SidebarCollapseMode.Hidden => SidebarState.Hidden,
+                SidebarCollapseMode.NonCollapsible => SidebarState.Expanded,
+                _ => SidebarState.Compact
+            };
         }
     }
 

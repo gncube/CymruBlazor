@@ -17,7 +17,7 @@ public sealed class CySidebarAccessibilityTests : AxeTestBase
     private static RenderFragment DefaultNavItems() => builder =>
     {
         builder.OpenElement(0, "nav");
-        builder.AddAttribute(1, "aria-label", "Main");
+        builder.AddAttribute(1, "aria-label", "Main navigation");
 
         builder.OpenElement(2, "a");
         builder.AddAttribute(3, "href", "/overview");
@@ -33,15 +33,15 @@ public sealed class CySidebarAccessibilityTests : AxeTestBase
         builder.CloseElement();
 
         builder.OpenElement(11, "a");
-        builder.AddAttribute(12, "href", "/patients");
+        builder.AddAttribute(12, "href", "/appointments");
         builder.AddAttribute(13, "class", "cy-sidebar__item");
         builder.OpenComponent<CyIcon>(14);
-        builder.AddComponentParameter(15, "Name", "carer");
+        builder.AddComponentParameter(15, "Name", "appointment");
         builder.AddComponentParameter(16, "Size", 18);
         builder.CloseComponent();
         builder.OpenElement(17, "span");
         builder.AddAttribute(18, "class", "cy-sidebar__label");
-        builder.AddContent(19, "Patients");
+        builder.AddContent(19, "Appointments");
         builder.CloseElement();
         builder.CloseElement();
 

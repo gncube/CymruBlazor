@@ -5,7 +5,7 @@
 @using CymruBlazor.Enums
 
 <CyPageHeader Title="CySidebar"
-              Subtitle="A composable, responsive sidebar panel supporting multi-state cycling and mobile drawer layout.">
+              Subtitle="A composable, responsive sidebar layout component supporting multi-state cycling and mobile drawer presentation.">
     <Breadcrumb>
         <CyBreadcrumb>
             <CyBreadcrumbItem Text="Layout" Href="/layouts" />
@@ -31,11 +31,12 @@
 
         <span class="cb-panel-caption">Preview</span>
         <p class="cb-section-description">
-            Click the chevron in the sidebar header to advance cyclically through the configured <code>States</code> list
-            (<strong>Expanded</strong> &rarr; <strong>Compact</strong> &rarr; <strong>IconOnly</strong> &rarr;
-            <strong>Hidden</strong> &rarr; back to Expanded).
-            When the sidebar is in the <code>Hidden</code> state, click the exterior reveal handle positioned along the
-            outside boundary to restore the view.
+            Click the chevron in the sidebar header to advance cyclically through the configured <code>States</code>
+            sequence:
+            <strong>Expanded</strong> &rarr; <strong>Compact</strong> &rarr; <strong>IconOnly</strong> &rarr;
+            <strong>Hidden</strong> &rarr; back to Expanded.
+            When in the <code>Hidden</code> state, an exterior reveal handle button is positioned along the outer edge to
+            restore the sidebar view without creating a keyboard focus trap.
         </p>
 
         <div class="cb-workbench-preview">
@@ -117,11 +118,11 @@
                 </div>
 
                 <p class="cb-section-description" style="margin-top:1.5rem;">
-                    <code>CySidebar</code> supports arbitrary multi-state cycling through the <code>States</code> collection.
-                    Assigning any subset of
-                    <code>[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]</code>
-                    enables cyclic progression directly from the header chevron toggle or programmatically via
-                    <code>CycleNextAsync()</code>.
+                    <code>CySidebar</code> supports composable multi-state cycling via the <code>States</code> parameter.
+                    By binding
+                    <code>[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]</code>,
+                    clicking the header toggle advances automatically through each configured state or can be driven
+                    programmatically via <code>CycleNextAsync()</code>.
                 </p>
                 <CyCodeBlock Code="@MultiStateRecipeCode" Language="csharp" />
 
@@ -188,7 +189,7 @@ else if (_activeTab == Tab.Api)
 
     private const string MultiStateRecipeCode =
         """
-        // In the component or host layout:
+        // In your component or page:
         private CySidebar? _sidebar;
         private SidebarState _state = SidebarState.Expanded;
         private bool _mobileOpen;
@@ -208,26 +209,26 @@ else if (_activeTab == Tab.Api)
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
     [
-        new("States", "IReadOnlyList<SidebarState>", "[Expanded, Compact]", "List of states through which the sidebar cycles when the header toggle is clicked."),
-        new("State", "SidebarState", "Expanded", "Active display state of the sidebar: Expanded, Compact, IconOnly, or Hidden. Two-way bindable via @bind-State."),
-        new("StateChanged", "EventCallback<SidebarState>", "-", "Raised when the sidebar state changes."),
-        new("MobileOpen", "bool", "false", "Whether the mobile off-canvas drawer is open. Two-way bindable via @bind-MobileOpen."),
+        new("States", "IReadOnlyList<SidebarState>", "[Expanded, Compact]", "List of states through which the sidebar cycles when toggled."),
+        new("State", "SidebarState", "Expanded", "Active display state: Expanded, Compact, IconOnly, or Hidden. Two-way bindable via @bind-State."),
+        new("StateChanged", "EventCallback<SidebarState>", "-", "Raised when State changes."),
+        new("MobileOpen", "bool", "false", "Whether the responsive off-canvas drawer is open. Two-way bindable via @bind-MobileOpen."),
         new("MobileOpenChanged", "EventCallback<bool>", "-", "Raised when MobileOpen changes."),
-        new("MobileBreakpoint", "string", "47.99rem", "CSS media breakpoint below which off-canvas drawer layout rules apply."),
-        new("ShowMobileBackdrop", "bool", "true", "Whether the dismissible dark overlay backdrop renders while MobileOpen is true."),
+        new("MobileBreakpoint", "string", "47.99rem", "CSS media query breakpoint below which off-canvas drawer rules apply."),
+        new("ShowMobileBackdrop", "bool", "true", "Whether the dismissible overlay backdrop is rendered while MobileOpen is true."),
         new("Position", "SidebarPosition", "Left", "Which edge the sidebar docks to: Left or Right."),
         new("Width", "SidebarWidth", "Medium", "Expanded width: Small, Medium, or Large."),
         new("Brand", "RenderFragment?", "null", "Optional brand lockup rendered in the header row."),
-        new("ChildContent", "RenderFragment?", "null", "The sidebar navigation content."),
+        new("ChildContent", "RenderFragment?", "null", "The navigation items rendered in the sidebar."),
         new("Collapsed (Obsolete)", "bool", "false", "Legacy collapsed flag. Deprecated in favor of States and State."),
-        new("CollapseMode (Obsolete)", "SidebarCollapseMode", "Compact", "Legacy collapse mode. Deprecated in favor of States and State.")
+        new("CollapseMode (Obsolete)", "SidebarCollapseMode", "Compact", "Legacy appearance mode. Deprecated in favor of States and State.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
-        new("Complementary landmark", "Renders as <aside>, a complementary landmark allowing assistive technology to identify and jump to navigation."),
+        new("Complementary landmark", "Renders as an <aside> landmark for assistive technology navigation."),
         new("Keyboard escape from Hidden state", "When in the Hidden state, an exterior reveal handle (.cy-sidebar__reveal-handle) is rendered with aria-label=\"Reveal sidebar\", preventing keyboard focus traps."),
-        new("Inert hidden content", "When Hidden, the zero-width clipped internal header elements are given aria-hidden=\"true\" and tabindex=\"-1\" so screen readers bypass invisible controls."),
-        new("Accessible mobile drawer", "The mobile off-canvas drawer renders a mutually exclusive close button with aria-label=\"Close sidebar\" and a dismissible backdrop marked aria-hidden=\"true\".")
+        new("Inert hidden content", "When Hidden, zero-width clipped internal header elements receive aria-hidden=\"true\" and tabindex=\"-1\" so screen readers bypass inaccessible controls."),
+        new("Accessible mobile drawer", "The off-canvas mobile drawer renders a mutually exclusive close button with aria-label=\"Close sidebar\" and a backdrop overlay marked aria-hidden=\"true\".")
     ];
 }
