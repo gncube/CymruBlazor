@@ -276,11 +276,27 @@
   width: 22rem;
 }
 
+/*
+ * Hidden state. The aside itself collapses to zero width, but it must be
+ * the containing block for .cy-sidebar__reveal-handle (position: relative)
+ * and must NOT clip it (overflow: visible) - otherwise the handle is either
+ * placed against some distant ancestor (off-screen, causing a horizontal
+ * scrollbar) or clipped by the very box it is meant to escape from. Every
+ * other child is display: none, which removes the header, brand and nav
+ * links from layout, the tab order and the accessibility tree, so there is
+ * nothing invisible left to Tab into. (Not applied while the mobile drawer
+ * is open - the drawer always shows its full contents.)
+ */
 .cy-sidebar--collapsed {
+  position: relative;
   flex-basis: 0;
   width: 0;
-  overflow: hidden;
+  overflow: visible;
   border-width: 0;
+}
+
+.cy-sidebar--collapsed:not(.cy-sidebar--mobile-open) > :not(.cy-sidebar__reveal-handle) {
+  display: none;
 }
 
 /*
@@ -526,6 +542,31 @@
         transform: translateX(0);
         box-shadow: var(--cymru-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1));
     }
+
+    /* A closed drawer is off-canvas, so it must also leave the tab order and
+       accessibility tree. visibility flips after the slide-out finishes. */
+    .cy-sidebar:not(.cy-sidebar--mobile-open) {
+        visibility: hidden;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.25s;
+    }
+
+    .cy-sidebar--mobile-open {
+        visibility: visible;
+    }
+
+    /* State=Hidden describes the desktop rail; an open drawer always shows
+       its full contents. */
+    .cy-sidebar--mobile-open.cy-sidebar--collapsed {
+        flex-basis: auto;
+        width: 100%;
+        overflow: auto;
+    }
+
+    /* The reveal handle is a desktop affordance; on mobile the consumer's
+       own control opens the drawer via MobileOpen. */
+    .cy-sidebar__reveal-handle {
+        display: none;
+    }
 }
 
 /*
@@ -549,6 +590,13 @@
   .cy-sidebar--right {
     border-inline-start: 0;
     border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  }
+
+  /* Declared after the rules above so Hidden still wins the cascade tie. */
+  .cy-sidebar--collapsed {
+    flex-basis: 0;
+    width: 0;
+    border-width: 0;
   }
 }
 

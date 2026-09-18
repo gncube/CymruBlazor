@@ -29,8 +29,14 @@ Full detail for every release is also available as auto-generated
 ### Fixed
 
 - `CySidebar` in the `Hidden` state no longer traps the user: a reveal
-  handle is rendered outside the clipped `<aside>`, and the clipped header
-  is removed from the tab order and accessibility tree.
+  handle is rendered beside the zero-width `<aside>` (which is now its
+  positioned containing block and no longer clips it, so it neither
+  disappears nor pushes the page into horizontal scrolling), and all other
+  sidebar content is `display: none` so it leaves the tab order and
+  accessibility tree. Hidden also now wins over the generic tablet
+  full-width stacking rule, an open mobile drawer always shows its full
+  contents regardless of `State`, and a closed mobile drawer is no longer
+  keyboard-focusable while off-canvas.
 - Demo: the `/content/icons` preview icon was invisible in dark mode (and
   the gallery's icon names and domain headings were near-invisible). The
   page's scoped stylesheet used `--cb-color-*` custom properties that are
