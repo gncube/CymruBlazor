@@ -1,12 +1,21 @@
 @inherits CyLayoutComponentBase
 @using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
 
 <aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute"
        @attributes="AdditionalAttributes">
 
+    @if (State == SidebarState.Hidden)
+    {
+        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="Reveal sidebar">
+            <CyIcon Name="@RevealIconName" Size="16" />
+        </button>
+    }
+
     @if (ShowHeader)
     {
-        <div class="cy-sidebar__header">
+        <div class="cy-sidebar__header" aria-hidden="@(State == SidebarState.Hidden ? "true" : null)"
+             tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
 
             @if (Brand is not null)
             {
@@ -20,7 +29,8 @@
                 <button type="button" class="cy-sidebar__toggle"
                         @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
                         aria-expanded="@(!EffectiveCollapsed)"
-                        aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")">
+                        aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")"
+                        tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
                     <CyIcon Name="@ToggleIconName" Size="16" />
                 </button>
             }

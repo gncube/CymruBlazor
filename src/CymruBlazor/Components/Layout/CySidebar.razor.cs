@@ -109,6 +109,13 @@ public partial class CySidebar : CyLayoutComponentBase
     };
 
     /// <summary>
+    /// The chevron icon used by the external reveal handle button when the sidebar is hidden.
+    /// </summary>
+    private string RevealIconName => Position == SidebarPosition.Right
+        ? "chevron-left"
+        : "chevron-right";
+
+    /// <summary>
     /// Legacy HTML attribute value for styling compatibility.
     /// </summary>
     public string CollapseModeAttribute => _state switch
