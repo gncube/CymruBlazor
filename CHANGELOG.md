@@ -10,6 +10,43 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+## [0.1.0-preview.10] - 2026-09-18
+
+### Added
+
+- `CySidebar` composable states: new `SidebarState` enum
+  (`Expanded`, `Compact`, `IconOnly`, `Hidden`) with `States`/`State`/
+  `StateChanged` parameters and `CycleNextAsync()`/`ExpandAsync()`/
+  `SetStateAsync()`, so a single toggle can cycle through any ordered set
+  of appearances. `Collapsed`/`CollapseMode`/`CollapsedChanged` keep
+  working unchanged as an `[Obsolete]` compatibility layer.
+- `CySidebar` mobile off-canvas drawer: `MobileOpen`/`MobileOpenChanged`/
+  `MobileBreakpoint`/`ShowMobileBackdrop`, with a click-to-close backdrop
+  and a close button replacing the desktop toggle while open.
+- `SidebarCollapseMode.NonCollapsible`; `Disabled` is retained as an
+  `[Obsolete]` alias for one release.
+
+### Fixed
+
+- `CySidebar` in the `Hidden` state no longer traps the user: a reveal
+  handle is rendered outside the clipped `<aside>`, and the clipped header
+  is removed from the tab order and accessibility tree.
+- Demo: the `/content/icons` preview icon was invisible in dark mode (and
+  the gallery's icon names and domain headings were near-invisible). The
+  page's scoped stylesheet used `--cb-color-*` custom properties that are
+  not defined anywhere, so every usage fell back to a hardcoded light-mode
+  colour; its dark override could never apply because scoped CSS rewrites
+  the `[data-theme]` selector to require a scope attribute the theme
+  provider element does not have. Now uses the theme-reactive
+  `--cb-bg-*`/`--cb-text-*`/`--cb-border-*` tokens, with a regression test
+  (`DemoCssTokenTests`) guarding against reintroducing undefined tokens.
+- `CySidebar`'s reveal handle, mobile backdrop and close button referenced
+  `--cy-color-*`/`--cy-radius-*`/`--cy-shadow-*` custom properties that are
+  defined nowhere in the library (the real design tokens are `--cymru-*`),
+  so they always rendered their hardcoded light-mode fallback regardless
+  of theme. Remapped to `--cymru-*` and guarded by
+  `Library_Css_Should_Not_Reference_Undefined_Cy_Tokens`.
+
 ### Changed (demo only)
 
 - Demo pages migrated from obsolete `Shared/DemoCodeBlock.razor` wrapper

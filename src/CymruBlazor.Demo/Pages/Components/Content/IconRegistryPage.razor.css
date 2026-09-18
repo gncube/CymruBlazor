@@ -32,10 +32,10 @@
     justify-content: center;
     min-height: 180px;
     padding: 2rem;
-    background-color: var(--cb-color-surface, #ffffff);
-    background-image: radial-gradient(var(--cb-color-border, #cbd5e1) 1px, transparent 1px);
+    background-color: var(--cb-bg-surface);
+    background-image: radial-gradient(var(--cb-bg-canvas-dots) 1px, transparent 1px);
     background-size: 16px 16px;
-    border: 1px solid var(--cb-color-border, #e2e8f0);
+    border: 1px solid var(--cb-border-subtle);
     border-radius: 8px;
     margin-bottom: 1.5rem;
 }
@@ -44,7 +44,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--cb-color-text, #0f172a);
+    color: var(--cb-text-primary);
     transition: transform 0.15s ease-in-out;
 }
 
@@ -62,20 +62,20 @@
     gap: 0.5rem;
     margin-bottom: 0.85rem;
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--cb-color-border, #e2e8f0);
+    border-bottom: 1px solid var(--cb-border-subtle);
 }
 
 .cb-icon-domain-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--cb-color-text, #0f172a);
+    color: var(--cb-text-primary);
 }
 
 .cb-icon-domain-count {
     margin-left: auto;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--cb-color-muted, #64748b);
+    color: var(--cb-text-muted);
 }
 
 .cb-icon-grid {
@@ -93,25 +93,25 @@
     justify-content: center;
     padding: 0.85rem 0.35rem 0.65rem;
     min-height: 80px;
-    background-color: var(--cb-color-surface, #ffffff);
-    border: 1px solid var(--cb-color-border, #e2e8f0);
+    background-color: var(--cb-bg-surface);
+    border: 1px solid var(--cb-border-subtle);
     border-radius: 8px;
     cursor: pointer;
     box-sizing: border-box;
-    color: var(--cb-color-text, #0f172a);
+    color: var(--cb-text-primary);
     transition: border-color 0.12s ease-in-out, box-shadow 0.12s ease-in-out, background-color 0.12s ease-in-out;
 }
 
 .cb-icon-tile:hover {
-    border-color: #0284c7;
-    background-color: #f8fafc;
+    border-color: var(--cb-border-focus);
+    background-color: var(--cb-bg-subtle);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .cb-icon-tile--active {
-    border-color: #0284c7;
-    background-color: #eff6ff;
-    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+    border-color: var(--cb-border-focus);
+    background-color: var(--cb-bg-muted);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--cb-border-focus) 25%, transparent);
 }
 
 .cb-icon-tile__graphic {
@@ -125,7 +125,7 @@
 .cb-icon-tile__name {
     font-size: 0.6875rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color: var(--cb-color-muted, #475569);
+    color: var(--cb-text-muted);
     text-align: center;
     max-width: 100%;
     overflow: hidden;
@@ -142,8 +142,8 @@
     font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
-    background-color: #0284c7;
-    color: #ffffff;
+    background-color: var(--cb-brand-primary);
+    color: var(--cb-text-on-accent);
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
     animation: fadeIn 0.15s ease-in-out;
@@ -152,43 +152,4 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-2px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-/* =========================================================================
-   DARK THEME OVERRIDES
-   ========================================================================= */
-
-[data-theme="dark"],
-.dark {
-    --cb-color-surface: #111b33;
-    --cb-color-border: #1e293b;
-    --cb-color-text: #f8fafc;
-    --cb-color-muted: #94a3b8;
-}
-
-[data-theme="dark"] .cb-workbench-preview,
-.dark .cb-workbench-preview {
-    background-color: #0b1329;
-    background-image: radial-gradient(#1e293b 1px, transparent 1px);
-    border-color: #1e293b;
-}
-
-[data-theme="dark"] .cb-icon-tile,
-.dark .cb-icon-tile {
-    background-color: #111b33;
-    border-color: #1e293b;
-    color: #f8fafc;
-}
-
-[data-theme="dark"] .cb-icon-tile:hover,
-.dark .cb-icon-tile:hover {
-    background-color: #172547;
-    border-color: #38bdf8;
-}
-
-[data-theme="dark"] .cb-icon-tile--active,
-.dark .cb-icon-tile--active {
-    background-color: rgba(2, 132, 199, 0.15);
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
 }
