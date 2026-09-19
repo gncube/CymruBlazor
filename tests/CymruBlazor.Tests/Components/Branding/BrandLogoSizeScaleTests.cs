@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Shouldly;
 using Xunit;
@@ -63,7 +64,7 @@ public sealed class BrandLogoSizeScaleTests
         var value = Regex.Match(block.Groups[1].Value, property + @":\s*(\d+)px");
         value.Success.ShouldBeTrue($"'{selector}' has no pixel '{property}'");
 
-        return int.Parse(value.Groups[1].Value);
+        return int.Parse(value.Groups[1].Value, CultureInfo.InvariantCulture);
     }
 
     private static string ReadBrandingCss()
