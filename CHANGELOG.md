@@ -23,6 +23,9 @@ Full detail for every release is also available as auto-generated
 - Toasts are announced to screen readers: the container is a polite,
   non-atomic live region and each toast has `role="status"` (Info/Success) or
   `role="alert"` (Warning/Danger), matching `CyAlert`.
+- `CyTabs`: the active tab's label failed WCAG AA contrast in the dark theme
+  (2.34:1, `#0a6a84` on `#212b32`). It now uses `--cymru-color-link` there.
+  Light and high-contrast are unchanged. Found by the new themed axe scans.
 - Undefined CSS custom properties (each hidden by a fallback value):
   the `CySidebar` drawer and backdrop now use `--cymru-z-modal` /
   `--cymru-z-overlay`, the sticky `CyHeader` uses `--cymru-z-sticky`

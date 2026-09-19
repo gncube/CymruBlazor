@@ -52,6 +52,17 @@
   color: var(--cymru-color-primary);
 }
 
+/*
+ * In the dark theme --cymru-color-primary is cyan-900 (#0a6a84), a surface
+ * fill colour: as text on the dark background it is 2.34:1 (WCAG AA needs
+ * 4.5:1). Use the dark theme's link colour, which is defined for text on
+ * dark surfaces, for both the label and the indicator.
+ */
+[data-theme="dark"] .cy-tabs__tab--active {
+  border-block-end-color: var(--cymru-color-link);
+  color: var(--cymru-color-link);
+}
+
 .cy-tabs__panel {
   padding-block-start: var(--cymru-spacing-component-md);
 }
