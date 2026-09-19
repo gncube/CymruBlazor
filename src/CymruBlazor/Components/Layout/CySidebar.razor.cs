@@ -102,6 +102,24 @@ public partial class CySidebar : CyLayoutComponentBase
     [Parameter]
     public RenderFragment? Brand { get; set; }
 
+    /// <summary>
+    /// Optional brand content shown instead of <see cref="Brand"/> while the sidebar is in a rail
+    /// state (<see cref="SidebarState.Compact"/> or <see cref="SidebarState.IconOnly"/>) - typically
+    /// the icon/symbol version of the logo, since the full lockup does not fit a rail. When
+    /// <see langword="null"/>, <see cref="Brand"/> is shown (or nothing, if
+    /// <see cref="ShowBrandWhenCollapsed"/> is <see langword="false"/>).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? CollapsedBrand { get; set; }
+
+    /// <summary>
+    /// When <see langword="false"/> and no <see cref="CollapsedBrand"/> is supplied, no brand is
+    /// rendered in the rail states, leaving just the size controls (use this when no icon-sized
+    /// logo is available). Defaults to <see langword="true"/> so existing markup is unchanged.
+    /// </summary>
+    [Parameter]
+    public bool ShowBrandWhenCollapsed { get; set; } = true;
+
     protected override string BaseCssClass => "cy-sidebar";
 
     /// <summary>
@@ -114,8 +132,69 @@ public partial class CySidebar : CyLayoutComponentBase
     /// </summary>
 #pragma warning disable CS0618
     private bool ShowHeader =>
-        MobileOpen || Brand is not null || CollapseMode != SidebarCollapseMode.NonCollapsible;
+        MobileOpen
+        || Brand is not null
+        || CollapsedBrand is not null
+        || CollapseMode != SidebarCollapseMode.NonCollapsible;
 #pragma warning restore CS0618
+
+    private bool IsRailState => _state is SidebarState.Compact or SidebarState.IconOnly;
+
+    /// <summary>
+    /// The brand shown in the header for the current state.
+    /// </summary>
+    private RenderFragment? HeaderBrand =>
+        IsRailState
+            ? CollapsedBrand ?? (ShowBrandWhenCollapsed ? Brand : null)
+            : Brand;
+
+    /// <summary>
+    /// With three or more configured states a single cycling button is ambiguous, so the header shows
+    /// directional chevrons instead (one to narrow, one to widen). Two-state sidebars keep the
+    /// original single toggle.
+    /// </summary>
+#pragma warning disable CS0618
+    private bool UseStepControls =>
+        States.Count > 2 && !MobileOpen && CollapseMode != SidebarCollapseMode.NonCollapsible;
+#pragma warning restore CS0618
+
+    private int CurrentIndex
+    {
+        get
+        {
+            for (var i = 0; i < States.Count; i++)
+            {
+                if (States[i] == _state)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+    }
+
+    private bool CanNarrow => CurrentIndex < States.Count - 1;
+
+    private bool CanWiden => CurrentIndex > 0;
+
+    private string NarrowLabel => CanNarrow ? DescribeTarget(States[CurrentIndex + 1]) : "Narrow sidebar";
+
+    private string WidenLabel => CanWiden ? DescribeTarget(States[CurrentIndex - 1]) : "Widen sidebar";
+
+    // "Narrow" points towards the sidebar's own edge, "widen" points away from it.
+    private string NarrowIconName => Position == SidebarPosition.Right ? "chevron-right" : "chevron-left";
+
+    private string WidenIconName => Position == SidebarPosition.Right ? "chevron-left" : "chevron-right";
+
+    private static string DescribeTarget(SidebarState target) => target switch
+    {
+        SidebarState.Expanded => "Expand sidebar",
+        SidebarState.Compact => "Show compact sidebar",
+        SidebarState.IconOnly => "Show icons only",
+        SidebarState.Hidden => "Hide sidebar",
+        _ => "Resize sidebar"
+    };
 
     /// <summary>
     /// The chevron icon used by the collapse/expand toggle button.
@@ -246,6 +325,34 @@ public partial class CySidebar : CyLayoutComponentBase
 
         var nextIndex = currentIndex >= 0 ? (currentIndex + 1) % States.Count : 0;
         await ApplyStateChangeAsync(States[nextIndex]);
+    }
+
+    /// <summary>
+    /// Moves one step towards the end of <see cref="States"/> (e.g. Expanded to Compact), without wrapping.
+    /// </summary>
+    public async Task NarrowAsync()
+    {
+#pragma warning disable CS0618
+        if (CollapseMode == SidebarCollapseMode.NonCollapsible || !CanNarrow)
+        {
+            return;
+        }
+#pragma warning restore CS0618
+
+        await ApplyStateChangeAsync(States[CurrentIndex + 1]);
+    }
+
+    /// <summary>
+    /// Moves one step towards the start of <see cref="States"/> (e.g. IconOnly to Compact), without wrapping.
+    /// </summary>
+    public async Task WidenAsync()
+    {
+        if (!CanWiden)
+        {
+            return;
+        }
+
+        await ApplyStateChangeAsync(States[CurrentIndex - 1]);
     }
 
     /// <summary>

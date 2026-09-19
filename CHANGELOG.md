@@ -25,9 +25,32 @@ Full detail for every release is also available as auto-generated
   and a close button replacing the desktop toggle while open.
 - `SidebarCollapseMode.NonCollapsible`; `Disabled` is retained as an
   `[Obsolete]` alias for one release.
+- `CySidebar` directional size controls: with three or more `States` the
+  header shows two chevrons - one to narrow a step, one to widen a step
+  (`NarrowAsync()`/`WidenAsync()`, no wrap-around) - instead of a single
+  cycling button. Each button's accessible name says where it goes ("Show
+  icons only", "Hide sidebar", "Expand sidebar"). One- and two-state
+  sidebars keep the original single toggle.
+- `CySidebar.CollapsedBrand` and `ShowBrandWhenCollapsed`: show the icon-sized
+  logo in the Compact/IconOnly rails, or just the two chevrons when no icon
+  logo is available.
+
+### Changed
+
+- `CySidebar` now always fills the full height of the row it sits in
+  (`align-self: stretch`), even when the parent uses `align-items:
+  flex-start`, so its background and border reach the bottom of the page.
+- `CySidebar` `IconOnly` rail is wider (5rem, was 3.5rem) and draws
+  navigation icons larger (1.75rem) with a 3rem minimum row height, so the
+  icon-only rail is comfortable to read and tap.
 
 ### Fixed
 
+- `CySidebar` in the `Hidden` state hid its contents with `display: none`
+  inside a CSS layer, so any consumer rule such as `.nav { display: flex }`
+  (consumer CSS is unlayered and always wins over layered CSS) left the
+  navigation visible and overlapping the page. The collapsed aside now also
+  uses `visibility: hidden` (which the reveal handle opts out of).
 - `CySidebar` in the `Hidden` state no longer traps the user: a reveal
   handle is rendered beside the zero-width `<aside>` (which is now its
   positioned containing block and no longer clips it, so it neither

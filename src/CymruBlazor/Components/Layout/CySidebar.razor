@@ -22,10 +22,10 @@
         <div class="cy-sidebar__header" aria-hidden="@(State == SidebarState.Hidden && !MobileOpen ? "true" : null)"
              tabindex="@(State == SidebarState.Hidden && !MobileOpen ? "-1" : null)">
 
-            @if (Brand is not null)
+            @if (HeaderBrand is not null)
             {
                 <div class="cy-sidebar__brand">
-                    @Brand
+                    @HeaderBrand
                 </div>
             }
 
@@ -37,6 +37,49 @@
                         <path d="M18 6 6 18M6 6l12 12" />
                     </svg>
                 </button>
+            }
+            else if (UseStepControls)
+            {
+                <div class="cy-sidebar__steps" role="group" aria-label="Sidebar size">
+                    @if (Position == SidebarPosition.Left)
+                    {
+                        if (CanNarrow)
+                        {
+                            <button type="button" class="cy-sidebar__step cy-sidebar__step--narrow" @onclick="NarrowAsync"
+                                    aria-label="@NarrowLabel"
+                                    tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
+                                <CyIcon Name="@NarrowIconName" Size="20" />
+                            </button>
+                        }
+                        if (CanWiden)
+                        {
+                            <button type="button" class="cy-sidebar__step cy-sidebar__step--widen" @onclick="WidenAsync"
+                                    aria-label="@WidenLabel"
+                                    tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
+                                <CyIcon Name="@WidenIconName" Size="20" />
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        if (CanWiden)
+                        {
+                            <button type="button" class="cy-sidebar__step cy-sidebar__step--widen" @onclick="WidenAsync"
+                                    aria-label="@WidenLabel"
+                                    tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
+                                <CyIcon Name="@WidenIconName" Size="20" />
+                            </button>
+                        }
+                        if (CanNarrow)
+                        {
+                            <button type="button" class="cy-sidebar__step cy-sidebar__step--narrow" @onclick="NarrowAsync"
+                                    aria-label="@NarrowLabel"
+                                    tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
+                                <CyIcon Name="@NarrowIconName" Size="20" />
+                            </button>
+                        }
+                    }
+                </div>
             }
             else if (ShowCycleOrToggle)
             {

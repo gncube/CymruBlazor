@@ -248,6 +248,12 @@
 .cy-sidebar {
   flex: 0 0 auto;
 
+  /* Always span the full height of the row it sits in, even when the parent
+     sets align-items: flex-start (an item's own align-self beats its
+     container's align-items), so the sidebar background and border reach the
+     bottom of the page instead of stopping at the end of its content. */
+  align-self: stretch;
+
   box-sizing: border-box;
 
   border-inline-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
@@ -300,6 +306,17 @@
 }
 
 /*
+ * Belt and braces: consumer stylesheets are unlayered, so they always beat
+ * this layered file - e.g. a consumer rule such as ".app-nav { display: flex }"
+ * defeats the display: none above. visibility is inherited and is almost never
+ * set by consumers, so it reliably removes anything still rendered from view,
+ * the tab order and the accessibility tree. The reveal handle opts back in.
+ */
+.cy-sidebar--collapsed:not(.cy-sidebar--mobile-open) {
+  visibility: hidden;
+}
+
+/*
  * CySidebar.Brand - optional lockup (e.g. <CyBrandLogo />) at the top
  * of the sidebar, paired with the expand/collapse chevron toggle in a
  * shared header row. Brand always renders, in every collapse state
@@ -325,7 +342,8 @@
   flex: 1 1 auto;
 }
 
-.cy-sidebar__toggle {
+.cy-sidebar__toggle,
+.cy-sidebar__step {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -341,11 +359,13 @@
   cursor: pointer;
 }
 
-.cy-sidebar__toggle:hover {
+.cy-sidebar__toggle:hover,
+.cy-sidebar__step:hover {
   background-color: var(--cymru-color-surface-alt);
 }
 
-.cy-sidebar__toggle:focus-visible {
+.cy-sidebar__toggle:focus-visible,
+.cy-sidebar__step:focus-visible {
   outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
   outline-offset: 2px;
 }
@@ -360,8 +380,30 @@
 .cy-sidebar--icon-only .cy-sidebar__header {
   flex-direction: column;
   justify-content: center;
-  padding-inline: var(--cymru-space-2);
+  padding-inline: var(--cymru-space-1);
 }
+
+/*
+ * Directional size controls (three or more States): a narrow chevron and a
+ * widen chevron side by side. Expanded shows only "narrow" (pushed to the end
+ * of the row), the last state shows only "widen", every state in between
+ * shows both.
+ */
+.cy-sidebar__steps {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: var(--cymru-space-1);
+  margin-inline-start: auto;
+}
+
+.cy-sidebar--compact .cy-sidebar__steps,
+.cy-sidebar--icon-only .cy-sidebar__steps {
+  justify-content: center;
+  inline-size: 100%;
+}
+
 
 .cy-sidebar--compact .cy-sidebar__brand,
 .cy-sidebar--icon-only .cy-sidebar__brand {
@@ -406,8 +448,8 @@
  * users are unaffected.
  */
 .cy-sidebar--icon-only {
-  flex-basis: 3.5rem;
-  width: 3.5rem;
+  flex-basis: 5rem;
+  width: 5rem;
   overflow: hidden;
 }
 
@@ -416,6 +458,15 @@
   align-items: center;
   justify-content: center;
   padding: var(--cymru-space-2);
+  min-block-size: 3rem;
+}
+
+/* With no label to carry meaning, the icon is the whole control, so it is
+   drawn larger than the 20px used beside a label (CyIcon only sets the
+   width/height presentation attributes, which any CSS rule overrides). */
+.cy-sidebar--icon-only .cy-sidebar__item .cy-icon {
+  width: 1.75rem;
+  height: 1.75rem;
 }
 
 /*
@@ -440,6 +491,7 @@
 
 /* --- Hidden Sidebar Reveal Handle --- */
 .cy-sidebar__reveal-handle {
+    visibility: visible;
     position: absolute;
     top: 0.75rem;
     inset-inline-start: 100%;

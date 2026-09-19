@@ -352,4 +352,129 @@ public sealed class CySidebarTests : TestContextBase
 
         mobileOpenState.ShouldBeFalse();
     }
+
+    private static readonly IReadOnlyList<SidebarState> FourStates =
+        [SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden];
+
+    [Fact]
+    public void ThreeOrMoreStatesShouldRenderDirectionalStepControlsInsteadOfSingleToggle()
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Expanded));
+
+        cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(0);
+
+        // Expanded is the first state: it can only narrow.
+        cut.FindAll(".cy-sidebar__step--narrow").Count.ShouldBe(1);
+        cut.FindAll(".cy-sidebar__step--widen").Count.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(SidebarState.Compact)]
+    [InlineData(SidebarState.IconOnly)]
+    public void RailStatesShouldRenderBothChevronsWithLabelsNamingTheirTarget(SidebarState state)
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, state));
+
+        cut.FindAll(".cy-sidebar__step").Count.ShouldBe(2);
+
+        var narrowLabel = state == SidebarState.Compact ? "Show icons only" : "Hide sidebar";
+        var widenLabel = state == SidebarState.Compact ? "Expand sidebar" : "Show compact sidebar";
+
+        cut.Find(".cy-sidebar__step--narrow").GetAttribute("aria-label").ShouldBe(narrowLabel);
+        cut.Find(".cy-sidebar__step--widen").GetAttribute("aria-label").ShouldBe(widenLabel);
+    }
+
+    [Theory]
+    [InlineData(SidebarPosition.Left, "m15 18-6-6 6-6", "m9 18 6-6-6-6")]
+    [InlineData(SidebarPosition.Right, "m9 18 6-6-6-6", "m15 18-6-6 6-6")]
+    public void StepChevronsShouldPointTowardsAndAwayFromTheSidebarEdge(
+        SidebarPosition position, string narrowPath, string widenPath)
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.Position, position)
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Compact));
+
+        cut.Find(".cy-sidebar__step--narrow svg path").GetAttribute("d").ShouldBe(narrowPath);
+        cut.Find(".cy-sidebar__step--widen svg path").GetAttribute("d").ShouldBe(widenPath);
+    }
+
+    [Fact]
+    public async Task NarrowAndWidenShouldStepWithoutWrapping()
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Expanded));
+
+        await cut.InvokeAsync(() => cut.Instance.WidenAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+
+        await cut.InvokeAsync(() => cut.Instance.NarrowAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+
+        await cut.InvokeAsync(() => cut.Instance.NarrowAsync());
+        await cut.InvokeAsync(() => cut.Instance.NarrowAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Hidden);
+
+        await cut.InvokeAsync(() => cut.Instance.NarrowAsync());
+        cut.Instance.State.ShouldBe(SidebarState.Hidden);
+
+        await cut.InvokeAsync(() => cut.Instance.WidenAsync());
+        cut.Instance.State.ShouldBe(SidebarState.IconOnly);
+    }
+
+    [Fact]
+    public async Task ClickingStepChevronsShouldChangeState()
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Compact));
+
+        await cut.Find(".cy-sidebar__step--narrow").ClickAsync(new());
+        cut.Instance.State.ShouldBe(SidebarState.IconOnly);
+
+        await cut.Find(".cy-sidebar__step--widen").ClickAsync(new());
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+    }
+
+    [Fact]
+    public void CollapsedBrandShouldReplaceBrandInRailStatesOnly()
+    {
+        RenderFragment brand = b => b.AddContent(0, "Full");
+        RenderFragment icon = b => b.AddContent(0, "Icon");
+
+        var expanded = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Expanded)
+            .Add(p => p.Brand, brand)
+            .Add(p => p.CollapsedBrand, icon));
+        expanded.Find(".cy-sidebar__brand").TextContent.ShouldBe("Full");
+
+        foreach (var state in new[] { SidebarState.Compact, SidebarState.IconOnly })
+        {
+            var rail = Render<CySidebar>(parameters => parameters
+                .Add(p => p.States, FourStates)
+                .Add(p => p.State, state)
+                .Add(p => p.Brand, brand)
+                .Add(p => p.CollapsedBrand, icon));
+            rail.Find(".cy-sidebar__brand").TextContent.ShouldBe("Icon");
+        }
+    }
+
+    [Fact]
+    public void ShowBrandWhenCollapsedFalseShouldLeaveOnlyTheChevronsInRailStates()
+    {
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, FourStates)
+            .Add(p => p.State, SidebarState.Compact)
+            .Add(p => p.Brand, (RenderFragment)(b => b.AddContent(0, "Full")))
+            .Add(p => p.ShowBrandWhenCollapsed, false));
+
+        cut.FindAll(".cy-sidebar__brand").Count.ShouldBe(0);
+        cut.FindAll(".cy-sidebar__step").Count.ShouldBe(2);
+    }
 }
