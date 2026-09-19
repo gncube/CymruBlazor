@@ -10,20 +10,33 @@
         Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
     </a>
     <p class="cb-page-description">
-        Traps keyboard focus within its child content. Place around any overlay
-        (modal, drawer, dialog) to prevent focus from escaping to background
-        elements. Automatically moves focus into the trap on first render and
-        restores the previously focused element on disposal.
+        A wrapper that asks an <code>IFocusManager</code> to move focus into its
+        content on first render and to restore focus when it is removed. The
+        focus manager registered by default only logs those requests, so today
+        this component does not move, restore or contain focus. A working
+        implementation is planned for 1.3.0.
     </p>
 </div>
+
+<CyAlert Severity="ComponentColour.Warning" Title="Preview: focus movement and containment are not implemented yet">
+    <p style="margin:0">
+        <code>CyFocusTrap</code> currently renders a <code>&lt;div tabindex="-1"&gt;</code> and
+        calls <code>IFocusManager</code>. The default <code>FocusManager</code> logs at Debug
+        level and returns success without touching the page: focus does not move on open,
+        <kbd>Tab</kbd> can leave the panel, and focus is not restored on close. Do not rely on
+        it to build a modal dialog. You can register your own <code>IFocusManager</code>
+        (see below).
+    </p>
+</CyAlert>
 
 <div class="cb-section">
     <h2 class="cb-section-title">Basic usage</h2>
     <p class="cb-section-description">
         When <code>Enabled</code> is <code>true</code> (the default) and
-        <code>AutoFocus</code> is <code>true</code>, the trap container
-        receives focus immediately after render. Press
-        <kbd>Escape</kbd> to dismiss the demo panel.
+        <code>AutoFocus</code> is <code>true</code>, the trap asks the
+        <code>IFocusManager</code> to focus its container after the first render.
+        With the default focus manager nothing visibly happens: try pressing
+        <kbd>Tab</kbd> in the demo panel to see focus leave it.
     </p>
 
     <div class="cb-example">
@@ -47,10 +60,10 @@
                                   border-radius:var(--cymru-radius-md);
                                   background:var(--cymru-color-surface)">
                     <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium">
-                        <p style="margin:0;font-weight:600">Focus is trapped inside this panel.</p>
+                        <p style="margin:0;font-weight:600">This panel is wrapped in a CyFocusTrap.</p>
                         <p style="margin:0;font-size:var(--cymru-font-size-sm);
                                   color:var(--cymru-color-text-muted)">
-                            Tab cycles only through the elements below.
+                            With the default focus manager, Tab is not contained here.
                         </p>
                         <input type="text"
                                placeholder="First focusable element"
@@ -66,30 +79,42 @@
                                       width:100%;box-sizing:border-box" />
                         <button class="cb-demo-btn cb-demo-btn--secondary"
                                 @onclick="CloseTrap">
-                            Close panel (restores focus to trigger)
+                            Close panel
                         </button>
                     </CyStack>
                 </CyFocusTrap>
             }
         </div>
-        <pre class="cb-example__code"><code>&lt;FocusTrap Enabled="true"
-           AutoFocus="true"
-           RestoreFocus="true"&gt;
+        <pre class="cb-example__code"><code>&lt;CyFocusTrap Enabled="true"
+             AutoFocus="true"
+             RestoreFocus="true"&gt;
     &lt;input type="text" /&gt;
     &lt;button @@onclick="Close"&gt;Close&lt;/button&gt;
-&lt;/FocusTrap&gt;</code></pre>
+&lt;/CyFocusTrap&gt;</code></pre>
     </div>
 </div>
 
 <div class="cb-section">
     <h2 class="cb-section-title">Disabled trap</h2>
     <p class="cb-section-description">
-        Set <code>Enabled="false"</code> to render the wrapper without any
-        focus management — useful when conditionally activating trapping.
+        Set <code>Enabled="false"</code> to render the wrapper without asking the
+        focus manager to do anything on first render.
     </p>
-    <pre><code>&lt;FocusTrap Enabled="@@_isOpen"&gt;
+    <pre><code>&lt;CyFocusTrap Enabled="@@_isOpen"&gt;
     ...
-&lt;/FocusTrap&gt;</code></pre>
+&lt;/CyFocusTrap&gt;</code></pre>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Providing your own focus manager</h2>
+    <p class="cb-section-description">
+        <code>CyFocusTrap</code> calls whatever <code>IFocusManager</code> is registered.
+        <code>AddCymruBlazor()</code> registers a logging placeholder; register your own
+        afterwards (the last registration wins) to move and restore focus for real, for
+        example through JavaScript interop.
+    </p>
+    <pre><code>builder.Services.AddCymruBlazor();
+builder.Services.AddScoped&lt;IFocusManager, MyJsFocusManager&gt;();</code></pre>
 </div>
 
 <div class="cb-section">
@@ -108,19 +133,19 @@
                 <td class="cb-api-table__name">Enabled</td>
                 <td class="cb-api-table__type">bool</td>
                 <td class="cb-api-table__default">true</td>
-                <td>Activates or deactivates focus trapping</td>
+                <td>When false, no focus request is made on first render</td>
             </tr>
             <tr>
                 <td class="cb-api-table__name">AutoFocus</td>
                 <td class="cb-api-table__type">bool</td>
                 <td class="cb-api-table__default">true</td>
-                <td>Moves focus into the trap container on first render</td>
+                <td>Asks the focus manager to focus the container on first render (no effect with the default manager)</td>
             </tr>
             <tr>
                 <td class="cb-api-table__name">RestoreFocus</td>
                 <td class="cb-api-table__type">bool</td>
                 <td class="cb-api-table__default">true</td>
-                <td>Returns focus to the previously focused element on disposal</td>
+                <td>Asks the focus manager to restore the previously focused element on disposal (no effect with the default manager)</td>
             </tr>
             <tr>
                 <td class="cb-api-table__name">ChildContent</td>
@@ -143,23 +168,31 @@
     <ul style="color:var(--cymru-color-text);line-height:1.75;
                padding-inline-start:var(--cymru-space-6)">
         <li>
-            The trap root renders as <code>&lt;div tabindex="-1"&gt;</code> — programmatically
-            focusable but not in the natural tab order. This satisfies WCAG 2.1
-            Success Criterion 2.4.3 (Focus Order).
+            <strong>Not a complete solution today.</strong> The trap root renders as
+            <code>&lt;div tabindex="-1"&gt;</code>, which is programmatically focusable but
+            not in the tab order. Nothing moves focus there, and <kbd>Tab</kbd> is not
+            contained, so this component alone does not meet WCAG 2.1 Success Criterion
+            2.4.3 (Focus Order) for modal content.
         </li>
         <li>
             <code>RestoreFocus="true"</code> calls
-            <code>IFocusManager.RestoreFocusAsync()</code> on disposal, returning focus
-            to whichever element was active before the trap opened.
+            <code>IFocusManager.RestoreFocusAsync()</code> on disposal. The default
+            implementation only logs the call, so focus is not returned to the element
+            that was active before the panel opened.
         </li>
         <li>
-            Combine with a visible modal container that carries
-            <code>role="dialog"</code>, <code>aria-modal="true"</code>, and
-            <code>aria-labelledby</code> pointing to the dialog title.
+            For modal content today, use a native <code>&lt;dialog&gt;</code> opened with
+            <code>showModal()</code>, or supply your own <code>IFocusManager</code>. Modal
+            containers should carry <code>role="dialog"</code>, <code>aria-modal="true"</code>,
+            and <code>aria-labelledby</code> pointing to the dialog title.
         </li>
         <li>
             The component does not render its own <kbd>Escape</kbd> handler —
             add a <code>@@onkeydown</code> on the overlay container to close on escape.
+        </li>
+        <li>
+            Real focus movement, restoration and <kbd>Tab</kbd> containment are planned
+            for 1.3.0.
         </li>
     </ul>
 </div>

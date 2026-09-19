@@ -19,7 +19,7 @@
     <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
         <CyCard Href="/accessibility/focus-trap">
             <Header><strong>CyFocusTrap</strong></Header>
-            <ChildContent>Traps keyboard focus within a region, for modals and menus.</ChildContent>
+            <ChildContent>Asks a focus manager to move and restore focus around a region (preview: the default manager only logs).</ChildContent>
         </CyCard>
         <CyCard Href="/accessibility/live-region">
             <Header><strong>CyLiveRegion</strong></Header>
@@ -43,7 +43,8 @@
         </li>
         <li>
             <strong>Compose into overlays and forms.</strong>
-            <code>CyFocusTrap</code> is meant to wrap modal/drawer content,
+            <code>CyFocusTrap</code> is intended to wrap modal/drawer content
+            (it is a preview: the default focus manager does not yet move focus),
             and <code>CyLiveRegion</code> is meant to be registered once in
             a shell layout and driven via the Mediator pipeline from
             anywhere in the app.

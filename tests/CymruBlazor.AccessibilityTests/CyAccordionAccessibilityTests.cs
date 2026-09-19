@@ -47,4 +47,23 @@ public sealed class CyAccordionAccessibilityTests : AxeTestBase
         // Assert
         result.Violations.ShouldBeEmpty();
     }
+
+    // Dark and high-contrast scans (roadmap v1.2.1, Phase 5). Every state is
+    // rendered into ONE markup per theme to keep CI time down.
+    [Theory]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_Open_And_Closed_Items_In_Dark_And_High_Contrast_Themes(string theme)
+    {
+        // Arrange - "eligibility" open, "how-to-apply" closed
+        var cut = Render<CyAccordion>(parameters => parameters
+            .Add(p => p.DefaultExpandedItemId, "eligibility")
+            .Add(p => p.ChildContent, TwoItems()));
+
+        // Act
+        var result = await ScanMarkupAsync(cut.Markup, theme);
+
+        // Assert
+        result.Violations.ShouldBeEmpty();
+    }
 }

@@ -49,4 +49,30 @@ public sealed class CyAlertAccessibilityTests : AxeTestBase
         // Assert
         result.Violations.ShouldBeEmpty();
     }
+
+    // Dark and high-contrast scans (roadmap v1.2.1, Phase 5). Every state is
+    // rendered into ONE markup per theme to keep CI time down.
+    [Theory]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_For_All_Severities_In_Dark_And_High_Contrast_Themes(string theme)
+    {
+        // Arrange - four severities, all dismissible
+        ComponentColour[] severities =
+            [ComponentColour.Info, ComponentColour.Success, ComponentColour.Warning, ComponentColour.Danger];
+
+        var markup = string.Join(
+            Environment.NewLine,
+            severities.Select(severity => Render<CyAlert>(parameters => parameters
+                .Add(p => p.Severity, severity)
+                .Add(p => p.Title, "Appointment confirmed")
+                .Add(p => p.Dismissible, true)
+                .AddChildContent("Your appointment has been confirmed for Tuesday at 10:30am.")).Markup));
+
+        // Act
+        var result = await ScanMarkupAsync(markup, theme);
+
+        // Assert
+        result.Violations.ShouldBeEmpty();
+    }
 }

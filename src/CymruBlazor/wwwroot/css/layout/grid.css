@@ -580,7 +580,7 @@
 .cy-sidebar__backdrop {
     position: fixed;
     inset: 0;
-    z-index: var(--cy-z-sidebar-backdrop, 998);
+    z-index: var(--cymru-z-overlay);
     background-color: rgb(0 0 0 / 0.5);
     backdrop-filter: blur(2px);
     transition: opacity 0.2s ease-in-out;
@@ -615,7 +615,7 @@
         position: fixed;
         top: 0;
         bottom: 0;
-        z-index: var(--cy-z-sidebar-drawer, 999);
+        z-index: var(--cymru-z-modal);
         display: flex;
         flex-direction: column;
         max-width: min(85vw, 20rem);

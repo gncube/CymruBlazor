@@ -84,7 +84,7 @@ else
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
         new("Labelled landmark", "Renders as <nav aria-label=\"Main\">, giving assistive tech a clear, named landmark."),
-        new("Focus trapped in the mobile menu", "While the mobile menu is open, focus is trapped inside it (via CyFocusTrap) and restored to the toggle button on close."),
+        new("Mobile menu focus (not yet managed)", "The mobile menu is toggled with a real button that exposes aria-expanded, but focus is not yet moved into the menu, contained, or restored to the toggle on close. CyFocusTrap is wired in, but its default focus manager is a placeholder until 1.3.0."),
         new("Toggle state announced", "The mobile toggle button uses aria-expanded and aria-controls so screen reader users know whether the menu is open.")
     ];
 }

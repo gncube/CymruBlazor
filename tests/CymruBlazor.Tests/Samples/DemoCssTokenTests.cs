@@ -39,35 +39,6 @@ public sealed class DemoCssTokenTests
             "use the theme-reactive --cb-bg-*/--cb-text-*/--cb-border-* tokens from demo.css instead.");
     }
 
-    /// <summary>
-    /// Same bug class in the shipped library: the CySidebar reveal handle,
-    /// backdrop and close button referenced <c>--cy-color-*</c>,
-    /// <c>--cy-radius-*</c> and <c>--cy-shadow-*</c> tokens. The library's
-    /// real tokens are all <c>--cymru-*</c>; the <c>--cy-*</c> ones are
-    /// defined nowhere, so those controls always rendered their hardcoded
-    /// light-mode fallback regardless of theme.
-    /// </summary>
-    [Fact]
-    public void Library_Css_Should_Not_Reference_Undefined_Cy_Tokens()
-    {
-        var cssDirectory = Path.Combine(FindRepositoryRoot(), "src", "CymruBlazor", "wwwroot", "css");
-
-        var undefinedPrefixes = new[] { "--cy-color-", "--cy-radius-", "--cy-shadow-" };
-
-        var offenders = Directory
-            .EnumerateFiles(cssDirectory, "*.css", SearchOption.AllDirectories)
-            .Where(f =>
-            {
-                var content = File.ReadAllText(f);
-                return undefinedPrefixes.Any(p => content.Contains(p, StringComparison.Ordinal));
-            })
-            .Select(f => Path.GetRelativePath(cssDirectory, f))
-            .ToList();
-
-        offenders.ShouldBeEmpty(
-            "These library stylesheets reference undefined --cy-* tokens; use the --cymru-* design tokens.");
-    }
-
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

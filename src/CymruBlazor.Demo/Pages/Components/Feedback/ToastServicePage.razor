@@ -95,29 +95,30 @@ else if (_activeTab == Tab.Api)
         <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
             ToastVariant
         </h3>
-        <p class="cb-section-description">Info, Success, Warning, Danger - controls the toast's colour and icon.</p>
+        <p class="cb-section-description">Info, Success, Warning, Danger - controls the toast's colour, icon, and ARIA
+            announcement role.</p>
 
-        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
-            ShowToastNotification record
-        </h3>
-        <DemoApiTable Parameters="_notificationApiDocs" />
+            <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+                ShowToastNotification record
+            </h3>
+            <DemoApiTable Parameters="_notificationApiDocs" />
 
-        <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
-            CyToastContainer
-        </h3>
-        <p class="cb-section-description">
-            No parameters - a single instance renders whatever <code>IToastService.Toasts</code>
-            currently holds and re-renders on <code>OnChange</code>. Place one instance in your
-            shell layout, same as <code>CyLiveRegion</code>.
-        </p>
-    </div>
-}
+            <h3 style="font-size:var(--cymru-font-size-lg);margin-block:var(--cymru-space-4) var(--cymru-space-2)">
+                CyToastContainer
+            </h3>
+            <p class="cb-section-description">
+                No parameters - a single instance renders whatever <code>IToastService.Toasts</code>
+                currently holds and re-renders on <code>OnChange</code>. Operates as an <code>aria-live="polite"</code>
+                region containing <code>role="status"</code> or <code>role="alert"</code> notification items.
+            </p>
+        </div>
+    }
 else
-{
-    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-        <DemoAccessibilityChecklist Items="_a11yItems" />
-    </div>
-}
+    {
+        <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+            <DemoAccessibilityChecklist Items="_a11yItems" />
+        </div>
+    }
 
 @code {
     private enum Tab { Examples, Api, Accessibility }
@@ -173,13 +174,15 @@ else
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _notificationApiDocs =
     [
         new("Message", "string", "-", "The text to display. Required."),
-        new("Variant", "ToastVariant", "Success", "Controls colour and icon."),
+        new("Variant", "ToastVariant", "Success", "Controls colour, icon, and role assignment."),
         new("Duration", "TimeSpan?", "4 seconds", "Auto-dismiss delay. Pass TimeSpan.Zero to require manual dismissal.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
         new("Single, app-wide container", "One CyToastContainer instance (registered once in the shell layout) means toasts always render in the same landmark region, wherever in the app they were raised from."),
+        new("Polite live announcements", "The CyToastContainer hosts aria-live=\"polite\" and aria-atomic=\"false\" so incoming notifications are announced without interrupting active speech."),
+        new("Role differentiation", "Info and Success toasts announce via role=\"status\", while Warning and Danger toasts expose role=\"alert\" to signal high-priority events."),
         new("Dismissible without a mouse", "Every toast has a real, focusable close button rather than relying solely on the auto-dismiss timer, so keyboard and switch-device users aren't forced to wait it out."),
         new("Bounded queue", "A hard cap of 5 concurrent toasts (oldest evicted first) keeps the notification region from becoming an overwhelming wall of text for assistive technology users.")
     ];

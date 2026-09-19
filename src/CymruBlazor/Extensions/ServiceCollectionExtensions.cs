@@ -42,6 +42,11 @@ public static class ServiceCollectionExtensions
         // by CyNavigation's mobile menu. Previously only ever registered
         // manually by consuming apps (e.g. the Demo app); any component
         // using FocusTrap would throw at resolution time without it.
+        //
+        // NOTE: FocusManager is currently a logging placeholder - it does
+        // not move, restore or contain focus. Register your own
+        // IFocusManager after AddCymruBlazor() for real behaviour (the last
+        // registration wins). A functional implementation is planned for 1.3.0.
         services.AddScoped<IFocusManager, FocusManager>();
 
         // Register the live-region registry used to forward Mediator

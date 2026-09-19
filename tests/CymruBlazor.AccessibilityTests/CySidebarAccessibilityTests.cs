@@ -86,4 +86,32 @@ public sealed class CySidebarAccessibilityTests : AxeTestBase
 
         result.Violations.ShouldBeEmpty();
     }
+
+    // Dark and high-contrast scans (roadmap v1.2.1, Phase 5). One scan per
+    // state and theme (not one markup per theme): each sidebar is its own
+    // landmark, so several in one page would fail landmark-unique.
+    [Theory]
+    [InlineData(SidebarState.Expanded, "dark")]
+    [InlineData(SidebarState.Compact, "dark")]
+    [InlineData(SidebarState.IconOnly, "dark")]
+    [InlineData(SidebarState.Hidden, "dark")]
+    [InlineData(SidebarState.Expanded, "high-contrast")]
+    [InlineData(SidebarState.Compact, "high-contrast")]
+    [InlineData(SidebarState.IconOnly, "high-contrast")]
+    [InlineData(SidebarState.Hidden, "high-contrast")]
+    public async Task EveryStateShouldHaveNoAccessibilityViolationsInDarkAndHighContrastThemes(SidebarState state, string theme)
+    {
+        // Arrange - Hidden renders the reveal handle
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden])
+            .Add(p => p.State, state)
+            .Add(p => p.Brand, DefaultBrandFragment())
+            .Add(p => p.ChildContent, DefaultNavItems()));
+
+        // Act
+        var result = await ScanMarkupAsync(cut.Markup, theme);
+
+        // Assert
+        result.Violations.ShouldBeEmpty();
+    }
 }

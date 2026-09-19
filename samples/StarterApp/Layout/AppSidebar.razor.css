@@ -188,7 +188,7 @@
        logo scrolls out of view along with the rest of the nav list. */
     position: sticky;
     inset-block-start: 0;
-    z-index: var(--cymru-z-index-sticky, 30);
+    z-index: var(--cymru-z-sticky);
     background-color: var(--cymru-color-surface, #ffffff);
 }
 

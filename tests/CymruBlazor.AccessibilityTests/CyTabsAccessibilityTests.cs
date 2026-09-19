@@ -56,4 +56,24 @@ public sealed class CyTabsAccessibilityTests : AxeTestBase
         // Assert
         result.Violations.ShouldBeEmpty();
     }
+
+    // Dark and high-contrast scans (roadmap v1.2.1, Phase 5). Every state is
+    // rendered into ONE markup per theme to keep CI time down.
+    [Theory]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_Selected_And_Unselected_Tabs_In_Dark_And_High_Contrast_Themes(string theme)
+    {
+        // Arrange - one selected tab, two unselected
+        var cut = Render<CyTabs>(parameters => parameters
+            .Add(p => p.TabListAriaLabel, "Component documentation")
+            .Add(p => p.ActiveTabId, "api")
+            .Add(p => p.ChildContent, ThreePanels()));
+
+        // Act
+        var result = await ScanMarkupAsync(cut.Markup, theme);
+
+        // Assert
+        result.Violations.ShouldBeEmpty();
+    }
 }

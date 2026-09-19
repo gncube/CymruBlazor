@@ -3,10 +3,15 @@
 @implements IDisposable
 @inject IToastService ToastService
 
-<div class="cy-toast-container" role="region" aria-label="Notifications">
+<div class="cy-toast-container"
+     role="region"
+     aria-label="Notifications"
+     aria-live="polite"
+     aria-atomic="false">
     @foreach (var toast in ToastService.Toasts)
     {
-        <div class="cy-toast cy-toast--@toast.Variant.ToString().ToLowerInvariant()">
+        <div class="cy-toast cy-toast--@toast.Variant.ToString().ToLowerInvariant()"
+             role="@GetAriaRole(toast.Variant)">
             <CyIcon Name="@GetIconName(toast.Variant)" Size="18" Class="cy-toast__icon" />
             <div class="cy-toast__content">
                 <span class="cy-toast__message">@toast.Message</span>
@@ -33,6 +38,12 @@
         ToastVariant.Warning => "warning",
         ToastVariant.Danger => "alert",
         _ => "info"
+    };
+
+    private static string GetAriaRole(ToastVariant variant) => variant switch
+    {
+        ToastVariant.Warning or ToastVariant.Danger => "alert",
+        _ => "status"
     };
 
     public void Dispose()

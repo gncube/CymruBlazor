@@ -26,7 +26,7 @@ public static class DemoNavigationIndex
         new("Foundations", "Typography", "/foundations/typography",
             "The NHS Wales type scale, via CyTypography."),
         new("Foundations", "Focus Trap", "/accessibility/focus-trap",
-            "Traps keyboard focus within a region, for modals and menus."),
+            "Asks a focus manager to move and restore focus around a region (preview: not yet functional by default)."),
 
         new("Layout", "Container", "/layouts/container",
             "Constrains content to a maximum readable width."),
