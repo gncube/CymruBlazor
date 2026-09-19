@@ -12,6 +12,10 @@ public sealed class CyToastContainerTests : TestContextBase
     // auto-dismiss timer, so no test here races a background Task.
     private static readonly TimeSpan Sticky = TimeSpan.Zero;
 
+    // Shared expected values: CA1861 rejects inline constant arrays.
+    private static readonly string[] ThreeMessagesInOrder = ["First message", "Second message", "Third message"];
+    private static readonly string[] OnlyKeepMe = ["Keep me"];
+
     private readonly ToastService _service = new();
 
     public CyToastContainerTests()
@@ -40,7 +44,7 @@ public sealed class CyToastContainerTests : TestContextBase
         var cut = Render<CyToastContainer>();
 
         var messages = cut.FindAll(".cy-toast__message").Select(m => m.TextContent.Trim()).ToList();
-        messages.ShouldBe(new[] { "First message", "Second message", "Third message" });
+        messages.ShouldBe(ThreeMessagesInOrder);
     }
 
     [Theory]
@@ -99,7 +103,7 @@ public sealed class CyToastContainerTests : TestContextBase
         _service.Toasts.Count.ShouldBe(1);
         _service.Toasts[0].Message.ShouldBe("Keep me");
         cut.WaitForAssertion(() =>
-            cut.FindAll(".cy-toast__message").Select(m => m.TextContent.Trim()).ShouldBe(new[] { "Keep me" }));
+            cut.FindAll(".cy-toast__message").Select(m => m.TextContent.Trim()).ShouldBe(OnlyKeepMe));
     }
 
     [Fact]
