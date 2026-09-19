@@ -83,7 +83,7 @@
 
   color: #e2e8f0;
 
-  font-family: var(--cymru-font-family-mono, ui-monospace, "Cascadia Code", "Fira Code", monospace);
+  font-family: var(--cymru-font-family-monospace);
   font-size: 0.875rem;
   line-height: 1.6;
 }

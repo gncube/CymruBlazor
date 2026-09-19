@@ -57,6 +57,17 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
+    <!--
+      Package validation: fail `dotnet pack` on accidental breaking API
+      changes versus the last published release (1.x promises semver).
+      Bump PackageValidationBaselineVersion when a release is published
+      (see CONTRIBUTING.md). Opt out offline with
+      -p:EnablePackageValidation=false; CI never does. Intentional breaks
+      (2.0.0) are recorded in CompatibilitySuppressions.xml.
+    -->
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.2.0</PackageValidationBaselineVersion>
+
     <!-- XML documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

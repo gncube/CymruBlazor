@@ -1,8 +1,7 @@
 # Contributing to CymruBlazor
 
-Thanks for your interest in contributing. CymruBlazor is an early-stage,
-pre-1.0 project - see the [README](README.md) for what's currently
-implemented versus planned.
+Thanks for your interest in contributing. CymruBlazor is an open-source
+component library implementing the NHS Wales Design System.
 
 ## Before you start
 
@@ -20,82 +19,38 @@ implemented versus planned.
 Requires the .NET 10 SDK.
 
 ```bash
-git clone https://github.com/gncube/CymruBlazor.git
+git clone [https://github.com/gncube/CymruBlazor.git](https://github.com/gncube/CymruBlazor.git)
 cd CymruBlazor
 dotnet restore CymruBlazor.slnx
 dotnet build CymruBlazor.slnx
 dotnet run --project src/CymruBlazor.Demo
-```
 
-If you're working on `samples/StarterApp`, `samples/Dashboard`, or
-`samples/HealthcarePortal`, one extra step is needed first. Those apps
-consume CymruBlazor as a real NuGet package (never a `ProjectReference` to
-`src/CymruBlazor`), and MinVer computes a new package version on every
-commit, so there's nothing fixed to restore against out of the box:
+## Releasing and package validation
 
-```powershell
-./New-LocalPackageFeed.ps1
-```
+`CymruBlazor.csproj` sets `EnablePackageValidation` with a
+`PackageValidationBaselineVersion`. `dotnet pack` compares the new package
+with that published baseline and fails with a `CP****` error on an accidental
+breaking API change, so 1.x patch and minor releases stay semver-compatible.
 
-This packs `src/CymruBlazor` to `./artifacts` and points the samples'
-central package version at whatever version was just produced (see
-`nuget.config` and `Directory.Packages.props`). Re-run it whenever you
-want the samples to pick up local library changes.
+- The baseline is the **last published version**. After publishing `vX.Y.Z`,
+  bump `PackageValidationBaselineVersion` to `X.Y.Z` in the next PR.
+- CI restores the baseline package from nuget.org (`NuGet.CI.Config`), so
+  validation needs no workflow changes.
+- Working offline? Pass `-p:EnablePackageValidation=false` to `dotnet pack`.
+  CI never does.
+- An intentional break (only for a new major version, e.g. 2.0.0) is recorded
+  with `dotnet pack -p:GenerateCompatibilitySuppressionFile=true`, which writes
+  `CompatibilitySuppressions.xml`; commit it with the change and explain it in
+  the PR.
+- Release flow: update `CHANGELOG.md`, open a PR, merge, then
+  `git tag -a vX.Y.Z -m "vX.Y.Z"` and push the tag (MinVer derives the version
+  from the tag).
 
-## Making a change
+## Tests worth knowing about
 
-1. Branch from `main`.
-2. Follow the existing component structure (see `Spec.md`, section 2,
-   "Component Architecture") - `.razor`, `.razor.css`, `.razor.cs`
-   code-behind, and a matching test file per component.
-3. Every new CSS class a component's `CssBuilder` generates must have a
-   corresponding rule in the appropriate `wwwroot/css/**` stylesheet, and
-   that stylesheet must be listed in
-   `src/CymruBlazor/wwwroot/css/cymrublazor.css` as an
-   `@import "path" layer(name);` statement. This one list is the single
-   source of truth for both dev-mode (the browser resolves the `@import`s
-   directly) and Release/Publish builds (`tools/CymruBlazor.CssBundler`
-   parses this same file and inlines each stylesheet into a single
-   bundled file with no runtime `@import`s - see
-   `src/CymruBlazor/build/BundleCss.targets`). There is deliberately no
-   second list to keep in sync.
-4. Add or update tests:
-   - `tests/CymruBlazor.Tests` - bUnit component tests (the primary,
-     actively-used test project right now).
-   - `tests/CymruBlazor.ApprovalTests` / `tests/CymruBlazor.AccessibilityTests` -
-     scaffolded but not yet populated; if you're adding the first tests to
-     either, please call that out in your PR description so it gets extra
-     review attention.
-5. Run the full suite before opening a PR:
-
-   ```bash
-   dotnet test CymruBlazor.slnx -c Release
-   ```
-
-6. Follow [Conventional Commits](https://www.conventionalcommits.org/) for
-   commit messages (`feat:`, `fix:`, `docs:`, `refactor:`, etc.) - CI's
-   generated release notes are built from these.
-
-## Pull requests
-
-- Keep PRs focused and reasonably small; large, multi-concern PRs are
-  harder to review carefully in an accessibility-focused library.
-- CI (`.github/workflows/ci.yml`) must pass: build, test, and a
-  pack-verification step.
-- Accessibility is not optional here - WCAG 2.2 AA, keyboard navigation,
-  and screen reader compatibility are requirements, not nice-to-haves (see
-  `PRD.md`, section 5).
-
-## Releasing
-
-Maintainers only. Versioning is fully derived from git tags via
-[MinVer](https://github.com/adamralph/minver) - there is no manual version
-bump anywhere in the codebase. Pushing a tag like `v0.2.0` triggers
-`.github/workflows/release.yml`, which builds, tests, packs, publishes to
-NuGet, and creates the GitHub Release automatically.
-
-## Code of conduct
-
-Be respectful and constructive. This project supports NHS Wales and public
-sector engineering teams building software that people rely on for
-healthcare - treat contributions and reviews with the same care.
+- `UndefinedCssVariableTests` fails when library CSS uses a `var(--x)` that no
+  stylesheet or C# code defines. Fix the reference or define the token; do not
+  add to its allowlist lightly.
+- `CymruBlazor.AccessibilityTests` runs real axe-core scans in Chromium.
+  Components with themed styling are scanned in the light, dark and
+  high-contrast themes.

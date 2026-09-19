@@ -10,6 +10,54 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+## [1.2.1] - Unreleased
+
+### Fixed
+
+- `CyToastContainer` now follows the active theme. It used `--cb-color-*`
+  custom properties that the library never defined, plus hard-coded hex
+  colours, so it ignored dark mode and showed pastel toasts in
+  high-contrast. It now uses the same `--cymru-*` tokens as `CyAlert`.
+- `CyToastContainer` z-index is now `--cymru-z-toast` (1080) instead of a
+  hard-coded 1050 that tied with modals.
+- Toasts are announced to screen readers: the container is a polite,
+  non-atomic live region and each toast has `role="status"` (Info/Success) or
+  `role="alert"` (Warning/Danger), matching `CyAlert`.
+- Undefined CSS custom properties (each hidden by a fallback value):
+  the `CySidebar` drawer and backdrop now use `--cymru-z-modal` /
+  `--cymru-z-overlay`, the sticky `CyHeader` uses `--cymru-z-sticky`
+  (changed together so the stack stays sticky header < backdrop < drawer <
+  toast), `CyCodeBlock` uses `--cymru-font-family-monospace`, and the skip
+  link uses a literal `150ms` transition.
+
+### Changed
+
+- Toast colours now come from the NHS Wales theme tokens instead of
+  Tailwind pastels, and `CyCodeBlock` renders in the design system's
+  monospace stack. Both are visible but intended theme-token alignments.
+
+### Documentation
+
+- `CyFocusTrap` docs corrected. It does not move, restore or contain focus
+  by default: the registered `FocusManager` only logs at Debug level. XML
+  docs (on `CyFocusTrap`, `IFocusManager`, `FocusManager`, `FocusOptions`,
+  `FocusResult`), the Demo pages and the code samples (`<CyFocusTrap>`) now
+  say so and describe how to register a custom `IFocusManager`. A working
+  implementation is planned for 1.3.0.
+
+### Internal
+
+- Package validation (`EnablePackageValidation`, baseline 1.2.0) fails
+  `dotnet pack` on accidental breaking API changes.
+- `UndefinedCssVariableTests` fails on any library `var(--x)` with no
+  definition, replacing the prefix-based token test.
+- `CyToastContainerTests` and `CyToastContainerAccessibilityTests`.
+- Dark and high-contrast axe scans for Accordion, Alert, Badge, Button,
+  Card, Checkbox, CodeBlock, Icon, Select, Sidebar, Tabs, TextBox and the
+  toast.
+- Removed the empty `CymruBlazor.ApprovalTests` project, its package pin and
+  its prompt reference.
+
 ## [1.2.0] - 2026-09-19
 
 ### Added

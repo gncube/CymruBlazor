@@ -85,4 +85,35 @@ public sealed class CyButtonAccessibilityTests : AxeTestBase
         // Assert
         result.Violations.ShouldBeEmpty();
     }
+
+    // Dark and high-contrast scans (roadmap v1.2.1, Phase 5). Every state is
+    // rendered into ONE markup per theme to keep CI time down.
+    [Theory]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_For_All_Variants_And_States_In_Dark_And_High_Contrast_Themes(string theme)
+    {
+        // Arrange - every variant, plus disabled and loading. (The Theory
+        // above only ever scanned the Primary variant.)
+        ComponentColour[] variants =
+            [ComponentColour.Primary, ComponentColour.Secondary, ComponentColour.Tertiary, ComponentColour.Danger];
+
+        var markup = string.Join(
+            Environment.NewLine,
+            variants.Select(variant => Render<CyButton>(parameters => parameters
+                .Add(p => p.Variant, variant)
+                .AddChildContent("Save changes")).Markup)
+            .Append(Render<CyButton>(parameters => parameters
+                .Add(p => p.Disabled, true)
+                .AddChildContent("Save changes")).Markup)
+            .Append(Render<CyButton>(parameters => parameters
+                .Add(p => p.Loading, true)
+                .AddChildContent("Save changes")).Markup));
+
+        // Act
+        var result = await ScanMarkupAsync(markup, theme);
+
+        // Assert
+        result.Violations.ShouldBeEmpty();
+    }
 }

@@ -31,7 +31,6 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
     <PackageVersion Include="bunit" Version="2.10.3" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="ApprovalTests" Version="7.0.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.13.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.62.0" />
