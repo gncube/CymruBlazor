@@ -75,6 +75,35 @@
             <CyCodeBlock Code="@ImageLogoExampleCode" Language="razor" />
         </div>
 
+        <div style="margin-top: var(--docs-section-gap);">
+            <h3>Logo sizes</h3>
+            <p class="cb-section-description">
+                The <code>Size</code> parameter uses the shared <code>ComponentSize</code> enum. It sets the
+                logo's height - the built-in mark's width and height, or the height of an image logo, whose width
+                follows its aspect ratio. Both use the same scale:
+            </p>
+            <table class="cb-api-table" aria-label="Logo sizes">
+                <thead><tr><th><code>ComponentSize</code></th><th>Height</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ExtraSmall</code></td><td>18px</td></tr>
+                    <tr><td><code>Small</code></td><td>32px</td></tr>
+                    <tr><td><code>Medium</code> (default)</td><td>48px</td></tr>
+                    <tr><td><code>Large</code></td><td>64px</td></tr>
+                    <tr><td><code>ExtraLarge</code></td><td>72px</td></tr>
+                </tbody>
+            </table>
+            <p class="cb-section-description" style="margin-top:1rem;">
+                Image logos are drawn at exactly that height, whatever their intrinsic size, so SVG assets scale
+                crisply; supply raster (PNG/JPG) assets at least as tall as the largest <code>Size</code> you use, or
+                they will soften. If the space is narrower than the logo at that height, the logo shrinks to fit
+                without distortion - so a wide lockup in a narrow sidebar can look smaller than its
+                <code>Size</code> suggests; choose a smaller <code>Size</code> or use the icon
+                (<code>SymbolOnly</code>) version there. For a height between the steps, override the asset's
+                <code>height</code> in your own stylesheet:
+            </p>
+            <CyCodeBlock Code="@LogoSizeOverrideCode" Language="css" />
+        </div>
+
     </div>
 }
 else if (_activeTab == Tab.Api)
@@ -183,6 +212,12 @@ else
         }
         """;
 
+    private const string LogoSizeOverrideCode =
+        """
+        /* <CyBrandLogo Class="app-logo" LogoPath="/images/logo.svg" /> */
+        .app-logo .cy-brand-logo__asset { height: 3.5rem; }
+        """;
+
     private const string ImageLogoExampleCode =
         """
         <CyBrandLogo LogoPath="/images/logo-light.svg"
@@ -194,7 +229,7 @@ else
     [
         new("Variant", "BrandLogoVariant", "Full", "Which parts of the built-in lockup render (Full, Mark, Wordmark, Stacked) or theme asset mode (Auto, Light, Dark)."),
         new("SymbolOnly", "bool", "false", "When true, renders only the mark/symbol icon rather than the full logo lockup."),
-        new("Size", "ComponentSize", "Medium", "Overall sizing - mark/wordmark scale, or max height for image assets."),
+        new("Size", "ComponentSize", "Medium", "Overall sizing from ComponentSize: 18 / 32 / 48 / 64 / 72px (ExtraSmall to ExtraLarge) - mark size, or height for image assets."),
         new("LogoPath", "string?", "null", "Light-theme (or single) logo asset. Takes precedence over the built-in lockup when set."),
         new("DarkLogoPath", "string?", "null", "Dark-theme logo asset. Falls back to LogoPath when omitted."),
         new("Text", "string", "\"CymruBlazor\"", "Organisation/product name rendered by the built-in wordmark."),

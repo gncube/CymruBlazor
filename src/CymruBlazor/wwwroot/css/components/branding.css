@@ -79,6 +79,12 @@ a.cy-brand-logo:focus-visible {
   max-width: 100%;
   height: auto;
 
+  /* If the container is narrower than the logo at its Size height, the box
+     narrows (max-width) but keeps that height; contain scales the image
+     down inside it without distortion. */
+  object-fit: contain;
+  object-position: left center;
+
   text-decoration: none;
 }
 
@@ -169,7 +175,11 @@ a.cy-brand-logo:focus-visible {
    -------------------------------------------------------------------------- */
 
 /*
- * Matches ComponentSize and mirrors the CyIcon grid convention.
+ * Matches ComponentSize. Heights, in px:
+ *   ExtraSmall 18 | Small 32 | Medium 48 | Large 64 | ExtraLarge 72
+ * The built-in SVG mark (below) and external image assets (further down)
+ * use the same scale, so a logo keeps its size whichever kind is rendered.
+ * Keep both blocks in sync - BrandLogoSizeScaleTests enforces it.
  * Image-based logos inherit the component's intrinsic aspect ratio and are
  * constrained by max-width; consumers can therefore provide appropriately
  * sized logo assets without the component distorting them.
@@ -185,8 +195,8 @@ a.cy-brand-logo:focus-visible {
 }
 
 .cy-brand-logo--small .cy-brand-logo__mark {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 }
 
 .cy-brand-logo--small .cy-brand-logo__wordmark {
@@ -194,8 +204,8 @@ a.cy-brand-logo:focus-visible {
 }
 
 .cy-brand-logo--medium .cy-brand-logo__mark {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
 }
 
 .cy-brand-logo--medium .cy-brand-logo__wordmark {
@@ -203,8 +213,8 @@ a.cy-brand-logo:focus-visible {
 }
 
 .cy-brand-logo--large .cy-brand-logo__mark {
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
 }
 
 .cy-brand-logo--large .cy-brand-logo__wordmark {
@@ -212,8 +222,8 @@ a.cy-brand-logo:focus-visible {
 }
 
 .cy-brand-logo--extralarge .cy-brand-logo__mark {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
 }
 
 .cy-brand-logo--extralarge .cy-brand-logo__wordmark {
@@ -326,26 +336,29 @@ a.cy-brand-logo:focus-visible {
 /*
  * External logo sizing.
  *
- * Height is controlled by the same ComponentSize scale used by the
- * built-in SVG mark. Width remains auto so the supplied brand asset
- * retains its intrinsic aspect ratio.
+ * Height is set (not merely capped) by the same ComponentSize scale used
+ * by the built-in SVG mark, so a logo is exactly its Size regardless of the
+ * asset's intrinsic dimensions - a max-height would never scale a 48px SVG
+ * up to Large (64px). SVG assets scale crisply; supply raster assets at
+ * least as tall as the largest Size you use. Width remains auto so the
+ * asset keeps its aspect ratio.
  */
 .cy-brand-logo--extrasmall .cy-brand-logo__asset {
-  max-height: 18px;
+  height: 18px;
 }
 
 .cy-brand-logo--small .cy-brand-logo__asset {
-  max-height: 24px;
+  height: 32px;
 }
 
 .cy-brand-logo--medium .cy-brand-logo__asset {
-  max-height: 32px;
+  height: 48px;
 }
 
 .cy-brand-logo--large .cy-brand-logo__asset {
-  max-height: 40px;
+  height: 64px;
 }
 
 .cy-brand-logo--extralarge .cy-brand-logo__asset {
-  max-height: 56px;
+  height: 72px;
 }
