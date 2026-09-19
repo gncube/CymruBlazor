@@ -10,7 +10,7 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
-## [0.1.0-preview.10] - 2026-09-18
+## [1.2.0] - 2026-09-19
 
 ### Added
 
@@ -98,6 +98,12 @@ Full detail for every release is also available as auto-generated
   so they always rendered their hardcoded light-mode fallback regardless
   of theme. Remapped to `--cymru-*` and guarded by
   `Library_Css_Should_Not_Reference_Undefined_Cy_Tokens`.
+
+## [1.1.0 and earlier] - retroactively documented
+
+These demo-site changes were listed under `[Unreleased]` and shipped before
+v1.2.0, but were never given a version heading. They are recorded here
+after the fact.
 
 ### Changed (demo only)
 
