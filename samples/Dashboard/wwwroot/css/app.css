@@ -117,26 +117,11 @@ code {
     gap: var(--cymru-space-4);
 }
 
-.app-shell__collapse-mode-label {
-    display: flex;
-    align-items: center;
-    gap: var(--cymru-space-2);
-    font-size: var(--cymru-font-size-sm);
-    color: var(--cymru-color-text-muted);
-}
-
-.app-shell__collapse-mode-select {
-    padding: var(--cymru-space-1) var(--cymru-space-2);
-    border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
-    border-radius: var(--cymru-radius-sm);
-    background: var(--cymru-color-surface);
-    color: var(--cymru-color-text);
-}
-
 .app-shell__body {
     display: flex;
     flex: 1;
-    align-items: flex-start;
+    /* Stretch so the sidebar always fills the page vertically. */
+    align-items: stretch;
 }
 
 .app-shell__main {
@@ -177,20 +162,6 @@ code {
  */
 .app-shell__nav-sidebar {
     padding-block-end: var(--cymru-space-4);
-}
-
-.app-shell__nav-sidebar-toggle-row {
-    display: flex;
-    justify-content: flex-end;
-    padding: var(--cymru-space-2) var(--cymru-space-4);
-}
-
-.app-shell__sidebar-toggle {
-    background: transparent;
-    color: var(--cymru-color-text-muted);
-    box-shadow: none;
-    padding: var(--cymru-space-1);
-    flex-shrink: 0;
 }
 
 .app-shell__nav-list {

@@ -3,7 +3,6 @@ using Xunit;
 using Shouldly;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using CymruBlazor.Enums;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
 using CymruBlazor.Samples.Dashboard.Layout;
@@ -75,13 +74,8 @@ public sealed class DashboardMainLayoutTests : TestContextBase
             .Count.ShouldBe(2);
     }
 
-    [Theory]
-    [InlineData(SidebarCollapseMode.Compact)]
-    [InlineData(SidebarCollapseMode.IconOnly)]
-    [InlineData(SidebarCollapseMode.NonCollapsible)]
-    [InlineData(SidebarCollapseMode.Hidden)]
-    public void Should_Render_Without_Throwing_In_Every_CollapseMode(
-        SidebarCollapseMode mode)
+    [Fact]
+    public async Task Should_Render_Without_Throwing_In_Every_Sidebar_State()
     {
         // Arrange
         var cut = Render<MainLayout>(parameters => parameters
@@ -89,18 +83,25 @@ public sealed class DashboardMainLayoutTests : TestContextBase
                 builder.AddContent(0, "Page content"))));
 
         // Act
-        // MainLayout exposes a live "Sidebar" <select> for this in the
-        // running app; drive the same underlying state here to exercise
-        // every CollapseMode's rendering path.
-        var select = cut.Find(".app-shell__collapse-mode-select");
-        select.Change(mode.ToString());
+        // The sidebar's own directional chevrons walk it through
+        // Expanded -> Compact -> IconOnly -> Hidden. Rendering throws if
+        // any CyIcon.Name (including the chevrons and the icon-only
+        // brand) is invalid in any of those states.
+        await cut.Find(".cy-sidebar__step--narrow").ClickAsync(new());
+        cut.Find(".cy-sidebar").ClassList.ShouldContain("cy-sidebar--compact");
+
+        await cut.Find(".cy-sidebar__step--narrow").ClickAsync(new());
+        cut.Find(".cy-sidebar").ClassList.ShouldContain("cy-sidebar--icon-only");
+
+        await cut.Find(".cy-sidebar__step--narrow").ClickAsync(new());
+        cut.Find(".cy-sidebar").ClassList.ShouldContain("cy-sidebar--collapsed");
 
         // Assert
-        // An invalid CyIcon.Name causes component rendering to throw.
-        // Reaching this point and retaining the page content therefore
-        // verifies that icon rendering remains valid after changing
-        // CollapseMode.
         cut.Markup.ShouldContain("Page content");
+        cut.FindAll(".cy-sidebar__reveal-handle").Count.ShouldBe(1);
+
+        await cut.Find(".cy-sidebar__reveal-handle").ClickAsync(new());
+        cut.Find(".cy-sidebar").ClassList.ShouldNotContain("cy-sidebar--collapsed");
     }
 }
 

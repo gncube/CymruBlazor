@@ -10,17 +10,6 @@
             <span class="app-shell__topbar-title">Dashboard</span>
 
             <div class="app-shell__topbar-actions">
-                <label class="app-shell__collapse-mode-label">
-                    Sidebar
-                    <select class="app-shell__collapse-mode-select" value="@_collapseMode"
-                            @onchange="OnCollapseModeChanged">
-                        <option value="@SidebarCollapseMode.Compact">Compact (icon + label)</option>
-                        <option value="@SidebarCollapseMode.IconOnly">Icon only</option>
-                        <option value="@SidebarCollapseMode.NonCollapsible">Non-collapsible</option>
-                        <option value="@SidebarCollapseMode.Hidden">Hidden (fully collapsible)</option>
-                    </select>
-                </label>
-
                 <CyLanguageToggle @bind-CurrentLanguage="_language" />
 
                 <button type="button" class="app-shell__theme-switch" role="switch"
@@ -56,26 +45,25 @@
         </header>
 
         <div class="app-shell__body">
-            <CySidebar @ref="_navSidebar" @bind-State="_sidebarState" States="_navStates" @bind-MobileOpen="_mobileOpen"
+            @* CollapsedBrand is shown in the Compact and IconOnly rails, where the full lockup does not
+               fit. Without an icon-sized logo, ShowBrandWhenCollapsed="false" would leave just the two
+               size chevrons instead. *@
+            <CySidebar @bind-State="_sidebarState" States="_navStates" @bind-MobileOpen="_mobileOpen"
                        Width="SidebarWidth.Small" Class="app-shell__nav-sidebar">
 
                 <Brand>
                     <CyBrandLogo LogoPath="/images/logo-dhcw-light.svg" DarkLogoPath="/images/logo-dhcw-dark.svg"
                                  Href="/" Text="DHCW" AriaLabel="DHCW dashboard" Variant="BrandLogoVariant.Full"
-                                 SymbolOnly="@(_sidebarState != SidebarState.Expanded)" Size="ComponentSize.ExtraLarge" />
+                                 Size="ComponentSize.ExtraLarge" />
                 </Brand>
 
-                <ChildContent>
-                    <div class="app-shell__nav-sidebar-toggle-row">
-                        <button type="button" class="cymru-btn app-shell__sidebar-toggle"
-                                aria-expanded="@(_sidebarState == SidebarState.Expanded)"
-                                aria-label="@(_sidebarState == SidebarState.Expanded ? "Cycle next navigation state" : "Expand navigation")"
-                                @onclick="AdvanceSidebarStateAsync">
-                            <CyIcon Name="@(_sidebarState == SidebarState.Expanded ? "chevron-left" : "chevron-right")"
-                                    Size="16" />
-                        </button>
-                    </div>
+                <CollapsedBrand>
+                    <CyBrandLogo LogoPath="/images/icon-dhcw-light.svg" DarkLogoPath="/images/icon-dhcw-dark.svg"
+                                 Href="/" Text="DHCW" AriaLabel="DHCW dashboard" SymbolOnly="true"
+                                 Size="ComponentSize.Large" />
+                </CollapsedBrand>
 
+                <ChildContent>
                     <span class="cy-sidebar__heading">Home</span>
                     <nav class="app-shell__nav-list" aria-label="Primary">
                         @foreach (var item in _navItems)
@@ -166,9 +154,7 @@
         SidebarState.Hidden
     ];
 
-    private CySidebar? _navSidebar;
     private SidebarState _sidebarState = SidebarState.Expanded;
-    private SidebarCollapseMode _collapseMode = SidebarCollapseMode.Compact;
     private bool _mobileOpen;
     private bool _wardsExpanded = true;
     private AppLanguage _language = AppLanguage.English;
@@ -176,29 +162,6 @@
     protected override void OnInitialized() => Theme.ThemeChanged += OnThemeChanged;
 
     private Task ToggleThemeAsync() => Theme.ToggleDarkModeAsync().AsTask();
-
-    private async Task AdvanceSidebarStateAsync()
-    {
-        if (_navSidebar is not null)
-        {
-            await _navSidebar.CycleNextAsync();
-        }
-    }
-
-    private void OnCollapseModeChanged(ChangeEventArgs e)
-    {
-        if (Enum.TryParse<SidebarCollapseMode>(e.Value?.ToString(), out var parsedMode))
-        {
-            _collapseMode = parsedMode;
-            _sidebarState = parsedMode switch
-            {
-                SidebarCollapseMode.IconOnly => SidebarState.IconOnly,
-                SidebarCollapseMode.Hidden => SidebarState.Hidden,
-                SidebarCollapseMode.NonCollapsible => SidebarState.Expanded,
-                _ => SidebarState.Compact
-            };
-        }
-    }
 
     private void OnThemeChanged(object? sender, ThemeChangedEventArgs e) => InvokeAsync(StateHasChanged);
 
