@@ -1279,3 +1279,88 @@ details[open] > summary .cb-nav-group__chevron {
 .loading-progress-text::after {
   content: var(--blazor-load-percentage-text, "Loading");
 }
+
+/* ── CySidebar workbench stage ──
+   A self-contained "app window" for the CySidebar preview: the sidebar on one
+   side, a content area with live status and actions on the other. */
+.cb-sidebar-stage {
+  display: flex;
+  width: 100%;
+  min-height: 340px;
+  position: relative;
+  overflow: hidden;
+  background: var(--cb-bg-surface);
+  border: 1px solid var(--cb-border-subtle);
+  border-radius: var(--docs-code-radius);
+  box-shadow: var(--cb-shadow-sm);
+}
+
+.cb-sidebar-stage__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--cb-bg-subtle);
+  color: var(--cb-text-primary);
+}
+
+.cb-sidebar-stage__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.cb-sidebar-stage__status,
+.cb-sidebar-stage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cb-sidebar-stage__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--cb-border-subtle);
+  border-radius: 999px;
+  background: var(--cb-bg-surface);
+  color: var(--cb-text-muted);
+  font-size: 0.8rem;
+}
+
+.cb-sidebar-stage__chip strong {
+  color: var(--cb-text-primary);
+}
+
+.cb-sidebar-stage__hint {
+  margin: auto 0 0;
+  font-size: 0.8rem;
+  color: var(--cb-text-muted);
+}
+
+/* Sub-headings inside the Properties panel */
+.cb-property-group-title {
+  margin: 0.5rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--cb-border-subtle);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+.cb-property-group-title:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.cb-property-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--cb-text-muted);
+}

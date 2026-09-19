@@ -37,15 +37,38 @@ Full detail for every release is also available as auto-generated
 
 ### Changed
 
+- `CyBrandLogo` size scale is now 18 / 32 / 48 / 64 / 72px (ExtraSmall,
+  Small, Medium, Large, ExtraLarge; was 18 / 24 / 32 / 40 / 56) for both the
+  built-in mark and image logos. Image logos now have their height *set* to
+  the Size instead of capped with `max-height`, so a 48px SVG really renders
+  at Large (64px); they still shrink without distortion when the container is
+  narrower. Existing `Small` usages grow from 24px to 32px - check any
+  fixed-height header or nav bars. Guarded by `BrandLogoSizeScaleTests`.
+- Demo: the CySidebar page preview is polished (a framed app window with
+  status chips, real navigation rows and styled buttons) and now exposes the
+  `CyBrandLogo` properties - variant, size, text - plus the rail logo
+  (`CollapsedBrand`) on/off and size, with the generated code following the
+  selections.
+- Demo: documented sidebar width customization (per-state defaults, the CSS
+  override recipe and its cautions) and the logo size scale.
 - `CySidebar` now always fills the full height of the row it sits in
   (`align-self: stretch`), even when the parent uses `align-items:
   flex-start`, so its background and border reach the bottom of the page.
 - `CySidebar` `IconOnly` rail is wider (5rem, was 3.5rem) and draws
-  navigation icons larger (1.75rem) with a 3rem minimum row height, so the
+  navigation icons at 1.5rem (24px) with a 3rem minimum row height, so the
   icon-only rail is comfortable to read and tap.
 
 ### Fixed
 
+- `CySidebar` navigation rows (`.cy-sidebar__item`) were never flex containers,
+  so the Compact/IconOnly `flex-direction`/`align-items` rules were inert: a
+  short label sat beside its icon while a long one wrapped beneath it, and
+  IconOnly icons hugged the left edge. Rows are now flex containers in every
+  state (with hover, focus-visible and `aria-current="page"` styles), Compact
+  always centres the icon with its label directly beneath, and IconOnly
+  centres the icon. Guarded by `CySidebarCssTests`.
+- Demo: the CySidebar preview's action buttons used an undefined
+  `cymru-btn` class and rendered as plain text; they now use `CyButton`.
 - `CySidebar` in the `Hidden` state hid its contents with `display: none`
   inside a CSS layer, so any consumer rule such as `.nav { display: flex }`
   (consumer CSS is unlayered and always wins over layered CSS) left the

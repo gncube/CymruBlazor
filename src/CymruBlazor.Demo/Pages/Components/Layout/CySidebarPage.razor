@@ -31,75 +31,87 @@
 
         <span class="cb-panel-caption">Preview</span>
         <p class="cb-section-description">
-            Click the chevron in the sidebar header to advance cyclically through the configured <code>States</code>
-            sequence:
-            <strong>Expanded</strong> &rarr; <strong>Compact</strong> &rarr; <strong>IconOnly</strong> &rarr;
-            <strong>Hidden</strong> &rarr; back to Expanded.
-            When in the <code>Hidden</code> state, an exterior reveal handle button is positioned along the outer edge to
-            restore the sidebar view without creating a keyboard focus trap.
+            Use the chevrons in the sidebar header to step through the configured <code>States</code>:
+            <strong>Expanded</strong> &harr; <strong>Compact</strong> &harr; <strong>IconOnly</strong> &harr;
+            <strong>Hidden</strong>. The narrow chevron moves towards Hidden and the widen chevron moves back
+            (neither wraps around). When in the <code>Hidden</code> state, a reveal handle sits along the sidebar's
+            edge to bring it back without creating a keyboard focus trap.
         </p>
 
         <div class="cb-workbench-preview">
-            <div
-                style="display:flex; gap:0; min-height:260px; width:100%; position:relative; overflow:hidden; border:1px solid var(--cymru-color-border); border-radius:var(--cymru-radius-md);">
-                @if (_position == SidebarPosition.Left)
-                {
-                    <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
-                               @bind-State="_state" @bind-MobileOpen="_mobileOpen">
-                        <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
-                                         Size="ComponentSize.Small" />
-                        </Brand>
-                        <ChildContent>
-                            <div class="cy-sidebar__item">
-                                <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
-                            </div>
-                            <div class="cy-sidebar__item">
-                                <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
-                            </div>
-                        </ChildContent>
-                    </CySidebar>
-                }
-                <div
-                    style="flex:1; padding:var(--cymru-space-4); font-size:var(--cymru-font-size-sm); color:var(--cymru-color-text-muted); background:var(--cymru-color-surface-subtle);">
-                    <div>Main content area</div>
-                    <div style="margin-top:var(--cymru-space-2);">Current State: <strong>@_state</strong></div>
-                    <div style="margin-top:var(--cymru-space-1);">Mobile Drawer Open: <strong>@_mobileOpen</strong></div>
+            <div class="cb-sidebar-stage">
+                <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
+                           @bind-State="_state" @bind-MobileOpen="_mobileOpen"
+                           ShowBrandWhenCollapsed="_railLogo" CollapsedBrand="@(_railLogo ? RailBrand : null)">
+                    <Brand>
+                        <CyBrandLogo Variant="_logoVariant" Size="_logoSize" Text="@_logoText" Href="@null" />
+                    </Brand>
+                    <ChildContent>
+                        <nav aria-label="Preview navigation">
+                            @foreach (var (text, icon, current) in _previewItems)
+                            {
+                                <a href="#" class="cy-sidebar__item" title="@text"
+                                   aria-current="@(current ? "page" : null)" @onclick:preventDefault>
+                                    <CyIcon Name="@icon" Size="20" />
+                                    <span class="cy-sidebar__label">@text</span>
+                                </a>
+                            }
+                        </nav>
+                    </ChildContent>
+                </CySidebar>
 
-                    <div style="margin-top:var(--cymru-space-4); display:flex; flex-wrap:wrap; gap:0.5rem;">
-                        <button type="button" class="cymru-btn" @onclick="CycleSidebarAsync">Cycle Next</button>
-                        <button type="button" class="cymru-btn" @onclick="ExpandSidebarAsync">Expand</button>
-                        <button type="button" class="cymru-btn" @onclick="SetIconOnlyAsync">Icon Only</button>
-                        <button type="button" class="cymru-btn" @onclick="SetHiddenAsync">Hide</button>
-                        <button type="button" class="cymru-btn" @onclick="ToggleDrawer">Toggle Mobile Drawer</button>
+                <div class="cb-sidebar-stage__main">
+                    <p class="cb-sidebar-stage__title">Main content area</p>
+                    <div class="cb-sidebar-stage__status">
+                        <span class="cb-sidebar-stage__chip">State <strong>@_state</strong></span>
+                        <span class="cb-sidebar-stage__chip">Mobile drawer <strong>@(_mobileOpen ? "Open" : "Closed")</strong></span>
                     </div>
+                    <div class="cb-sidebar-stage__actions">
+                        <CyButton Size="ComponentSize.Small" OnClick="NarrowSidebarAsync">Narrow</CyButton>
+                        <CyButton Size="ComponentSize.Small" Variant="ComponentColour.Secondary" OnClick="WidenSidebarAsync">Widen</CyButton>
+                        <CyButton Size="ComponentSize.Small" Variant="ComponentColour.Secondary" OnClick="ExpandSidebarAsync">Expand</CyButton>
+                        <CyButton Size="ComponentSize.Small" Variant="ComponentColour.Secondary" OnClick="SetHiddenAsync">Hide</CyButton>
+                        <CyButton Size="ComponentSize.Small" Variant="ComponentColour.Secondary" OnClick="ToggleDrawer">Toggle mobile drawer</CyButton>
+                    </div>
+                    <p class="cb-sidebar-stage__hint">
+                        The mobile drawer only appears when the browser window is narrower than the mobile breakpoint
+                        (<code>47.99rem</code> by default).
+                    </p>
                 </div>
-                @if (_position == SidebarPosition.Right)
-                {
-                    <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
-                               @bind-State="_state" @bind-MobileOpen="_mobileOpen">
-                        <Brand>
-                            <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)"
-                                         Size="ComponentSize.Small" />
-                        </Brand>
-                        <ChildContent>
-                            <div class="cy-sidebar__item">
-                                <CyIcon Name="home" Size="18" /><span class="cy-sidebar__label">Home</span>
-                            </div>
-                            <div class="cy-sidebar__item">
-                                <CyIcon Name="appointment" Size="18" /><span class="cy-sidebar__label">Appointments</span>
-                            </div>
-                        </ChildContent>
-                    </CySidebar>
-                }
             </div>
         </div>
 
         <div class="cb-playground-grid">
             <DemoPropertyControls>
+                <p class="cb-property-group-title">Sidebar</p>
                 <DemoPropertyToggleGroup Label="Position" @bind-Value="_position" Options="_positionOptions"
                                          TValue="SidebarPosition" />
                 <DemoPropertyToggleGroup Label="Width" @bind-Value="_width" Options="_widthOptions" TValue="SidebarWidth" />
+
+                <p class="cb-property-group-title">Brand logo (CyBrandLogo)</p>
+                <DemoPropertyToggleGroup Label="Variant" @bind-Value="_logoVariant" Options="_logoVariantOptions"
+                                         TValue="BrandLogoVariant" />
+                <DemoPropertyToggleGroup Label="Size" @bind-Value="_logoSize" Options="_logoSizeOptions"
+                                         TValue="ComponentSize" />
+                <DemoPropertyTextInput Label="Text (built-in lockup)" @bind-Value="_logoText" />
+
+                <p class="cb-property-group-title">Rail logo (CollapsedBrand)</p>
+                <DemoPropertySwitch Label="Show icon logo in the Compact and IconOnly rails" @bind-Value="_railLogo" />
+                @if (_railLogo)
+                {
+                    <DemoPropertyToggleGroup Label="Rail logo size" @bind-Value="_railLogoSize"
+                                             Options="_railLogoSizeOptions" TValue="ComponentSize" />
+                    <p class="cb-property-hint">
+                        The IconOnly rail is 5rem wide, so keep the rail logo at Large (64px) or smaller.
+                    </p>
+                }
+                else
+                {
+                    <p class="cb-property-hint">
+                        With no icon logo, the rails show only the two size chevrons
+                        (<code>ShowBrandWhenCollapsed="false"</code>).
+                    </p>
+                }
             </DemoPropertyControls>
 
             <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
@@ -125,6 +137,54 @@
         </p>
         <CyCodeBlock Code="@MultiStateRecipeCode" Language="csharp" />
 
+        <div style="margin-top: var(--docs-section-gap);">
+            <h3>Customizing widths</h3>
+            <p class="cb-section-description">
+                Only the <strong>Expanded</strong> width is a parameter: <code>Width</code> picks one of three
+                presets (the default is <code>SidebarWidth.Medium</code>). The Compact and IconOnly rails have
+                fixed widths of their own, because a rail's width is set by its content - icon size, the two size
+                chevrons, wrapped labels - not by how wide the expanded sidebar is. So changing
+                <code>Width</code> does <em>not</em> resize the rails.
+            </p>
+            <table class="cb-api-table" aria-label="Sidebar widths by state">
+                <thead><tr><th>State</th><th>Default width</th><th>How to change it</th></tr></thead>
+                <tbody>
+                    <tr><td><code>Expanded</code></td><td>14rem (<code>Small</code>), 18rem (<code>Medium</code>), 22rem (<code>Large</code>)</td><td><code>Width</code> parameter, or override <code>.cy-sidebar--sm</code> / <code>--md</code> / <code>--lg</code> in CSS</td></tr>
+                    <tr><td><code>Compact</code></td><td>6.5rem</td><td>Override <code>.cy-sidebar--compact</code> in CSS</td></tr>
+                    <tr><td><code>IconOnly</code></td><td>5rem</td><td>Override <code>.cy-sidebar--icon-only</code> in CSS</td></tr>
+                    <tr><td><code>Hidden</code></td><td>0</td><td>Fixed - the sidebar collapses to nothing and a reveal handle is shown</td></tr>
+                    <tr><td>Mobile drawer</td><td><code>min(85vw, 20rem)</code></td><td>Applies only below the mobile breakpoint, whatever the state</td></tr>
+                </tbody>
+            </table>
+            <p class="cb-section-description" style="margin-top:1rem;">
+                To change a width, add rules to your own stylesheet and target the sidebar with the
+                <code>Class</code> you gave it. Set both <code>flex-basis</code> and <code>width</code>:
+            </p>
+            <CyCodeBlock Code="@WidthOverrideCode" Language="css" />
+            <h4>Cautions</h4>
+            <ul class="cb-section-description">
+                <li>
+                    <strong>Use a stylesheet, not the <code>Style</code> parameter.</strong> An inline style applies in
+                    every state, so a width set there would also apply to the Compact and IconOnly rails.
+                </li>
+                <li>
+                    <strong>Set both <code>flex-basis</code> and <code>width</code>.</strong> The library sets both, and
+                    setting only one leaves the other at the default. Your own CSS wins without
+                    <code>!important</code>, because the library's styles live in a CSS cascade layer and unlayered
+                    styles always beat layered ones.
+                </li>
+                <li>
+                    <strong>Keep IconOnly at about 4.8rem or wider.</strong> The two size chevrons need 4.25rem plus the
+                    header padding, and anything narrower is clipped.
+                </li>
+                <li>
+                    <strong>Size the logo to fit the rail.</strong> A logo is limited by the rail's inner width, so pick a
+                    <code>CyBrandLogo</code> <code>Size</code> that fits (see the
+                    <a href="/branding/brand-logo">CyBrandLogo</a> page for the pixel scale).
+                </li>
+            </ul>
+        </div>
+
     </div>
 }
 else if (_activeTab == Tab.Api)
@@ -149,6 +209,23 @@ else
     private SidebarWidth _width = SidebarWidth.Medium;
     private SidebarState _state = SidebarState.Expanded;
     private bool _mobileOpen;
+    private BrandLogoVariant _logoVariant = BrandLogoVariant.Auto;
+    private ComponentSize _logoSize = ComponentSize.Medium;
+    private string _logoText = "CymruBlazor";
+    private bool _railLogo = true;
+    private ComponentSize _railLogoSize = ComponentSize.Medium;
+
+    private static readonly (string Text, string Icon, bool Current)[] _previewItems =
+    [
+        ("Dashboard", "dashboard", true),
+        ("Appointments", "appointment", false),
+        ("Wards", "ward", false),
+        ("Reports", "chart", false)
+    ];
+
+    // The icon-sized logo shown in the Compact and IconOnly rails.
+    private RenderFragment RailBrand =>
+        @<CyBrandLogo Variant="_logoVariant" SymbolOnly="true" Size="_railLogoSize" Text="@_logoText" Href="@null" />;
 
     private static readonly IReadOnlyList<SidebarState> _cyclingStates =
     [
@@ -168,11 +245,34 @@ else
         SidebarWidth.Small, SidebarWidth.Medium, SidebarWidth.Large
     ];
 
-    private async Task CycleSidebarAsync()
+    private readonly IReadOnlyList<BrandLogoVariant> _logoVariantOptions =
+    [
+        BrandLogoVariant.Auto, BrandLogoVariant.Full, BrandLogoVariant.Mark, BrandLogoVariant.Wordmark
+    ];
+
+    private readonly IReadOnlyList<ComponentSize> _logoSizeOptions =
+    [
+        ComponentSize.Small, ComponentSize.Medium, ComponentSize.Large, ComponentSize.ExtraLarge
+    ];
+
+    private readonly IReadOnlyList<ComponentSize> _railLogoSizeOptions =
+    [
+        ComponentSize.ExtraSmall, ComponentSize.Small, ComponentSize.Medium, ComponentSize.Large
+    ];
+
+    private async Task NarrowSidebarAsync()
     {
         if (_sidebarRef is not null)
         {
-            await _sidebarRef.CycleNextAsync();
+            await _sidebarRef.NarrowAsync();
+        }
+    }
+
+    private async Task WidenSidebarAsync()
+    {
+        if (_sidebarRef is not null)
+        {
+            await _sidebarRef.WidenAsync();
         }
     }
 
@@ -181,14 +281,6 @@ else
         if (_sidebarRef is not null)
         {
             await _sidebarRef.ExpandAsync();
-        }
-    }
-
-    private async Task SetIconOnlyAsync()
-    {
-        if (_sidebarRef is not null)
-        {
-            await _sidebarRef.SetStateAsync(SidebarState.IconOnly);
         }
     }
 
@@ -205,22 +297,61 @@ else
         _mobileOpen = !_mobileOpen;
     }
 
-    private string GeneratedCode =>
-        $"""
-        <CySidebar
-            Position="SidebarPosition.{_position}"
-            Width="SidebarWidth.{_width}"
-            States="[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]"
-            @bind-State="_state"
-            @bind-MobileOpen="_mobileOpen">
-            <Brand>
-                <CyBrandLogo Variant="BrandLogoVariant.Auto" SymbolOnly="@(_state != SidebarState.Expanded)" />
-            </Brand>
-            <ChildContent>
-                <div class="cy-sidebar__item"><CyIcon Name="home" /><span class="cy-sidebar__label">Home</span></div>
-                <div class="cy-sidebar__item"><CyIcon Name="appointment" /><span class="cy-sidebar__label">Appointments</span></div>
-            </ChildContent>
-        </CySidebar>
+    private string GeneratedCode
+    {
+        get
+        {
+            var usesBuiltInText = _logoVariant is BrandLogoVariant.Full or BrandLogoVariant.Wordmark;
+            var textAttribute = usesBuiltInText ? $" Text=\"{_logoText}\"" : string.Empty;
+
+            var lines = new List<string>
+            {
+                "<CySidebar",
+                $"    Position=\"SidebarPosition.{_position}\"",
+                $"    Width=\"SidebarWidth.{_width}\"",
+                "    States=\"[SidebarState.Expanded, SidebarState.Compact, SidebarState.IconOnly, SidebarState.Hidden]\"",
+                "    @bind-State=\"_state\"",
+                "    @bind-MobileOpen=\"_mobileOpen\">",
+                "    <Brand>",
+                $"        <CyBrandLogo Variant=\"BrandLogoVariant.{_logoVariant}\" Size=\"ComponentSize.{_logoSize}\"{textAttribute} />",
+                "    </Brand>"
+            };
+
+            if (_railLogo)
+            {
+                lines.Add("    <CollapsedBrand>");
+                lines.Add($"        <CyBrandLogo Variant=\"BrandLogoVariant.{_logoVariant}\" SymbolOnly=\"true\" Size=\"ComponentSize.{_railLogoSize}\"{textAttribute} />");
+                lines.Add("    </CollapsedBrand>");
+            }
+            else
+            {
+                // Replace the opening tag's last attribute so ShowBrandWhenCollapsed sits with the others.
+                lines[5] = "    @bind-MobileOpen=\"_mobileOpen\"";
+                lines.Insert(6, "    ShowBrandWhenCollapsed=\"false\">");
+            }
+
+            lines.Add("    <ChildContent>");
+            lines.Add("        <nav aria-label=\"Primary\">");
+            lines.Add("            <a href=\"/\" class=\"cy-sidebar__item\" aria-current=\"page\">");
+            lines.Add("                <CyIcon Name=\"dashboard\" Size=\"20\" /><span class=\"cy-sidebar__label\">Dashboard</span>");
+            lines.Add("            </a>");
+            lines.Add("            <a href=\"/appointments\" class=\"cy-sidebar__item\">");
+            lines.Add("                <CyIcon Name=\"appointment\" Size=\"20\" /><span class=\"cy-sidebar__label\">Appointments</span>");
+            lines.Add("            </a>");
+            lines.Add("        </nav>");
+            lines.Add("    </ChildContent>");
+            lines.Add("</CySidebar>");
+
+            return string.Join(Environment.NewLine, lines);
+        }
+    }
+
+    private const string WidthOverrideCode =
+        """
+        /* <CySidebar Class="app-shell__nav-sidebar" Width="SidebarWidth.Small" ... /> */
+        .app-shell__nav-sidebar.cy-sidebar--sm        { flex-basis: 16rem;  width: 16rem;  } /* Expanded (Small) */
+        .app-shell__nav-sidebar.cy-sidebar--compact   { flex-basis: 7.5rem; width: 7.5rem; } /* Compact rail */
+        .app-shell__nav-sidebar.cy-sidebar--icon-only { flex-basis: 5.5rem; width: 5.5rem; } /* IconOnly rail */
         """;
 
     private const string MultiStateRecipeCode =

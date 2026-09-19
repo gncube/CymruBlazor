@@ -413,6 +413,43 @@
 }
 
 /*
+ * cy-sidebar__item - a navigation row (icon + cy-sidebar__label). It must be
+ * a flex container in EVERY state: the Compact and IconOnly rules below set
+ * flex-direction / align-items / justify-content, which do nothing on a block
+ * element (the icon and label would just flow inline and wrap unpredictably).
+ * A consumer's own unlayered rules still override any of this.
+ */
+.cy-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-2) var(--cymru-space-4);
+  border-radius: var(--cymru-radius-md);
+  color: var(--cymru-color-text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cy-sidebar__item > .cy-icon {
+  flex: 0 0 auto;
+}
+
+.cy-sidebar__item:hover {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.cy-sidebar__item:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: -2px;
+}
+
+.cy-sidebar__item[aria-current="page"] {
+  background-color: var(--cymru-color-primary-subtle);
+  color: var(--cymru-color-primary);
+  font-weight: var(--cymru-font-weight-medium);
+}
+
+/*
  * CollapseMode.Compact - collapses to a narrow rail that keeps a short
  * label stacked beneath each item's icon (reference design: the
  * "Dashboard / Patient Search / Referrals ..." rail with visible
@@ -433,6 +470,10 @@
   gap: var(--cymru-space-1);
   text-align: center;
   padding: var(--cymru-space-2);
+}
+
+.cy-sidebar--compact .cy-sidebar__item > .cy-icon {
+  margin-inline: auto;
 }
 
 .cy-sidebar--compact .cy-sidebar__label {
@@ -462,11 +503,13 @@
 }
 
 /* With no label to carry meaning, the icon is the whole control, so it is
-   drawn larger than the 20px used beside a label (CyIcon only sets the
-   width/height presentation attributes, which any CSS rule overrides). */
+   drawn at 1.5rem (24px, the CyIcon default) rather than the 20px used beside
+   a label. CyIcon only sets width/height presentation attributes, which any
+   CSS rule overrides. Centred in the rail by the flex rules above. */
 .cy-sidebar--icon-only .cy-sidebar__item .cy-icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline: auto;
 }
 
 /*
