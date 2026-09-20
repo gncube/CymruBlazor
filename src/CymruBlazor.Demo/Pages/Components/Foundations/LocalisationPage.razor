@@ -1,0 +1,244 @@
+@page "/foundations/localisation"
+@namespace CymruBlazor.Demo.Pages.Components.Foundations
+@implements IDisposable
+@inject CymruBlazor.Demo.Localisation.AppStrings T
+@inject IToastService Toasts
+@using CymruBlazor.Demo.Localisation
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Localisation</h1>
+    <a class="cb-open-in-github"
+       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor.Demo/Localisation/AppStrings.cs"
+       target="_blank" rel="noopener noreferrer">
+        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+    </a>
+    <p class="cb-page-description">
+        Every string CymruBlazor renders on its own (accessible names, button text, announcements)
+        has a <code>string?</code> parameter with an English default. Pass your translation and it
+        replaces the default; leave it unset and you get English. This page shows the pattern
+        end to end: one <code>AppStrings</code> service holds the current language, and the components
+        below take their strings from it.
+    </p>
+</div>
+
+<CyAlert Severity="ComponentColour.Warning">
+    <p style="margin:0">
+        <strong>The Welsh here is illustrative.</strong> It demonstrates the mechanism and is used by the tests. It has not been reviewed by a translator.
+        Use text supplied and checked by your translation service in a real service.
+    </p>
+</CyAlert>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Try it</h2>
+    <p class="cb-section-description">
+        Switch language, then inspect the buttons and landmarks (or use a screen reader): their accessible
+        names change with the language. The toast notification region lives in this site's shell layout, so
+        its labels change too (open a notification and check its close button). The preview is marked with
+        <code>lang="@T.LangTag"</code> so assistive technology pronounces it correctly (WCAG 3.1.2).
+    </p>
+
+    <p>
+        <CyLanguageToggle CurrentLanguage="T.Language" CurrentLanguageChanged="SetLanguage" />
+    </p>
+
+    <div id="localisation-preview" class="cb-l10n-preview" lang="@T.LangTag"
+         style="display:flex;flex-direction:column;gap:var(--cymru-space-6)">
+
+        <CyAlert Severity="ComponentColour.Info"
+                 Dismissible="true"
+                 DismissAriaLabel="@L.AlertDismiss">
+            <strong>@C.AlertTitle.</strong> @C.AlertBody
+        </CyAlert>
+
+        <CyBreadcrumb AriaLabel="@L.BreadcrumbLabel">
+            <CyBreadcrumbItem Text="@C.CrumbHome" Href="/" />
+            <CyBreadcrumbItem Text="@C.CrumbAppointments" />
+        </CyBreadcrumb>
+
+        <CyCodeBlock Language="csharp"
+                     Code="@CodeSample"
+                     CopyLabel="@L.CopyLabel"
+                     CopiedLabel="@L.CopiedLabel"
+                     CopyFailedLabel="@L.CopyFailedLabel"
+                     CopiedMessage="@L.CopiedMessage"
+                     CopyFailedMessage="@L.CopyFailedMessage"
+                     CodeLabel="@L.CodeLabel" />
+
+        <div style="display:flex;flex-wrap:wrap;gap:var(--cymru-space-3)">
+            <button id="l10n-open-dialog" type="button" class="cb-demo-btn" @onclick="() => _dialogOpen = true">@C.OpenDialog</button>
+            <button id="l10n-show-toast" type="button" class="cb-demo-btn cb-demo-btn--secondary" @onclick="ShowToast">@C.ShowNotification</button>
+        </div>
+
+        <div class="cb-workbench-preview">
+            <div class="cb-sidebar-stage">
+                <CySidebar States="_sidebarStates"
+                           @bind-State="_sidebarState"
+                           SizeGroupLabel="@L.SidebarSizeGroup"
+                           RevealLabel="@L.SidebarReveal"
+                           CloseLabel="@L.SidebarClose"
+                           ExpandLabel="@L.SidebarExpand"
+                           CollapseLabel="@L.SidebarCollapse"
+                           CompactLabel="@L.SidebarCompact"
+                           IconOnlyLabel="@L.SidebarIconOnly"
+                           HideLabel="@L.SidebarHide"
+                           ResizeLabel="@L.SidebarResize">
+                    <ChildContent>
+                        <nav aria-label="@C.SampleNavigationLabel">
+                            <a href="#" class="cy-sidebar__item" title="@C.NavOverview" aria-current="page" @onclick:preventDefault>
+                                <CyIcon Name="info" Size="20" />
+                                <span class="cy-sidebar__label">@C.NavOverview</span>
+                            </a>
+                            <a href="#" class="cy-sidebar__item" title="@C.CrumbAppointments" @onclick:preventDefault>
+                                <CyIcon Name="language" Size="20" />
+                                <span class="cy-sidebar__label">@C.CrumbAppointments</span>
+                            </a>
+                        </nav>
+                    </ChildContent>
+                </CySidebar>
+            </div>
+        </div>
+
+        <CyDialog @bind-Open="_dialogOpen"
+                  Title="@C.DialogTitle"
+                  Description="@C.DialogDescription"
+                  CloseLabel="@L.DialogClose">
+            <ChildContent>
+                <p>@C.DialogBody</p>
+            </ChildContent>
+            <Footer>
+                <button type="button" class="cb-demo-btn" autofocus @onclick="() => _dialogOpen = false">@C.DialogConfirm</button>
+            </Footer>
+        </CyDialog>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">1. Hold the language and the strings in one service</h2>
+    <p class="cb-section-description">
+        <code>AppStrings</code> is a scoped service with the current <code>AppLanguage</code>, a
+        <code>Changed</code> event, and two records of strings: <code>LibraryStrings</code> (what you pass to
+        CymruBlazor) and your own content. Register it once:
+    </p>
+    <CyCodeBlock Language="csharp" Code="@RegistrationSample" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">2. Pass the strings to the components</h2>
+    <p class="cb-section-description">
+        Components that appear once (navigation, the toast container, the sidebar) are set in the layout, once.
+        Components that repeat (alerts, code blocks) are wrapped once so every use follows the language. In both
+        cases the layout re-renders when <code>AppStrings.Changed</code> fires.
+    </p>
+    <CyCodeBlock Language="razor" Code="@UsageSample" />
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">3. Mark the language of translated text</h2>
+    <p class="cb-section-description">
+        Set <code>&lt;html lang&gt;</code> to the page language, and put <code>lang="cy"</code> on any Welsh
+        text inside an English page (or the other way round). CymruBlazor does not do this for you: it does not
+        know your language. <code>AppStrings.LangTag</code> provides the value.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">String catalogue</h2>
+    <p class="cb-section-description">
+        Every override parameter in 1.3, its English default, and the illustrative Welsh used above. A
+        <code>null</code> parameter renders the English default.
+    </p>
+    <div style="overflow-x:auto">
+        <table class="cb-api-table" aria-label="Localisable strings">
+            <thead>
+                <tr><th>Component</th><th>Parameter</th><th>English (default)</th><th>Cymraeg (illustrative)</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in AppStrings.Catalogue)
+                {
+                    <tr>
+                        <td class="cb-api-table__name">@entry.Component</td>
+                        <td class="cb-api-table__type">@entry.Parameter</td>
+                        <td lang="en">@entry.Get(AppStrings.EnglishLibrary)</td>
+                        <td lang="cy">@entry.Get(AppStrings.WelshLibrary)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Not covered by a parameter</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li><code>CyLanguageToggle</code> labels itself in the language it switches <em>to</em>; override its accessible name with <code>AriaLabel</code>.</li>
+        <li><code>CyBrandLogo</code> builds "{Text} Home"; set <code>AriaLabel</code>.</li>
+        <li><code>CySkipLink</code> and <code>CyValidationSummary</code> take their text as content or a <code>Title</code> parameter you already set.</li>
+        <li>A central <code>ICyLocalizer</code> that removes the per-component wiring is proposed in ADR-0002 (not built yet).</li>
+    </ul>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<SidebarState> _sidebarStates =
+    [
+        SidebarState.Expanded,
+        SidebarState.Compact,
+        SidebarState.IconOnly,
+        SidebarState.Hidden
+    ];
+
+    private SidebarState _sidebarState = SidebarState.Compact;
+    private bool _dialogOpen;
+
+    private LibraryStrings L => T.Library;
+
+    private SampleContent C => T.Content;
+
+    private const string CodeSample = "var greeting = \"Helo\";\nvar farewell = \"Hwyl\";";
+
+    private const string RegistrationSample = """
+        builder.Services.AddScoped<AppStrings>();
+
+        public sealed class AppStrings
+        {
+            public AppLanguage Language { get; private set; }
+            public event Action? Changed;
+
+            public LibraryStrings Library =>
+                Language == AppLanguage.Welsh ? WelshLibrary : EnglishLibrary;
+
+            public string LangTag => Language == AppLanguage.Welsh ? "cy" : "en";
+
+            public void SetLanguage(AppLanguage language)
+            {
+                Language = language;
+                Changed?.Invoke();
+            }
+        }
+        """;
+
+    private const string UsageSample = """
+        @inject AppStrings T
+
+        <CyLanguageToggle CurrentLanguage="T.Language"
+                          CurrentLanguageChanged="T.SetLanguage" />
+
+        <CyAlert Dismissible="true" DismissAriaLabel="@T.Library.AlertDismiss">...</CyAlert>
+        <CyBreadcrumb AriaLabel="@T.Library.BreadcrumbLabel">...</CyBreadcrumb>
+
+        <CyDialog Title="@Title" CloseLabel="@T.Library.DialogClose">...</CyDialog>
+
+        @* In MainLayout, once: *@
+        <CyToastContainer AriaLabel="@T.Library.ToastRegion"
+                          DismissAriaLabel="@T.Library.ToastDismiss" />
+        """;
+
+    protected override void OnInitialized() => T.Changed += HandleChanged;
+
+    private void SetLanguage(AppLanguage language) => T.SetLanguage(language);
+
+    private void HandleChanged() => InvokeAsync(StateHasChanged);
+
+    private void ShowToast() => Toasts.Show(C.NotificationText, ToastVariant.Success);
+
+    public void Dispose() => T.Changed -= HandleChanged;
+}

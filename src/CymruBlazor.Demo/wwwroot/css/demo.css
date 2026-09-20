@@ -972,9 +972,9 @@ details[open] > summary .cb-nav-group__chevron {
 .cb-api-table__name {
   font-family: monospace;
   font-weight: 600;
-  /* #0284c7 (Tailwind sky-600) is 4.10:1 on white, just under WCAG AA's
-     4.5:1 for text this size - sky-700 (#0369a1) passes at 5.93:1. */
-  color: #0369a1;
+  /* Theme-aware link colour (AA in light, dark and high-contrast). The old
+     fixed sky-700 (#0369a1) passed on white but not on the dark surface. */
+  color: var(--cymru-color-link, #0369a1);
 }
 
 .cb-api-table__type,

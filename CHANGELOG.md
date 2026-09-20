@@ -49,6 +49,11 @@ against 1.2.0.
 
 ### Changed
 
+- Demo: a **Localisation** page (`/foundations/localisation`) and an
+  `AppStrings` service show the step-1 pattern end to end (language toggle,
+  translated accessible names, `lang` on translated text, a catalogue of
+  every override). The site's shell toast container now follows the selected
+  language. The Welsh text is illustrative and not translator-reviewed.
 - `CyFocusTrap` now really works: it moves focus in, contains `Tab`, pulls
   back escaped focus and restores focus when released. It also honours
   `Enabled` changing after the first render. It still does not make the rest
@@ -63,6 +68,8 @@ against 1.2.0.
 
 ### Fixed
 
+- Demo API tables: the parameter-name colour was a fixed blue that failed
+  contrast on the dark theme; it now uses the theme-aware link colour.
 - `CyAlert` no longer makes the whole page scroll horizontally when its text
   contains a long unbroken string on a narrow screen (WCAG 1.4.10).
 

@@ -27,6 +27,10 @@ Naming convention already in use: accessible names of dismiss buttons are
 The library currently has no notion of "the current language" beyond the
 `CyLanguageToggle` component's parameters, and it ships no Welsh text.
 
+The demo's Localisation page (`/foundations/localisation`, `AppStrings`) is
+the working reference for step 1 and shows the per-component wiring that this
+ADR would remove.
+
 ## Proposal
 
 Add an optional service; components fall back through three levels:

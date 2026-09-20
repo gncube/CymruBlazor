@@ -27,5 +27,11 @@
       have caught it, only rendering the component actually does.
     -->
     <ProjectReference Include="..\..\samples\Dashboard\Dashboard.csproj" />
+    <!--
+      Referenced so LocalisationPageTests can bUnit-render the real demo
+      /foundations/localisation page and prove that, in Welsh, none of the
+      library's English defaults reach the rendered markup.
+    -->
+    <ProjectReference Include="..\..\src\CymruBlazor.Demo\CymruBlazor.Demo.csproj" />
   </ItemGroup>
 </Project>

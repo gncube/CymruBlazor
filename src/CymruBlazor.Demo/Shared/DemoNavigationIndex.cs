@@ -25,6 +25,8 @@ public static class DemoNavigationIndex
             "Applies the active theme app-wide and enables runtime theme switching."),
         new("Foundations", "Typography", "/foundations/typography",
             "The NHS Wales type scale, via CyTypography."),
+        new("Foundations", "Localisation", "/foundations/localisation",
+            "Translate every built-in string (English/Cymraeg) with parameter overrides and one AppStrings service."),
         new("Foundations", "Focus Trap", "/accessibility/focus-trap",
             "Keeps keyboard focus inside a region, wraps Tab, and returns focus afterwards."),
         new("Foundations", "Dialog", "/accessibility/dialog",
