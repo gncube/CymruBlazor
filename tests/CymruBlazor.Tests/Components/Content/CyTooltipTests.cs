@@ -89,7 +89,9 @@ public sealed class CyTooltipTests : TestContextBase
     [Fact]
     public void Tooltip_Text_Is_Encoded_Not_Rendered_As_Markup()
     {
-        var cut = RenderTooltip(p => p.Add(t => t.Text, "<b>bold</b>"));
+        var cut = Render<CyTooltip>(p => p
+            .Add(t => t.Text, "<b>bold</b>")
+            .AddChildContent("Info"));
 
         cut.Find("[role=tooltip]").InnerHtml.ShouldBe("&lt;b&gt;bold&lt;/b&gt;");
         cut.FindAll("[role=tooltip] b").Count.ShouldBe(0);

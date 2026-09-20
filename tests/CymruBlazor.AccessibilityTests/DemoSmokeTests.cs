@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Deque.AxeCore.Commons;
 using Deque.AxeCore.Playwright;
 using Microsoft.Playwright;
 using Shouldly;
@@ -89,7 +90,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         failures.ShouldBeEmpty(string.Join(Environment.NewLine, failures));
     }
 
-    private async Task SmokeThemeAsync(string demoDirectory, IReadOnlyList<string> routes, string theme, List<string> failures)
+    private async Task SmokeThemeAsync(string demoDirectory, List<string> routes, string theme, List<string> failures)
     {
         await using var context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {

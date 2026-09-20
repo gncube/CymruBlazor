@@ -86,7 +86,7 @@ public sealed class ComponentContractTests : TestContextBase
     }
 
     [Fact]
-    public void IHasValidationState_Is_Invalid_Only_While_The_Field_Has_A_Validation_Message()
+    public async Task IHasValidationState_Is_Invalid_Only_While_The_Field_Has_A_Validation_Message()
     {
         var model = new TextModel();
         var editContext = new EditContext(model);
@@ -104,7 +104,7 @@ public sealed class ComponentContractTests : TestContextBase
         ((IHasValidationState)field).ValidationState.ShouldBe(ValidationState.Unspecified);
 
         messages.Add(editContext.Field(nameof(TextModel.Name)), "Required");
-        editContext.NotifyValidationStateChanged();
+        await cut.InvokeAsync(editContext.NotifyValidationStateChanged);
 
         ((IHasValidationState)field).ValidationState.ShouldBe(ValidationState.Invalid);
     }
