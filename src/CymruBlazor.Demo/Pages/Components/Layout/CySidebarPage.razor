@@ -16,12 +16,12 @@
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
     <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)"
-            aria-controls="panel-examples" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
+            aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
             @onclick="() => _activeTab = Tab.Examples">Examples</button>
-    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="panel-api"
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)"
             class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
     <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
-            aria-controls="panel-accessibility" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
+            aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
             @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
 </div>
 
@@ -40,7 +40,7 @@
 
         <div class="cb-workbench-preview">
             <div class="cb-sidebar-stage">
-                <CySidebar @ref="_sidebarRef" Position="_position" Width="_width" States="_cyclingStates"
+                <CySidebar @ref="_sidebarRef" aria-label="Sample sidebar" Position="_position" Width="_width" States="_cyclingStates"
                            @bind-State="_state" @bind-MobileOpen="_mobileOpen"
                            ShowBrandWhenCollapsed="_railLogo" CollapsedBrand="@(_railLogo ? RailBrand : null)">
                     <Brand>

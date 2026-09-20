@@ -94,6 +94,12 @@ components, especially anything that renders on a coloured background
   ```
 
   Without the variable it is a no-op locally and a failure when `CI=true`.
+
+  **No local Playwright or WebAssembly toolchain?** You do not need one. Run the
+  **Demo smoke** workflow (Actions tab -> Demo smoke -> Run workflow): it
+  publishes the demo on a GitHub runner, runs only this test, and posts every
+  finding to the job summary and a `demo-smoke-report` artifact. The full CI run
+  does the same (`TestResults/demo-smoke-report.md`).
   Understood, tracked violations can be listed in `KnownIssues` as
   `"route|rule-id"`; keep that empty otherwise.
 - Tooltips fade in over ~120ms; wait for it to settle before scanning, or axe

@@ -74,7 +74,7 @@
   /* Foreground / Text Hierarchy */
   --cb-text-primary: #0f172a;         /* Slate 900 */
   --cb-text-secondary: #475569;       /* Slate 600 */
-  --cb-text-muted: #64748b;           /* Slate 500 */
+  --cb-text-muted: #556479;           /* Between Slate 500 and 600: 5.5:1 on --cb-bg-muted (Slate 500 was 4.34:1) */
   --cb-text-subtle: #94a3b8;          /* Slate 400 */
   --cb-text-on-accent: #ffffff;
 
@@ -280,6 +280,7 @@ body {
 }
 
 .cb-toc-title {
+  margin-top: 0;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1rem;

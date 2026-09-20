@@ -130,6 +130,26 @@
   color: var(--cymru-color-text);
 }
 
+/*
+ * A quiet button (Secondary/Tertiary: transparent, primary-coloured text) placed in the Actions of a
+ * coloured header would be primary-on-accent and unreadable. Inherit the header's own text colour
+ * instead. Three classes, so this wins over CyButton's scoped (class + attribute) rules.
+ */
+.cy-header--primary .cy-header__actions .cy-button--secondary,
+.cy-header--primary .cy-header__actions .cy-button--tertiary,
+.cy-header--secondary .cy-header__actions .cy-button--secondary,
+.cy-header--secondary .cy-header__actions .cy-button--tertiary {
+  color: inherit;
+  border-color: currentcolor;
+}
+
+.cy-header--primary .cy-header__actions .cy-button--secondary:hover,
+.cy-header--primary .cy-header__actions .cy-button--tertiary:hover,
+.cy-header--secondary .cy-header__actions .cy-button--secondary:hover,
+.cy-header--secondary .cy-header__actions .cy-button--tertiary:hover {
+  background: color-mix(in srgb, currentcolor 18%, transparent);
+}
+
 .cy-header--sticky {
   position: sticky;
   top: 0;

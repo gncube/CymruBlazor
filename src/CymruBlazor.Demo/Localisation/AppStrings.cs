@@ -72,6 +72,8 @@ public sealed record SampleContent
 
     public required string SampleNavigationLabel { get; init; }
 
+    public required string SampleSidebarLabel { get; init; }
+
     public required string NavOverview { get; init; }
 
     public required string OpenDialog { get; init; }
@@ -171,6 +173,7 @@ public sealed class AppStrings
         CrumbHome = "Home",
         CrumbAppointments = "Appointments",
         SampleNavigationLabel = "Sample navigation",
+        SampleSidebarLabel = "Sample sidebar",
         NavOverview = "Overview",
         OpenDialog = "Open dialog",
         DialogTitle = "Appointment details",
@@ -188,6 +191,7 @@ public sealed class AppStrings
         CrumbHome = "Hafan",
         CrumbAppointments = "Apwyntiadau",
         SampleNavigationLabel = "Llywio enghreifftiol",
+        SampleSidebarLabel = "Bar ochr enghreifftiol",
         NavOverview = "Trosolwg",
         OpenDialog = "Agor y ddeialog",
         DialogTitle = "Manylion yr apwyntiad",

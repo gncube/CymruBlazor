@@ -6,7 +6,7 @@
     style="@CssStyle"
     @attributes="AdditionalAttributes">
 
-    <h3 class="cy-accordion-item__heading">
+    <h3 class="cy-accordion-item__heading" aria-level="@(HeadingLevel == 3 ? null : HeadingLevel.ToString(System.Globalization.CultureInfo.InvariantCulture))">
         <button
             type="button"
             @ref="_triggerRef"

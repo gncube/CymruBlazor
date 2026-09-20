@@ -23,6 +23,14 @@ public partial class CyAlert : CyLayoutComponentBase, IHasColour
     [Parameter]
     public ComponentColour Severity { get; set; } = ComponentColour.Info;
 
+    /// <summary>
+    /// The heading level (1-6) of <see cref="Title"/>. Defaults to 6, which keeps the alert title small but
+    /// fails "heading levels should only increase by one" when the alert follows, say, an h2. Set it to one
+    /// more than the nearest preceding heading. The visual size is unchanged.
+    /// </summary>
+    [Parameter]
+    public int TitleLevel { get; set; } = 6;
+
     /// <inheritdoc />
     ComponentColour IHasColour.Colour => Severity;
 
@@ -76,6 +84,12 @@ public partial class CyAlert : CyLayoutComponentBase, IHasColour
     protected override void ValidateParameters()
     {
         base.ValidateParameters();
+
+        if (TitleLevel is < 1 or > 6)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CyAlert)}.{nameof(TitleLevel)} must be between 1 and 6. Received '{TitleLevel}'.");
+        }
 
         if (Severity is not (ComponentColour.Info
             or ComponentColour.Success
