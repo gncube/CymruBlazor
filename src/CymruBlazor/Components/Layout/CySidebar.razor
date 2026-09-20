@@ -8,11 +8,13 @@
 }
 
 <aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute"
+       tabindex="@(MobileOpen ? "-1" : null)"
+       @onkeydown="HandleKeyDownAsync"
        @attributes="AdditionalAttributes">
 
     @if (State == SidebarState.Hidden && !MobileOpen)
     {
-        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="Reveal sidebar">
+        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="@(RevealLabel ?? "Reveal sidebar")">
             <CyIcon Name="@RevealIconName" Size="16" />
         </button>
     }
@@ -31,7 +33,7 @@
 
             @if (MobileOpen)
             {
-                <button type="button" class="cy-sidebar__close" @onclick="CloseMobileDrawerAsync" aria-label="Close sidebar">
+                <button type="button" class="cy-sidebar__close" @onclick="CloseMobileDrawerAsync" aria-label="@(CloseLabel ?? "Close sidebar")">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M18 6 6 18M6 6l12 12" />
@@ -40,7 +42,7 @@
             }
             else if (UseStepControls)
             {
-                <div class="cy-sidebar__steps" role="group" aria-label="Sidebar size">
+                <div class="cy-sidebar__steps" role="group" aria-label="@(SizeGroupLabel ?? "Sidebar size")">
                     @if (Position == SidebarPosition.Left)
                     {
                         if (CanNarrow)
@@ -86,7 +88,7 @@
                 <button type="button" class="cy-sidebar__toggle"
                         @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
                         aria-expanded="@(!EffectiveCollapsed)"
-                        aria-label="@(EffectiveCollapsed ? "Expand sidebar" : "Collapse sidebar")"
+                        aria-label="@(EffectiveCollapsed ? ExpandText : CollapseText)"
                         tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
                     <CyIcon Name="@ToggleIconName" Size="16" />
                 </button>

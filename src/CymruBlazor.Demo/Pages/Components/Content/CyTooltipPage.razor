@@ -1,0 +1,105 @@
+@page "/content/tooltip"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Tooltip</h1>
+    <a class="cb-open-in-github"
+       href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyTooltip.razor"
+       target="_blank" rel="noopener noreferrer">
+        Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+    </a>
+    <p class="cb-page-description">
+        A short, plain-text hint that appears when its trigger is hovered <em>or</em> focused.
+        It meets WCAG 1.4.13 (Content on Hover or Focus): dismissible with <kbd>Escape</kbd>,
+        hoverable, and persistent.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Basic usage</h2>
+    <p class="cb-section-description">
+        Tab to the icon or hover it. Press <kbd>Escape</kbd> to dismiss the tooltip without moving
+        focus. The trigger content should carry its own accessible name, so the icon has a
+        <code>Label</code>.
+    </p>
+
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview" style="padding:var(--cymru-space-12) var(--cymru-space-8)">
+            <span>Ward occupancy</span>
+            <CyTooltip Text="Occupied beds out of total available beds, updated in real time.">
+                <CyIcon Name="info" Size="16" Label="About ward occupancy" />
+            </CyTooltip>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTooltip Text="Occupied beds out of total available beds."&gt;
+    &lt;CyIcon Name="info" Label="About ward occupancy" /&gt;
+&lt;/CyTooltip&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Placement</h2>
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview" style="padding:var(--cymru-space-12) var(--cymru-space-16);gap:var(--cymru-space-12);display:flex;flex-wrap:wrap">
+            @foreach (var placement in Enum.GetValues<TooltipPlacement>())
+            {
+                <CyTooltip Text="@($"Shown at the {placement.ToString().ToLowerInvariant()}")" Placement="placement">
+                    @placement
+                </CyTooltip>
+            }
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTooltip Text="Shown at the bottom" Placement="TooltipPlacement.Bottom"&gt;
+    Bottom
+&lt;/CyTooltip&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Interactive triggers</h2>
+    <p class="cb-section-description">
+        When the trigger is already focusable (a button or link), set <code>Focusable="false"</code>
+        so it is not a second tab stop, and point the trigger's <code>aria-describedby</code> at the
+        tooltip. Give the tooltip an explicit <code>Id</code>; its text element is
+        <code>{Id}-content</code>.
+    </p>
+    <div class="cb-example">
+        <span class="cb-example__label">Interactive</span>
+        <div class="cb-example__preview" style="padding:var(--cymru-space-12) var(--cymru-space-8)">
+            <CyTooltip Id="save-draft-tip" Text="Saves without submitting." Focusable="false">
+                <button type="button" class="cb-demo-btn" aria-describedby="save-draft-tip-content">Save draft</button>
+            </CyTooltip>
+        </div>
+        <pre class="cb-example__code"><code>&lt;CyTooltip Id="save-draft-tip" Text="Saves without submitting." Focusable="false"&gt;
+    &lt;button type="button" aria-describedby="save-draft-tip-content"&gt;Save draft&lt;/button&gt;
+&lt;/CyTooltip&gt;</code></pre>
+    </div>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">API</h2>
+    <table class="cb-api-table" aria-label="Tooltip parameters">
+        <thead>
+            <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            <tr><td class="cb-api-table__name">Text</td><td class="cb-api-table__type">string</td><td class="cb-api-table__default">required</td><td>The tooltip text. Plain text only</td></tr>
+            <tr><td class="cb-api-table__name">ChildContent</td><td class="cb-api-table__type">RenderFragment</td><td class="cb-api-table__default">-</td><td>The trigger</td></tr>
+            <tr><td class="cb-api-table__name">Placement</td><td class="cb-api-table__type">TooltipPlacement</td><td class="cb-api-table__default">Top</td><td>Top, Bottom, Start or End (logical, so they flip in right-to-left layouts)</td></tr>
+            <tr><td class="cb-api-table__name">Focusable</td><td class="cb-api-table__type">bool</td><td class="cb-api-table__default">true</td><td>Makes the trigger wrapper a tab stop with <code>aria-describedby</code></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Accessibility notes</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li><strong>Hover and focus.</strong> The tooltip shows for keyboard users as well as pointer users, using CSS only.</li>
+        <li><strong>Dismissible.</strong> <kbd>Escape</kbd> hides it without moving the pointer or focus; it returns on the next hover or focus.</li>
+        <li><strong>Hoverable and persistent.</strong> The pointer can move onto the tooltip; it stays until hover and focus leave.</li>
+        <li><strong>Plain text only.</strong> A tooltip must not contain links or controls. Use a dialog for richer content.</li>
+        <li>The tooltip does not flip at viewport edges: choose a placement with room.</li>
+    </ul>
+</div>

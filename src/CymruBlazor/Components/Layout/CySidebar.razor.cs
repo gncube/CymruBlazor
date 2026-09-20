@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
 
@@ -8,9 +10,21 @@ namespace CymruBlazor.Components.Layout;
 /// Provides a collapsible, responsive sidebar layout component supporting multi-state cycling,
 /// legacy two-state collapse modes, and mobile off-canvas drawer presentation.
 /// </summary>
-public partial class CySidebar : CyLayoutComponentBase
+/// <remarks>
+/// While the mobile drawer is open on a small screen, focus moves into it,
+/// <c>Tab</c> stays inside it, <c>Escape</c> closes it and focus returns to the
+/// control that opened it. Focus handling uses the registered
+/// <see cref="IFocusManager"/> if there is one (<c>AddCymruBlazor()</c> registers it);
+/// without one the drawer still closes on <c>Escape</c>.
+/// </remarks>
+public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
 {
     private SidebarState _state = SidebarState.Expanded;
+    private IAsyncDisposable? _drawerTrap;
+    private bool _drawerTrapActive;
+
+    [Inject]
+    private IServiceProvider Services { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the list of states through which the sidebar cycles.
@@ -120,7 +134,47 @@ public partial class CySidebar : CyLayoutComponentBase
     [Parameter]
     public bool ShowBrandWhenCollapsed { get; set; } = true;
 
+    /// <summary>Accessible name of the button that reveals a hidden sidebar. Defaults to the English "Reveal sidebar".</summary>
+    [Parameter]
+    public string? RevealLabel { get; set; }
+
+    /// <summary>Accessible name of the mobile drawer's close button. Defaults to the English "Close sidebar".</summary>
+    [Parameter]
+    public string? CloseLabel { get; set; }
+
+    /// <summary>Accessible name of the group holding the narrow/widen buttons. Defaults to the English "Sidebar size".</summary>
+    [Parameter]
+    public string? SizeGroupLabel { get; set; }
+
+    /// <summary>Accessible name for the action that expands the sidebar. Defaults to the English "Expand sidebar".</summary>
+    [Parameter]
+    public string? ExpandLabel { get; set; }
+
+    /// <summary>Accessible name for the two-state toggle while expanded. Defaults to the English "Collapse sidebar".</summary>
+    [Parameter]
+    public string? CollapseLabel { get; set; }
+
+    /// <summary>Accessible name for the action that shows the compact rail. Defaults to the English "Show compact sidebar".</summary>
+    [Parameter]
+    public string? CompactLabel { get; set; }
+
+    /// <summary>Accessible name for the action that shows the icon-only rail. Defaults to the English "Show icons only".</summary>
+    [Parameter]
+    public string? IconOnlyLabel { get; set; }
+
+    /// <summary>Accessible name for the action that hides the sidebar. Defaults to the English "Hide sidebar".</summary>
+    [Parameter]
+    public string? HideLabel { get; set; }
+
+    /// <summary>Accessible name used for a state with no dedicated label. Defaults to the English "Resize sidebar".</summary>
+    [Parameter]
+    public string? ResizeLabel { get; set; }
+
     protected override string BaseCssClass => "cy-sidebar";
+
+    private string ExpandText => ExpandLabel ?? "Expand sidebar";
+
+    private string CollapseText => CollapseLabel ?? "Collapse sidebar";
 
     /// <summary>
     /// Indicates whether the sidebar is currently in any non-expanded collapsed state.
@@ -178,22 +232,22 @@ public partial class CySidebar : CyLayoutComponentBase
 
     private bool CanWiden => CurrentIndex > 0;
 
-    private string NarrowLabel => CanNarrow ? DescribeTarget(States[CurrentIndex + 1]) : "Narrow sidebar";
+    private string NarrowLabel => CanNarrow ? DescribeTarget(States[CurrentIndex + 1]) : ResizeLabel ?? "Resize sidebar";
 
-    private string WidenLabel => CanWiden ? DescribeTarget(States[CurrentIndex - 1]) : "Widen sidebar";
+    private string WidenLabel => CanWiden ? DescribeTarget(States[CurrentIndex - 1]) : ResizeLabel ?? "Resize sidebar";
 
     // "Narrow" points towards the sidebar's own edge, "widen" points away from it.
     private string NarrowIconName => Position == SidebarPosition.Right ? "chevron-right" : "chevron-left";
 
     private string WidenIconName => Position == SidebarPosition.Right ? "chevron-left" : "chevron-right";
 
-    private static string DescribeTarget(SidebarState target) => target switch
+    private string DescribeTarget(SidebarState target) => target switch
     {
-        SidebarState.Expanded => "Expand sidebar",
-        SidebarState.Compact => "Show compact sidebar",
-        SidebarState.IconOnly => "Show icons only",
-        SidebarState.Hidden => "Hide sidebar",
-        _ => "Resize sidebar"
+        SidebarState.Expanded => ExpandText,
+        SidebarState.Compact => CompactLabel ?? "Show compact sidebar",
+        SidebarState.IconOnly => IconOnlyLabel ?? "Show icons only",
+        SidebarState.Hidden => HideLabel ?? "Hide sidebar",
+        _ => ResizeLabel ?? "Resize sidebar"
     };
 
     /// <summary>
@@ -279,6 +333,70 @@ public partial class CySidebar : CyLayoutComponentBase
 
         var trimmedStyle = Style.TrimEnd(';', ' ');
         return $"{trimmedStyle}; {customBreakpoint};";
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (MobileOpen && !_drawerTrapActive)
+        {
+            _drawerTrapActive = true;
+
+            var focusManager = Services.GetService(typeof(IFocusManager)) as IFocusManager;
+            if (focusManager is null)
+            {
+                return;
+            }
+
+            var trap = await focusManager.TrapAsync(
+                Id,
+                new FocusTrapOptions(
+                    AutoFocus: true,
+                    RestoreFocus: true,
+                    PreventScroll: true,
+                    MediaQuery: string.IsNullOrWhiteSpace(MobileBreakpoint) ? null : $"(max-width: {MobileBreakpoint})"));
+
+            if (_drawerTrapActive)
+            {
+                _drawerTrap = trap;
+            }
+            else if (trap is not null)
+            {
+                await trap.DisposeAsync();
+            }
+        }
+        else if (!MobileOpen && _drawerTrapActive)
+        {
+            await ReleaseDrawerTrapAsync();
+        }
+    }
+
+    private async Task HandleKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (MobileOpen && args.Key == "Escape")
+        {
+            await CloseMobileDrawerAsync();
+        }
+    }
+
+    private async ValueTask ReleaseDrawerTrapAsync()
+    {
+        var trap = _drawerTrap;
+        _drawerTrap = null;
+        _drawerTrapActive = false;
+
+        if (trap is not null)
+        {
+            await trap.DisposeAsync();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+
+        await ReleaseDrawerTrapAsync();
     }
 
     /// <summary>

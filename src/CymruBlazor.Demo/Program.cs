@@ -11,4 +11,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddCymruBlazor();
 
+// Demo of localisation step 1: the current language and its strings (see /foundations/localisation).
+builder.Services.AddScoped<CymruBlazor.Demo.Localisation.AppStrings>();
+
 await builder.Build().RunAsync();

@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 @using CymruBlazor.Demo.SharedComponents
 
 <CyThemeProvider>
@@ -44,7 +45,7 @@
 
     <CyLiveRegion />
 
-    <CyToastContainer />
+    <CyToastContainer AriaLabel="@Strings.Library.ToastRegion" DismissAriaLabel="@Strings.Library.ToastDismiss" />
 
 </CyThemeProvider>
 
@@ -56,7 +57,12 @@
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += HandleLocationChanged;
+
+        // The toast container is app-wide, so its labels are set here, once, and follow the language.
+        Strings.Changed += HandleStringsChanged;
     }
+
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -128,6 +134,7 @@
     public async ValueTask DisposeAsync()
     {
         NavigationManager.LocationChanged -= HandleLocationChanged;
+        Strings.Changed -= HandleStringsChanged;
 
         if (_dotNetRef is not null)
         {

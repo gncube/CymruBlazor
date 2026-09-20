@@ -28,7 +28,7 @@
         <button
             type="button"
             class="cy-alert__dismiss"
-            aria-label="Dismiss"
+            aria-label="@(DismissAriaLabel ?? "Dismiss")"
             @onclick="HandleDismissAsync">
 
             <span aria-hidden="true">&times;</span>

@@ -43,11 +43,12 @@ public static class ServiceCollectionExtensions
         // manually by consuming apps (e.g. the Demo app); any component
         // using FocusTrap would throw at resolution time without it.
         //
-        // NOTE: FocusManager is currently a logging placeholder - it does
-        // not move, restore or contain focus. Register your own
-        // IFocusManager after AddCymruBlazor() for real behaviour (the last
-        // registration wins). A functional implementation is planned for 1.3.0.
-        services.AddScoped<IFocusManager, FocusManager>();
+        // JsFocusManager (1.3.0) really moves, restores and contains focus via
+        // the on-demand cymru-overlay.js module. Register your own
+        // IFocusManager after AddCymruBlazor() to replace it (the last
+        // registration wins). The old logging-only FocusManager remains as a
+        // no-op implementation but is no longer registered.
+        services.AddScoped<IFocusManager, JsFocusManager>();
 
         // Register the live-region registry used to forward Mediator
         // announcements to the actual, render-tree-attached CyLiveRegion

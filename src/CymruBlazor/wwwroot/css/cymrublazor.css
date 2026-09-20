@@ -69,6 +69,8 @@
 @import "components/navigation.css" layer(components);
 @import "components/icons.css" layer(components);
 @import "components/branding.css" layer(components);
+@import "components/tooltip.css" layer(components);
+@import "components/dialog.css" layer(components);
 
 /* ==========================================================================
    Utilities

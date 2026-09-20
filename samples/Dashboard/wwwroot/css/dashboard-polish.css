@@ -213,37 +213,14 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
   gap: var(--cymru-space-1);
 }
 
+/* The tooltip itself is CyTooltip; this only tints the trigger icon. */
 .dashboard-info-tip {
-  position: relative;
-  display: inline-flex;
   color: var(--cymru-color-text-muted);
   cursor: help;
 }
 
-.dashboard-info-tip:hover,
-.dashboard-info-tip:focus-visible {
+.dashboard-info-tip:is(:hover, :focus-within) {
   color: var(--cymru-color-primary);
-}
-
-.dashboard-info-tip:hover::after,
-.dashboard-info-tip:focus-visible::after {
-  content: attr(aria-label);
-  position: absolute;
-  bottom: calc(100% + var(--cymru-space-2));
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: 14rem;
-  padding: var(--cymru-space-2) var(--cymru-space-3);
-  border-radius: var(--cymru-radius-sm);
-  background-color: var(--cymru-color-secondary);
-  color: var(--cymru-color-text-inverse);
-  font-size: var(--cymru-font-size-xs);
-  font-weight: var(--cymru-font-weight-regular);
-  line-height: 1.3;
-  box-shadow: var(--cymru-shadow-md);
-  z-index: 10;
-  pointer-events: none;
 }
 
 /* ==========================================================================

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Mediator;
 
 namespace CymruBlazor.Components.Feedback;
@@ -13,7 +14,9 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
 
     private readonly object _syncLock = new();
     private readonly List<ToastNotification> _toasts = [];
-    private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _dismissTokens = new();
+    private static readonly TimeSpan MinimumResume = TimeSpan.FromSeconds(1);
+
+    private readonly ConcurrentDictionary<Guid, DismissTimer> _dismissTokens = new();
 
     public event Action? OnChange;
 
@@ -107,10 +110,63 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
         return ValueTask.CompletedTask;
     }
 
+    /// <inheritdoc />
+    public void PauseAutoDismiss(Guid id)
+    {
+        if (!_dismissTokens.TryGetValue(id, out var timer))
+        {
+            return;
+        }
+
+        lock (timer)
+        {
+            if (timer.Cts is null)
+            {
+                return; // already paused
+            }
+
+            var elapsed = Stopwatch.GetElapsedTime(timer.StartedAt);
+            timer.Remaining = timer.Remaining > elapsed ? timer.Remaining - elapsed : TimeSpan.Zero;
+            CancelTimer(timer);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ResumeAutoDismiss(Guid id)
+    {
+        if (!_dismissTokens.TryGetValue(id, out var timer))
+        {
+            return;
+        }
+
+        lock (timer)
+        {
+            if (timer.Cts is not null)
+            {
+                return; // not paused
+            }
+
+            StartTimer(id, timer, timer.Remaining < MinimumResume ? MinimumResume : timer.Remaining);
+        }
+    }
+
     private void ScheduleAutoDismiss(Guid id, TimeSpan delay)
     {
+        var timer = new DismissTimer();
+        _dismissTokens[id] = timer;
+
+        lock (timer)
+        {
+            StartTimer(id, timer, delay);
+        }
+    }
+
+    private void StartTimer(Guid id, DismissTimer timer, TimeSpan delay)
+    {
         var cts = new CancellationTokenSource();
-        _dismissTokens[id] = cts;
+        timer.Cts = cts;
+        timer.Remaining = delay;
+        timer.StartedAt = Stopwatch.GetTimestamp();
 
         _ = Task.Run(async () =>
         {
@@ -121,28 +177,53 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
             }
             catch (OperationCanceledException)
             {
-                // Expected on manual dismissal or disposal
+                // Expected on manual dismissal, pause or disposal
             }
         });
     }
 
-    private void CancelDismissTimer(Guid id)
+    private static void CancelTimer(DismissTimer timer)
     {
-        if (_dismissTokens.TryRemove(id, out var cts))
+        var cts = timer.Cts;
+        timer.Cts = null;
+
+        if (cts is not null)
         {
             cts.Cancel();
             cts.Dispose();
         }
     }
 
+    private void CancelDismissTimer(Guid id)
+    {
+        if (_dismissTokens.TryRemove(id, out var timer))
+        {
+            lock (timer)
+            {
+                CancelTimer(timer);
+            }
+        }
+    }
+
+    private sealed class DismissTimer
+    {
+        public CancellationTokenSource? Cts { get; set; }
+
+        public TimeSpan Remaining { get; set; }
+
+        public long StartedAt { get; set; }
+    }
+
     public void Dispose()
     {
         lock (_syncLock)
         {
-            foreach (var cts in _dismissTokens.Values)
+            foreach (var timer in _dismissTokens.Values)
             {
-                cts.Cancel();
-                cts.Dispose();
+                lock (timer)
+                {
+                    CancelTimer(timer);
+                }
             }
             _dismissTokens.Clear();
             _toasts.Clear();

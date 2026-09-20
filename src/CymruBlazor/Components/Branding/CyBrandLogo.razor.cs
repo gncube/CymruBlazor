@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
@@ -9,7 +10,7 @@ namespace CymruBlazor.Components.Branding;
 /// Renders an NHS Wales brand logo with CSS-driven theme resolution
 /// or built-in SVG mark and wordmark lockup.
 /// </summary>
-public partial class CyBrandLogo : CyLayoutComponentBase
+public partial class CyBrandLogo : CyLayoutComponentBase, IHasSize
 {
     /// <summary>
     /// Gets or sets the display variant or theme mode.

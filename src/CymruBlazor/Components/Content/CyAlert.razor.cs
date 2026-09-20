@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
@@ -12,7 +13,7 @@ namespace CymruBlazor.Components.Content;
 /// for messages the user must not miss), while <c>Info</c>/<c>Success</c>
 /// render <c>role="status"</c> (polite - announced without interrupting).
 /// </summary>
-public partial class CyAlert : CyLayoutComponentBase
+public partial class CyAlert : CyLayoutComponentBase, IHasColour
 {
     /// <summary>
     /// Gets or sets the alert's severity. Must be <see cref="ComponentColour.Info"/>,
@@ -21,6 +22,9 @@ public partial class CyAlert : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public ComponentColour Severity { get; set; } = ComponentColour.Info;
+
+    /// <inheritdoc />
+    ComponentColour IHasColour.Colour => Severity;
 
     /// <summary>
     /// Optional bold title rendered above the message.
@@ -33,6 +37,13 @@ public partial class CyAlert : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public bool Dismissible { get; set; }
+
+    /// <summary>
+    /// Accessible label for the dismiss button. Defaults to the English
+    /// "Dismiss"; supply a translation (e.g. Welsh) for bilingual services.
+    /// </summary>
+    [Parameter]
+    public string? DismissAriaLabel { get; set; }
 
     /// <summary>
     /// Raised when the dismiss button is activated. CyAlert does not

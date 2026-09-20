@@ -4,7 +4,7 @@
     id="@Id"
     class="@CssClass"
     style="@CssStyle"
-    aria-label="Breadcrumb"
+    aria-label="@(AriaLabel ?? "Breadcrumb")"
     @attributes="AdditionalAttributes">
 
     <ol class="cy-breadcrumb__list">

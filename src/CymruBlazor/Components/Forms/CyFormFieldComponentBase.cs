@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using CymruBlazor.Components.Core;
@@ -21,7 +22,7 @@ namespace CymruBlazor.Components.Forms;
 /// form to keep the same conventions as <c>CyComponentBase</c>-derived
 /// components.
 /// </summary>
-public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>
+public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHasDisabledState, IHasValidationState
 {
     [Inject]
     private IComponentIdGenerator ComponentIdGenerator { get; set; } = default!;
@@ -101,6 +102,10 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>
     /// </summary>
     protected ValidationState CurrentValidationState =>
         HasValidationError ? ValidationState.Invalid : ValidationState.Unspecified;
+
+    /// <inheritdoc />
+    ValidationState IHasValidationState.ValidationState =>
+        EditContext is null ? ValidationState.Unspecified : CurrentValidationState;
 
     /// <summary>
     /// The space-separated ids this field's input should be described by

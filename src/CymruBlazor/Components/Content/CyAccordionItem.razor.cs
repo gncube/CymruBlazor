@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using CymruBlazor.Components.Core;
@@ -10,7 +11,7 @@ namespace CymruBlazor.Components.Content;
 /// Must be used inside a <see cref="CyAccordion"/> - it reads expanded
 /// state from, and reports toggles/focus moves to, the cascaded parent.
 /// </summary>
-public partial class CyAccordionItem : CyLayoutComponentBase, IDisposable
+public partial class CyAccordionItem : CyLayoutComponentBase, IHasDisabledState, IDisposable
 {
     private ElementReference _triggerRef;
     private bool _isRegistered;

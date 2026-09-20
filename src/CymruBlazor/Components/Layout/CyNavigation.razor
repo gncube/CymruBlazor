@@ -1,7 +1,7 @@
 @inherits CyLayoutComponentBase
 @using CymruBlazor.Components.Accessibility
 
-<nav id="@Id" class="@CssClass" style="@CssStyle" aria-label="Main" @attributes="AdditionalAttributes">
+<nav id="@Id" class="@CssClass" style="@CssStyle" aria-label="@(AriaLabel ?? "Main")" @attributes="AdditionalAttributes">
 
     <div class="cy-navigation__bar">
 
@@ -19,7 +19,7 @@
             aria-controls="@MenuId"
             @onclick="ToggleMobileMenu">
 
-            <span class="u-sr-only">@(IsMobileMenuOpen ? "Close menu" : "Open menu")</span>
+            <span class="u-sr-only">@(IsMobileMenuOpen ? (CloseMenuLabel ?? "Close menu") : (OpenMenuLabel ?? "Open menu"))</span>
             <span class="cy-navigation__toggle-icon" aria-hidden="true"></span>
 
         </button>

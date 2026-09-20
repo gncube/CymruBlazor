@@ -5,18 +5,22 @@
 
 <div class="cy-toast-container"
      role="region"
-     aria-label="Notifications"
+     aria-label="@(AriaLabel ?? "Notifications")"
      aria-live="polite"
      aria-atomic="false">
     @foreach (var toast in ToastService.Toasts)
     {
         <div class="cy-toast cy-toast--@toast.Variant.ToString().ToLowerInvariant()"
-             role="@GetAriaRole(toast.Variant)">
+             role="@GetAriaRole(toast.Variant)"
+             @onmouseenter="() => SetHover(toast.Id, true)"
+             @onmouseleave="() => SetHover(toast.Id, false)"
+             @onfocusin="() => SetFocus(toast.Id, true)"
+             @onfocusout="() => SetFocus(toast.Id, false)">
             <CyIcon Name="@GetIconName(toast.Variant)" Size="18" Class="cy-toast__icon" />
             <div class="cy-toast__content">
                 <span class="cy-toast__message">@toast.Message</span>
             </div>
-            <button type="button" class="cy-toast__close" aria-label="Close notification"
+            <button type="button" class="cy-toast__close" aria-label="@(DismissAriaLabel ?? "Close notification")"
                     @onclick="() => ToastService.Remove(toast.Id)">
                 <CyIcon Name="close" Size="14" />
             </button>
@@ -25,12 +29,51 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Accessible name of the notifications region. Defaults to the English "Notifications".
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    /// <summary>
+    /// Accessible name of each toast's close button. Defaults to the English "Close notification".
+    /// </summary>
+    [Parameter]
+    public string? DismissAriaLabel { get; set; }
+
     protected override void OnInitialized()
     {
         ToastService.OnChange += OnToastsChanged;
     }
 
     private void OnToastsChanged() => InvokeAsync(StateHasChanged);
+
+    // A toast's countdown is paused while it is hovered or holds focus
+    // (WCAG 2.2.1 Timing Adjustable) and resumes once neither applies.
+    private readonly HashSet<Guid> _hovered = [];
+    private readonly HashSet<Guid> _focused = [];
+
+    private void SetHover(Guid id, bool active) => Track(_hovered, id, active);
+
+    private void SetFocus(Guid id, bool active) => Track(_focused, id, active);
+
+    private void Track(HashSet<Guid> set, Guid id, bool active)
+    {
+        if (active)
+        {
+            set.Add(id);
+            ToastService.PauseAutoDismiss(id);
+        }
+        else
+        {
+            set.Remove(id);
+
+            if (!_hovered.Contains(id) && !_focused.Contains(id))
+            {
+                ToastService.ResumeAutoDismiss(id);
+            }
+        }
+    }
 
     private static string GetIconName(ToastVariant variant) => variant switch
     {

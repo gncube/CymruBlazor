@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
@@ -14,7 +15,7 @@ namespace CymruBlazor.Components.Content;
 /// have a separate CyTag component, since the two only differ by whether a
 /// dismiss affordance is present, not by structure or semantics.
 /// </summary>
-public partial class CyBadge : CyLayoutComponentBase
+public partial class CyBadge : CyLayoutComponentBase, IHasColour
 {
     /// <summary>
     /// Gets or sets the badge's semantic colour. Any value other than
@@ -22,6 +23,9 @@ public partial class CyBadge : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public ComponentColour Variant { get; set; } = ComponentColour.Neutral;
+
+    /// <inheritdoc />
+    ComponentColour IHasColour.Colour => Variant;
 
     /// <summary>
     /// When <see langword="true"/> (the default), renders as a fully

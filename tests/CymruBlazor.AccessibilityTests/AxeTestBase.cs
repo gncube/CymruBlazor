@@ -168,6 +168,151 @@ public abstract class AxeTestBase : BunitContext, IAsyncLifetime
         return await Page.RunAxe(options);
     }
 
+    /// <summary>
+    /// Loads markup into a page served from a fake origin (<c>https://cymru.test/</c>) that maps
+    /// <c>/_content/CymruBlazor/*</c> onto the library's real <c>wwwroot</c>, exactly like the
+    /// static web asset URLs in a running app. Unlike <see cref="ScanMarkupAsync"/> (which uses
+    /// <c>file://</c>) this lets the page import the library's ES module, so tests can exercise the
+    /// real JavaScript - focus containment, <c>&lt;dialog&gt;</c> wiring, tooltip dismissal - in a
+    /// real browser. The module is imported and exposed as <c>window.overlay</c>.
+    /// </summary>
+    protected async Task LoadHostedAsync(
+        string bodyMarkup,
+        string theme = "light",
+        int width = 1280,
+        int height = 800)
+    {
+        var wwwroot = FindLibraryWwwroot();
+
+        await Page.SetViewportSizeAsync(width, height);
+
+        await Page.RouteAsync($"{HostedOrigin}/**", async route =>
+        {
+            var path = new Uri(route.Request.Url).AbsolutePath;
+
+            if (path == "/")
+            {
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    ContentType = "text/html; charset=utf-8",
+                    Body = BuildHostedHtml(bodyMarkup, theme)
+                });
+
+                return;
+            }
+
+            const string prefix = "/_content/CymruBlazor/";
+            var relative = path.StartsWith(prefix, StringComparison.Ordinal) ? path[prefix.Length..] : null;
+            var file = relative is null ? null : Path.GetFullPath(Path.Combine(wwwroot, relative));
+
+            if (file is null || !file.StartsWith(wwwroot, StringComparison.Ordinal) || !File.Exists(file))
+            {
+                await route.FulfillAsync(new RouteFulfillOptions { Status = 404 });
+                return;
+            }
+
+            await route.FulfillAsync(new RouteFulfillOptions
+            {
+                ContentType = Path.GetExtension(file) switch
+                {
+                    ".js" => "text/javascript",
+                    ".css" => "text/css",
+                    ".svg" => "image/svg+xml",
+                    _ => "application/octet-stream"
+                },
+                Body = await File.ReadAllTextAsync(file)
+            });
+        });
+
+        await Page.GotoAsync($"{HostedOrigin}/");
+        await Page.WaitForFunctionAsync("() => window.overlay !== undefined");
+    }
+
+    /// <summary>
+    /// Measures an element with real layout: visibility, whether it sits inside the viewport, its
+    /// resolved size, and whether the page scrolls horizontally.
+    /// </summary>
+    protected async Task<ElementMetrics> MeasureAsync(string selector)
+    {
+        ElementMetrics? metrics = await Page.EvaluateAsync<ElementMetrics?>(
+            """
+            (selector) => {
+              const el = document.querySelector(selector);
+              if (!el) { return null; }
+              const r = el.getBoundingClientRect();
+              const cs = getComputedStyle(el);
+              const root = document.documentElement;
+              return {
+                found: true,
+                visible: cs.visibility !== 'hidden' && cs.display !== 'none' && r.width > 0 && r.height > 0,
+                left: r.left, top: r.top, right: r.right, bottom: r.bottom,
+                width: r.width, height: r.height,
+                viewportWidth: window.innerWidth, viewportHeight: window.innerHeight,
+                pageScrollWidth: root.scrollWidth,
+                zIndex: cs.zIndex, opacity: parseFloat(cs.opacity)
+              };
+            }
+            """,
+            selector);
+
+        return metrics ?? new ElementMetrics { Found = false };
+    }
+
+    /// <summary>
+    /// Runs axe-core against the page as it currently is (after a test has opened a dialog, focused a
+    /// trigger, and so on), with the same rule configuration as <see cref="ScanMarkupAsync"/>.
+    /// </summary>
+    protected Task<AxeResult> RunAxeOnPageAsync()
+    {
+        var options = new AxeRunOptions
+        {
+            Rules = new Dictionary<string, RuleOptions>
+            {
+                ["page-has-heading-one"] = new() { Enabled = false }
+            }
+        };
+
+        return Page.RunAxe(options);
+    }
+
+    /// <summary>The id of the element that currently has focus ("" when it has none).</summary>
+    protected Task<string> ActiveElementIdAsync() =>
+        Page.EvaluateAsync<string>("() => document.activeElement?.id ?? ''");
+
+    private const string HostedOrigin = "https://cymru.test";
+
+    private static string BuildHostedHtml(string bodyMarkup, string theme) =>
+        $$"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>CymruBlazor browser test host</title>
+        <link rel="stylesheet" href="/_content/CymruBlazor/css/cymrublazor.css" />
+        </head>
+        <body>
+        <main>
+        <div class="cy-theme-provider" data-theme="{{theme}}">
+        {{bodyMarkup}}
+        </div>
+        </main>
+        <script type="module">
+          import * as overlay from '/_content/CymruBlazor/js/cymru-overlay.js';
+          window.overlay = overlay;
+        </script>
+        </body>
+        </html>
+        """;
+
+    private static string FindLibraryWwwroot()
+    {
+        var repoRoot = FindRepoRoot()
+            ?? throw new InvalidOperationException("Could not locate the repository root (.git).");
+
+        return Path.GetFullPath(Path.Combine(repoRoot, "src", "CymruBlazor", "wwwroot"));
+    }
+
     private static string ToFileUrl(string path) => path.Replace('\\', '/');
 
     /// <summary>

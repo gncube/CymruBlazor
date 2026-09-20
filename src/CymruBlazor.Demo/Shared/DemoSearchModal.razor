@@ -1,22 +1,22 @@
 @namespace CymruBlazor.Demo.SharedComponents
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
 
-@if (IsOpen)
-{
-    <div class="cb-search-backdrop" @onclick="Close">
-        <CyFocusTrap Enabled="true" AutoFocus="false" RestoreFocus="true">
-            <div class="cb-search-modal"
-                 role="dialog"
-                 aria-modal="true"
-                 aria-label="Search documentation"
-                 @onclick:stopPropagation="true">
+<CyDialog Open="IsOpen"
+          OpenChanged="HandleOpenChanged"
+          Title="Search documentation"
+          Size="ComponentSize.Large"
+          CloseOnBackdropClick="true"
+          Class="cb-search-dialog">
+
+            <div class="cb-search-modal">
 
                 <div class="cb-search-modal__input-row">
                     <CyIcon Name="search" Size="18" />
                     <input id="cb-search-input"
                            class="cb-search-modal__input"
                            type="text"
+                           autofocus
+                           aria-label="Search components and docs"
                            placeholder="Search components and docs..."
                            autocomplete="off"
                            value="@_query"
@@ -56,9 +56,8 @@
                 }
 
             </div>
-        </CyFocusTrap>
-    </div>
-}
+
+</CyDialog>
 
 @code {
     [Parameter]
@@ -71,7 +70,6 @@
     private IReadOnlyList<DemoNavigationIndex.Entry> _results = [];
     private int _selectedIndex;
     private bool _wasOpen;
-    private bool _focusedSinceOpen;
 
     protected override void OnParametersSet()
     {
@@ -85,16 +83,12 @@
         _wasOpen = IsOpen;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task HandleOpenChanged(bool open)
     {
-        if (IsOpen && !_focusedSinceOpen)
+        // CyDialog reports Escape, the close button and backdrop clicks here.
+        if (!open)
         {
-            _focusedSinceOpen = true;
-            await JSRuntime.InvokeVoidAsync("cymruDemoSearch.focusElement", "cb-search-input");
-        }
-        else if (!IsOpen)
-        {
-            _focusedSinceOpen = false;
+            await Close();
         }
     }
 
@@ -109,10 +103,6 @@
     {
         switch (args.Key)
         {
-            case "Escape":
-                await Close();
-                break;
-
             case "ArrowDown":
                 if (_results.Count > 0)
                 {

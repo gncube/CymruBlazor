@@ -5,34 +5,40 @@ using CymruBlazor.Components.Core;
 namespace CymruBlazor.Components.Accessibility;
 
 /// <summary>
-/// A wrapper element that <em>asks</em> an <see cref="IFocusManager"/> to move
-/// focus into it and to restore focus when it is removed.
+/// A wrapper element that keeps keyboard focus inside its content: it moves
+/// focus in when activated, contains <c>Tab</c>/<c>Shift+Tab</c> while active
+/// and returns focus to where it came from when it is removed or disabled.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Preview - this component does not trap focus yet.</b> It renders
-/// <c>&lt;div class="cy-focus-trap" tabindex="-1"&gt;</c> around its content.
-/// When <see cref="Enabled"/> and <see cref="AutoFocus"/> are both true it
-/// calls <c>IFocusManager.FocusAsync</c> after the first render, and when
-/// <see cref="RestoreFocus"/> is true it calls
-/// <c>IFocusManager.RestoreFocusAsync</c> on disposal.
+/// Renders <c>&lt;div class="cy-focus-trap" tabindex="-1"&gt;</c> around its
+/// content and, after the first render, asks the registered
+/// <see cref="IFocusManager"/> to <see cref="IFocusManager.TrapAsync"/> it.
+/// The default manager (<see cref="JsFocusManager"/>, registered by
+/// <c>AddCymruBlazor()</c> since 1.3.0) does this with a small on-demand
+/// JavaScript module: focus goes to the first <c>autofocus</c> or tabbable
+/// element (else the wrapper), <c>Tab</c> wraps at both ends, and focus that
+/// escapes (for example by a mouse click outside) is pulled back. Traps nest:
+/// only the most recently activated one acts.
 /// </para>
 /// <para>
-/// The <see cref="IFocusManager"/> registered by <c>AddCymruBlazor()</c> is a
-/// logging placeholder: it records the request at Debug level and returns
-/// success without touching the DOM. So by default focus is not moved, is not
-/// restored, and <c>Tab</c> is not contained. Do not rely on this component to
-/// satisfy WCAG 2.4.3 (Focus Order) or to build a modal dialog.
+/// This is a <em>focus</em> trap only. It does not make the rest of the page
+/// inert, add a dialog role, or handle <c>Escape</c>. For a modal dialog use
+/// <see cref="CyDialog"/>, which builds on the native <c>&lt;dialog&gt;</c>.
 /// </para>
 /// <para>
-/// To get real behaviour today, register your own <see cref="IFocusManager"/>
-/// after <c>AddCymruBlazor()</c> (the last registration wins). A functional
-/// implementation, with Tab containment, is planned for 1.3.0.
+/// A custom <see cref="IFocusManager"/> that only implements the three
+/// original methods still works: the interface's default
+/// <c>TrapAsync</c> calls <c>FocusAsync</c> and <c>RestoreFocusAsync</c>, but
+/// does not contain <c>Tab</c>.
 /// </para>
 /// </remarks>
 public partial class CyFocusTrap : CyComponentBase, IAsyncDisposable
 {
-    /// <summary>The focus manager the trap calls; see the class remarks for the default's limits.</summary>
+    private IAsyncDisposable? _trap;
+    private bool _active;
+
+    /// <summary>The focus manager the trap uses; see the class remarks.</summary>
     [Inject]
     protected IFocusManager FocusManager { get; set; } = default!;
 
@@ -41,24 +47,24 @@ public partial class CyFocusTrap : CyComponentBase, IAsyncDisposable
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// When false, no focus request is made on first render. Defaults to true.
-    /// This does not remove the wrapper element.
+    /// When true (the default) the trap is active. Setting it to false releases
+    /// the trap (restoring focus if <see cref="RestoreFocus"/>); setting it
+    /// back to true activates it again. The wrapper element is always rendered.
     /// </summary>
     [Parameter]
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// When true (and <see cref="Enabled"/> is true), requests focus for the
-    /// trap element after the first render. The default focus manager does not
-    /// act on the request. Defaults to true.
+    /// When true (and <see cref="Enabled"/> is true), moves focus into the trap
+    /// each time it is activated. Defaults to true. Set to false when your own
+    /// code focuses a specific control (for example a search box).
     /// </summary>
     [Parameter]
     public bool AutoFocus { get; set; } = true;
 
     /// <summary>
-    /// When true, requests that the previously focused element be refocused when
-    /// the trap is disposed. The default focus manager does not act on the
-    /// request. Defaults to true.
+    /// When true, returns focus to the element that had it before the trap was
+    /// activated when the trap is released or disposed. Defaults to true.
     /// </summary>
     [Parameter]
     public bool RestoreFocus { get; set; } = true;
@@ -67,27 +73,45 @@ public partial class CyFocusTrap : CyComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || !Enabled || !AutoFocus)
+        if (Enabled && !_active)
         {
-            return;
-        }
+            _active = true;
+            var trap = await FocusManager.TrapAsync(
+                Id,
+                new FocusTrapOptions(AutoFocus, RestoreFocus, PreventScroll: true));
 
-        await FocusManager.FocusAsync(
-            Id,
-            new FocusOptions(
-                PreventScroll: true,
-                RestorePreviousFocus: RestoreFocus));
+            if (_active)
+            {
+                _trap = trap;
+            }
+            else if (trap is not null)
+            {
+                // Disabled or disposed while the trap was being activated.
+                await trap.DisposeAsync();
+            }
+        }
+        else if (!Enabled && _active)
+        {
+            await ReleaseAsync();
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
 
-        if (!RestoreFocus)
-        {
-            return;
-        }
+        await ReleaseAsync();
+    }
 
-        await FocusManager.RestoreFocusAsync();
+    private async ValueTask ReleaseAsync()
+    {
+        var trap = _trap;
+        _trap = null;
+        _active = false;
+
+        if (trap is not null)
+        {
+            await trap.DisposeAsync();
+        }
     }
 }
