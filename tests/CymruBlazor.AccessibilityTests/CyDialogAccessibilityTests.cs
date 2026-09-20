@@ -14,6 +14,12 @@ namespace CymruBlazor.AccessibilityTests;
 /// </summary>
 public sealed class CyDialogAccessibilityTests : AxeTestBase
 {
+    public CyDialogAccessibilityTests()
+    {
+        // An open CyDialog imports the overlay module after render; the hosted page loads the real one instead.
+        JSInterop.Mode = JSRuntimeMode.Loose;
+    }
+
     private string RenderOpenDialog()
     {
         var cut = Render<CyDialog>(p => p

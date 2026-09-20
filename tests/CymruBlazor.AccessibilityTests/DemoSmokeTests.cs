@@ -123,15 +123,16 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
             try
             {
-                var previousHeading = await page.EvaluateAsync<string>("() => document.querySelector('h1')?.textContent ?? ''");
-
                 if (!string.Equals(await page.EvaluateAsync<string>("() => location.pathname"), route, StringComparison.Ordinal))
                 {
+                    // Mark the outgoing page's heading so a stale one is never mistaken for the new page's, even
+                    // when two pages share the same heading text.
+                    await page.EvaluateAsync("() => document.querySelectorAll('h1').forEach(h => h.setAttribute('data-stale', ''))");
                     await page.EvaluateAsync("(path) => Blazor.navigateTo(path)", route);
                     await page.WaitForFunctionAsync(
-                        "([path, previous]) => location.pathname === path && document.querySelector('h1') && document.querySelector('h1').textContent !== previous",
-                        new object[] { route, previousHeading },
-                        new PageWaitForFunctionOptions { Timeout = 20_000 });
+                        "(path) => location.pathname === path && document.querySelector('h1:not([data-stale])') !== null",
+                        route,
+                        new PageWaitForFunctionOptions { Timeout = 15_000 });
                 }
                 else
                 {
@@ -150,7 +151,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
                     failures.Add($"[{theme}] {route}: axe {violation.Id} ({violation.Nodes.Length} node(s)): {violation.Help}");
                 }
             }
-            catch (PlaywrightException ex)
+            catch (Exception ex) when (ex is PlaywrightException or TimeoutException)
             {
                 failures.Add($"[{theme}] {route}: did not render a heading: {ex.Message.Split('\n')[0]}");
             }
