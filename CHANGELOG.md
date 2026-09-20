@@ -75,6 +75,8 @@ against 1.2.0.
   rendered (29 pages), heading order (TOC, properties panel, home features),
   duplicate unlabeled landmarks (sample sidebars, breadcrumbs) and the Legacy
   page (no `h1`, nested `main`).
+- A Secondary/Tertiary `CyButton` in the Actions of a Primary or Secondary `CyHeader` was primary-on-accent
+  and unreadable; it now inherits the header's text colour (found by the smoke run).
 - `CyCodeBlock`'s scrollable `<pre>` is keyboard focusable (`tabindex="0"`).
 - Demo API tables: the parameter-name colour was a fixed blue that failed
   contrast on the dark theme; it now uses the theme-aware link colour.

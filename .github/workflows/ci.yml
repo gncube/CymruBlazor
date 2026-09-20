@@ -84,6 +84,8 @@ jobs:
       - name: Test
         env:
           CYMRU_DEMO_DIR: ${{ github.workspace }}/demo-smoke/wwwroot
+          # Full smoke findings land in TestResults (uploaded below) and the job summary.
+          CYMRU_SMOKE_REPORT_DIR: ${{ github.workspace }}/TestResults
         run: >
           dotnet test CymruBlazor.slnx -c Release --no-build
           --logger "trx"

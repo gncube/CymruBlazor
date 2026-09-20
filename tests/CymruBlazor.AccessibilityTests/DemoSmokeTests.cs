@@ -102,7 +102,50 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
             output.WriteLine($"not enforced: {line}");
         }
 
+        WriteReport(routes.Count, failures, unenforced);
+
         failures.ShouldBeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    /// <summary>
+    /// Writes the full findings to <c>demo-smoke-report.md</c> (in <c>CYMRU_SMOKE_REPORT_DIR</c>, else next to the test
+    /// binaries) and, on GitHub Actions, to the job summary, so a CI run can be read without downloading logs or
+    /// running Playwright locally.
+    /// </summary>
+    private void WriteReport(int routeCount, List<string> failures, List<string> unenforced)
+    {
+        var lines = new List<string>
+        {
+            "# Demo smoke run",
+            string.Empty,
+            $"{routeCount} routes x {Themes.Length} themes: **{failures.Count} failure(s)**, {unenforced.Count} unenforced contrast finding(s).",
+            string.Empty,
+            "## Failures",
+            string.Empty
+        };
+
+        lines.AddRange(failures.Count == 0 ? ["None."] : failures.Select(f => $"- {f.ReplaceLineEndings(" ")}"));
+        lines.AddRange(["", "## Not enforced (colour contrast in dark / high-contrast)", ""]);
+        lines.AddRange(unenforced.Count == 0 ? ["None."] : unenforced.Select(f => $"- {f.ReplaceLineEndings(" ")}"));
+
+        var report = string.Join(Environment.NewLine, lines);
+
+        try
+        {
+            var directory = Environment.GetEnvironmentVariable("CYMRU_SMOKE_REPORT_DIR") ?? AppContext.BaseDirectory;
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(Path.Combine(directory, "demo-smoke-report.md"), report);
+
+            var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
+            if (!string.IsNullOrWhiteSpace(summary))
+            {
+                File.AppendAllText(summary, string.Join(Environment.NewLine, lines.Take(400)) + Environment.NewLine);
+            }
+        }
+        catch (IOException ex)
+        {
+            output.WriteLine($"Could not write the smoke report: {ex.Message}");
+        }
     }
 
     private async Task SmokeThemeAsync(string demoDirectory, List<string> routes, string theme, List<string> failures, List<string> unenforced)

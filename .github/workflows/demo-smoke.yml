@@ -1,0 +1,67 @@
+name: Demo smoke
+
+# A fast, on-demand run of only the published-demo smoke test (every route x light/dark/high-contrast,
+# no console errors, axe). For iterating on demo/theme/accessibility fixes without waiting for the full CI
+# run and without needing Playwright or a WebAssembly toolchain on your own machine. The findings are in the
+# job summary and in the demo-smoke-report artifact.
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: "dotnet test --filter expression"
+        default: "FullyQualifiedName~DemoSmokeTests"
+        required: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  CI: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore CymruBlazor.slnx --configfile NuGet.CI.Config
+
+      - name: Build
+        run: dotnet build CymruBlazor.slnx -c Release --no-restore
+
+      - name: Install Playwright browsers
+        run: >
+          pwsh tests/CymruBlazor.AccessibilityTests/bin/Release/net10.0/playwright.ps1
+          install --with-deps chromium
+
+      - name: Publish demo
+        run: >
+          dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj
+          -c Release --no-restore -o ./demo-smoke
+
+      - name: Run smoke test
+        env:
+          CYMRU_DEMO_DIR: ${{ github.workspace }}/demo-smoke/wwwroot
+          CYMRU_SMOKE_REPORT_DIR: ${{ github.workspace }}/TestResults
+        run: >
+          dotnet test tests/CymruBlazor.AccessibilityTests -c Release --no-build
+          --filter "${{ inputs.filter }}"
+          --logger "trx" --results-directory ./TestResults
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-smoke-report
+          path: ./TestResults
+          retention-days: 14
