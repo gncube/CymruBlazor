@@ -19,12 +19,12 @@
 </CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
-    <button type="button" role="tab" id="tab-examples" aria-controls="panel-examples"
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)"
             aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
             @onclick="() => _activeTab = Tab.Examples">Examples</button>
-    <button type="button" role="tab" id="tab-api" aria-controls="panel-api" aria-selected="@(_activeTab == Tab.Api)"
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)"
             class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
-    <button type="button" role="tab" id="tab-accessibility" aria-controls="panel-accessibility"
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)"
             aria-selected="@(_activeTab == Tab.Accessibility)"
             class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
             @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>

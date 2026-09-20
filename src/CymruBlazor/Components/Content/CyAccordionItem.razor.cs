@@ -45,9 +45,23 @@ public partial class CyAccordionItem : CyLayoutComponentBase, IHasDisabledState,
 
     private string PanelId => $"{Id}-panel";
 
+    /// <summary>
+    /// The heading level (1-6) announced for this item's title, via <c>aria-level</c>. Defaults to 3.
+    /// Set it to one more than the nearest preceding heading so assistive technology gets an unbroken outline
+    /// (the visual style does not change).
+    /// </summary>
+    [Parameter]
+    public int HeadingLevel { get; set; } = 3;
+
     protected override void ValidateParameters()
     {
         base.ValidateParameters();
+
+        if (HeadingLevel is < 1 or > 6)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CyAccordionItem)}.{nameof(HeadingLevel)} must be between 1 and 6. Received '{HeadingLevel}'.");
+        }
 
         if (Parent is null)
         {

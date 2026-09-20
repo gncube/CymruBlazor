@@ -44,6 +44,8 @@ against 1.2.0.
   resumes with the time left (at least one second) - WCAG 2.2.1.
 - `cymru-overlay.js`, an ES module the library imports on demand. No
   `<script>` tag is needed.
+- `CyAlert.TitleLevel` and `CyAccordionItem.HeadingLevel` (default unchanged) so
+  pages can keep an unbroken heading outline.
 - `IHasSize`, `IHasColour`, `IHasDisabledState` and `IHasValidationState`
   are now implemented where the property already existed.
 
@@ -68,6 +70,12 @@ against 1.2.0.
 
 ### Fixed
 
+- The published-demo smoke run found and fixed, in the demo: low-contrast muted
+  text in the light theme, `aria-controls` pointing at tab panels that are not
+  rendered (29 pages), heading order (TOC, properties panel, home features),
+  duplicate unlabeled landmarks (sample sidebars, breadcrumbs) and the Legacy
+  page (no `h1`, nested `main`).
+- `CyCodeBlock`'s scrollable `<pre>` is keyboard focusable (`tabindex="0"`).
 - Demo API tables: the parameter-name colour was a fixed blue that failed
   contrast on the dark theme; it now uses the theme-aware link colour.
 - `CyAlert` no longer makes the whole page scroll horizontally when its text

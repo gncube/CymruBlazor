@@ -3,11 +3,11 @@
 @using CymruBlazor.Enums
 
 <div class="demo-legacy-container">
-    <h3>Legacy Page</h3>
+    <h1>Legacy Page</h1>
     <p>Demonstrating CySidebar using modern State parameters.</p>
 
     <div style="display: flex; height: 300px; border: 1px solid var(--cy-color-border, #e2e8f0);">
-        <CySidebar @bind-State="_state">
+        <CySidebar aria-label="Legacy sidebar" @bind-State="_state">
             <Brand>
                 <div style="padding: 0.5rem; font-weight: bold;">Demo</div>
             </Brand>
@@ -17,9 +17,9 @@
                 </nav>
             </ChildContent>
         </CySidebar>
-        <main style="flex: 1; padding: 1rem;">
+        <div style="flex: 1; padding: 1rem;">
             <div>Current Sidebar State: <strong>@_state</strong></div>
-        </main>
+        </div>
     </div>
 </div>
 
