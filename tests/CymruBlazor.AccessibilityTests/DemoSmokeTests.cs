@@ -147,7 +147,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
                 foreach (var violation in result.Violations.Where(v => !KnownIssues.Contains($"{route}|{v.Id}")))
                 {
-                    failures.Add($"[{theme}] {route}: axe {violation.Id} ({violation.Nodes.Count()} node(s)): {violation.Help}");
+                    failures.Add($"[{theme}] {route}: axe {violation.Id} ({violation.Nodes.Length} node(s)): {violation.Help}");
                 }
             }
             catch (PlaywrightException ex)

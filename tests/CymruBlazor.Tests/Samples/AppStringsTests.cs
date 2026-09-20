@@ -6,6 +6,7 @@ using Moq;
 using Shouldly;
 using Xunit;
 
+using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Components.Content;
 using CymruBlazor.Components.Feedback;
 using CymruBlazor.Components.Layout;
@@ -25,7 +26,7 @@ public sealed class AppStringsTests : TestContextBase
     private static IEnumerable<PropertyInfo> StringProperties<T>() =>
         typeof(T).GetProperties().Where(p => p.PropertyType == typeof(string));
 
-    private static IReadOnlyDictionary<string, string> Values<T>(T instance) =>
+    private static Dictionary<string, string> Values<T>(T instance) =>
         StringProperties<T>().ToDictionary(p => p.Name, p => (string)p.GetValue(instance)!);
 
     [Fact]
