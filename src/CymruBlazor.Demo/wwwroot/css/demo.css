@@ -1098,27 +1098,21 @@ details[open] > summary .cb-nav-group__chevron {
 }
 
 /* ── Search modal (Ctrl+K) ── */
-.cb-search-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  z-index: 60;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 12vh;
+/* CyDialog supplies the surface, border, shadow, top-layer and backdrop; the
+   search box wants the body flush to the edges. */
+.cb-search-dialog {
+  --cy-dialog-max-width: 36rem;
+  margin-block-start: 12vh;
+}
+
+.cb-search-dialog .cy-dialog__body {
+  padding: 0;
 }
 
 .cb-search-modal {
-  width: min(90vw, 560px);
-  max-height: 60vh;
   display: flex;
   flex-direction: column;
-  background: var(--cb-bg-surface, #ffffff);
   color: var(--cb-text-primary);
-  border-radius: var(--docs-code-radius);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
 }
 
 .cb-search-modal__input-row {

@@ -71,3 +71,30 @@ also includes a dark-mode/high-contrast theme scan, demonstrating the
 `theme` parameter on `ScanMarkupAsync` - worth extending to other
 components, especially anything that renders on a coloured background
 (`CyFooter`, `CyHeader`, `CyAlert`).
+
+## Browser suites added in 1.3.0
+
+- `AxeTestBase.LoadHostedAsync(markup, theme, width, height)` serves the page
+  from `https://cymru.test/` and maps `/_content/CymruBlazor/*` onto the
+  library `wwwroot`, so the page can import the real `cymru-overlay.js` (an ES
+  module cannot load from `file://`). Use it when a test needs JavaScript,
+  focus, hover or keyboard behaviour; `ScanMarkupAsync` remains the simplest
+  axe-only path.
+- `MeasureAsync(selector)` returns `ElementMetrics` (visible, in viewport,
+  size, page overflow). Prefer it to eyeballing screenshots.
+- `OverlayModuleBrowserTests`, `CyDialogAccessibilityTests`,
+  `CyTooltipAccessibilityTests`, `ComputedStyleTests`.
+- `DemoSmokeTests` drives every demo route in three themes against a
+  *published* demo. Publish it and set `CYMRU_DEMO_DIR` to its `wwwroot`:
+
+  ```powershell
+  dotnet publish src/CymruBlazor.Demo -c Release -o demo-smoke
+  $env:CYMRU_DEMO_DIR = "$PWD\demo-smoke\wwwroot"
+  dotnet test tests/CymruBlazor.AccessibilityTests --filter DemoSmokeTests
+  ```
+
+  Without the variable it is a no-op locally and a failure when `CI=true`.
+  Understood, tracked violations can be listed in `KnownIssues` as
+  `"route|rule-id"`; keep that empty otherwise.
+- Tooltips fade in over ~120ms; wait for it to settle before scanning, or axe
+  reports false contrast failures from half-transparent colours.

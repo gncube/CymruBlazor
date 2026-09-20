@@ -649,6 +649,12 @@
         visibility: visible;
     }
 
+    /* The open drawer is a programmatic focus target (tabindex="-1") for
+       CyFocusTrap-style containment; it is not a control, so no ring. */
+    .cy-sidebar--mobile-open:focus {
+        outline: none;
+    }
+
     /* State=Hidden describes the desktop rail; an open drawer always shows
        its full contents. */
     .cy-sidebar--mobile-open.cy-sidebar--collapsed {

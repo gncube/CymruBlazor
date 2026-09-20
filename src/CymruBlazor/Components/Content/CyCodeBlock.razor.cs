@@ -83,11 +83,55 @@ public partial class CyCodeBlock : CyComponentBase
     [Parameter]
     public bool ShowCopyToast { get; set; } = true;
 
+    /// <summary>
+    /// Header label used when <see cref="Language"/> is blank. Defaults to the English "Code".
+    /// </summary>
+    [Parameter]
+    public string? CodeLabel { get; set; }
+
+    /// <summary>
+    /// Copy button text at rest. Defaults to the English "Copy".
+    /// </summary>
+    [Parameter]
+    public string? CopyLabel { get; set; }
+
+    /// <summary>
+    /// Copy button text after a successful copy. Defaults to the English "Copied".
+    /// </summary>
+    [Parameter]
+    public string? CopiedLabel { get; set; }
+
+    /// <summary>
+    /// Copy button text after a failed copy. Defaults to the English "Copy failed".
+    /// </summary>
+    [Parameter]
+    public string? CopyFailedLabel { get; set; }
+
+    /// <summary>
+    /// Message announced (and shown in the toast) after a successful copy.
+    /// Defaults to the English "Code copied to clipboard."
+    /// </summary>
+    [Parameter]
+    public string? CopiedMessage { get; set; }
+
+    /// <summary>
+    /// Message announced (and shown in the toast) after a failed copy.
+    /// Defaults to the English "Copying to clipboard failed."
+    /// </summary>
+    [Parameter]
+    public string? CopyFailedMessage { get; set; }
+
     protected override string BaseCssClass => "cy-code-block";
 
-    private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? "Code" : Language;
+    private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? (CodeLabel ?? "Code") : Language;
 
-    private string CopyButtonText => _copyFailed ? "Copy failed" : (_copied ? "Copied" : "Copy");
+    private string CopyButtonText => _copyFailed
+        ? (CopyFailedLabel ?? "Copy failed")
+        : (_copied ? (CopiedLabel ?? "Copied") : (CopyLabel ?? "Copy"));
+
+    private string CopiedText => CopiedMessage ?? "Code copied to clipboard.";
+
+    private string CopyFailedText => CopyFailedMessage ?? "Copying to clipboard failed.";
 
     private async Task CopyToClipboardAsync()
     {
@@ -99,13 +143,13 @@ public partial class CyCodeBlock : CyComponentBase
             _copyFailed = false;
 
             await Mediator.Publish(new LiveRegionAnnouncement(
-                "Code copied to clipboard.",
+                CopiedText,
                 AnnouncementPoliteness));
 
             if (ShowCopyToast)
             {
                 await Mediator.Publish(new ShowToastNotification(
-                    "Code copied to clipboard.",
+                    CopiedText,
                     ToastVariant.Success));
             }
         }
@@ -118,13 +162,13 @@ public partial class CyCodeBlock : CyComponentBase
             _copyFailed = true;
 
             await Mediator.Publish(new LiveRegionAnnouncement(
-                "Copying to clipboard failed.",
+                CopyFailedText,
                 LiveRegionPoliteness.Assertive));
 
             if (ShowCopyToast)
             {
                 await Mediator.Publish(new ShowToastNotification(
-                    "Copying to clipboard failed.",
+                    CopyFailedText,
                     ToastVariant.Danger));
             }
         }

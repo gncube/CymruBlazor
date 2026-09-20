@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using CymruBlazor.Components.Core;
@@ -11,7 +12,7 @@ namespace CymruBlazor.Components.Button;
 /// <see cref="Href"/> is set and the button is not <see cref="CyInteractiveComponentBase.Disabled"/>,
 /// so it can be used for both actions and navigation.
 /// </summary>
-public partial class CyButton : CyInteractiveComponentBase
+public partial class CyButton : CyInteractiveComponentBase, IHasSize, IHasColour
 {
     /// <summary>
     /// Content to render inside the button.
@@ -26,6 +27,9 @@ public partial class CyButton : CyInteractiveComponentBase
     /// </summary>
     [Parameter]
     public ComponentColour Variant { get; set; } = ComponentColour.Primary;
+
+    /// <inheritdoc />
+    ComponentColour IHasColour.Colour => Variant;
 
     /// <summary>
     /// Gets or sets the button's size. Must be <see cref="ComponentSize.Small"/>,

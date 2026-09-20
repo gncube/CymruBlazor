@@ -70,7 +70,20 @@ jobs:
           pwsh tests/CymruBlazor.AccessibilityTests/bin/Release/net10.0/playwright.ps1
           install --with-deps chromium
 
+      - name: Publish demo for the smoke run
+        # DemoSmokeTests (CymruBlazor.AccessibilityTests) drives every demo
+        # route in real Chromium against this published output: no console
+        # errors, and axe-clean in light, dark and high-contrast. It fails
+        # (rather than skips) when CYMRU_DEMO_DIR is missing under CI.
+        run: >
+          dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj
+          -c Release
+          --no-restore
+          -o ./demo-smoke
+
       - name: Test
+        env:
+          CYMRU_DEMO_DIR: ${{ github.workspace }}/demo-smoke/wwwroot
         run: >
           dotnet test CymruBlazor.slnx -c Release --no-build
           --logger "trx"

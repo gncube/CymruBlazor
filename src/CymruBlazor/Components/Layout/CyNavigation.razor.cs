@@ -22,6 +22,26 @@ public partial class CyNavigation : CyLayoutComponentBase
     [Parameter]
     public RenderFragment? Brand { get; set; }
 
+    /// <summary>
+    /// Accessible name of the navigation landmark. Defaults to the English "Main".
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    /// <summary>
+    /// Text (visually hidden) of the mobile toggle while the menu is closed.
+    /// Defaults to the English "Open menu".
+    /// </summary>
+    [Parameter]
+    public string? OpenMenuLabel { get; set; }
+
+    /// <summary>
+    /// Text (visually hidden) of the mobile toggle while the menu is open.
+    /// Defaults to the English "Close menu".
+    /// </summary>
+    [Parameter]
+    public string? CloseMenuLabel { get; set; }
+
     protected override string BaseCssClass => "cy-navigation";
 
     private bool IsMobileMenuOpen => _isMobileMenuOpen;

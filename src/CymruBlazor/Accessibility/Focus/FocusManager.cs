@@ -9,9 +9,9 @@ namespace CymruBlazor.Accessibility.Focus;
 /// <b>This is a logging placeholder.</b> Every method writes a Debug-level log
 /// entry and returns <c>new FocusResult(true)</c>; none of them moves,
 /// restores or contains focus in the browser, and no JavaScript is involved.
-/// Register your own <see cref="IFocusManager"/> after <c>AddCymruBlazor()</c>
-/// if you need real focus management. A functional implementation is planned
-/// for 1.3.0.
+/// Since 1.3.0 it is no longer registered by <c>AddCymruBlazor()</c> (that is
+/// <see cref="JsFocusManager"/>); it remains as a no-op implementation, e.g.
+/// for unit tests or non-browser hosts.
 /// </remarks>
 public sealed partial class FocusManager(
     ILogger<FocusManager> logger)

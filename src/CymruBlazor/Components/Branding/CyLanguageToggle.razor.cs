@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
@@ -27,7 +28,7 @@ namespace CymruBlazor.Components.Branding;
 /// resource files, routing). Bind <see cref="CurrentLanguage"/> to your
 /// own application state to drive that.
 /// </summary>
-public partial class CyLanguageToggle : CyLayoutComponentBase
+public partial class CyLanguageToggle : CyLayoutComponentBase, IHasDisabledState
 {
     private AppLanguage _uncontrolledLanguage;
     private bool _uncontrolledLanguageInitialized;
@@ -57,6 +58,14 @@ public partial class CyLanguageToggle : CyLayoutComponentBase
     /// </summary>
     [Parameter]
     public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Overrides the button's accessible name. By default it is written in
+    /// the language being switched <em>to</em> ("Newid yr iaith i Gymraeg" /
+    /// "Change the language to English").
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
 
     protected override string BaseCssClass => "cy-language-toggle";
 
@@ -95,9 +104,9 @@ public partial class CyLanguageToggle : CyLayoutComponentBase
         TargetLanguage == AppLanguage.Welsh ? "cy" : "en";
 
     private string ComputedAriaLabel =>
-        TargetLanguage == AppLanguage.Welsh
+        AriaLabel ?? (TargetLanguage == AppLanguage.Welsh
             ? "Newid yr iaith i Gymraeg"
-            : "Change the language to English";
+            : "Change the language to English");
 
     protected override string BuildCssClass() =>
         CssBuilder.Empty

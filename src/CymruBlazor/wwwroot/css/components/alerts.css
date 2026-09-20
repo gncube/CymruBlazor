@@ -47,6 +47,10 @@
   flex: 1 1 auto;
 
   min-width: 0;
+
+  /* WCAG 1.4.10 Reflow: a long unbroken string (URL, identifier) must wrap
+     inside the alert rather than widen the whole page. */
+  overflow-wrap: anywhere;
 }
 
 .cy-alert__title {

@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -13,7 +14,7 @@ namespace CymruBlazor.Components.Core;
 /// Form binding, validation, and JavaScript interop are intentionally
 /// implemented by more specialised derived classes.
 /// </summary>
-public abstract class CyInteractiveComponentBase : CyComponentBase
+public abstract class CyInteractiveComponentBase : CyComponentBase, IHasDisabledState
 {
     /// <summary>
     /// Gets or sets whether the component is disabled.

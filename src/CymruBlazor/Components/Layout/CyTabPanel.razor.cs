@@ -1,3 +1,4 @@
+using CymruBlazor.Contracts;
 using Microsoft.AspNetCore.Components;
 
 namespace CymruBlazor.Components.Layout;
@@ -9,7 +10,7 @@ namespace CymruBlazor.Components.Layout;
 /// parent, which is what allows <see cref="CyTabs"/> to render the tab
 /// strip once, ahead of whichever single panel is currently visible.
 /// </summary>
-public partial class CyTabPanel : CyLayoutComponentBase, IDisposable
+public partial class CyTabPanel : CyLayoutComponentBase, IHasDisabledState, IDisposable
 {
     private bool _isRegistered;
 

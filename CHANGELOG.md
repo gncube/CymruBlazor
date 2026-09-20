@@ -10,6 +10,73 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+## [1.3.0] - Unreleased
+
+Welsh strings and overlays. Everything is additive; package validation runs
+against 1.2.0.
+
+### Added
+
+- **`CyDialog`**: a modal dialog on the native `<dialog>` element
+  (`showModal()`): inert background, `Tab` containment, `Escape`, focus
+  return, top layer. Parameters: `Open`/`OpenChanged`, `OnClosed`, `Title`,
+  `Description`, `ChildContent`, `Footer`, `Dismissible`,
+  `CloseOnBackdropClick`, `Size`, `CloseLabel`. See ADR-0001.
+- **`CyTooltip`** (`TooltipPlacement`): plain-text tooltip on hover *and*
+  focus, dismissible with `Escape`, hoverable (WCAG 1.4.13), with
+  `aria-describedby`.
+- **Localisation step 1**: every built-in English string has a `string?`
+  override with an English default. `AriaLabel` on `CyBreadcrumb`,
+  `CyNavigation`, `CyToastContainer` and `CyLanguageToggle`;
+  `OpenMenuLabel`/`CloseMenuLabel` on `CyNavigation`; `DismissAriaLabel` on
+  `CyAlert` and `CyToastContainer`; `CodeLabel`, `CopyLabel`, `CopiedLabel`,
+  `CopyFailedLabel`, `CopiedMessage`, `CopyFailedMessage` on `CyCodeBlock`;
+  `RevealLabel`, `CloseLabel`, `SizeGroupLabel`, `ExpandLabel`,
+  `CollapseLabel`, `CompactLabel`, `IconOnlyLabel`, `HideLabel`,
+  `ResizeLabel` on `CySidebar`. ADR-0002 proposes the step-2 localiser.
+- `JsFocusManager` (registered by default) and
+  `IFocusManager.TrapAsync(...)` with `FocusTrapOptions`. `TrapAsync` is a
+  default interface member, so existing custom `IFocusManager`
+  implementations keep compiling and keep getting `FocusAsync` /
+  `RestoreFocusAsync` calls.
+- `IToastService.PauseAutoDismiss` / `ResumeAutoDismiss` (default interface
+  members). A toast's countdown pauses while it is hovered or focused and
+  resumes with the time left (at least one second) - WCAG 2.2.1.
+- `cymru-overlay.js`, an ES module the library imports on demand. No
+  `<script>` tag is needed.
+- `IHasSize`, `IHasColour`, `IHasDisabledState` and `IHasValidationState`
+  are now implemented where the property already existed.
+
+### Changed
+
+- `CyFocusTrap` now really works: it moves focus in, contains `Tab`, pulls
+  back escaped focus and restores focus when released. It also honours
+  `Enabled` changing after the first render. It still does not make the rest
+  of the page inert; use `CyDialog` for a modal.
+- The `CySidebar` mobile drawer closes on `Escape`, traps focus while open on
+  small screens and returns focus afterwards. Without a registered
+  `IFocusManager` it still closes on `Escape`.
+- `AddCymruBlazor()` registers `JsFocusManager` instead of the logging-only
+  `FocusManager`, which remains available as a no-op implementation.
+- The Demo search modal and Dashboard sample tooltips use `CyDialog` /
+  `CyTooltip`.
+
+### Fixed
+
+- `CyAlert` no longer makes the whole page scroll horizontally when its text
+  contains a long unbroken string on a narrow screen (WCAG 1.4.10).
+
+### Deprecated
+
+- `IHasVariant`, `IHasIcon`, `ComponentVariant` and `IconPosition` are
+  `[Obsolete]`: nothing implements or uses them. Removal in 2.0.0.
+
+### Tests
+
+- Real-browser suites for the overlay module, `CyDialog`, `CyTooltip` and
+  computed-style/reflow checks, and a smoke run over the published demo
+  (every route, light/dark/high-contrast, no console errors, axe clean).
+  See `tests/CymruBlazor.AccessibilityTests/README.md`.
 ## [1.2.1] - Unreleased
 
 ### Fixed
