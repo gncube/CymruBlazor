@@ -177,6 +177,8 @@ public sealed class OverlayModuleBrowserTests : AxeTestBase
         await Page.Keyboard.PressAsync("Escape");
         await Page.WaitForFunctionAsync("() => !document.getElementById('dlg').open");
 
+        // The native 'close' event is queued after the dialog stops being open, so wait for the notification.
+        await Page.WaitForFunctionAsync("() => window.closedCount >= 1");
         (await Page.EvaluateAsync<int>("() => window.closedCount")).ShouldBe(1);
         (await ActiveElementIdAsync()).ShouldBe("opener");
     }
