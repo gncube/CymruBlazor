@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using CymruBlazor.Components.Core;
 
 namespace CymruBlazor.Components.Layout;
 

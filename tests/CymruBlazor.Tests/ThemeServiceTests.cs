@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
 using Shouldly;

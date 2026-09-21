@@ -248,7 +248,7 @@ body {
   flex-grow: 1;
   /* Flex items default to min-width: auto, which refuses to shrink
      below the intrinsic width of their content. A long unwrapped code
-     line inside .cb-code-block would otherwise force this whole column
+     line inside a code block would otherwise force this whole column
      (and the page) wider than the viewport instead of scrolling inside
      the code block's own overflow-x: auto. */
   min-width: 0;
@@ -434,13 +434,6 @@ details[open] > summary .cb-nav-group__chevron {
   border-radius: var(--docs-code-radius);
   padding: 1rem;
   box-shadow: var(--cb-shadow-sm);
-}
-
-
-.cb-code-block pre {
-  margin: 0;
-  padding: 1rem;
-  overflow-x: auto;
 }
 
 /* Badges */
@@ -869,49 +862,10 @@ details[open] > summary .cb-nav-group__chevron {
   margin-bottom: 0.5rem;
 }
 
-.cb-code-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .cb-open-in-github {
   display: inline-block;
   margin-top: 0.5rem;
   font-size: 0.85rem;
-}
-
-/* ── Home page ── */
-.cb-tech-badges {
-  margin-top: 1.5rem;
-}
-
-.cb-badge--pill {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #ffffff;
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-}
-
-.cb-feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-}
-
-.cb-feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  font-size: 1.25rem;
-  color: #ffffff;
 }
 
 /* ── Static content pages (Getting Started, Design Tokens, Installation) ── */
