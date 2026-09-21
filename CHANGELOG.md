@@ -10,6 +10,12 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+### Removed
+
+- Unused Razor Class Library template asset `wwwroot/background.png` (it was
+  shipped as `_content/CymruBlazor/background.png` but nothing referenced it).
+  No public API is affected.
+
 ## [1.3.0] - Unreleased
 
 Welsh strings and overlays. Everything is additive; package validation runs

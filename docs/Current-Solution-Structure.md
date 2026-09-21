@@ -8,7 +8,6 @@ CymruBlazor/
 ├─ Directory.Packages.props
 ├─ LICENSE
 ├─ local-package-versions.props
-├─ MIGRATION_CLEANUP.md
 ├─ New-LocalPackageFeed.ps1
 ├─ NuGet.CI.Config
 ├─ nuget.config
@@ -16,23 +15,21 @@ CymruBlazor/
 ├─ Pack-Solution.ps1
 ├─ README.md
 ├─ test-local.ps1
+├─ .github/
+│  └─ workflows/                       (ci, demo-smoke, publish-demo, release)
 ├─ artifacts/                          (excluded from tree above as generated output)
 ├─ docs/
+│  ├─ ADR/
 │  ├─ CymruBlazor-Scaffold-Guide.md
 │  ├─ CymruBlazor-Scaffold-Guide.OLD-for-comparison.md
-│  ├─ DEMO_TODOS.md
-│  ├─ implementation-plan.md
-│  └─ rfc-cysidebar-composable-states-and-mobile-drawer.md
-├─ plan/
+│  └─ Current-Solution-Structure.md
+├─ plan/                               (local working notes; git-ignored)
 │  ├─ _template.md
 │  ├─ known-issues-and-backlog.md
+│  ├─ plan-*.md                        (per-release plans)
 │  ├─ README.md
 │  ├─ active/
 │  └─ archive/
-│     ├─ architecture-demo-documentation-platform-1.md
-│     ├─ implement-core-componet-foundatiomn-base-architecture.md
-│     ├─ plan-first-nuget-release.md
-│     └─ plan-next-release-components.md
 ├─ samples/
 │  ├─ Dashboard/
 │  │  ├─ App.razor
@@ -94,6 +91,7 @@ CymruBlazor/
 │  │  ├─ Icons/
 │  │  ├─ Services/
 │  │  ├─ Themes/
+│  │  ├─ build/                       (BundleCss.targets)
 │  │  ├─ wwwroot/
 │  │  ├─ _Imports.razor
 │  │  └─ CymruBlazor.csproj
@@ -106,17 +104,17 @@ CymruBlazor/
 │     ├─ Layout/
 │     │  ├─ MainLayout.razor
 │     │  └─ ... (shared/demo layout files)
+│     ├─ Localisation/
 │     ├─ Pages/
 │     │  ├─ Components/
 │     │  │  ├─ Accessibility/
 │     │  │  ├─ Branding/
-│     │  │  ├─ Button/
 │     │  │  ├─ Content/
-│     │  │  ├─ Core/
 │     │  │  ├─ Feedback/
 │     │  │  ├─ Forms/
+│     │  │  ├─ Foundations/
 │     │  │  ├─ Layout/
-│     │  │  ├─ Theming/
+│     │  │  ├─ Navigation/
 │     │  │  └─ _Imports.razor
 │     │  ├─ GettingStarted/
 │     │  ├─ Home.razor
@@ -129,8 +127,10 @@ CymruBlazor/
 │     ├─ wwwroot/
 │     └─ ... (demo-specific supporting files)
 │
-└─ tests/
-   ├─ CymruBlazor.AccessibilityTests/
-   ├─ CymruBlazor.ApprovalTests/
-   └─ CymruBlazor.Tests/
+├─ tests/
+│  ├─ CymruBlazor.AccessibilityTests/
+│  └─ CymruBlazor.Tests/
+│
+└─ tools/
+   └─ CymruBlazor.CssBundler/
    ```

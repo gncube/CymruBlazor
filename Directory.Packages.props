@@ -3,7 +3,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="ASP.NET Core / Blazor">
-    <!--<PackageVersion Include="Mediator" Version="1.0.2123" />-->
     <!--
       Placeholder only. MinVer computes a new CymruBlazor version on
       every commit (see CONTRIBUTING.md), so there is no fixed version
