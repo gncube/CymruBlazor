@@ -95,7 +95,7 @@ public sealed class CyTextAreaTests : FormFieldTestContext
 
         count.GetAttribute("aria-live").ShouldBe("polite");
         count.TextContent.ShouldContain("You have 150 characters remaining");
-        cut.Find("textarea").GetAttribute("aria-describedby").ShouldContain(count.GetAttribute("id")!);
+        cut.Find("textarea").GetAttribute("aria-describedby")!.ShouldContain(count.GetAttribute("id")!);
     }
 
     [Fact]
