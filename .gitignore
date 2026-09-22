@@ -508,3 +508,5 @@ local-package-versions.props
 # Demo publish output (CI, publish-demo, and the demo smoke run write here)
 /demo-publish/
 /demo-smoke/
+Apply-Housekeeping-Deletions.ps1
+Pack-Solution.ps1
