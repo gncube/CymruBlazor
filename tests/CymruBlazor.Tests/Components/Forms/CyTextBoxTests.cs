@@ -78,6 +78,52 @@ public sealed class CyTextBoxTests : FormFieldTestContext
     }
 
     [Fact]
+    public void Should_Render_InputMode_And_Autocomplete_When_Set()
+    {
+        // Arrange
+        var model = new TestFormModel();
+        var editContext = CreateEditContext(model);
+
+        // Act
+        var cut = Render<CyTextBox>(parameters => parameters
+            .AddCascadingValue(editContext)
+            .Add(p => p.Label, "Account number")
+            .Add(p => p.InputMode, "numeric")
+            .Add(p => p.Autocomplete, "off")
+            .Add(p => p.Value, model.Text)
+            .Add(p => p.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Text = v))
+            .Add(p => p.ValueExpression, () => model.Text));
+
+        // Assert
+        var input = cut.Find("input");
+
+        input.GetAttribute("inputmode").ShouldBe("numeric");
+        input.GetAttribute("autocomplete").ShouldBe("off");
+    }
+
+    [Fact]
+    public void Should_Omit_InputMode_And_Autocomplete_When_Not_Set()
+    {
+        // Arrange
+        var model = new TestFormModel();
+        var editContext = CreateEditContext(model);
+
+        // Act
+        var cut = Render<CyTextBox>(parameters => parameters
+            .AddCascadingValue(editContext)
+            .Add(p => p.Label, "Full name")
+            .Add(p => p.Value, model.Text)
+            .Add(p => p.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Text = v))
+            .Add(p => p.ValueExpression, () => model.Text));
+
+        // Assert
+        var input = cut.Find("input");
+
+        input.HasAttribute("inputmode").ShouldBeFalse();
+        input.HasAttribute("autocomplete").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task Should_Show_Validation_Error_When_Field_Is_Invalid()
     {
         // Arrange

@@ -1,0 +1,126 @@
+@page "/forms/radio-group"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CyRadioGroup" Subtitle="A fieldset of mutually exclusive options.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyRadioGroup" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
+            <CyRadioGroup TValue="string"
+                          @bind-Value="_model.ContactMethod"
+                          Label="Preferred contact method"
+                          HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                          Required="_required"
+                          Disabled="_disabled">
+                <CyRadio Value="email" Label="Email" HintText="We'll only use this to confirm or reschedule" />
+                <CyRadio Value="phone" Label="Phone" />
+                <CyRadio Value="post" Label="Post" />
+            </CyRadioGroup>
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Hint text" @bind-Value="_hintText" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyRadioGroup.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <p class="cb-panel-caption" style="margin-bottom: var(--cymru-space-4);">CyRadioGroup&lt;TValue&gt;</p>
+    <DemoApiTable Parameters="_groupApiDocs" />
+    <p class="cb-panel-caption" style="margin-block: var(--cymru-space-6) var(--cymru-space-4);">CyRadio</p>
+    <DemoApiTable Parameters="_radioApiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        public string ContactMethod { get; set; } = string.Empty;
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private string _hintText = string.Empty;
+    private bool _required;
+    private bool _disabled;
+
+    private string GeneratedCode =>
+        $"""
+        <CyRadioGroup TValue="string"
+                      @bind-Value="model.ContactMethod"
+                      Label="Preferred contact method"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")}>
+            <CyRadio Value="email" Label="Email" HintText="We'll only use this to confirm or reschedule" />
+            <CyRadio Value="phone" Label="Phone" />
+            <CyRadio Value="post" Label="Post" />
+        </CyRadioGroup>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _groupApiDocs =
+    [
+        new("Label", "string", "-", "The fieldset's <legend> text."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby on the fieldset."),
+        new("Required", "bool", "false", "Adds a visual indicator and aria-required on every radio in the group. Does not perform validation itself."),
+        new("Disabled", "bool", "false", "Disables every radio in the group."),
+        new("ChildContent", "RenderFragment?", "null", "The group's options - one CyRadio per option."),
+        new("Value", "TValue", "-", "The bound selection; use @bind-Value.")
+    ];
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _radioApiDocs =
+    [
+        new("Value", "string", "-", "The value submitted for this option."),
+        new("Label", "string", "-", "This option's visible, programmatically-associated label."),
+        new("HintText", "string?", "null", "Optional supporting text for this specific option."),
+        new("Disabled", "bool", "false", "Disables this option specifically, in addition to the group's own Disabled.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native fieldset/legend", "The group of options and its shared label are exposed to assistive technology through native <fieldset>/<legend> semantics, not ARIA roles bolted onto a <div>."),
+        new("One name per group", "Every radio in a group shares a generated name attribute, so only one can ever be checked, matching native radio-button behaviour."),
+        new("Per-option hints", "An individual CyRadio's HintText is associated with just that option via aria-describedby, rather than being lumped into the group's own hint.")
+    ];
+}

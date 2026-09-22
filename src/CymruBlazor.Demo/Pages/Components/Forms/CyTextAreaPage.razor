@@ -1,0 +1,120 @@
+@page "/forms/textarea"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CyTextArea" Subtitle="A multi-line text field with an optional live character count.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyTextArea" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
+            <CyTextArea @bind-Value="_model.Notes"
+                        Label="Additional notes"
+                        HintText="Include anything else the clinic should know"
+                        Rows="_rows"
+                        MaxLength="@(_showCharacterCount ? 150 : null)"
+                        ShowCharacterCount="_showCharacterCount"
+                        Required="_required"
+                        Disabled="_disabled" />
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySelect Label="Rows" @bind-Value="_rows" Options="_rowOptions" TValue="int" />
+            <DemoPropertySwitch Label="Show character count (150)" @bind-Value="_showCharacterCount" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyTextArea.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        public string Notes { get; set; } = string.Empty;
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private int _rows = 5;
+    private bool _showCharacterCount;
+    private bool _required;
+    private bool _disabled;
+
+    private readonly IReadOnlyList<int> _rowOptions = [3, 5, 8];
+
+    private string GeneratedCode =>
+        $"""
+        <CyTextArea
+            @bind-Value="model.Notes"
+            Label="Additional notes"
+            HintText="Include anything else the clinic should know"{(_rows != 5 ? $"\n    Rows=\"{_rows}\"" : "")}{(_showCharacterCount ? "\n    MaxLength=\"150\"\n    ShowCharacterCount=\"true\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The field's visible, programmatically-associated label."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
+        new("Rows", "int", "5", "The textarea's visible height, in rows."),
+        new("MaxLength", "int?", "null", "Native maxlength attribute. Required for ShowCharacterCount to render anything."),
+        new("ShowCharacterCount", "bool", "false", "Shows a live, aria-live=\"polite\" characters-remaining/too-many message."),
+        new("CharacterRemainingFormat", "string", "\"You have {0} character remaining\"", "Singular \"remaining\" message override."),
+        new("CharactersRemainingFormat", "string", "\"You have {0} characters remaining\"", "Plural \"remaining\" message override."),
+        new("CharacterOverLimitFormat", "string", "\"You have {0} character too many\"", "Singular \"too many\" message override."),
+        new("CharactersOverLimitFormat", "string", "\"You have {0} characters too many\"", "Plural \"too many\" message override."),
+        new("Required", "bool", "false", "Adds aria-required and a visual indicator. Does not perform validation itself."),
+        new("Disabled", "bool", "false", "Disables the field."),
+        new("Value", "string", "-", "The bound value; use @bind-Value.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Live count is announced", "The character-count message uses aria-live=\"polite\" and is added to the field's aria-describedby, so screen reader users hear it update as they type, not just see it."),
+        new("No silent truncation surprises", "The native maxlength attribute is the same hard limit sighted users see reflected in the live count - there is no separate, invisible limit."),
+        new("Correct singular/plural wording", "\"1 character remaining\" rather than \"1 characters remaining\" - small, but it's exactly the kind of detail that makes synthesised speech sound wrong.")
+    ];
+}

@@ -1,0 +1,112 @@
+@page "/forms/date-input"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CyDateInput" Subtitle="A three-field day/month/year date input.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyDateInput" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
+            <CyDateInput @bind-Value="_model.DateOfBirth"
+                         Label="Date of birth"
+                         HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                         AutocompleteDateOfBirth="_autocompleteDateOfBirth"
+                         Required="_required"
+                         Disabled="_disabled" />
+        </EditForm>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Hint text" @bind-Value="_hintText" />
+            <DemoPropertySwitch Label="Autocomplete = date of birth" @bind-Value="_autocompleteDateOfBirth" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyDateInput.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DemoModel
+    {
+        public DateOnly? DateOfBirth { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DemoModel _model = new();
+    private string _hintText = "For example, 15 3 1984";
+    private bool _autocompleteDateOfBirth;
+    private bool _required;
+    private bool _disabled;
+
+    private string GeneratedCode =>
+        $"""
+        <CyDateInput
+            @bind-Value="model.DateOfBirth"
+            Label="Date of birth"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(_autocompleteDateOfBirth ? "\n    AutocompleteDateOfBirth=\"true\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The fieldset's <legend> text."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby on the fieldset."),
+        new("DayLabel", "string", "\"Day\"", "Visible label for the day field."),
+        new("MonthLabel", "string", "\"Month\"", "Visible label for the month field."),
+        new("YearLabel", "string", "\"Year\"", "Visible label for the year field."),
+        new("AutocompleteDateOfBirth", "bool", "false", "Sets autocomplete=\"bday-day\"/\"bday-month\"/\"bday-year\" on the three fields."),
+        new("Required", "bool", "false", "Adds a visual indicator. Does not perform validation itself."),
+        new("Disabled", "bool", "false", "Disables all three fields."),
+        new("Value", "DateOnly?", "null", "The bound date; use @bind-Value. Null until all three segments form a valid date.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Plain text, not a native number/date input", "Each segment is type=\"text\" inputmode=\"numeric\" rather than type=\"number\" or type=\"date\" - avoiding spinner buttons, locale-dependent formats and a native date picker's own accessibility inconsistencies across browsers."),
+        new("No automatic focus movement", "The three fields never auto-advance focus for the user - confirmed against the NHS Wales/GOV.UK guidance that automatic tabbing between fields is confusing for keyboard and screen reader users."),
+        new("Composed once, not per keystroke", "Segments are combined into a date on change (blur/tab-away), not on every keystroke, so a user is never shown a validation error while still mid-digit.")
+    ];
+}

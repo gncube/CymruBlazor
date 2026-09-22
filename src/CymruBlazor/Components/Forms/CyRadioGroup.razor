@@ -1,0 +1,33 @@
+@typeparam TValue
+@inherits CyFormFieldComponentBase<TValue>
+
+<fieldset class="@BuildFieldCssClass("cy-field cy-radio-group")" aria-describedby="@ComputedAriaDescribedBy"
+          @attributes="AdditionalAttributes">
+
+    <legend class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </legend>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <div class="cy-radios">
+        <CascadingValue Value="(ICyRadioGroup)this">
+            @ChildContent
+        </CascadingValue>
+    </div>
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+        </p>
+    }
+
+</fieldset>
