@@ -1,7 +1,8 @@
 @typeparam TValue
 @inherits CyFormFieldComponentBase<TValue>
 
-<fieldset class="@BuildFieldCssClass("cy-field cy-radio-group")" aria-describedby="@ComputedAriaDescribedBy" @attributes="AdditionalAttributes">
+<fieldset class="@BuildFieldCssClass("cy-field cy-radio-group")" aria-describedby="@ComputedAriaDescribedBy"
+          @attributes="AdditionalAttributes">
 
     <legend class="cy-field__label">
         @Label
@@ -17,7 +18,7 @@
     }
 
     <div class="cy-radios">
-        <CascadingValue Value="(ICyRadioGroup)this" IsFixed="true">
+        <CascadingValue Value="(ICyRadioGroup)this">
             @ChildContent
         </CascadingValue>
     </div>

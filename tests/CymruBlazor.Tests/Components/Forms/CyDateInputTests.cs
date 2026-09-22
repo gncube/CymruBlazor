@@ -60,7 +60,6 @@ public sealed class CyDateInputTests : FormFieldTestContext
     [Fact]
     public void Should_Compose_DateOnly_From_Three_Segments_On_Change()
     {
-        // Arrange
         var model = new TestFormModel();
         var editContext = CreateEditContext(model);
         DateOnly? composed = null;
@@ -72,20 +71,16 @@ public sealed class CyDateInputTests : FormFieldTestContext
             .Add(p => p.ValueChanged, EventCallback.Factory.Create<DateOnly?>(this, v => composed = v))
             .Add(p => p.ValueExpression, () => model.Date));
 
-        // Act
-        var inputs = cut.FindAll(".cy-date-input__input");
-        inputs[0].Change("15"); // day
-        inputs[1].Change("3");  // month
-        inputs[2].Change("1990"); // year
+        cut.FindAll(".cy-date-input__input")[0].Change("15");
+        cut.FindAll(".cy-date-input__input")[1].Change("3");
+        cut.FindAll(".cy-date-input__input")[2].Change("1990");
 
-        // Assert
         composed.ShouldBe(new DateOnly(1990, 3, 15));
     }
 
     [Fact]
     public void Should_Clear_Value_When_A_Valid_Date_Is_Edited_Into_An_Invalid_One()
     {
-        // Arrange
         var model = new TestFormModel();
         var editContext = CreateEditContext(model);
         DateOnly? composed = null;
@@ -97,19 +92,18 @@ public sealed class CyDateInputTests : FormFieldTestContext
             .Add(p => p.ValueChanged, EventCallback.Factory.Create<DateOnly?>(this, v => composed = v))
             .Add(p => p.ValueExpression, () => model.Date));
 
-        var inputs = cut.FindAll(".cy-date-input__input");
-        inputs[0].Change("15");
-        inputs[1].Change("2");
-        inputs[2].Change("1990");
+        cut.FindAll(".cy-date-input__input")[0].Change("15");
+        cut.FindAll(".cy-date-input__input")[1].Change("2");
+        cut.FindAll(".cy-date-input__input")[2].Change("1990");
 
         composed.ShouldBe(new DateOnly(1990, 2, 15));
 
-        // Act - day 31 doesn't exist in month 2 (February)
-        inputs[0].Change("31");
+        cut.FindAll(".cy-date-input__input")[0].Change("31");
 
-        // Assert
         composed.ShouldBeNull();
     }
+
+
 
     [Fact]
     public void Should_Populate_Segments_From_An_Externally_Supplied_Value()
