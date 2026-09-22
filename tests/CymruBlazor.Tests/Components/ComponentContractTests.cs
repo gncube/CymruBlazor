@@ -46,15 +46,28 @@ public sealed class ComponentContractTests : TestContextBase
     [InlineData(typeof(CyButton))]
     [InlineData(typeof(CyTextBox))]
     [InlineData(typeof(CyLanguageToggle))]
+    [InlineData(typeof(CyRadio))]
+    [InlineData(typeof(CyTextArea))]
+    [InlineData(typeof(CyDateInput))]
     public void Components_That_Can_Be_Disabled_Implement_IHasDisabledState(Type component)
     {
         typeof(IHasDisabledState).IsAssignableFrom(component).ShouldBeTrue();
     }
 
-    [Fact]
-    public void Form_Fields_Implement_IHasValidationState()
+    [Theory]
+    [InlineData(typeof(CyTextBox))]
+    [InlineData(typeof(CyTextArea))]
+    [InlineData(typeof(CyDateInput))]
+    public void Form_Fields_Implement_IHasValidationState(Type component)
     {
-        typeof(IHasValidationState).IsAssignableFrom(typeof(CyTextBox)).ShouldBeTrue();
+        typeof(IHasValidationState).IsAssignableFrom(component).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void CyRadioGroup_Implements_IHasDisabledState_And_IHasValidationState()
+    {
+        typeof(IHasDisabledState).IsAssignableFrom(typeof(CyRadioGroup<string>)).ShouldBeTrue();
+        typeof(IHasValidationState).IsAssignableFrom(typeof(CyRadioGroup<string>)).ShouldBeTrue();
     }
 
     [Fact]

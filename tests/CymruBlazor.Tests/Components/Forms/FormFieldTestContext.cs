@@ -21,6 +21,8 @@ public abstract class FormFieldTestContext : TestContextBase
         public bool Flag { get; set; }
 
         public string Choice { get; set; } = string.Empty;
+
+        public DateOnly? Date { get; set; }
     }
 
     protected static EditContext CreateEditContext(TestFormModel model) =>

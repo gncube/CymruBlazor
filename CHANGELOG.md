@@ -100,6 +100,61 @@ against 1.2.0.
   computed-style/reflow checks, and a smoke run over the published demo
   (every route, light/dark/high-contrast, no console errors, axe clean).
   See `tests/CymruBlazor.AccessibilityTests/README.md`.
+
+## [1.4.0] - Unreleased
+
+Forms. Everything is additive; package validation runs against 1.2.0.
+Confirmed against the NHS Wales Design System (the DHCW component library)
+in addition to GOV.UK/NHS.UK, per the roadmap's D-numeric/D4 decisions.
+
+### Added
+
+- **`CyRadioGroup<TValue>`** and **`CyRadio`**: a native `<fieldset>`/
+  `<legend>` group of mutually exclusive options. `CyRadioGroup<TValue>`
+  parameters: `Label`, `HintText`, `Required`, `Disabled`, `ChildContent`
+  (one `CyRadio` per option), `Value`/`ValueChanged` (`@bind-Value`).
+  `CyRadio` parameters: `Value`, `Label`, `HintText`, `Disabled`. Selection
+  is reported up as a string and converted to `TValue` the same way
+  `CySelect<TValue>`'s `<option>` values are.
+- **`CyTextArea`**: a multi-line text field. Parameters: `Rows` (default
+  5), `MaxLength`, `ShowCharacterCount` (a live, `aria-live="polite"`
+  characters-remaining/too-many message, with correct singular/plural
+  wording and localisable `Character[s]RemainingFormat`/
+  `Character[s]OverLimitFormat` overrides), plus the usual
+  `Label`/`HintText`/`Required`/`Disabled`/`Value`.
+- **`CyDateInput`**: a three-field day/month/year date input (`DateOnly?`),
+  built ahead of any calendar `CyDatePicker` per roadmap decision D4.
+  Segments are plain `type="text" inputmode="numeric"` fields (not
+  `type="number"` or a `<select>` of months), never auto-advance focus
+  between each other, and are only combined into a date on `change`
+  (blur), not on every keystroke. Parameters: `Label`, `HintText`,
+  `DayLabel`/`MonthLabel`/`YearLabel` (English defaults, overridable),
+  `AutocompleteDateOfBirth`, `Required`, `Disabled`, `Value`/`ValueChanged`.
+- `CyTextBox.InputMode` and `CyTextBox.Autocomplete`: native `inputmode`
+  and `autocomplete` attributes. No `type="number"` variant was added
+  (roadmap D-numeric decision) - a native number input's spin buttons,
+  locale-dependent decimal separator and habit of silently discarding
+  non-numeric characters make it unsuitable for most of what looks like
+  "a number" in a form (postcodes, phone numbers, NHS numbers); use
+  `Type="text"` (the default) with `InputMode="numeric"` instead.
+
+### Tests
+
+- Unit tests for all three new components, plus `CyTextBox`'s new
+  `InputMode`/`Autocomplete` parameters.
+- Axe suites (light, dark, high-contrast) for `CyRadioGroup`/`CyRadio`,
+  `CyTextArea` and `CyDateInput`.
+- `ComponentContractTests` extended: `CyRadio`, `CyTextArea` and
+  `CyDateInput` implement `IHasDisabledState`; `CyTextArea`, `CyDateInput`
+  and `CyRadioGroup<TValue>` implement `IHasValidationState`.
+
+### Known limitations
+
+- `CyDateInput`'s `aria-invalid` applies to all three segments together
+  when the field is invalid, not to whichever specific segment is wrong
+  (the DHCW reference marks only the offending segment). Tracked in the
+  backlog.
+
 ## [1.2.1] - Unreleased
 
 ### Fixed

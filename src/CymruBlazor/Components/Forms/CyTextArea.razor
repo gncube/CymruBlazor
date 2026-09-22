@@ -15,20 +15,23 @@
         <p id="@HintId" class="cy-field__hint">@HintText</p>
     }
 
-    <input
+    <textarea
         @attributes="AdditionalAttributes"
         id="@FieldId"
-        type="@Type"
-        class="cy-textbox"
-        placeholder="@Placeholder"
+        class="cy-textarea"
+        rows="@Rows"
         maxlength="@MaxLength"
-        inputmode="@InputMode"
-        autocomplete="@Autocomplete"
-        @bind="CurrentValueAsString"
         aria-required="@(Required ? "true" : "false")"
         aria-invalid="@(HasValidationError ? "true" : "false")"
-        aria-describedby="@ComputedAriaDescribedBy"
-        disabled="@Disabled" />
+        aria-describedby="@DescribedBy"
+        disabled="@Disabled"
+        @bind="CurrentValueAsString"
+        @bind:event="oninput"></textarea>
+
+    @if (ShowCharacterCount && MaxLength.HasValue)
+    {
+        <p id="@CountId" class="cy-field__hint cy-textarea__count" aria-live="polite">@CharacterCountMessage</p>
+    }
 
     @if (HasValidationError)
     {

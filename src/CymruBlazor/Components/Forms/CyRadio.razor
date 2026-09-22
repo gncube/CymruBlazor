@@ -1,0 +1,25 @@
+@inherits CyComponentBase
+
+<div class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    <input
+        id="@Id"
+        type="radio"
+        class="cy-radio-item__input"
+        name="@(Parent?.GroupName)"
+        value="@Value"
+        checked="@IsChecked"
+        disabled="@IsDisabled"
+        aria-describedby="@(string.IsNullOrWhiteSpace(HintText) ? null : HintId)"
+        aria-invalid="@((Parent?.HasError ?? false) ? "true" : "false")"
+        aria-required="@((Parent?.Required ?? false) ? "true" : "false")"
+        @onchange="HandleChangeAsync" />
+
+    <label for="@Id" class="cy-radio-item__label">@Label</label>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-radio-item__hint">@HintText</p>
+    }
+
+</div>

@@ -1,0 +1,77 @@
+@inherits CyFormFieldComponentBase<DateOnly?>
+
+<fieldset class="@BuildFieldCssClass("cy-field cy-date-input-group")" role="group" aria-describedby="@ComputedAriaDescribedBy" @attributes="AdditionalAttributes">
+
+    <legend class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </legend>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <div class="cy-date-input">
+
+        <div class="cy-date-input__item">
+            <label for="@DayId" class="cy-date-input__label">@DayLabel</label>
+            <input
+                id="@DayId"
+                type="text"
+                inputmode="numeric"
+                maxlength="2"
+                class="cy-date-input__input cy-date-input__input--day"
+                autocomplete="@(AutocompleteDateOfBirth ? "bday-day" : null)"
+                aria-invalid="@(HasValidationError ? "true" : "false")"
+                disabled="@Disabled"
+                @bind="_day"
+                @bind:event="onchange"
+                @bind:after="RecomputeAsync" />
+        </div>
+
+        <div class="cy-date-input__item">
+            <label for="@MonthId" class="cy-date-input__label">@MonthLabel</label>
+            <input
+                id="@MonthId"
+                type="text"
+                inputmode="numeric"
+                maxlength="2"
+                class="cy-date-input__input cy-date-input__input--month"
+                autocomplete="@(AutocompleteDateOfBirth ? "bday-month" : null)"
+                aria-invalid="@(HasValidationError ? "true" : "false")"
+                disabled="@Disabled"
+                @bind="_month"
+                @bind:event="onchange"
+                @bind:after="RecomputeAsync" />
+        </div>
+
+        <div class="cy-date-input__item">
+            <label for="@YearId" class="cy-date-input__label">@YearLabel</label>
+            <input
+                id="@YearId"
+                type="text"
+                inputmode="numeric"
+                maxlength="4"
+                class="cy-date-input__input cy-date-input__input--year"
+                autocomplete="@(AutocompleteDateOfBirth ? "bday-year" : null)"
+                aria-invalid="@(HasValidationError ? "true" : "false")"
+                disabled="@Disabled"
+                @bind="_year"
+                @bind:event="onchange"
+                @bind:after="RecomputeAsync" />
+        </div>
+
+    </div>
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+        </p>
+    }
+
+</fieldset>
