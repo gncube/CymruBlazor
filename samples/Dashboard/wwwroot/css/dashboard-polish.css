@@ -130,18 +130,6 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
 }
 
 /* ==========================================================================
-   2. Status pills / badges
-   ========================================================================== */
-
-.dashboard-status {
-  border-radius: var(--cymru-radius-pill);
-  padding: 0.2rem var(--cymru-space-3);
-  font-size: var(--cymru-font-size-xs);
-  font-weight: var(--cymru-font-weight-medium);
-  line-height: 1.4;
-}
-
-/* ==========================================================================
    3. Appointment list - left accent bars
    ========================================================================== */
 
@@ -172,31 +160,6 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
 .dashboard-appointment-list__time {
   color: var(--cymru-color-text-muted);
   font-weight: var(--cymru-font-weight-semibold);
-}
-
-/* ==========================================================================
-   4. Progress bars - rounded caps, soft rail
-   ========================================================================== */
-
-.dashboard-progress__label {
-  color: var(--cymru-color-text-muted);
-}
-
-.dashboard-progress__label span:first-child {
-  color: var(--cymru-color-text);
-  font-weight: var(--cymru-font-weight-medium);
-}
-
-.dashboard-progress__track {
-  height: 0.5rem;
-  border-radius: var(--cymru-radius-pill);
-  background-color: var(--cymru-color-background);
-  overflow: hidden;
-}
-
-.dashboard-progress__fill {
-  border-radius: var(--cymru-radius-pill);
-  transition: width 200ms ease;
 }
 
 /* ==========================================================================
