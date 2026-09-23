@@ -28,9 +28,9 @@
                             <strong>@appt.PatientInitials</strong> &middot; @appt.Type
                             <span class="dashboard-appointment-list__clinician">@appt.Clinician</span>
                         </span>
-                        <span class="dashboard-status dashboard-status--@appt.StatusSeverity.ToString().ToLowerInvariant()">
+                        <CyBadge Variant="appt.StatusSeverity">
                             @appt.StatusText
-                        </span>
+                        </CyBadge>
                     </li>
                 }
             </ul>

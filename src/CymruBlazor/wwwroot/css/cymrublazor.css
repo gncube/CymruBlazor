@@ -71,6 +71,10 @@
 @import "components/branding.css" layer(components);
 @import "components/tooltip.css" layer(components);
 @import "components/dialog.css" layer(components);
+@import "components/table.css" layer(components);
+@import "components/pagination.css" layer(components);
+@import "components/progress.css" layer(components);
+@import "components/spinner.css" layer(components);
 
 /* ==========================================================================
    Utilities

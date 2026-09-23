@@ -1,0 +1,45 @@
+@inherits CyComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    @if (ShouldRenderHeader)
+    {
+        <div class="cy-progress__header">
+            @if (!string.IsNullOrWhiteSpace(Label))
+            {
+                <span class="cy-progress__label" id="@LabelId">@Label</span>
+            }
+            @if (ComputedValueText is not null)
+            {
+                <span class="cy-progress__value-text">@ComputedValueText</span>
+            }
+        </div>
+    }
+
+    @if (IsIndeterminate)
+    {
+        <progress
+            class="cy-progress__bar"
+            max="@MaxAttr"
+            aria-label="@AriaLabel"
+            aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)"
+            aria-valuetext="@ComputedValueText">
+        </progress>
+    }
+    else
+    {
+        <progress
+            class="cy-progress__bar"
+            value="@ClampedValueAttr"
+            max="@MaxAttr"
+            aria-label="@AriaLabel"
+            aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)"
+            aria-valuetext="@ComputedValueText">
+        </progress>
+    }
+
+</div>

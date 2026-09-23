@@ -10,8 +10,7 @@
         </span>
     </Header>
     <ChildContent>
-        <table class="dashboard-waiting-table">
-            <caption class="u-sr-only">Number of patients waiting and breach risk per specialty</caption>
+        <CyTable Caption="Number of patients waiting and breach risk per specialty" CaptionVisuallyHidden="true">
             <thead>
                 <tr>
                     <th scope="col">Specialty</th>
@@ -28,19 +27,17 @@
                         <td>
                             @if (specialty.BreachRiskCount > 0)
                             {
-                                <span class="dashboard-status dashboard-status--@specialty.Severity.ToString().ToLowerInvariant()">
-                                    @(specialty.BreachRiskCount) at risk
-                                </span>
+                                <CyBadge Variant="specialty.Severity">@(specialty.BreachRiskCount) at risk</CyBadge>
                             }
                             else
                             {
-                                <span class="dashboard-status dashboard-status--success">None</span>
+                                <CyBadge Variant="ComponentColour.Success">None</CyBadge>
                             }
                         </td>
                     </tr>
                 }
             </tbody>
-        </table>
+        </CyTable>
     </ChildContent>
 </CyCard>
 

@@ -16,6 +16,74 @@ Full detail for every release is also available as auto-generated
   shipped as `_content/CymruBlazor/background.png` but nothing referenced it).
   No public API is affected.
 
+## [1.5.0] - Unreleased
+
+Data display and feedback. Everything is additive; package validation
+runs against 1.2.0. Deliberately does not include a data grid, sorting,
+filtering or virtualisation (roadmap decision D5) - style
+`Microsoft.AspNetCore.Components.QuickGrid` instead if you need those.
+
+### Added
+
+- **`CyTable`**: a styled semantic table wrapper. Parameters: `Caption`
+  (required), `CaptionVisuallyHidden`, `ScrollContainer` (default `true` -
+  wraps the table in a keyboard-focusable `role="region"` so a table
+  wider than its container can be reached without a mouse instead of
+  silently overflowing), `ChildContent` (your own `<thead>`/`<tbody>`
+  markup, including `scope="col"`/`scope="row"` on your own `<th>`
+  elements).
+- **`CyPagination`**: page navigation for a result set too large to show
+  at once. Parameters: `CurrentPage`/`CurrentPageChanged`
+  (`@bind-CurrentPage`), `TotalPages`, `SiblingCount`, `BoundaryCount`
+  (boundary/sibling truncation with an ellipsis for large page counts,
+  following the same model as GOV.UK's and Material UI's pagination),
+  `AriaLabel`, `PreviousLabel`, `NextLabel`, `PageAriaLabelFormat`,
+  `CurrentPageAriaLabelFormat` (all with English defaults, overridable).
+  Renders nothing when there is only one page.
+- **`CyProgress`**: a progress indicator built on the native
+  `<progress>` element (browsers expose this as `role="progressbar"`
+  automatically, with `aria-valuenow`/`min`/`max` computed from
+  `value`/`max`). Parameters: `Value` (`double?` - leave `null` for
+  indeterminate), `Max`, `Colour`, `Size`, `Label`, `AriaLabel` (exactly
+  one of `Label`/`AriaLabel` is required, so the bar always has an
+  accessible name), `ShowValueText`, `ValueText` (overrides the computed
+  percentage, e.g. "18 of 20 beds").
+- **`CySpinner`**: an indeterminate loading indicator. `role="status"`
+  with an accessible name (`Label`, default "Loading"), shown visually
+  next to the spinner only when `ShowLabel` is set. `CyButton.Loading`'s
+  own inline spinner is unchanged and does not use this component - use
+  `CySpinner` where a loading state needs its own accessible name (e.g.
+  a panel that is (re)loading data), not for a button's own busy state.
+
+### Changed
+
+- `samples/Dashboard`: `WaitingListWidget` now renders its table with
+  `CyTable`, `OccupancyWidget` now renders its bed-occupancy bars with
+  `CyProgress`, and all three widgets' status pills are now `CyBadge`
+  instead of a hand-rolled `<span class="dashboard-status">`. The
+  now-unused `.dashboard-status`, `.dashboard-progress__*` and
+  `.dashboard-waiting-table` CSS was removed.
+
+### Tests
+
+- Unit tests for all four new components.
+- Axe suites (light, dark, high-contrast) for all four.
+- `DashboardWidgetMigrationTests`: renders the three migrated Dashboard
+  widgets with real sample data, asserting the old hand-rolled markup is
+  gone and the new library components are in place - the regression
+  harness the roadmap called for.
+
+### Known limitations
+
+- The new override strings on `CySpinner`/`CyPagination` were not added
+  to the Demo's `AppStrings.Catalogue` (the 1.3.0 localisation-step-1
+  reference implementation). Tracked in the backlog.
+- Written without being able to run the .NET test projects (no `dotnet`
+  in the authoring environment), same caveat as v1.3.0/v1.4.0. In
+  particular, `CyPagination`'s boundary/sibling truncation algorithm was
+  checked only by manually tracing several page/total combinations by
+  hand, not by running `CyPaginationTests`.
+
 ## [1.3.0] - Unreleased
 
 Welsh strings and overlays. Everything is additive; package validation runs
