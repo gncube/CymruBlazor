@@ -4,7 +4,8 @@ namespace CymruBlazor.Demo.SharedComponents;
 /// The single, ordered source of truth for every documentation page in the
 /// demo, matching <c>DemoSidebar</c>'s order exactly. Drives prev/next page
 /// navigation (<see cref="DemoPageNav"/>) so the two never drift apart.
-/// "Focus Trap" is canonically listed under Foundations, and "Dialog" under Feedback.
+/// Follows the 10-step developer journey: Getting Started -> Foundations ->
+/// Branding -> Layout -> Navigation -> Forms -> Content -> Data -> Feedback -> Accessibility.
 /// </summary>
 public static class DemoNavigationIndex
 {
@@ -12,13 +13,16 @@ public static class DemoNavigationIndex
 
     public static readonly IReadOnlyList<Entry> Pages =
     [
+        // 1. Getting Started
         new("Getting Started", "Overview", "/getting-started",
             "What CymruBlazor is, its design principles, and requirements."),
         new("Getting Started", "Installation", "/installation",
             "NuGet package, stylesheet, theme script, and service registration."),
-        new("Getting Started", "Design Tokens", "/design-tokens",
-            "Colour, spacing, and typography tokens sourced from the DHCW design system."),
 
+        // 2. Foundations
+        new("Foundations", "Design Tokens", "/foundations/tokens",
+            "Colour, spacing, and typography tokens sourced from the DHCW design system.",
+            Aliases: ["/design-tokens"]),
         new("Foundations", "Theme Provider", "/foundations/theme-provider",
             "Applies the active theme app-wide and enables runtime theme switching."),
         new("Foundations", "Typography", "/foundations/typography",
@@ -29,6 +33,17 @@ public static class DemoNavigationIndex
             "Keeps keyboard focus inside a region, wraps Tab, and returns focus afterwards.",
             Aliases: ["/accessibility/focus-trap"]),
 
+        // 3. Branding
+        new("Branding", "Overview", "/branding",
+            "NHS Wales and DHCW brand identity, marks, and bilingual conventions."),
+        new("Branding", "Brand Logo", "/branding/brand-logo",
+            "The CymruBlazor/product logo mark and wordmark."),
+        new("Branding", "Language Toggle", "/branding/language-toggle",
+            "Switches the active display language between Welsh and English."),
+
+        // 4. Layout
+        new("Layout", "Overview", "/layouts",
+            "Six layout primitives that compose to build any NHS Wales page structure."),
         new("Layout", "Container", "/layouts/container",
             "Constrains content to a maximum readable width."),
         new("Layout", "Stack", "/layouts/stack",
@@ -42,6 +57,25 @@ public static class DemoNavigationIndex
         new("Layout", "Center", "/layouts/center",
             "Horizontally centers content with an optional max width."),
 
+        // 5. Navigation
+        new("Navigation", "Breadcrumb", "/navigation/breadcrumb",
+            "A breadcrumb trail showing the current page's location in the site hierarchy."),
+        new("Navigation", "Header", "/navigation/header",
+            "The page-level header chrome bar: brand, primary content, and trailing actions."),
+        new("Navigation", "Navigation", "/navigation/navigation",
+            "Top-level site navigation with a responsive mobile toggle."),
+        new("Navigation", "Page Header", "/navigation/page-header",
+            "A page-level heading region: title, subtitle, breadcrumb, and actions."),
+        new("Navigation", "Skip Link", "/navigation/skip-link",
+            "A visually-hidden-until-focused link that jumps to the main content."),
+        new("Navigation", "Footer", "/navigation/footer",
+            "Site footer with optional link groups, copyright, and version display."),
+        new("Navigation", "Tabs", "/navigation/tabs",
+            "A set of tabs, each showing one child CyTabPanel at a time."),
+
+        // 6. Forms
+        new("Forms", "Overview", "/forms",
+            "Labelled, validation-aware controls for collecting user input built on EditForm."),
         new("Forms", "Button", "/forms/button",
             "Trigger actions and submit forms."),
         new("Forms", "TextBox", "/forms/textbox",
@@ -59,6 +93,9 @@ public static class DemoNavigationIndex
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
 
+        // 7. Content
+        new("Content", "Overview", "/content",
+            "Presentational components for displaying information, cards, and icons."),
         new("Content", "Alert", "/content/alert",
             "An inline status/alert banner."),
         new("Content", "Card", "/content/card",
@@ -74,11 +111,13 @@ public static class DemoNavigationIndex
         new("Content", "Code Block", "/content/code-block",
             "A labelled, read-only code sample with a copy-to-clipboard button."),
 
+        // 8. Data
         new("Data", "Table", "/data/table",
             "A styled semantic table, with a required caption and a keyboard-accessible scroll container."),
         new("Data", "Pagination", "/data/pagination",
             "Page navigation for a result set too large to show at once, with boundary/sibling ellipsis truncation."),
 
+        // 9. Feedback
         new("Feedback", "Dialog", "/feedback/dialog",
             "A modal dialog on the native dialog element: inert background, Escape, focus return.",
             Aliases: ["/accessibility/dialog"]),
@@ -89,26 +128,9 @@ public static class DemoNavigationIndex
         new("Feedback", "Spinner", "/feedback/spinner",
             "An indeterminate loading indicator with its own accessible name."),
 
-        new("Branding", "Brand Logo", "/branding/brand-logo",
-            "The CymruBlazor/product logo mark and wordmark."),
-        new("Branding", "Language Toggle", "/branding/language-toggle",
-            "Switches the active display language between Welsh and English."),
-
-        new("Navigation", "Breadcrumb", "/navigation/breadcrumb",
-            "A breadcrumb trail showing the current page's location in the site hierarchy."),
-        new("Navigation", "Header", "/navigation/header",
-            "The page-level header chrome bar: brand, primary content, and trailing actions."),
-        new("Navigation", "Navigation", "/navigation/navigation",
-            "Top-level site navigation with a responsive mobile toggle."),
-        new("Navigation", "Page Header", "/navigation/page-header",
-            "A page-level heading region: title, subtitle, breadcrumb, and actions."),
-        new("Navigation", "Skip Link", "/navigation/skip-link",
-            "A visually-hidden-until-focused link that jumps to the main content."),
-        new("Navigation", "Footer", "/navigation/footer",
-            "Site footer with optional link groups, copyright, and version display."),
-        new("Navigation", "Tabs", "/navigation/tabs",
-            "A set of tabs, each showing one child CyTabPanel at a time."),
-
+        // 10. Accessibility
+        new("Accessibility", "Overview", "/accessibility",
+            "Non-visual and assistive-technology-focused building blocks and principles."),
         new("Accessibility", "Live Region", "/accessibility/live-region",
             "Announces dynamic content changes to screen readers."),
         new("Accessibility", "Screen Reader Only", "/accessibility/screen-reader-only",
