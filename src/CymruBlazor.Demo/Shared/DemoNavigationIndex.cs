@@ -4,13 +4,11 @@ namespace CymruBlazor.Demo.SharedComponents;
 /// The single, ordered source of truth for every documentation page in the
 /// demo, matching <c>DemoSidebar</c>'s order exactly. Drives prev/next page
 /// navigation (<see cref="DemoPageNav"/>) so the two never drift apart.
-/// "Focus Trap" appears in both the Foundations and Accessibility sidebar
-/// sections but is listed once here, at its first (Foundations) position,
-/// so prev/next doesn't loop back on itself.
+/// "Focus Trap" is canonically listed under Foundations, and "Dialog" under Feedback.
 /// </summary>
 public static class DemoNavigationIndex
 {
-    public sealed record Entry(string Category, string Title, string Href, string Description = "");
+    public sealed record Entry(string Category, string Title, string Href, string Description = "", IReadOnlyList<string>? Aliases = null);
 
     public static readonly IReadOnlyList<Entry> Pages =
     [
@@ -27,10 +25,9 @@ public static class DemoNavigationIndex
             "The NHS Wales type scale, via CyTypography."),
         new("Foundations", "Localisation", "/foundations/localisation",
             "Translate every built-in string (English/Cymraeg) with parameter overrides and one AppStrings service."),
-        new("Foundations", "Focus Trap", "/accessibility/focus-trap",
-            "Keeps keyboard focus inside a region, wraps Tab, and returns focus afterwards."),
-        new("Foundations", "Dialog", "/accessibility/dialog",
-            "A modal dialog on the native dialog element: inert background, Escape, focus return."),
+        new("Foundations", "Focus Trap", "/foundations/focus-trap",
+            "Keeps keyboard focus inside a region, wraps Tab, and returns focus afterwards.",
+            Aliases: ["/accessibility/focus-trap"]),
 
         new("Layout", "Container", "/layouts/container",
             "Constrains content to a maximum readable width."),
@@ -53,6 +50,12 @@ public static class DemoNavigationIndex
             "A labelled dropdown selection field."),
         new("Forms", "Checkbox", "/forms/checkbox",
             "A single labelled checkbox field."),
+        new("Forms", "Radio Group", "/forms/radio-group",
+            "A fieldset of mutually exclusive options."),
+        new("Forms", "Text Area", "/forms/textarea",
+            "A multi-line text field with an optional live character count."),
+        new("Forms", "Date Input", "/forms/date-input",
+            "A three-field day/month/year date input."),
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
 
@@ -76,6 +79,9 @@ public static class DemoNavigationIndex
         new("Data", "Pagination", "/data/pagination",
             "Page navigation for a result set too large to show at once, with boundary/sibling ellipsis truncation."),
 
+        new("Feedback", "Dialog", "/feedback/dialog",
+            "A modal dialog on the native dialog element: inert background, Escape, focus return.",
+            Aliases: ["/accessibility/dialog"]),
         new("Feedback", "Toast Service", "/feedback/toast-service",
             "Accessible toast notifications, shown from anywhere - a component, a service, or the Mediator pipeline."),
         new("Feedback", "Progress", "/feedback/progress",
@@ -115,7 +121,9 @@ public static class DemoNavigationIndex
 
         for (var i = 0; i < Pages.Count; i++)
         {
-            if (string.Equals(Pages[i].Href, normalized, StringComparison.OrdinalIgnoreCase))
+            var page = Pages[i];
+            if (string.Equals(page.Href, normalized, StringComparison.OrdinalIgnoreCase) ||
+                (page.Aliases is not null && page.Aliases.Any(a => string.Equals(a, normalized, StringComparison.OrdinalIgnoreCase))))
             {
                 return i;
             }
