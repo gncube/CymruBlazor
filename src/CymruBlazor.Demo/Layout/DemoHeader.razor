@@ -4,12 +4,13 @@
 @using CymruBlazor.Enums
 @using CymruBlazor.Themes
 @inject IThemeService ThemeService
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 <CyHeader Class="cb-shell-header" Sticky="true">
     <Brand>
         <button type="button"
                 class="cb-shell-header__hamburger"
-                aria-label="@(MobileMenuOpen ? "Close navigation menu" : "Open navigation menu")"
+                aria-label="@(MobileMenuOpen ? Strings.Nav.CloseNavigationMenu : Strings.Nav.OpenNavigationMenu)"
                 aria-expanded="@(MobileMenuOpen ? "true" : "false")"
                 aria-controls="cb-mobile-sidebar"
                 @onclick="OnToggleMobileMenu">
@@ -23,9 +24,9 @@
     </Brand>
 
     <ChildContent>
-        <nav class="cb-shell-header__nav" aria-label="Primary">
-            <NavLink href="layouts/stack">Components</NavLink>
-            <NavLink href="getting-started">Docs</NavLink>
+        <nav class="cb-shell-header__nav" aria-label="@Strings.Nav.PrimaryNavigation">
+            <NavLink href="layouts/stack">@Strings.Nav.Components</NavLink>
+            <NavLink href="getting-started">@Strings.Nav.Docs</NavLink>
             <a href="https://github.com/gncube/CymruBlazor" target="_blank" rel="noopener noreferrer">
                 GitHub<span class="u-sr-only"> (opens in new tab)</span>
             </a>
@@ -37,15 +38,16 @@
 
     <Actions>
         <div class="cb-shell-header__actions">
-            <button type="button" class="cb-shell-header__search-trigger" aria-label="Search documentation" title="Search (Ctrl+K)" @onclick="OnOpenSearch">
+            <button type="button" class="cb-shell-header__search-trigger" aria-label="@Strings.Nav.SearchAriaLabel" title="@Strings.Nav.SearchTitle" @onclick="OnOpenSearch">
                 <CyIcon Name="search" Size="16" />
-                <span class="search-text">Search...</span>
+                <span class="search-text">@Strings.Nav.Search</span>
                 <kbd class="search-kbd">Ctrl+K</kbd>
             </button>
+            <CyLanguageToggle CurrentLanguage="Strings.Language" CurrentLanguageChanged="HandleLanguageChanged" />
             <button type="button"
                     class="cb-shell-header__icon-btn"
-                    aria-label="@(ThemeService.CurrentTheme.Mode == ThemeMode.Dark ? "Switch to light mode" : "Switch to dark mode")"
-                    title="Toggle dark mode"
+                    aria-label="@(ThemeService.CurrentTheme.Mode == ThemeMode.Dark ? Strings.Nav.SwitchToLightMode : Strings.Nav.SwitchToDarkMode)"
+                    title="@Strings.Nav.ToggleDarkMode"
                     @onclick="async () => await ThemeService.ToggleDarkModeAsync()">
                 <CyIcon Name="@(ThemeService.CurrentTheme.Mode == ThemeMode.Dark ? "sun" : "moon")" Size="18" />
             </button>
@@ -74,6 +76,7 @@
         // subscription to stay in sync rather than relying on this
         // click handler's own automatic re-render.
         ThemeService.ThemeChanged += HandleThemeChanged;
+        Strings.Changed += HandleStringsChanged;
     }
 
     private void HandleThemeChanged(object? sender, ThemeChangedEventArgs e)
@@ -81,8 +84,19 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleLanguageChanged(AppLanguage newLanguage)
+    {
+        Strings.SetLanguage(newLanguage);
+    }
+
     public void Dispose()
     {
         ThemeService.ThemeChanged -= HandleThemeChanged;
+        Strings.Changed -= HandleStringsChanged;
     }
 }

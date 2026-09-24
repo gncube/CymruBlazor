@@ -56,6 +56,8 @@ public static class DemoNavigationIndex
             "A two-column layout with a fixed-width side panel."),
         new("Layout", "Center", "/layouts/center",
             "Horizontally centers content with an optional max width."),
+        new("Layout", "Hero Banner", "/layouts/hero-banner",
+            "A prominent page-top hero banner with title, subtitle, and action controls."),
 
         // 5. Navigation
         new("Navigation", "Breadcrumb", "/navigation/breadcrumb",

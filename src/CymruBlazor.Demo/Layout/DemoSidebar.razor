@@ -1,18 +1,20 @@
 @namespace CymruBlazor.Demo.Layout
+@implements IDisposable
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
-<aside id="cb-mobile-sidebar" class="cb-shell-sidebar @(IsOpen ? "cb-shell-sidebar--open" : "")" aria-label="Documentation navigation">
+<aside id="cb-mobile-sidebar" class="cb-shell-sidebar @(IsOpen ? "cb-shell-sidebar--open" : "")" aria-label="@Strings.Nav.DocumentationNavigation">
     <details class="cb-nav-group" open>
         <summary>
-            <span class="cb-nav-group__title">Getting Started</span>
+            <span class="cb-nav-group__title">@Strings.Nav.GettingStarted</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="getting-started" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="getting-started" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="installation">Installation</NavLink>
     </details>
 
     <details class="cb-nav-group" open>
         <summary>
-            <span class="cb-nav-group__title">Foundations</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Foundations</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
         <NavLink class="cb-nav-item" href="foundations/tokens">Design Tokens</NavLink>
@@ -24,31 +26,32 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Branding</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Branding</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="branding" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="branding" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="branding/brand-logo">Brand Logo</NavLink>
         <NavLink class="cb-nav-item" href="branding/language-toggle">Language Toggle</NavLink>
     </details>
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Layout</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Layout</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="layouts" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="layouts" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="layouts/container">Container</NavLink>
         <NavLink class="cb-nav-item" href="layouts/stack">Stack</NavLink>
         <NavLink class="cb-nav-item" href="layouts/grid">Grid</NavLink>
         <NavLink class="cb-nav-item" href="layouts/cluster">Cluster</NavLink>
         <NavLink class="cb-nav-item" href="layouts/sidebar">Sidebar</NavLink>
         <NavLink class="cb-nav-item" href="layouts/center">Center</NavLink>
+        <NavLink class="cb-nav-item" href="layouts/hero-banner">Hero Banner</NavLink>
     </details>
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Navigation</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Navigation</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
         <NavLink class="cb-nav-item" href="navigation/breadcrumb">Breadcrumb</NavLink>
@@ -62,10 +65,10 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Forms</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Forms</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="forms" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="forms" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="forms/button">Button</NavLink>
         <NavLink class="cb-nav-item" href="forms/textbox">TextBox</NavLink>
         <NavLink class="cb-nav-item" href="forms/select">Select</NavLink>
@@ -78,10 +81,10 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Content</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Content</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="content" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="content" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="content/alert">Alert</NavLink>
         <NavLink class="cb-nav-item" href="content/card">Card</NavLink>
         <NavLink class="cb-nav-item" href="content/icons">Icon</NavLink>
@@ -93,7 +96,7 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Data</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Data</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
         <NavLink class="cb-nav-item" href="data/table">Table</NavLink>
@@ -102,7 +105,7 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Feedback</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Feedback</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
         <NavLink class="cb-nav-item" href="feedback/dialog">Dialog</NavLink>
@@ -113,10 +116,10 @@
 
     <details class="cb-nav-group">
         <summary>
-            <span class="cb-nav-group__title">Accessibility</span>
+            <span class="cb-nav-group__title">@Strings.Nav.Accessibility</span>
             <CyIcon Name="chevron-right" Class="cb-nav-group__chevron" Size="14" />
         </summary>
-        <NavLink class="cb-nav-item" href="accessibility" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="cb-nav-item" href="accessibility" Match="NavLinkMatch.All">@Strings.Nav.Overview</NavLink>
         <NavLink class="cb-nav-item" href="accessibility/live-region">Live Region</NavLink>
         <NavLink class="cb-nav-item" href="accessibility/screen-reader-only">Screen Reader Only</NavLink>
     </details>
@@ -127,4 +130,19 @@
     /// Has no effect at desktop widths, where the sidebar is always visible.</summary>
     [Parameter]
     public bool IsOpen { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
+    }
 }
