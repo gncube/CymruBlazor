@@ -8,10 +8,13 @@ using Xunit;
 
 using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Components.Content;
+using CymruBlazor.Components.Data;
 using CymruBlazor.Components.Feedback;
+using CymruBlazor.Components.Forms;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Demo.Localisation;
 using CymruBlazor.Enums;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace CymruBlazor.Tests.Samples;
 
@@ -85,7 +88,20 @@ public sealed class AppStringsTests : TestContextBase
             SidebarCompact = nameof(LibraryStrings.SidebarCompact),
             SidebarIconOnly = nameof(LibraryStrings.SidebarIconOnly),
             SidebarHide = nameof(LibraryStrings.SidebarHide),
-            SidebarResize = nameof(LibraryStrings.SidebarResize)
+            SidebarResize = nameof(LibraryStrings.SidebarResize),
+            DateDay = nameof(LibraryStrings.DateDay),
+            DateMonth = nameof(LibraryStrings.DateMonth),
+            DateYear = nameof(LibraryStrings.DateYear),
+            CharacterRemainingFormat = nameof(LibraryStrings.CharacterRemainingFormat),
+            CharactersRemainingFormat = nameof(LibraryStrings.CharactersRemainingFormat),
+            CharacterOverLimitFormat = nameof(LibraryStrings.CharacterOverLimitFormat),
+            CharactersOverLimitFormat = nameof(LibraryStrings.CharactersOverLimitFormat),
+            PaginationLabel = nameof(LibraryStrings.PaginationLabel),
+            PaginationPrevious = nameof(LibraryStrings.PaginationPrevious),
+            PaginationNext = nameof(LibraryStrings.PaginationNext),
+            PageAriaLabelFormat = nameof(LibraryStrings.PageAriaLabelFormat),
+            CurrentPageAriaLabelFormat = nameof(LibraryStrings.CurrentPageAriaLabelFormat),
+            SpinnerLabel = nameof(LibraryStrings.SpinnerLabel)
         };
 
         var covered = AppStrings.Catalogue.Select(e => e.Get(probe)).ToList();
@@ -176,5 +192,34 @@ public sealed class AppStringsTests : TestContextBase
             .Add(s => s.States, [SidebarState.Expanded, SidebarState.Compact, SidebarState.Hidden])
             .Add(s => s.State, SidebarState.Compact))
             .Find(".cy-sidebar__step--narrow").GetAttribute("aria-label").ShouldBe(e.SidebarHide);
+
+        DateOnly? dateValue = null;
+        var dateContext = new EditContext(new object());
+        var date = Render<CyDateInput>(p => p
+            .AddCascadingValue(dateContext)
+            .Add(d => d.Label, "Date")
+            .Add(d => d.ValueExpression, () => dateValue));
+        var dateLabels = date.FindAll(".cy-date-input__label").Select(l => l.TextContent).ToList();
+        dateLabels.ShouldBe([e.DateDay, e.DateMonth, e.DateYear]);
+
+        string textValue = string.Empty;
+        var textContext = new EditContext(new object());
+        var textArea = Render<CyTextArea>(p => p
+            .AddCascadingValue(textContext)
+            .Add(t => t.Label, "Notes")
+            .Add(t => t.MaxLength, 100)
+            .Add(t => t.ShowCharacterCount, true)
+            .Add(t => t.ValueExpression, () => textValue));
+        textArea.Find(".cy-textarea__count").TextContent.ShouldBe(string.Format(System.Globalization.CultureInfo.InvariantCulture, e.CharactersRemainingFormat, 100));
+
+        var pagination = Render<CyPagination>(p => p.Add(x => x.TotalPages, 5).Add(x => x.CurrentPage, 2));
+        pagination.Find("nav").GetAttribute("aria-label").ShouldBe(e.PaginationLabel);
+        pagination.Find(".cy-pagination__control--previous span").TextContent.ShouldBe(e.PaginationPrevious);
+        pagination.Find(".cy-pagination__control--next span").TextContent.ShouldBe(e.PaginationNext);
+        pagination.Find(".cy-pagination__page--current").GetAttribute("aria-label").ShouldBe(string.Format(System.Globalization.CultureInfo.InvariantCulture, e.CurrentPageAriaLabelFormat, 2));
+        pagination.FindAll("button.cy-pagination__page")[0].GetAttribute("aria-label").ShouldBe(string.Format(System.Globalization.CultureInfo.InvariantCulture, e.PageAriaLabelFormat, 1));
+
+        var spinner = Render<CySpinner>();
+        spinner.Find(".cy-spinner .u-sr-only").TextContent.ShouldBe(e.SpinnerLabel);
     }
 }

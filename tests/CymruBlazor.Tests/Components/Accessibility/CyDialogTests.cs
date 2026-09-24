@@ -205,23 +205,17 @@ public sealed class CyDialogTests : TestContextBase
     }
 
     [Theory]
+    [InlineData(ComponentSize.ExtraSmall, "cy-dialog--sm")]
     [InlineData(ComponentSize.Small, "cy-dialog--sm")]
     [InlineData(ComponentSize.Medium, "cy-dialog--md")]
     [InlineData(ComponentSize.Unspecified, "cy-dialog--md")]
     [InlineData(ComponentSize.Large, "cy-dialog--lg")]
+    [InlineData(ComponentSize.ExtraLarge, "cy-dialog--lg")]
     public void Size_Maps_To_A_Modifier_Class(ComponentSize size, string expected)
     {
         var cut = RenderDialog(p => p.Add(d => d.Size, size));
 
         cut.Find("dialog").ClassList.ShouldContain(expected);
-    }
-
-    [Theory]
-    [InlineData(ComponentSize.ExtraSmall)]
-    [InlineData(ComponentSize.ExtraLarge)]
-    public void Unsupported_Sizes_Throw(ComponentSize size)
-    {
-        Should.Throw<InvalidOperationException>(() => RenderDialog(p => p.Add(d => d.Size, size)));
     }
 
     [Fact]

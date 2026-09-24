@@ -85,29 +85,13 @@ public partial class CyBrandLogo : CyLayoutComponentBase, IHasSize
             ? (SymbolOnly ? "images/icon-dhcw-dark.svg" : "images/logo-dhcw-dark.svg")
             : null);
 
-    private string ComputedLinkClass =>
-        CssBuilder.Empty
-            .AddClass("inline-flex items-center gap-2 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-sr-focus-ring")
-            .AddClass(BaseCssClass)
-            .AddClass(Class)
-            .AddClass($"cy-brand-logo--{Variant.ToString().ToLowerInvariant()}")
-            .AddClass($"cy-brand-logo--{Size.ToString().ToLowerInvariant()}")
-            .Build();
+    private string ComputedLinkClass => BuildCssClass();
 
-    private string ComputedContainerClass =>
-        CssBuilder.Empty
-            .AddClass("inline-flex items-center")
-            .AddClass(BaseCssClass)
-            .AddClass(Class)
-            .AddClass($"cy-brand-logo--{Variant.ToString().ToLowerInvariant()}")
-            .AddClass($"cy-brand-logo--{Size.ToString().ToLowerInvariant()}")
-            .Build();
+    private string ComputedContainerClass => BuildCssClass();
 
-    private string ComputedImageClass(string themeModifierClass) =>
+    private static string ComputedImageClass(string themeModifierClass) =>
         CssBuilder.Empty
             .AddClass(themeModifierClass)
-            .AddClass(SymbolOnly ? "h-8 w-auto" : "h-15 w-auto")
-            .AddClass("transition-opacity duration-150")
             .Build();
 
     protected override string BuildCssClass() =>

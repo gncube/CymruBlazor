@@ -25,7 +25,7 @@ Targets .NET 10. Install the package from NuGet:
 dotnet add package CymruBlazor
 ```
 
-Add the stylesheet to your `App.razor` or `_Host.cshtml`:
+Add the stylesheet to your `App.razor` (Blazor Web App) or `wwwroot/index.html` (Blazor WebAssembly):
 
 ```html
 <link href="_content/CymruBlazor/css/cymrublazor.css" rel="stylesheet" />

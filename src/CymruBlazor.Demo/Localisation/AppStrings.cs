@@ -54,6 +54,35 @@ public sealed record LibraryStrings
     public required string SidebarHide { get; init; }
 
     public required string SidebarResize { get; init; }
+
+    // Forms (v1.4.0)
+    public required string DateDay { get; init; }
+
+    public required string DateMonth { get; init; }
+
+    public required string DateYear { get; init; }
+
+    public required string CharacterRemainingFormat { get; init; }
+
+    public required string CharactersRemainingFormat { get; init; }
+
+    public required string CharacterOverLimitFormat { get; init; }
+
+    public required string CharactersOverLimitFormat { get; init; }
+
+    // Data (v1.5.0)
+    public required string PaginationLabel { get; init; }
+
+    public required string PaginationPrevious { get; init; }
+
+    public required string PaginationNext { get; init; }
+
+    public required string PageAriaLabelFormat { get; init; }
+
+    public required string CurrentPageAriaLabelFormat { get; init; }
+
+    // Feedback (v1.5.0)
+    public required string SpinnerLabel { get; init; }
 }
 
 /// <summary>
@@ -135,7 +164,20 @@ public sealed class AppStrings
         SidebarCompact = "Show compact sidebar",
         SidebarIconOnly = "Show icons only",
         SidebarHide = "Hide sidebar",
-        SidebarResize = "Resize sidebar"
+        SidebarResize = "Resize sidebar",
+        DateDay = "Day",
+        DateMonth = "Month",
+        DateYear = "Year",
+        CharacterRemainingFormat = "You have {0} character remaining",
+        CharactersRemainingFormat = "You have {0} characters remaining",
+        CharacterOverLimitFormat = "You have {0} character too many",
+        CharactersOverLimitFormat = "You have {0} characters too many",
+        PaginationLabel = "Pagination",
+        PaginationPrevious = "Previous",
+        PaginationNext = "Next",
+        PageAriaLabelFormat = "Page {0}",
+        CurrentPageAriaLabelFormat = "Current page, page {0}",
+        SpinnerLabel = "Loading"
     };
 
     /// <summary>Illustrative Welsh (Cymraeg). Not translator-reviewed.</summary>
@@ -163,7 +205,20 @@ public sealed class AppStrings
         SidebarCompact = "Dangos bar ochr cryno",
         SidebarIconOnly = "Dangos eiconau'n unig",
         SidebarHide = "Cuddio'r bar ochr",
-        SidebarResize = "Newid maint y bar ochr"
+        SidebarResize = "Newid maint y bar ochr",
+        DateDay = "Diwrnod",
+        DateMonth = "Mis",
+        DateYear = "Blwyddyn",
+        CharacterRemainingFormat = "Mae gennych {0} nod ar ôl",
+        CharactersRemainingFormat = "Mae gennych {0} o nodau ar ôl",
+        CharacterOverLimitFormat = "Mae gennych {0} nod gormod",
+        CharactersOverLimitFormat = "Mae gennych {0} o nodau gormod",
+        PaginationLabel = "Tudalennu",
+        PaginationPrevious = "Blaenorol",
+        PaginationNext = "Nesaf",
+        PageAriaLabelFormat = "Tudalen {0}",
+        CurrentPageAriaLabelFormat = "Tudalen {0}, tudalen gyfredol",
+        SpinnerLabel = "Wrthi'n llwytho"
     };
 
     public static SampleContent EnglishContent { get; } = new()
@@ -227,7 +282,20 @@ public sealed class AppStrings
         new("CySidebar", "CompactLabel", s => s.SidebarCompact),
         new("CySidebar", "IconOnlyLabel", s => s.SidebarIconOnly),
         new("CySidebar", "HideLabel", s => s.SidebarHide),
-        new("CySidebar", "ResizeLabel", s => s.SidebarResize)
+        new("CySidebar", "ResizeLabel", s => s.SidebarResize),
+        new("CyDateInput", "DayLabel", s => s.DateDay),
+        new("CyDateInput", "MonthLabel", s => s.DateMonth),
+        new("CyDateInput", "YearLabel", s => s.DateYear),
+        new("CyTextArea", "CharacterRemainingFormat", s => s.CharacterRemainingFormat),
+        new("CyTextArea", "CharactersRemainingFormat", s => s.CharactersRemainingFormat),
+        new("CyTextArea", "CharacterOverLimitFormat", s => s.CharacterOverLimitFormat),
+        new("CyTextArea", "CharactersOverLimitFormat", s => s.CharactersOverLimitFormat),
+        new("CyPagination", "AriaLabel", s => s.PaginationLabel),
+        new("CyPagination", "PreviousLabel", s => s.PaginationPrevious),
+        new("CyPagination", "NextLabel", s => s.PaginationNext),
+        new("CyPagination", "PageAriaLabelFormat", s => s.PageAriaLabelFormat),
+        new("CyPagination", "CurrentPageAriaLabelFormat", s => s.CurrentPageAriaLabelFormat),
+        new("CySpinner", "Label", s => s.SpinnerLabel)
     ];
 
     /// <summary>Raised after <see cref="Language"/> changes. Layouts subscribe to re-render.</summary>

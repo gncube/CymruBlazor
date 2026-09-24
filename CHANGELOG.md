@@ -10,6 +10,43 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+### Added
+
+- `AppStrings.Catalogue` and `LibraryStrings` in the Demo app now include all 13
+  text override parameters added across v1.4.0 (`CyDateInput`, `CyTextArea`) and
+  v1.5.0 (`CyPagination`, `CySpinner`), with illustrative Welsh translations.
+- `ComponentContractTests` extended to cover `CyProgress` and `CySpinner` under
+  `IHasSize` and `IHasColour`.
+
+### Changed
+
+- `CyDialog`: `Size` parameter now gracefully clamps `ComponentSize.ExtraSmall`
+  to `Small` and `ComponentSize.ExtraLarge` to `Large` rather than throwing an
+  unhandled runtime exception.
+- `CyTextArea`: parameter validation now enforces that `MaxLength` is supplied
+  when `ShowCharacterCount="true"`.
+
+### Fixed
+
+- `CyBrandLogo`: removed obsolete Tailwind prototype utility classes
+  (`items-center`, `focus-visible:ring-*`, `h-8`, `h-15`) from computed class
+  properties; logo styling and sizing are cleanly governed by BEM classes in
+  `branding.css`.
+
+### Documentation
+
+- Overhauled `docs/CymruBlazor-Scaffold-Guide.md` for v1.5.0 stable release:
+  updated package installation, central package management, service registrations
+  (`IToastService`), complete component namespace directory (`.Data`, `.Feedback`,
+  `.Forms`, etc.), and added dedicated usage sections for Forms, Data Display,
+  Feedback, Overlays, and Localisation Strategy.
+- Modernised `README.md` to reference modern `App.razor` (Blazor Web App) and
+  `wwwroot/index.html` (Blazor WebAssembly) instead of obsolete `_Host.cshtml`.
+- Corrected Demo `Installation.razor` layout structure (`CyThemeProvider` wrapping
+  layout `@Body` rather than `<Router>`) and expanded global usings snippet.
+- Synchronised Demo `DesignTokens.razor` typography scale table with the DHCW
+  discrete dual-tier desktop/mobile token specification in `typography.css`.
+
 ### Removed
 
 - Unused Razor Class Library template asset `wwwroot/background.png` (it was

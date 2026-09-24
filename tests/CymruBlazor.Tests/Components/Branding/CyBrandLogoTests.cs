@@ -27,11 +27,11 @@ public sealed class CyBrandLogoTests : TestContextBase
 
         var lightImg = cut.Find("img.cy-brand-logo__asset--light");
         lightImg.GetAttribute("src").ShouldBe("images/logo-dhcw-light.svg");
-        lightImg.GetAttribute("class")!.ShouldContain("h-15");
+        lightImg.GetAttribute("class")!.ShouldContain("cy-brand-logo__asset--light");
 
         var darkImg = cut.Find("img.cy-brand-logo__asset--dark");
         darkImg.GetAttribute("src").ShouldBe("images/logo-dhcw-dark.svg");
-        darkImg.GetAttribute("class")!.ShouldContain("h-15");
+        darkImg.GetAttribute("class")!.ShouldContain("cy-brand-logo__asset--dark");
     }
 
     [Fact]
@@ -43,11 +43,11 @@ public sealed class CyBrandLogoTests : TestContextBase
 
         var lightImg = cut.Find("img.cy-brand-logo__asset--light");
         lightImg.GetAttribute("src").ShouldBe("images/icon-dhcw-light.svg");
-        lightImg.GetAttribute("class")!.ShouldContain("h-8");
+        lightImg.GetAttribute("class")!.ShouldContain("cy-brand-logo__asset--light");
 
         var darkImg = cut.Find("img.cy-brand-logo__asset--dark");
         darkImg.GetAttribute("src").ShouldBe("images/icon-dhcw-dark.svg");
-        darkImg.GetAttribute("class")!.ShouldContain("h-8");
+        darkImg.GetAttribute("class")!.ShouldContain("cy-brand-logo__asset--dark");
     }
 
     [Fact]

@@ -6,18 +6,16 @@ This guide answers one question: **I have a new .NET/Blazor application and
 want to use the current CymruBlazor package — what do I need to install,
 configure and implement to get started correctly?**
 
-It documents the package as it is currently published, not the eventual
-v1.0 scope described in `PRD.md`. Where the two differ, this guide follows
-what you can actually install today.
+It documents the package as it is currently published in **v1.5.0**.
 
 ---
 
 ## 0. Current status
 
-> **CymruBlazor is pre-release.** The latest published version is
-> `0.1.0-preview.9`. The public API — component names, parameters and CSS
-> class names — may still change before `1.0.0`. Treat this guide as
-> describing "the current preview", not a stable contract.
+> **Status: Stable (1.x).** The current published version is `1.5.0`.
+> CymruBlazor follows [Semantic Versioning](https://semver.org/): new
+> components and features arrive in minor releases, and breaking changes
+> are reserved for major releases.
 
 - GitHub: <https://github.com/gncube/CymruBlazor>
 - NuGet: <https://www.nuget.org/packages/CymruBlazor/>
@@ -28,20 +26,7 @@ what you can actually install today.
 
 Versioning is derived entirely from git tags by
 [MinVer](https://github.com/adamralph/minver) (tag prefix `v`, e.g. tag
-`v0.1.0-preview.9` → package version `0.1.0-preview.9`) — there is no
-manually maintained version number and no GitVersion tooling involved.
-This is a repository-maintenance detail, not something a consumer needs to
-configure.
-
-> **New in `0.1.0-preview.9`:** `CyBadge`, `CyAccordion`/`CyAccordionItem`,
-> `CyTabs`/`CyTabPanel`, and `CyCodeBlock` — previously built on `main` but
-> unreleased — are now published. They're documented alongside the rest
-> of the component set in [§5a](#5a-new-in-0.1.0-preview.9-cybadge-cyaccordion-cytabs-cycodeblock)
-> below. Four component category overview pages (`/forms`, `/content`,
-> `/branding`, `/accessibility`) and "Open in GitHub" links on the
-> remaining component doc pages also shipped in this release, but those
-> are Demo-app/documentation-site changes with nothing for a consumer to
-> do differently.
+`v1.5.0` → package version `1.5.0`).
 
 ---
 
@@ -60,27 +45,25 @@ styling are shipped as pre-built CSS inside the NuGet package itself.
 
 ## 2. Install the package
 
-Because no `1.0.0` has been published yet, the default `dotnet add
-package` resolution (which ignores prerelease versions) will not find it.
-Pass `--prerelease`, or pin an explicit version:
+Install the package via the .NET CLI:
 
 ```bash
-dotnet add package CymruBlazor --prerelease
+dotnet add package CymruBlazor
 ```
 
-or, pinned:
+or with an explicit version:
 
 ```bash
-dotnet add package CymruBlazor --version 0.1.0-preview.9
+dotnet add package CymruBlazor --version 1.5.0
 ```
 
-Using [Central Package Management](https://learn.microsoft.com/nuget/consume-packages/central-package-management)?
-Add the version to `Directory.Packages.props` and reference it without a
-version in the project file:
+Using [Central Package Management (CPM)](https://learn.microsoft.com/nuget/consume-packages/central-package-management)?
+Add the package version to `Directory.Packages.props` and reference it without a
+version in your project file:
 
 ```xml
 <!-- Directory.Packages.props -->
-<PackageVersion Include="CymruBlazor" Version="0.1.0-preview.9" />
+<PackageVersion Include="CymruBlazor" Version="1.5.0" />
 ```
 
 ```xml
@@ -88,57 +71,40 @@ version in the project file:
 <PackageReference Include="CymruBlazor" />
 ```
 
-That single package is everything you need. Icons (`CyIcon`) and theming
-(`IThemeService`, `CyThemeProvider`) ship as part of the core package —
-there is currently no separate `CymruBlazor.Icons` or
-`CymruBlazor.Theming` package on NuGet, regardless of what the
-long-term repository layout in `Spec.md` describes.
+That single package contains everything you need: design tokens, components,
+icons (`CyIcon`), overlays (`CyDialog`, `CyTooltip`), and theming
+(`IThemeService`, `CyThemeProvider`).
 
-Installing the package also brings in two transitive dependencies you
-should be aware of:
-
-- **`Mediator.Abstractions`** — a lightweight, source-generated
-  mediator/notification library. CymruBlazor uses it internally for its
-  accessibility live-region announcement pipeline (see
-  [§7](#7-accessibility-services)); you don't need to configure it
-  yourself, but you will see it in your dependency tree and it's
-  available to `@inject` (`IMediator`) if you want to publish your own
-  announcements.
-- **`Microsoft.JSInterop`** — required for the small, optional
-  `cymrublazor.js` script described in [§6](#6-theming).
+Installing the package also brings in two transitive dependencies:
+- **`Mediator.Abstractions`** — lightweight, source-generated mediator used
+  internally for `CyLiveRegion` screen-reader announcements and toast notifications.
+- **`Microsoft.JSInterop`** — required for DOM event listeners, theme persistence,
+  and native overlay interop (`cymru-overlay.js`).
 
 ---
 
 ## 3. Reference the stylesheet
 
-Add a single `<link>` to `wwwroot/index.html` (Blazor WebAssembly) or the
-relevant host page/`App.razor` (Blazor Web App):
+Add a single `<link>` to `App.razor` (Blazor Web App) or `wwwroot/index.html` (Blazor WebAssembly):
 
 ```html
 <link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />
 ```
 
-This one file is the complete design system — NHS Wales colour, spacing,
-and typography tokens, base resets, layout primitives, every shipped
-component's styles, utility classes, and the light/dark/high-contrast
-theme variants. It is generated at build time from a layered source tree
-(`tokens/`, `base/`, `layout/`, `components/`, `themes/`, `utilities/`)
-and concatenated into one file using CSS
-[`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for
-predictable cascade ordering — you only ever need to reference the single
-bundled file shown above.
+This bundle contains the complete design system — NHS Wales colour, spacing,
+and typography tokens, base resets, layout primitives, component styles,
+and light/dark/high-contrast themes organised using CSS `@layer` rules.
 
-If you use `CyThemeProvider` with persisted/OS-aware theme switching
-(recommended — see [§6](#6-theming)), also reference the small companion
-script:
+If you use `CyThemeProvider` with persisted theme preferences and OS
+`prefers-color-scheme` synchronization, also include the companion script:
 
 ```html
 <script src="_content/CymruBlazor/js/cymrublazor.js"></script>
 ```
 
-This script is optional. Without it, runtime theme switching still works
-for the current session; it just won't remember the user's choice across
-page loads or react live to OS light/dark-mode changes.
+*(Note: Overlay components like `CyDialog` and `CyTooltip` import their own
+ES module `cymru-overlay.js` on demand automatically without requiring an
+explicit script tag).*
 
 ---
 
@@ -152,360 +118,279 @@ using CymruBlazor.Extensions;
 builder.Services.AddCymruBlazor();
 ```
 
-This call is **required**, not optional infrastructure — several
-components resolve services from DI at render time and will throw if
-`AddCymruBlazor()` hasn't been called. It registers:
+This registration is **mandatory**. Several components resolve scoped
+services from dependency injection during rendering. `AddCymruBlazor()` registers:
 
-| Service | Used by |
-|---|---|
-| `IComponentIdGenerator` | Deterministic element IDs across all components (labels, `aria-describedby`, etc.) |
-| `IThemeService` | `CyThemeProvider`, and any component you build that reacts to theme changes |
-| `IFocusManager` | `CyFocusTrap`, and transitively `CyNavigation`'s mobile menu |
-| `IPackageVersionService` | `CyFooter`'s optional `ShowVersion` parameter (looks up the published NuGet version) |
-| Mediator pipeline (`IMediator`, notification handlers) | `CyLiveRegion`'s screen-reader announcement handling |
-
-All are registered `Scoped`, matching Blazor's per-circuit/per-session
-lifetime.
+| Service | Lifetime | Used by |
+|---|---|---|
+| `IComponentIdGenerator` | `Scoped` | Deterministic element IDs across all components (labels, `aria-describedby`, form inputs) |
+| `IThemeService` | `Scoped` | `CyThemeProvider`, and components reacting to runtime theme changes |
+| `IFocusManager` (`JsFocusManager`) | `Scoped` | `CyFocusTrap`, `CyDialog`, and `CyNavigation` mobile drawer |
+| `IToastService` (`ToastService`) | `Scoped` | Injected into components to trigger accessible notifications rendered by `CyToastContainer` |
+| `IPackageVersionService` | `Scoped` | `CyFooter`'s optional `ShowVersion` parameter |
+| Mediator pipeline (`IMediator`) | `Scoped` | `CyLiveRegion` announcements and internal notification dispatch |
 
 ---
 
 ## 5. Add recommended global usings
 
-Component and enum types are split across several namespaces. The
-library's own `_Imports.razor` only pre-imports
-`CymruBlazor.Components.Core`, `CymruBlazor.Components.Layout`, and
-`CymruBlazor.Enums` — everything else needs an explicit `@using` in your
-own app. At minimum, add the ones you're using; a reasonable starting set
-mirrors what the Demo application itself recommends:
+Add the following to your root `_Imports.razor` to make CymruBlazor components
+and enums available across all pages and layouts:
 
 ```razor
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Data
+@using CymruBlazor.Components.Feedback
+@using CymruBlazor.Components.Forms
 @using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Theming
+@using CymruBlazor.Components.Branding
 @using CymruBlazor.Components.Accessibility
 @using CymruBlazor.Enums
+@using CymruBlazor.Themes
 @using CymruBlazor.Accessibility.Notifications
 @using Mediator
 ```
 
-Add these as needed for the areas you use:
+### Namespace Directory
 
-| Namespace | Contains |
+| Namespace | Key Components and Types |
 |---|---|
-| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyHeader`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink`, `CyTabs`, `CyTabPanel` (yes, tabs live here, not in `.Content`) |
-| `CymruBlazor.Components.Content` | `CyCard`, `CyAlert`, `CyIcon`, `CyTypography`, `CyBadge`, `CyAccordion`, `CyAccordionItem`, `CyCodeBlock` |
-| `CymruBlazor.Components.Forms` | `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyValidationSummary` |
+| `CymruBlazor.Components.Layout` | `CyContainer`, `CyStack`, `CySidebar`, `CyCluster`, `CyGrid`, `CyCenter`, `CyHeader`, `CyNavigation`, `CyNavigationItem`, `CyHeroBanner`, `CyFooter`, `CyBreadcrumb`, `CyBreadcrumbItem`, `CyPageHeader`, `CySkipLink`, `CyTabs`, `CyTabPanel` |
+| `CymruBlazor.Components.Content` | `CyCard`, `CyAlert`, `CyIcon`, `CyTypography`, `CyBadge`, `CyAccordion`, `CyAccordionItem`, `CyCodeBlock`, `CyTooltip` |
+| `CymruBlazor.Components.Forms` | `CyTextBox`, `CySelect<TValue>`, `CyCheckbox`, `CyRadioGroup<TValue>`, `CyRadio`, `CyTextArea`, `CyDateInput`, `CyValidationSummary` |
+| `CymruBlazor.Components.Data` | `CyTable`, `CyPagination` |
+| `CymruBlazor.Components.Feedback` | `IToastService`, `CyToastContainer`, `CyProgress`, `CySpinner` |
+| `CymruBlazor.Components.Button` | `CyButton` (`Variant`, `Size`, `Disabled`, `Loading`, `Href`, `Type`, `OnClick`) |
+| `CymruBlazor.Components.Accessibility` | `CyDialog`, `CyFocusTrap`, `CyLiveRegion`, `CyScreenReaderOnly` |
 | `CymruBlazor.Components.Theming` | `CyThemeProvider` |
 | `CymruBlazor.Components.Branding` | `CyBrandLogo`, `CyLanguageToggle` |
-| `CymruBlazor.Components.Accessibility` | `CyFocusTrap`, `CyLiveRegion`, `CyScreenReaderOnly` |
-| `CymruBlazor.Components.Button` | `CyButton` (`Variant`, `Size`, `Disabled`, `Loading`, `Href`, `Type`, `OnClick` — see note below) |
-| `CymruBlazor.Enums` | `ComponentSize`, `ComponentColour`, `ComponentElevation`, `ContainerSize`, `Orientation`, `AlignItems`, `JustifyContent`, `GridColumns`, `GridGap`, `HeroBackground`, `SidebarPosition`, `SidebarWidth`, `SidebarCollapseMode`, `TypographyVariant`, `ValidationState`, `AppLanguage`, `BrandLogoVariant`, `LiveRegionPoliteness`, `IconPosition` |
-| `CymruBlazor.Themes` | `IThemeService`, `ThemeMode`, `ThemeDefinition`, `ThemeChangedEventArgs` |
-| `CymruBlazor.Accessibility.Focus` | `IFocusManager`, `IKeyboardNavigationService` |
-| `CymruBlazor.Accessibility.Notifications` | `LiveRegionAnnouncement` |
+| `CymruBlazor.Enums` | `ComponentSize`, `ComponentColour`, `ContainerSize`, `Orientation`, `TypographyVariant`, `ThemeMode`, `AppLanguage`, etc. |
 
-> **Naming note:** every component uses a `Cy` prefix (`CyContainer`,
-> `CyNavigation`, `CyTextBox`, `CyButton`, `CyFocusTrap`, …), **not** the
-> `Cymru`-prefixed names shown in `PRD.md`/`PROMPT.md` (those describe an
-> earlier planning document, not the shipped API). `CyButton` and
-> `CyFocusTrap` were originally shipped unprefixed (`Button`, `FocusTrap`)
-> and later renamed - if you're looking at an example predating that
-> rename, add the `Cy` prefix. `CyButton` is no longer minimal: it
-> supports `Variant` (`ComponentColour`), `Size` (`ComponentSize`),
-> `Disabled`, `Loading` (shows a spinner, blocks `OnClick`), `Href`
-> (renders as `<a>` instead of `<button>` when set and not disabled),
-> `Type`, and `OnClick`. There is still no dedicated icon-only mode —
-> for an icon-only action button, wrap `CyIcon` in a plain
-> `<button aria-label="...">` yourself, the way the Demo app's own
-> header search/theme-toggle buttons currently do.
+> **Icon-Only Buttons:** To create an accessible icon-only button, compose
+> `CyButton` with `CyIcon` and supply an `aria-label`:
+> ```razor
+> <CyButton Variant="ComponentColour.Tertiary" aria-label="Search" OnClick="HandleSearch">
+>     <CyIcon Name="search" Size="20" />
+> </CyButton>
+> ```
 
 ---
 
-## 5a. New in `0.1.0-preview.9`: CyBadge, CyAccordion, CyTabs, CyCodeBlock
+## 6. Layout and Shell Structure
 
-These four components shipped in `0.1.0-preview.9` and are available as
-soon as you're on that version or later.
-
-**`CyBadge`** (`CymruBlazor.Components.Content`) — a small label for
-categorisation, status, or metadata. Also covers the removable "tag"/chip
-case via `Dismissible`, rather than shipping a separate `CyTag`
-component — the two only differ by whether a dismiss affordance is
-present:
-
-```razor
-<CyBadge Variant="ComponentColour.Success">Active</CyBadge>
-<CyBadge Variant="ComponentColour.Info" Pill="false"
-         Dismissible="true" DismissAriaLabel="Remove Cardiology filter"
-         OnDismiss="HandleDismiss">
-    Cardiology
-</CyBadge>
-```
-
-`Variant` accepts any `ComponentColour` except `Unspecified`; `Pill`
-defaults to `true`. Note the parameter is `Variant`, not `Colour`.
-
-**`CyAccordion` / `CyAccordionItem`** (`CymruBlazor.Components.Content`)
-— a vertically stacked set of expand/collapse sections implementing the
-WAI-ARIA Accordion pattern (Up/Down/Home/End move focus between section
-headers):
-
-```razor
-<CyAccordion AllowMultiple="false" DefaultExpandedItemId="getting-started">
-    <CyAccordionItem ItemId="getting-started" Title="Getting started">
-        ...
-    </CyAccordionItem>
-    <CyAccordionItem ItemId="foundations" Title="Foundations">
-        ...
-    </CyAccordionItem>
-</CyAccordion>
-```
-
-**`CyTabs` / `CyTabPanel`** — implements the WAI-ARIA Tabs pattern with
-automatic activation — moving focus with Left/Right/Home/End also selects
-the tab — and skips disabled tabs:
-
-```razor
-<CyTabs TabListAriaLabel="Component documentation" @bind-ActiveTabId="_activeTab">
-    <CyTabPanel TabId="usage" Title="Usage">...</CyTabPanel>
-    <CyTabPanel TabId="api" Title="API" Disabled="@_apiDocsPending">...</CyTabPanel>
-</CyTabs>
-```
-
-**`CyCodeBlock`** (`CymruBlazor.Components.Content`) — a labelled,
-read-only code sample with a copy-to-clipboard button (direct
-`navigator.clipboard.writeText` JS interop; no syntax highlighting):
-
-```razor
-<CyCodeBlock Language="razor" Code="@codeSample" />
-```
-
-Copy success/failure is announced via the `Mediator` pipeline to any
-`CyLiveRegion` in your layout (see [§9](#9-accessibility-services)) —
-add one if you want that announcement to be audible to screen reader
-users, otherwise the copy still works, it just isn't announced.
-
----
-
-## 6. Your first component
-
-Layout primitives compose to build any page structure:
-
-```razor
-<CyContainer Size="ContainerSize.Large">
-    <CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium">
-        <h1>Hello, NHS Wales</h1>
-        <p>Built with CymruBlazor.</p>
-    </CyStack>
-</CyContainer>
-```
-
-### Page chrome
-
-The NHS Wales-specific layout components compose the same way:
-
-```razor
-<CySkipLink TargetId="main-content" />
-
-<CyNavigation>
-    <CyNavigationItem Text="Home" Href="/" />
-    <CyNavigationItem Text="Appointments" Href="/appointments" />
-</CyNavigation>
-
-<CyPageHeader Title="Appointments" Subtitle="Manage upcoming clinics">
-    <Breadcrumb>
-        <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Home" Href="/" />
-            <CyBreadcrumbItem Text="Appointments" />
-        </CyBreadcrumb>
-    </Breadcrumb>
-</CyPageHeader>
-
-<main id="main-content" tabindex="-1">
-    @Body
-</main>
-
-<CyFooter Copyright="© 2026 Digital Health and Care Wales"
-          ShowVersion="true"
-          Background="ComponentColour.Surface" />
-```
-
-Place `CySkipLink` before `CyNavigation` in markup, not after — it must be
-the first focusable element on the page to satisfy WCAG 2.4.1 (Bypass
-Blocks).
-
-`CyFooter.Background` (`0.1.0-preview.7`) lets you use the footer on a
-light page without the hardcoded navy — it accepts `Primary`,
-`Secondary`, `Surface`, or `Neutral`. There is still no typed
-`LinkGroups`/`FooterLink` API for footer columns; keep passing your link
-markup as plain `ChildContent` for now. There is also no `CyDivider`
-component yet — use a plain CSS border/rule where you need a visual
-separator, the way the library's own Demo app currently does for its
-sidebar section separators.
-
----
-
-## 7. Forms
-
-Form fields (`CyTextBox`, `CySelect<TValue>`, `CyCheckbox`) derive from
-Blazor's own `InputBase<TValue>`, so they behave like the framework's
-built-in `<InputText>`/`<InputSelect>` — use them inside an `<EditForm>`
-with `@bind-Value`, and validation follows normal `DataAnnotations`/
-`EditContext` rules:
-
-```razor
-<EditForm Model="_model" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <CyValidationSummary Title="There is a problem" />
-
-    <CyTextBox @bind-Value="_model.PatientName"
-               Label="Patient name"
-               HintText="As shown on the NHS number card"
-               Required="true" />
-
-    <CySelect @bind-Value="_model.Ward" Label="Ward">
-        <option value="">Select a ward</option>
-        <option value="cardiology">Cardiology</option>
-        <option value="paediatrics">Paediatrics</option>
-    </CySelect>
-
-    <CyCheckbox @bind-Value="_model.ConsentGiven" Label="Consent given" />
-
-    <button type="submit">Save</button>
-</EditForm>
-```
-
-`Label` is `[EditorRequired]` on every field component — there is no
-placeholder-as-label option, since relying on placeholder text as a label
-is a well-known accessibility failure. Hints and validation errors are
-wired up automatically via `aria-describedby`.
-
----
-
-## 8. Theming
-
-Wrap your root layout content in `CyThemeProvider` to enable runtime light
-/ dark / high-contrast theme switching:
+In `MainLayout.razor`, wrap the application shell inside `<CyThemeProvider>`:
 
 ```razor
 @inherits LayoutComponentBase
 @inject IThemeService Theme
 
 <CyThemeProvider>
-    ... your layout markup ...
+    <!-- 1. Skip link MUST be first focusable element (WCAG 2.4.1) -->
+    <CySkipLink TargetId="main-content" />
+
+    <div class="app-shell">
+        <CyHeader Title="NHS Wales" />
+
+        <CyNavigation>
+            <CyNavigationItem Text="Home" Href="/" Match="NavLinkMatch.All" />
+            <CyNavigationItem Text="Patients" Href="/patients" />
+            <CyNavigationItem Text="Clinics" Href="/clinics" />
+        </CyNavigation>
+
+        <!-- 2. Main content landmark with matching id and tabindex for focus transfer -->
+        <main id="main-content" tabindex="-1">
+            @Body
+        </main>
+
+        <CyFooter Copyright="© 2026 Digital Health and Care Wales" ShowVersion="true" />
+    </div>
+
+    <!-- 3. Global accessible toast container and screen reader live region -->
+    <CyToastContainer />
+    <CyLiveRegion />
 </CyThemeProvider>
 ```
 
-`CyThemeProvider` applies the active theme via a `data-theme` attribute
-and re-renders its subtree whenever the theme changes. To switch themes
-programmatically:
+---
+
+## 7. Forms
+
+Form components integrate with Blazor's `<EditForm>` and support `DataAnnotations`:
+
+```razor
+<EditForm Model="_model" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <CyValidationSummary Title="There is a problem" />
+
+    <!-- Text input with HTML5 inputmode and autocomplete -->
+    <CyTextBox @bind-Value="_model.NhsNumber"
+               Label="NHS Number"
+               HintText="10-digit number shown on medical card"
+               InputMode="numeric"
+               Required="true" />
+
+    <!-- 3-Field Date Input (Day / Month / Year) -->
+    <CyDateInput @bind-Value="_model.DateOfBirth"
+                 Label="Date of birth"
+                 HintText="For example, 31 3 1980"
+                 AutocompleteDateOfBirth="true"
+                 Required="true" />
+
+    <!-- Radio group with fieldset/legend semantics -->
+    <CyRadioGroup @bind-Value="_model.ContactPreference"
+                  Label="How should we contact you?"
+                  Required="true">
+        <CyRadio Value="@("email")" Label="Email" />
+        <CyRadio Value="@("sms")" Label="Text message (SMS)" />
+        <CyRadio Value="@("letter")" Label="Letter" />
+    </CyRadioGroup>
+
+    <!-- Multi-line text area with live character counter -->
+    <CyTextArea @bind-Value="_model.ClinicalNotes"
+                Label="Clinical notes"
+                Rows="5"
+                MaxLength="500"
+                ShowCharacterCount="true" />
+
+    <CyCheckbox @bind-Value="_model.ConsentGiven" Label="Consent confirmed" />
+
+    <CyButton Type="submit" Variant="ComponentColour.Primary">
+        Submit Record
+    </CyButton>
+</EditForm>
+```
+
+---
+
+## 8. Data Display (CyTable & CyPagination)
+
+CymruBlazor v1.5.0 provides accessible table and pagination primitives:
+
+```razor
+<!-- Accessible table with mandatory Caption and horizontal scroll region -->
+<CyTable Caption="Scheduled Outpatient Clinics" ScrollContainer="true">
+    <thead>
+        <tr>
+            <th scope="col">Clinic</th>
+            <th scope="col">Specialty</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var clinic in _pagedClinics)
+        {
+            <tr>
+                <th scope="row">@clinic.Name</th>
+                <td>@clinic.Specialty</td>
+                <td><CyBadge Variant="@clinic.StatusColour">@clinic.Status</CyBadge></td>
+            </tr>
+        }
+    </tbody>
+</CyTable>
+
+<!-- Pagination with boundary/sibling truncation -->
+<CyPagination TotalPages="@_totalPages"
+              @bind-CurrentPage="_currentPage"
+              BoundaryCount="1"
+              SiblingCount="1" />
+```
+
+---
+
+## 9. Feedback (CyProgress, CySpinner & IToastService)
+
+Provide clear, accessible state feedback during loading or async operations:
+
+```razor
+<!-- Determinate Progress Bar with accessible name -->
+<CyProgress Value="18" Max="20" Label="Bed Occupancy" ShowValueText="true" ValueText="18 of 20 beds occupied" />
+
+<!-- Indeterminate Loading Spinner -->
+<CySpinner Label="Loading patient records..." ShowLabel="true" Size="ComponentSize.Medium" />
+```
+
+### Toast Notifications
+
+Inject `IToastService` anywhere in your application:
 
 ```csharp
-await Theme.ToggleDarkModeAsync();
-// or
-await Theme.SetThemeAsync(ThemeMode.HighContrast);
+@inject IToastService Toasts
+
+private void SaveRecord()
+{
+    // Countdown pauses automatically on hover or keyboard focus (WCAG 2.2.1)
+    Toasts.Show("Record updated successfully", ToastVariant.Success);
+}
 ```
-
-Subscribe to `IThemeService.ThemeChanged` if a component outside the
-provider's own subtree needs to react to theme changes.
-
-If you referenced `cymrublazor.js` in [§3](#3-reference-the-stylesheet),
-the chosen theme persists across page loads (`localStorage`) and the app
-will also follow the OS `prefers-color-scheme` setting live until the
-user makes an explicit in-app choice.
 
 ---
 
-## 9. Accessibility services
+## 10. Overlays & Accessibility Services
 
-Beyond the WCAG-aligned markup baked into every component, CymruBlazor
-ships two accessibility-specific building blocks worth knowing about:
+### Modal Dialogs (`CyDialog`)
 
-**`CyFocusTrap`** — wrap transient UI (mobile menus, dialogs) to contain
-keyboard focus and optionally restore it on close:
+Native `<dialog>` with inert backdrop, top-layer elevation, focus containment, and Escape handling:
 
 ```razor
-<CyFocusTrap Enabled="_menuOpen" AutoFocus="true" RestoreFocus="true">
-    ...
-</CyFocusTrap>
+<CyButton OnClick="() => _dialogOpen = true">View Discharge Summary</CyButton>
+
+<CyDialog @bind-Open="_dialogOpen"
+          Title="Discharge Summary"
+          Description="Confirm details before finalising discharge"
+          Size="ComponentSize.Large">
+    <p>Patient is medically fit for discharge.</p>
+
+    <Footer>
+        <CyButton Variant="ComponentColour.Primary" OnClick="ConfirmDischarge">Confirm</CyButton>
+        <CyButton Variant="ComponentColour.Secondary" OnClick="() => _dialogOpen = false">Cancel</CyButton>
+    </Footer>
+</CyDialog>
 ```
 
-**`CyLiveRegion`** — announces dynamic content changes to screen readers.
-Place one instance in your layout, then publish announcements from
-anywhere in your app via the `Mediator` package's `IMediator`:
+### Accessible Tooltips (`CyTooltip`)
+
+WCAG 1.4.13 compliant tooltip triggering on both hover and focus:
 
 ```razor
-<CyLiveRegion Politeness="LiveRegionPoliteness.Polite" />
+<CyTooltip Text="National Health Service identifier">
+    <span tabindex="0">NHS Number</span>
+</CyTooltip>
 ```
-
-```csharp
-@inject IMediator Mediator
-
-await Mediator.Publish(new LiveRegionAnnouncement("Appointment saved"));
-```
-
-This publish/subscribe pattern (rather than a direct method call) is why
-the `Mediator` package appears in your dependency tree even though you
-never call `AddMediator` yourself — `AddCymruBlazor()` does that for you.
 
 ---
 
-## 10. Icons and branding
+## 11. Localisation Strategy (Welsh / English)
 
-`CyIcon` renders from a built-in, named SVG registry that includes both
-general-purpose icons (`chevron-down`, `close`, `edit`, `filter`, …) and
-healthcare-specific ones (`ambulance`, `clinical`, `gp`, `ward`,
-`critical`, …):
+Every component exposing user-facing text provides overridable string parameters
+(e.g., `AriaLabel`, `CloseLabel`, `DayLabel`, `MonthLabel`, `YearLabel`,
+`PreviousLabel`, `NextLabel`).
+
+In consuming applications, inject an application string service (patterned after
+the Demo app's `AppStrings`) to cleanly map bilingual resources:
 
 ```razor
-<CyIcon Name="appointment" Size="20" />
-```
+<CyDateInput DayLabel="@Strings.DateDay"
+             MonthLabel="@Strings.DateMonth"
+             YearLabel="@Strings.DateYear"
+             Label="@Strings.DateOfBirth" />
 
-`CyBrandLogo` and `CyLanguageToggle` support NHS Wales's bilingual
-(English/Welsh) branding requirements:
-
-```razor
-<CyBrandLogo Href="/" Text="DHCW" Variant="BrandLogoVariant.Full" />
-<CyLanguageToggle @bind-CurrentLanguage="_language" />
+<CyPagination PreviousLabel="@Strings.PaginationPrevious"
+              NextLabel="@Strings.PaginationNext"
+              AriaLabel="@Strings.PaginationLabel"
+              @bind-CurrentPage="_page"
+              TotalPages="10" />
 ```
 
 ---
 
-## 11. Worked example
+## Summary Checklist
 
-The repository's `samples/Dashboard` project is currently the only sample
-that actually references and uses CymruBlazor end-to-end — package
-reference, `AddCymruBlazor()`, `CyThemeProvider`, `CySidebar`,
-`CyBrandLogo`, `CyLanguageToggle`, `CyIcon`, and the theming/live-region
-patterns above are all demonstrated there. Use it as your reference
-implementation rather than `samples/StarterApp` or
-`samples/HealthcarePortal`, which are currently unmodified Blazor
-WebAssembly templates with no CymruBlazor integration.
-
-For a live, always-current catalogue of every shipped component with
-interactive previews, see the Demo application published at
-<https://gncube.github.io/CymruBlazor/>.
-
----
-
-## 12. Verifying your setup
-
-```bash
-dotnet build
-dotnet run
-```
-
-If a component throws a DI resolution error at runtime, double-check step
-4 (`AddCymruBlazor()`); if styles are missing or components render
-unstyled, double-check step 3 (the stylesheet `<link>`).
-
----
-
-## Summary checklist
-
-1. `dotnet add package CymruBlazor --prerelease`
-2. `<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />`
-3. *(optional, for persisted theming)* `<script src="_content/CymruBlazor/js/cymrublazor.js"></script>`
-4. `builder.Services.AddCymruBlazor();`
-5. Add `@using` directives for the component namespaces you need
-6. Wrap your layout in `<CyThemeProvider>`
-7. Build pages from `CyContainer`/`CyStack` and the NHS Wales chrome
-   components; use `CyTextBox`/`CySelect`/`CyCheckbox` inside `<EditForm>`
-   for forms
+1. `dotnet add package CymruBlazor`
+2. Add `<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />` to host page
+3. *(Optional)* Add `<script src="_content/CymruBlazor/js/cymrublazor.js"></script>` for persisted theming
+4. `builder.Services.AddCymruBlazor();` in `Program.cs`
+5. Add component `@using` directives to `_Imports.razor`
+6. Wrap `MainLayout.razor` in `<CyThemeProvider>`
+7. Build pages using semantic primitives (`CyTable`, `CyPagination`, `CyProgress`, `CyDialog`, and forms)

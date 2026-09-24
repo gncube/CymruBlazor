@@ -54,23 +54,21 @@ public sealed class CyTextAreaTests : FormFieldTestContext
     }
 
     [Fact]
-    public void Should_Not_Render_Character_Count_Without_MaxLength()
+    public void Should_Throw_When_ShowCharacterCount_True_Without_MaxLength()
     {
         // Arrange
         var model = new TestFormModel();
         var editContext = CreateEditContext(model);
 
-        // Act
-        var cut = Render<CyTextArea>(parameters => parameters
-            .AddCascadingValue(editContext)
-            .Add(p => p.Label, "Additional notes")
-            .Add(p => p.ShowCharacterCount, true)
-            .Add(p => p.Value, model.Text)
-            .Add(p => p.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Text = v))
-            .Add(p => p.ValueExpression, () => model.Text));
-
-        // Assert
-        cut.FindAll(".cy-textarea__count").Count.ShouldBe(0);
+        // Act & Assert
+        Should.Throw<InvalidOperationException>(() =>
+            Render<CyTextArea>(parameters => parameters
+                .AddCascadingValue(editContext)
+                .Add(p => p.Label, "Additional notes")
+                .Add(p => p.ShowCharacterCount, true)
+                .Add(p => p.Value, model.Text)
+                .Add(p => p.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Text = v))
+                .Add(p => p.ValueExpression, () => model.Text)));
     }
 
     [Fact]
