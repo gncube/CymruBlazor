@@ -91,6 +91,7 @@ public partial class CyDialog : CyLayoutComponentBase, IHasSize, IAsyncDisposabl
     /// <summary>
     /// The dialog width: <see cref="ComponentSize.Small"/>, <see cref="ComponentSize.Medium"/> (the default,
     /// also used for <see cref="ComponentSize.Unspecified"/>) or <see cref="ComponentSize.Large"/>.
+    /// <see cref="ComponentSize.ExtraSmall"/> gracefully clamps to Small, and <see cref="ComponentSize.ExtraLarge"/> clamps to Large.
     /// </summary>
     [Parameter]
     public ComponentSize Size { get; set; } = ComponentSize.Medium;
@@ -111,8 +112,8 @@ public partial class CyDialog : CyLayoutComponentBase, IHasSize, IAsyncDisposabl
     {
         var sizeSuffix = Size switch
         {
-            ComponentSize.Small => "sm",
-            ComponentSize.Large => "lg",
+            ComponentSize.ExtraSmall or ComponentSize.Small => "sm",
+            ComponentSize.ExtraLarge or ComponentSize.Large => "lg",
             _ => "md"
         };
 
@@ -126,12 +127,6 @@ public partial class CyDialog : CyLayoutComponentBase, IHasSize, IAsyncDisposabl
     protected override void ValidateParameters()
     {
         base.ValidateParameters();
-
-        if (Size is ComponentSize.ExtraSmall or ComponentSize.ExtraLarge)
-        {
-            throw new InvalidOperationException(
-                $"{nameof(CyDialog)}.{nameof(Size)} must be Small, Medium or Large. Received '{Size}'.");
-        }
 
         if (string.IsNullOrWhiteSpace(Title))
         {

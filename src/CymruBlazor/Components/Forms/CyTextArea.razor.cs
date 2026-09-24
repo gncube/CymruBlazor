@@ -27,15 +27,15 @@ public partial class CyTextArea : CyFormFieldComponentBase<string>
     [Parameter]
     public int Rows { get; set; } = 5;
 
-    /// <summary>Native <c>maxlength</c> attribute. Required for <see cref="ShowCharacterCount"/> to render anything.</summary>
+    /// <summary>Native <c>maxlength</c> attribute. Required when <see cref="ShowCharacterCount"/> is <see langword="true"/>.</summary>
     [Parameter]
     public int? MaxLength { get; set; }
 
     /// <summary>
     /// Shows a live "characters remaining"/"characters too many" message
     /// below the field, updated as the user types and announced via
-    /// <c>aria-live="polite"</c>. Has no effect unless <see cref="MaxLength"/>
-    /// is also set.
+    /// <c>aria-live="polite"</c>. Throws <see cref="InvalidOperationException"/> if
+    /// <see cref="MaxLength"/> is not set.
     /// </summary>
     [Parameter]
     public bool ShowCharacterCount { get; set; }
@@ -98,6 +98,18 @@ public partial class CyTextArea : CyFormFieldComponentBase<string>
                 -1 => string.Format(CultureInfo.CurrentCulture, CharacterOverLimitFormat, -remaining),
                 _ => string.Format(CultureInfo.CurrentCulture, CharactersOverLimitFormat, -remaining)
             };
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (ShowCharacterCount && !MaxLength.HasValue)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CyTextArea)}.{nameof(MaxLength)} must be set when {nameof(ShowCharacterCount)} is true.");
         }
     }
 

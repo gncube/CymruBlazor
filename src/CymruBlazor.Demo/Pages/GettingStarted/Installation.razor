@@ -18,7 +18,7 @@
 
 <div class="cb-section">
     <h2 class="cb-section-title">2. Reference the stylesheet</h2>
-    <p class="cb-section-description">Add this to <code>wwwroot/index.html</code> (WASM) or <code>App.razor</code> (Server):</p>
+    <p class="cb-section-description">Add this to <code>App.razor</code> (Blazor Web App) or <code>wwwroot/index.html</code> (Blazor WebAssembly):</p>
     <CyCodeBlock Code="@_stylesheetCode" Language="html" />
 </div>
 
@@ -65,16 +65,29 @@
 
     private const string _mainLayoutCode =
         """
+        @inherits LayoutComponentBase
+
         <CyThemeProvider>
-            <Router AppAssembly="@typeof(App).Assembly">
-                ...
-            </Router>
+            <CySkipLink TargetId="main-content" />
+            <div class="app-shell">
+                <main id="main-content" tabindex="-1">
+                    @Body
+                </main>
+            </div>
+            <CyToastContainer />
         </CyThemeProvider>
         """;
 
     private const string _globalUsingsCode =
         """
+        @using CymruBlazor.Components.Button
+        @using CymruBlazor.Components.Content
+        @using CymruBlazor.Components.Data
+        @using CymruBlazor.Components.Feedback
+        @using CymruBlazor.Components.Forms
         @using CymruBlazor.Components.Layout
+        @using CymruBlazor.Components.Theming
+        @using CymruBlazor.Components.Branding
         @using CymruBlazor.Components.Accessibility
         @using CymruBlazor.Enums
         @using CymruBlazor.Accessibility.Notifications

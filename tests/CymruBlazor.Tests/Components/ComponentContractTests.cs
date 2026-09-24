@@ -10,6 +10,7 @@ using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Components.Branding;
 using CymruBlazor.Components.Button;
 using CymruBlazor.Components.Content;
+using CymruBlazor.Components.Feedback;
 using CymruBlazor.Components.Forms;
 using CymruBlazor.Contracts;
 using CymruBlazor.Enums;
@@ -28,6 +29,8 @@ public sealed class ComponentContractTests : TestContextBase
     [InlineData(typeof(CyButton))]
     [InlineData(typeof(CyBrandLogo))]
     [InlineData(typeof(CyDialog))]
+    [InlineData(typeof(CyProgress))]
+    [InlineData(typeof(CySpinner))]
     public void Components_With_A_Size_Implement_IHasSize(Type component)
     {
         typeof(IHasSize).IsAssignableFrom(component).ShouldBeTrue();
@@ -37,6 +40,8 @@ public sealed class ComponentContractTests : TestContextBase
     [InlineData(typeof(CyButton))]
     [InlineData(typeof(CyBadge))]
     [InlineData(typeof(CyAlert))]
+    [InlineData(typeof(CyProgress))]
+    [InlineData(typeof(CySpinner))]
     public void Components_With_A_Semantic_Colour_Implement_IHasColour(Type component)
     {
         typeof(IHasColour).IsAssignableFrom(component).ShouldBeTrue();
