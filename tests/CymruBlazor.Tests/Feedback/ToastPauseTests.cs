@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;
 
@@ -91,35 +92,59 @@ public sealed class ToastPauseTests : TestContextBase
     }
 
     [Fact]
-    public async Task ToastService_Paused_Toast_Is_Not_Removed_Until_Resumed()
+    public void ToastService_Paused_Toast_Is_Not_Removed_Until_Resumed()
     {
-        using var service = new ToastService();
-        service.Show("Slow", ToastVariant.Info, TimeSpan.FromMilliseconds(300));
+        var timeProvider = new FakeTimeProvider();
+        using var service = new ToastService(timeProvider);
+        service.Show("Slow", ToastVariant.Info, TimeSpan.FromSeconds(3));
         var id = service.Toasts[0].Id;
 
-        service.PauseAutoDismiss(id);
-        await Task.Delay(700);
-
+        // Advance 1s, still visible
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
         service.Toasts.Count.ShouldBe(1);
 
-        service.ResumeAutoDismiss(id);
-        await WaitUntilAsync(() => service.Toasts.Count == 0, TimeSpan.FromSeconds(4));
+        // Pause auto-dismiss
+        service.PauseAutoDismiss(id);
 
+        // Advance 5s while paused; toast must not be removed
+        timeProvider.Advance(TimeSpan.FromSeconds(5));
+        service.Toasts.Count.ShouldBe(1);
+
+        // Resume: remaining time was 2s
+        service.ResumeAutoDismiss(id);
+
+        // Advance 1s: still visible
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
+        service.Toasts.Count.ShouldBe(1);
+
+        // Advance 1 more second (total 2s after resume): dismissed
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
         service.Toasts.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task ToastService_Resume_Gives_At_Least_One_Second()
+    public void ToastService_Resume_Gives_At_Least_One_Second()
     {
-        using var service = new ToastService();
+        var timeProvider = new FakeTimeProvider();
+        using var service = new ToastService(timeProvider);
+        // Show with 200ms duration
         service.Show("Short", ToastVariant.Info, TimeSpan.FromMilliseconds(200));
         var id = service.Toasts[0].Id;
+
+        // Advance 100ms and pause (remaining is 100ms, which is < 1s MinimumResume)
+        timeProvider.Advance(TimeSpan.FromMilliseconds(100));
         service.PauseAutoDismiss(id);
+
+        // Resume: MinimumResume guarantees at least 1000ms
         service.ResumeAutoDismiss(id);
 
-        await Task.Delay(500);
-
+        // Advance 500ms: toast must still be present because of the 1-second floor
+        timeProvider.Advance(TimeSpan.FromMilliseconds(500));
         service.Toasts.Count.ShouldBe(1);
+
+        // Advance another 500ms (1000ms total elapsed since resume): dismissed
+        timeProvider.Advance(TimeSpan.FromMilliseconds(500));
+        service.Toasts.ShouldBeEmpty();
     }
 
     [Fact]
@@ -138,15 +163,6 @@ public sealed class ToastPauseTests : TestContextBase
             service.Remove(sticky);
             service.PauseAutoDismiss(sticky);
         });
-    }
-
-    private static async Task WaitUntilAsync(Func<bool> condition, TimeSpan timeout)
-    {
-        var deadline = DateTime.UtcNow + timeout;
-        while (!condition() && DateTime.UtcNow < deadline)
-        {
-            await Task.Delay(50);
-        }
     }
 
     private sealed class RecordingToastService : IToastService

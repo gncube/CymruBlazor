@@ -1,5 +1,6 @@
 using Mediator;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
@@ -58,6 +59,7 @@ public static class ServiceCollectionExtensions
 
         // Register toast notifications and the Mediator handler that lets
         // ShowToastNotification be published through the pipeline below.
+        services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<IToastService, ToastService>();
         services.AddScoped<INotificationHandler<ShowToastNotification>>(
             sp => (ToastService)sp.GetRequiredService<IToastService>());

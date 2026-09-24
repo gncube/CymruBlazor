@@ -17,6 +17,16 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
     private static readonly TimeSpan MinimumResume = TimeSpan.FromSeconds(1);
 
     private readonly ConcurrentDictionary<Guid, DismissTimer> _dismissTokens = new();
+    private readonly TimeProvider _timeProvider;
+
+    public ToastService() : this(TimeProvider.System)
+    {
+    }
+
+    public ToastService(TimeProvider timeProvider)
+    {
+        _timeProvider = timeProvider ?? TimeProvider.System;
+    }
 
     public event Action? OnChange;
 
@@ -120,12 +130,12 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
 
         lock (timer)
         {
-            if (timer.Cts is null)
+            if (timer.Timer is null)
             {
                 return; // already paused
             }
 
-            var elapsed = Stopwatch.GetElapsedTime(timer.StartedAt);
+            var elapsed = _timeProvider.GetElapsedTime(timer.StartedAt);
             timer.Remaining = timer.Remaining > elapsed ? timer.Remaining - elapsed : TimeSpan.Zero;
             CancelTimer(timer);
         }
@@ -141,7 +151,7 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
 
         lock (timer)
         {
-            if (timer.Cts is not null)
+            if (timer.Timer is not null)
             {
                 return; // not paused
             }
@@ -163,35 +173,16 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
 
     private void StartTimer(Guid id, DismissTimer timer, TimeSpan delay)
     {
-        var cts = new CancellationTokenSource();
-        timer.Cts = cts;
         timer.Remaining = delay;
-        timer.StartedAt = Stopwatch.GetTimestamp();
-
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(delay, cts.Token);
-                Remove(id);
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected on manual dismissal, pause or disposal
-            }
-        });
+        timer.StartedAt = _timeProvider.GetTimestamp();
+        timer.Timer = _timeProvider.CreateTimer(state => Remove((Guid)state!), id, delay, Timeout.InfiniteTimeSpan);
     }
 
     private static void CancelTimer(DismissTimer timer)
     {
-        var cts = timer.Cts;
-        timer.Cts = null;
-
-        if (cts is not null)
-        {
-            cts.Cancel();
-            cts.Dispose();
-        }
+        var t = timer.Timer;
+        timer.Timer = null;
+        t?.Dispose();
     }
 
     private void CancelDismissTimer(Guid id)
@@ -207,7 +198,7 @@ public sealed class ToastService : IToastService, INotificationHandler<ShowToast
 
     private sealed class DismissTimer
     {
-        public CancellationTokenSource? Cts { get; set; }
+        public ITimer? Timer { get; set; }
 
         public TimeSpan Remaining { get; set; }
 
