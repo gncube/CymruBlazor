@@ -3,7 +3,7 @@
 @namespace CymruBlazor.Demo.Pages.Components.Accessibility
 
 <div class="cb-page-header">
-    <h1 class="cb-page-title">Dialog</h1>
+    <h1 class="cb-page-title">CyDialog</h1>
     <a class="cb-open-in-github"
        href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Accessibility/CyDialog.razor"
        target="_blank" rel="noopener noreferrer">
@@ -124,6 +124,7 @@
         <li>Focus goes to the <code>autofocus</code> element, otherwise the first focusable element (the close button). Put <code>autofocus</code> on the safest control for long or destructive dialogs.</li>
         <li>Closing returns focus to the control that opened the dialog (WCAG 2.4.3).</li>
         <li>Requires the browser's native <code>&lt;dialog&gt;</code> support (all evergreen browsers since 2022). See ADR-0001.</li>
+        <li>For non-modal floating overlays or drawers that do not require full document inertia, see <a href="/foundations/focus-trap"><code>CyFocusTrap</code></a>.</li>
     </ul>
 </div>
 
