@@ -48,7 +48,7 @@
 
 .cy-badge--success {
   background-color: var(--cymru-color-success-background);
-  color: var(--cymru-color-success);
+  color: var(--cymru-color-success-text);
 }
 
 .cy-badge--warning {
@@ -62,7 +62,7 @@
 
 .cy-badge--danger {
   background-color: var(--cymru-color-danger-background);
-  color: var(--cymru-color-danger);
+  color: var(--cymru-color-danger-text);
 }
 
 .cy-badge--info {

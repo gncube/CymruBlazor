@@ -41,10 +41,12 @@ public sealed class CyPaginationAccessibilityTests : AxeTestBase
             Environment.NewLine,
             Render<CyPagination>(parameters => parameters
                 .Add(p => p.CurrentPage, 1)
-                .Add(p => p.TotalPages, 10)).Markup,
+                .Add(p => p.TotalPages, 10)
+                .Add(p => p.AriaLabel, "Pagination (first page)")).Markup,
             Render<CyPagination>(parameters => parameters
                 .Add(p => p.CurrentPage, 5)
-                .Add(p => p.TotalPages, 10)).Markup);
+                .Add(p => p.TotalPages, 10)
+                .Add(p => p.AriaLabel, "Pagination (middle page)")).Markup);
 
         // Act
         var result = await ScanMarkupAsync(markup, theme);

@@ -66,12 +66,14 @@
        ========================================================================== */
 
   --cymru-color-success: var(--cymru-green-600);
+  --cymru-color-success-text: var(--cymru-green-700);
   --cymru-color-success-background: var(--cymru-green-100);
 
   --cymru-color-warning: var(--cymru-yellow-500);
   --cymru-color-warning-background: var(--cymru-yellow-100);
 
   --cymru-color-danger: var(--cymru-red-600);
+  --cymru-color-danger-text: var(--cymru-red-700);
   --cymru-color-danger-background: var(--cymru-red-100);
 
   --cymru-color-info: var(--cymru-info-blue-700);

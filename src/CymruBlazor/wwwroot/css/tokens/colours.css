@@ -62,9 +62,11 @@
   --cymru-white: #ffffff;
 
   /* Status - clinical and UI status colours */
+  --cymru-red-700: #8a1e16; /* critical text on surface (>= 4.5:1 WCAG AA) */
   --cymru-red-600: #d5281b; /* critical */
   --cymru-red-100: #fcdbd9; /* critical surface */
 
+  --cymru-green-700: #005a28; /* success text on surface (>= 4.5:1 WCAG AA) */
   --cymru-green-600: #007f3b; /* success */
   --cymru-green-100: #d9efe5; /* success surface */
 
@@ -146,12 +148,14 @@
   /* Status */
 
   --cymru-color-success: var(--cymru-green-600);
+  --cymru-color-success-text: var(--cymru-green-700);
   --cymru-color-success-background: var(--cymru-green-100);
 
   --cymru-color-warning: var(--cymru-yellow-500);
   --cymru-color-warning-background: var(--cymru-yellow-100);
 
   --cymru-color-danger: var(--cymru-red-600);
+  --cymru-color-danger-text: var(--cymru-red-700);
   --cymru-color-danger-background: var(--cymru-red-100);
 
   --cymru-color-info: var(--cymru-info-blue-700);
