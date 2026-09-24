@@ -1,73 +1,151 @@
 @page "/content"
 @namespace CymruBlazor.Demo.Pages.Components.Content
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Content Components</h1>
-    <p class="cb-page-description">
-        Presentational components for displaying information: status
-        messages, grouped content containers, and the icon set shared
-        across the rest of the library.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Cynnwys</h1>
+        <p class="cb-page-description">
+            Cydrannau cyflwyno ar gyfer arddangos gwybodaeth: negeseuon statws, cynwysyddion cynnwys wedi'u grwpio,
+            a'r set eiconau a rennir ar draws gweddill y llyfrgell.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components</h2>
-    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
-        <CyCard Href="/content/alert">
-            <Header><strong>CyAlert</strong></Header>
-            <ChildContent>An inline status/alert banner.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/card">
-            <Header><strong>CyCard</strong></Header>
-            <ChildContent>A content container with optional header, footer, and whole-card link.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/icons">
-            <Header><strong>CyIcon</strong></Header>
-            <ChildContent>The built-in icon set and how to render them.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/badge">
-            <Header><strong>CyBadge</strong></Header>
-            <ChildContent>A small label for categorisation, status, or metadata - also covers the removable tag/chip use case.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/tooltip">
-            <Header><strong>CyTooltip</strong></Header>
-            <ChildContent>A floating contextual hint anchored to a trigger element.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/accordion">
-            <Header><strong>CyAccordion</strong></Header>
-            <ChildContent>A vertically stacked set of expand/collapse sections.</ChildContent>
-        </CyCard>
-        <CyCard Href="/content/code-block">
-            <Header><strong>CyCodeBlock</strong></Header>
-            <ChildContent>A labelled, read-only code sample with a copy-to-clipboard button.</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/content/alert">
+                <Header><strong>CyAlert</strong></Header>
+                <ChildContent>Baner statws/rhybudd mewnol.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/card">
+                <Header><strong>CyCard</strong></Header>
+                <ChildContent>Cynhwysydd cynnwys gyda phennawd dewisol, troedyn, a dolen cerdyn cyfan.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/icons">
+                <Header><strong>CyIcon</strong></Header>
+                <ChildContent>Y set eiconau adeiledig a sut i'w rendro.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/badge">
+                <Header><strong>CyBadge</strong></Header>
+                <ChildContent>Label bach ar gyfer categoreiddio, statws, neu fetadata - hefyd yn cwmpasu achos defnydd tag/sglodyn symudadwy.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/tooltip">
+                <Header><strong>CyTooltip</strong></Header>
+                <ChildContent>Awgrym cyd-destunol arnofiol wedi'i angori i elfen ysgogi.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/accordion">
+                <Header><strong>CyAccordion</strong></Header>
+                <ChildContent>Set wedi'i pentyrru'n fertigol o adrannau ehangu/cwympo.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/code-block">
+                <Header><strong>CyCodeBlock</strong></Header>
+                <ChildContent>Sampl cod darllen-yn-unig wedi'i labelu gyda botwm copïo i'r clipfwrdd.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Semantic status colour.</strong> <code>CyAlert</code>'s
-            variant drives both its colour and an implicit ARIA role
-            (<code>alert</code> for urgent variants, <code>status</code>
-            otherwise), so the visual and assistive-technology signal never
-            disagree.
-        </li>
-        <li>
-            <strong>Composable, not prescriptive.</strong>
-            <code>CyCard</code> renders whatever <code>Header</code>,
-            <code>ChildContent</code>, and <code>Footer</code> you give it —
-            it supplies structure and elevation, not opinions about layout.
-        </li>
-        <li>
-            <strong>One icon source of truth.</strong> Every icon in the
-            library, including ones used internally by other components,
-            resolves through the same <code>IconRegistry</code> that
-            <code>CyIcon</code> renders from.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Lliw statws semantig.</strong> Mae amrywiad <code>CyAlert</code>
+                yn pennu ei liw a rôl ARIA ymhlyg (<code>alert</code> ar gyfer amrywiadau brys,
+                <code>status</code> fel arall), fel nad yw'r signal gweledol a thechnoleg gynorthwyol
+                byth yn anghytuno.
+            </li>
+            <li>
+                <strong>Cyfansoddadwy, nid rhagnodol.</strong>
+                Mae <code>CyCard</code> yn rendro beth bynnag o <code>Header</code>,
+                <code>ChildContent</code>, a <code>Footer</code> a roddir iddo —
+                mae'n darparu strwythur a drychiad, nid barn am gynllun.
+            </li>
+            <li>
+                <strong>Un ffynhonnell wirionedd eicon.</strong> Mae pob eicon yn y
+                llyfrgell, gan gynnwys y rhai a ddefnyddir yn fewnol gan gydrannau eraill,
+                yn cyd-fynd drwy'r un <code>IconRegistry</code> y mae
+                <code>CyIcon</code> yn ei rendro ohono.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Content Components</h1>
+        <p class="cb-page-description">
+            Presentational components for displaying information: status
+            messages, grouped content containers, and the icon set shared
+            across the rest of the library.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/content/alert">
+                <Header><strong>CyAlert</strong></Header>
+                <ChildContent>An inline status/alert banner.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/card">
+                <Header><strong>CyCard</strong></Header>
+                <ChildContent>A content container with optional header, footer, and whole-card link.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/icons">
+                <Header><strong>CyIcon</strong></Header>
+                <ChildContent>The built-in icon set and how to render them.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/badge">
+                <Header><strong>CyBadge</strong></Header>
+                <ChildContent>A small label for categorisation, status, or metadata - also covers the removable tag/chip use case.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/tooltip">
+                <Header><strong>CyTooltip</strong></Header>
+                <ChildContent>A floating contextual hint anchored to a trigger element.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/accordion">
+                <Header><strong>CyAccordion</strong></Header>
+                <ChildContent>A vertically stacked set of expand/collapse sections.</ChildContent>
+            </CyCard>
+            <CyCard Href="/content/code-block">
+                <Header><strong>CyCodeBlock</strong></Header>
+                <ChildContent>A labelled, read-only code sample with a copy-to-clipboard button.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Semantic status colour.</strong> <code>CyAlert</code>'s
+                variant drives both its colour and an implicit ARIA role
+                (<code>alert</code> for urgent variants, <code>status</code>
+                otherwise), so the visual and assistive-technology signal never
+                disagree.
+            </li>
+            <li>
+                <strong>Composable, not prescriptive.</strong>
+                <code>CyCard</code> renders whatever <code>Header</code>,
+                <code>ChildContent</code>, and <code>Footer</code> you give it —
+                it supplies structure and elevation, not opinions about layout.
+            </li>
+            <li>
+                <strong>One icon source of truth.</strong> Every icon in the
+                library, including ones used internally by other components,
+                resolves through the same <code>IconRegistry</code> that
+                <code>CyIcon</code> renders from.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

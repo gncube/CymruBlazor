@@ -1,46 +1,98 @@
 @page "/branding"
 @namespace CymruBlazor.Demo.Pages.Components.Branding
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Branding Components</h1>
-    <p class="cb-page-description">
-        Components that carry NHS Wales / gov.wales identity and bilingual
-        convention: the product mark, and the Welsh/English language
-        switch used throughout the site.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Brandio</h1>
+        <p class="cb-page-description">
+            Cydrannau sy'n cario hunaniaeth GIG Cymru / llyw.cymru a chonfensiwn dwyieithog:
+            marc y cynnyrch, a'r togl iaith Gymraeg/Saesneg a ddefnyddir ar draws y safle.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components</h2>
-    <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
-        <CyCard Href="/branding/brand-logo">
-            <Header><strong>CyBrandLogo</strong></Header>
-            <ChildContent>The CymruBlazor/product logo mark and wordmark.</ChildContent>
-        </CyCard>
-        <CyCard Href="/branding/language-toggle">
-            <Header><strong>CyLanguageToggle</strong></Header>
-            <ChildContent>Switches the active display language between Welsh and English.</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau</h2>
+        <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
+            <CyCard Href="/branding/brand-logo">
+                <Header><strong>CyBrandLogo</strong></Header>
+                <ChildContent>Marc logo ac enw-nod CymruBlazor / cynnyrch.</ChildContent>
+            </CyCard>
+            <CyCard Href="/branding/language-toggle">
+                <Header><strong>CyLanguageToggle</strong></Header>
+                <ChildContent>Newid yr iaith arddangos weithredol rhwng y Gymraeg a'r Saesneg.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Bilingual by convention, not translation.</strong>
-            <code>CyLanguageToggle</code> always labels itself in the
-            language it would switch <em>to</em>, following the gov.wales
-            pattern, rather than the language currently displayed.
-        </li>
-        <li>
-            <strong>Identity, not layout.</strong> Both components render a
-            fixed visual identity and expose <code>Class</code>/<code>Style</code>
-            for placement, but do not make assumptions about where in the
-            page chrome they sit.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Dwyieithog yn ôl confensiwn, nid cyfieithiad.</strong>
+                Mae <code>CyLanguageToggle</code> bob amser yn labelu ei hun yn yr
+                iaith y byddai'n newid <em>iddi</em>, gan ddilyn patrwm llyw.cymru,
+                yn hytrach na'r iaith a ddangosir ar hyn o bryd.
+            </li>
+            <li>
+                <strong>Hunaniaeth, nid cynllun.</strong> Mae'r ddwy gydran yn rendro
+                hunaniaeth weledol benodol ac yn datgelu <code>Class</code>/<code>Style</code>
+                ar gyfer lleoliad, ond nid ydynt yn gwneud tybiaethau am ble yng nghromlin
+                y dudalen y maent yn eistedd.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Branding Components</h1>
+        <p class="cb-page-description">
+            Components that carry NHS Wales / gov.wales identity and bilingual
+            convention: the product mark, and the Welsh/English language
+            switch used throughout the site.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components</h2>
+        <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
+            <CyCard Href="/branding/brand-logo">
+                <Header><strong>CyBrandLogo</strong></Header>
+                <ChildContent>The CymruBlazor/product logo mark and wordmark.</ChildContent>
+            </CyCard>
+            <CyCard Href="/branding/language-toggle">
+                <Header><strong>CyLanguageToggle</strong></Header>
+                <ChildContent>Switches the active display language between Welsh and English.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Bilingual by convention, not translation.</strong>
+                <code>CyLanguageToggle</code> always labels itself in the
+                language it would switch <em>to</em>, following the gov.wales
+                pattern, rather than the language currently displayed.
+            </li>
+            <li>
+                <strong>Identity, not layout.</strong> Both components render a
+                fixed visual identity and expose <code>Class</code>/<code>Style</code>
+                for placement, but do not make assumptions about where in the
+                page chrome they sit.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

@@ -1,73 +1,182 @@
 @page "/layouts"
 @namespace CymruBlazor.Demo.Pages.Components.Layout
+@implements IDisposable
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Layout Components</h1>
-    <p class="cb-page-description">
-        CymruBlazor provides layout components that compose to build any
-        NHS Wales page structure. They emit no visual styling of their own (aside from the
-        hero banner's surface colours) — they arrange content using CSS Flexbox and Grid, consuming
-        the shared spacing, surface and breakpoint tokens.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Cynllun</h1>
+        <p class="cb-page-description">
+            Mae CymruBlazor yn darparu cydrannau cynllun sy'n cyfuno i adeiladu unrhyw strwythur
+            tudalen GIG Cymru. Nid ydynt yn allyrru arddull weledol eu hunain (ar wahân i liwiau
+            wyneb y faner arwr) — maent yn trefnu cynnwys gan ddefnyddio CSS Flexbox a Grid, gan
+            ddefnyddio'r tocynnau bylchau, wyneb a phwyntiau torri a rennir.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Primitives &amp; Layout Components</h2>
-    <table class="cb-api-table" aria-label="Layout component summary">
-        <thead>
-            <tr>
-                <th>Component</th>
-                <th>Element</th>
-                <th>Primary use</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="/layouts/container" class="cb-api-table__name">CyContainer</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Max-width wrapper — constrains content to a readable line length</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/stack" class="cb-api-table__name">CyStack</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Single-axis flexbox flow (vertical or horizontal) with consistent gap</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/grid" class="cb-api-table__name">CyGrid</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Multi-column CSS Grid with named column counts</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/cluster" class="cb-api-table__name">CyCluster</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Wrapping flex row — tags, button groups, badge lists</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/sidebar" class="cb-api-table__name">CySidebar</a></td>
-                <td class="cb-api-table__type">&lt;aside&gt;</td>
-                <td>Collapsible, sticky side navigation panel</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/center" class="cb-api-table__name">CyCenter</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Horizontal and/or vertical centring via flexbox</td>
-            </tr>
-            <tr>
-                <td><a href="/layouts/hero-banner" class="cb-api-table__name">CyHeroBanner</a></td>
-                <td class="cb-api-table__type">&lt;div&gt;</td>
-                <td>Prominent page header banner for key announcements and service landing pages</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Primitifau a Chydrannau Cynllun</h2>
+        <table class="cb-api-table" aria-label="Crynodeb cydrannau cynllun">
+            <thead>
+                <tr>
+                    <th>Cydran</th>
+                    <th>Elfen</th>
+                    <th>Prif ddefnydd</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="/layouts/container" class="cb-api-table__name">CyContainer</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Llapio lled-uchaf — cyfyngu cynnwys i hyd llinell ddarllenadwy</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/stack" class="cb-api-table__name">CyStack</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Llif flexbox un-echel (fertigol neu lorweddol) gyda bwlch cyson</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/grid" class="cb-api-table__name">CyGrid</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Grid CSS aml-golofn gyda chyfrifiadau colofn a enwir</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/cluster" class="cb-api-table__name">CyCluster</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Rhes flex lapio — tagiau, grwpiau botymau, rhestrau bathodynnau</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/sidebar" class="cb-api-table__name">CySidebar</a></td>
+                    <td class="cb-api-table__type">&lt;aside&gt;</td>
+                    <td>Panel llywio ochr cwympadwy, gludiog</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/center" class="cb-api-table__name">CyCenter</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Canoli llorweddol a/neu fertigol trwy flexbox</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/hero-banner" class="cb-api-table__name">CyHeroBanner</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Baner pennawd tudalen amlwg ar gyfer cyhoeddiadau allweddol a thudalennau glanio gwasanaeth</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Composition example</h2>
-    <p class="cb-section-description">
-        Layout components nest freely. This example reproduces the standard
-        NHS Wales two-column article layout.
-    </p>
-    <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+    <div class="cb-section">
+        <h2 class="cb-section-title">Enghraifft gyfansoddi</h2>
+        <p class="cb-section-description">
+            Mae cydrannau cynllun yn nythu'n rhydd. Mae'r enghraifft hon yn atgynhyrchu cynllun
+            erthygl dwy golofn safonol GIG Cymru.
+        </p>
+        <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+    &lt;CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Large"&gt;
+
+        &lt;CySidebar Width="SidebarWidth.Small"&gt;
+            &lt;!-- Llywio tudalen --&gt;
+        &lt;/CySidebar&gt;
+
+        &lt;CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium"&gt;
+            &lt;!-- Prif gynnwys --&gt;
+        &lt;/CyStack&gt;
+
+    &lt;/CyStack&gt;
+&lt;/CyContainer&gt;</code></pre>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Dim arddull weledol.</strong> Dim ond CSS strwythurol (arddangos, bwlch, lled)
+                y mae cydrannau cynllun yn ei gymhwyso. Mae lliwiau, borderi a chysgodion yn perthyn i gydrannau cynnwys.
+            </li>
+            <li>
+                <strong>HTML Semantig.</strong> Mae <code>CySidebar</code> yn rendro <code>&lt;aside&gt;</code>
+                ar gyfer semanteg tirnod cywir. Mae pob un arall yn rendro <code>&lt;div&gt;</code>.
+            </li>
+            <li>
+                <strong>Bylchau wedi'u halinio â thocynnau.</strong> Mae pob gwerth bwlch a phadin yn defnyddio
+                tocynnau <code>--cymru-space-*</code> — byth gwerthoedd picsel caled.
+            </li>
+            <li>
+                <strong>Trosglwyddo trwy <code>Class</code> a <code>Style</code>.</strong>
+                Mae pob cydran yn datgelu <code>Class</code> ar gyfer dosbarthiadau CSS ychwanegol
+                a <code>Style</code> ar gyfer diystyriadau mewn-llinell pan fo angen.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Layout Components</h1>
+        <p class="cb-page-description">
+            CymruBlazor provides layout components that compose to build any
+            NHS Wales page structure. They emit no visual styling of their own (aside from the
+            hero banner's surface colours) — they arrange content using CSS Flexbox and Grid, consuming
+            the shared spacing, surface and breakpoint tokens.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Primitives &amp; Layout Components</h2>
+        <table class="cb-api-table" aria-label="Layout component summary">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Element</th>
+                    <th>Primary use</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="/layouts/container" class="cb-api-table__name">CyContainer</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Max-width wrapper — constrains content to a readable line length</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/stack" class="cb-api-table__name">CyStack</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Single-axis flexbox flow (vertical or horizontal) with consistent gap</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/grid" class="cb-api-table__name">CyGrid</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Multi-column CSS Grid with named column counts</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/cluster" class="cb-api-table__name">CyCluster</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Wrapping flex row — tags, button groups, badge lists</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/sidebar" class="cb-api-table__name">CySidebar</a></td>
+                    <td class="cb-api-table__type">&lt;aside&gt;</td>
+                    <td>Collapsible, sticky side navigation panel</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/center" class="cb-api-table__name">CyCenter</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Horizontal and/or vertical centring via flexbox</td>
+                </tr>
+                <tr>
+                    <td><a href="/layouts/hero-banner" class="cb-api-table__name">CyHeroBanner</a></td>
+                    <td class="cb-api-table__type">&lt;div&gt;</td>
+                    <td>Prominent page header banner for key announcements and service landing pages</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Composition example</h2>
+        <p class="cb-section-description">
+            Layout components nest freely. This example reproduces the standard
+            NHS Wales two-column article layout.
+        </p>
+        <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
     &lt;CyStack Orientation="Orientation.Horizontal" Gap="ComponentSize.Large"&gt;
 
         &lt;CySidebar Width="SidebarWidth.Small"&gt;
@@ -80,27 +189,34 @@
 
     &lt;/CyStack&gt;
 &lt;/CyContainer&gt;</code></pre>
-</div>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>No visual styling.</strong> Layout components apply only structural CSS
-            (display, gap, width). Colours, borders, and shadows belong to content components.
-        </li>
-        <li>
-            <strong>Semantic HTML.</strong> <code>CySidebar</code> renders <code>&lt;aside&gt;</code>
-            for correct landmark semantics. All others render <code>&lt;div&gt;</code>.
-        </li>
-        <li>
-            <strong>Token-aligned spacing.</strong> All gap and padding values consume
-            <code>--cymru-space-*</code> tokens — never hard-coded pixel values.
-        </li>
-        <li>
-            <strong>Override via <code>Class</code> and <code>Style</code>.</strong>
-            Every component exposes <code>Class</code> for additional CSS classes
-            and <code>Style</code> for inline overrides when needed.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>No visual styling.</strong> Layout components apply only structural CSS
+                (display, gap, width). Colours, borders, and shadows belong to content components.
+            </li>
+            <li>
+                <strong>Semantic HTML.</strong> <code>CySidebar</code> renders <code>&lt;aside&gt;</code>
+                for correct landmark semantics. All others render <code>&lt;div&gt;</code>.
+            </li>
+            <li>
+                <strong>Token-aligned spacing.</strong> All gap and padding values consume
+                <code>--cymru-space-*</code> tokens — never hard-coded pixel values.
+            </li>
+            <li>
+                <strong>Override via <code>Class</code> and <code>Style</code>.</strong>
+                Every component exposes <code>Class</code> for additional CSS classes
+                and <code>Style</code> for inline overrides when needed.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

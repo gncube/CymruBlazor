@@ -1,143 +1,293 @@
 @page "/getting-started"
 @namespace CymruBlazor.Demo.Pages.GettingStarted
+@implements IDisposable
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Getting Started</h1>
-    <p class="cb-page-description">
-        CymruBlazor is an open-source Blazor component library implementing the
-        NHS Wales Design System, for any Blazor WebAssembly or Blazor Server
-        project. This page covers what it is and how it's built; for the
-        step-by-step setup, see <a href="/installation">Installation</a>.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Dechrau Arni</h1>
+        <p class="cb-page-description">
+            Mae CymruBlazor yn llyfrgell gydrannau Blazor ffynhonnell agored sy'n gweithredu System Dylunio GIG Cymru,
+            ar gyfer unrhyw brosiect Blazor WebAssembly neu Blazor Server. Mae'r dudalen hon yn egluro beth ydyw a sut y mae
+            wedi'i adeiladu; am y camau sefydlu cam-wrth-gam, gweler <a href="/installation">Gosod</a>.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">What is CymruBlazor?</h2>
-    <p class="cb-section-description">
-        A set of accessible, composable Blazor components - layout primitives,
-        form controls, content and navigation elements - styled to the DHCW
-        "Single Record Design System" and distributed as a single NuGet
-        package. Icons, theming, and design tokens all ship as part of the
-        core package; nothing extra to install.
-    </p>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Beth yw CymruBlazor?</h2>
+        <p class="cb-section-description">
+            Set o gydrannau Blazor hygyrch, cyfansoddadwy - prifelfennau cynllun, rheolaethau ffurflen, elfennau cynnwys
+            a llywio - wedi'u steilio i "System Dylunio Cofnod Sengl" Iechyd a Gofal Digidol Cymru (DHCW) a'u dosbarthu fel
+            pecyn NuGet sengl. Mae eiconau, themâu, a thocynnau dylunio i gyd yn rhan o'r pecyn craidd; dim byd ychwanegol i'w osod.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
 
-    <table class="cb-api-table" aria-label="Design principles">
-        <thead>
-            <tr>
-                <th>Principle</th>
-                <th>What it means</th>
-            </tr>
-        </thead>
+        <table class="cb-api-table" aria-label="Egwyddorion dylunio">
+            <thead>
+                <tr>
+                    <th>Egwyddor</th>
+                    <th>Beth mae'n ei olygu</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">Accessible by default</td>
-                <td>Every component is built to WCAG 2.2 AA, not retrofitted afterwards.</td>
-            </tr>
+            <tbody>
+                <tr>
+                    <td class="cb-api-table__name">Hygyrch yn ddiofyn</td>
+                    <td>Mae pob cydran wedi'i hadeiladu i WCAG 2.2 AA, nid wedi'i haddasu wedi hynny.</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Composable</td>
-                <td>Small, single-purpose components that connect together instead of one large monolith.</td>
-            </tr>
+                <tr>
+                    <td class="cb-api-table__name">Cyfansoddadwy</td>
+                    <td>Cydrannau bach, pwrpas sengl sy'n cysylltu â'i gilydd yn lle un monolith mawr.</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Design tokens</td>
-                <td>Colour, spacing, and typography are tokenised CSS custom properties aligned to Welsh NHS branding guidelines - see <a href="/foundations/tokens">Design Tokens</a>.</td>
-            </tr>
+                <tr>
+                    <td class="cb-api-table__name">Tocynnau dylunio</td>
+                    <td>Mae lliw, bylchiad a theipograffeg yn briodweddau personol CSS wedi'u tocynnu sy'n cyd-fynd â chanllawiau brandio GIG Cymru - gweler <a href="/foundations/tokens">Tocynnau Dylunio</a>.</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Minimal JavaScript</td>
-                <td>Interop is used only for genuine browser API calls (e.g. clipboard, focus); behaviour otherwise lives in C#.</td>
-            </tr>
+                <tr>
+                    <td class="cb-api-table__name">Isafswm JavaScript</td>
+                    <td>Defnyddir rhyngweithredu ar gyfer galwadau API porwr go iawn yn unig (e.e. clipfwrdd, ffocws); mae ymddygiad fel arall yn byw yn C#.</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Mediator pipeline</td>
-                <td>Cross-cutting concerns, such as screen-reader live-region announcements, flow through a shared Mediator pipeline rather than direct component references - see <a href="/accessibility/live-region">Live Region</a>.</td>
-            </tr>
+                <tr>
+                    <td class="cb-api-table__name">Piblinell y Cyfryngwr</td>
+                    <td>Mae pryderon traws-dorri, megis cyhoeddiadau rhanbarth byw darllenydd sgrin, yn llifo drwy biblinell Cyfryngwr a rennir yn hytrach na chyfeiriadau cydran uniongyrchol - gweler <a href="/accessibility/live-region">Rhanbarth Byw</a>.</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Welsh language support</td>
-                <td>Native language toggling and localisation primitives for Welsh and English content - see <a href="/foundations/localisation">Localisation</a> and <a href="/branding/language-toggle">Language Toggle</a>.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+                <tr>
+                    <td class="cb-api-table__name">Cefnogaeth i'r Gymraeg</td>
+                    <td>Toglo iaith frodorol a phrifelfennau lleoleiddio ar gyfer cynnwys Cymraeg a Saesneg - gweler <a href="/foundations/localisation">Lleoleiddio</a> a <a href="/branding/language-toggle">Toglo Iaith</a>.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">See it in action</h2>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Gweld ar waith</h2>
 
-    <p class="cb-section-description">
-        Layout primitives compose to build any NHS Wales-aligned page structure.
-    </p>
+        <p class="cb-section-description">
+            Mae prifelfennau cynllun yn cyfansoddi i adeiladu unrhyw strwythur tudalen sy'n cyd-fynd â GIG Cymru.
+        </p>
 
-    <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+        <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
+    &lt;CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium"&gt;
+        &lt;h1&gt;Helo, GIG Cymru&lt;/h1&gt;
+        &lt;p&gt;Adeiladwyd gyda CymruBlazor.&lt;/p&gt;
+    &lt;/CyStack&gt;
+&lt;/CyContainer&gt;</code></pre>
+
+        <div class="cb-example">
+            <span class="cb-example__label">Rhagolwg byw</span>
+
+            <div class="cb-example__preview">
+                <CyContainer Size="ContainerSize.Large">
+                    <CyStack Orientation="Orientation.Vertical"
+                             Gap="ComponentSize.Medium">
+                        <h1 style="margin:0;font-size:var(--cymru-font-size-2xl)">
+                            Helo, GIG Cymru
+                        </h1>
+
+                        <p style="margin:0;color:var(--cymru-color-text-muted)">
+                            Adeiladwyd gyda CymruBlazor.
+                        </p>
+                    </CyStack>
+                </CyContainer>
+            </div>
+        </div>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Gofynion</h2>
+
+        <table class="cb-api-table" aria-label="Gofynion">
+            <thead>
+                <tr>
+                    <th>Dibyniaeth</th>
+                    <th>Fersiwn</th>
+                    <th>Nodiadau</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td class="cb-api-table__name">.NET SDK</td>
+                    <td class="cb-api-table__type">10.0+</td>
+                    <td>Gofynnol ar gyfer pob prosiect Blazor</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Mediator.SourceGenerator</td>
+                    <td class="cb-api-table__type">3.0.2+</td>
+                    <td>Piblinell a gynhyrchir o'r ffynhonnell — wedi'i chynnwys yn drosglwyddol</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Blazor WebAssembly neu Server</td>
+                    <td class="cb-api-table__type">10.0+</td>
+                    <td>Cefnogir y ddau fodel cynnal</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cb-section">
+        <p class="cb-section-description">
+            Barod i'w ychwanegu at eich prosiect? Ewch i
+            <a href="/installation">Gosod</a> am y camau sefydlu cyflawn, y gellir eu copïo a'u gludo.
+        </p>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Getting Started</h1>
+        <p class="cb-page-description">
+            CymruBlazor is an open-source Blazor component library implementing the
+            NHS Wales Design System, for any Blazor WebAssembly or Blazor Server
+            project. This page covers what it is and how it's built; for the
+            step-by-step setup, see <a href="/installation">Installation</a>.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">What is CymruBlazor?</h2>
+        <p class="cb-section-description">
+            A set of accessible, composable Blazor components - layout primitives,
+            form controls, content and navigation elements - styled to the DHCW
+            "Single Record Design System" and distributed as a single NuGet
+            package. Icons, theming, and design tokens all ship as part of the
+            core package; nothing extra to install.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+
+        <table class="cb-api-table" aria-label="Design principles">
+            <thead>
+                <tr>
+                    <th>Principle</th>
+                    <th>What it means</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td class="cb-api-table__name">Accessible by default</td>
+                    <td>Every component is built to WCAG 2.2 AA, not retrofitted afterwards.</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Composable</td>
+                    <td>Small, single-purpose components that connect together instead of one large monolith.</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Design tokens</td>
+                    <td>Colour, spacing, and typography are tokenised CSS custom properties aligned to Welsh NHS branding guidelines - see <a href="/foundations/tokens">Design Tokens</a>.</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Minimal JavaScript</td>
+                    <td>Interop is used only for genuine browser API calls (e.g. clipboard, focus); behaviour otherwise lives in C#.</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Mediator pipeline</td>
+                    <td>Cross-cutting concerns, such as screen-reader live-region announcements, flow through a shared Mediator pipeline rather than direct component references - see <a href="/accessibility/live-region">Live Region</a>.</td>
+                </tr>
+
+                <tr>
+                    <td class="cb-api-table__name">Welsh language support</td>
+                    <td>Native language toggling and localisation primitives for Welsh and English content - see <a href="/foundations/localisation">Localisation</a> and <a href="/branding/language-toggle">Language Toggle</a>.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">See it in action</h2>
+
+        <p class="cb-section-description">
+            Layout primitives compose to build any NHS Wales-aligned page structure.
+        </p>
+
+        <pre><code>&lt;CyContainer Size="ContainerSize.Large"&gt;
     &lt;CyStack Orientation="Orientation.Vertical" Gap="ComponentSize.Medium"&gt;
         &lt;h1&gt;Hello, NHS Wales&lt;/h1&gt;
         &lt;p&gt;Built with CymruBlazor.&lt;/p&gt;
     &lt;/CyStack&gt;
 &lt;/CyContainer&gt;</code></pre>
 
-    <div class="cb-example">
-        <span class="cb-example__label">Live preview</span>
+        <div class="cb-example">
+            <span class="cb-example__label">Live preview</span>
 
-        <div class="cb-example__preview">
-            <CyContainer Size="ContainerSize.Large">
-                <CyStack Orientation="Orientation.Vertical"
-                         Gap="ComponentSize.Medium">
-                    <h1 style="margin:0;font-size:var(--cymru-font-size-2xl)">
-                        Hello, NHS Wales
-                    </h1>
+            <div class="cb-example__preview">
+                <CyContainer Size="ContainerSize.Large">
+                    <CyStack Orientation="Orientation.Vertical"
+                             Gap="ComponentSize.Medium">
+                        <h1 style="margin:0;font-size:var(--cymru-font-size-2xl)">
+                            Hello, NHS Wales
+                        </h1>
 
-                    <p style="margin:0;color:var(--cymru-color-text-muted)">
-                        Built with CymruBlazor.
-                    </p>
-                </CyStack>
-            </CyContainer>
+                        <p style="margin:0;color:var(--cymru-color-text-muted)">
+                            Built with CymruBlazor.
+                        </p>
+                    </CyStack>
+                </CyContainer>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Requirements</h2>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Requirements</h2>
 
-    <table class="cb-api-table" aria-label="Prerequisites">
-        <thead>
-            <tr>
-                <th>Dependency</th>
-                <th>Version</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
+        <table class="cb-api-table" aria-label="Prerequisites">
+            <thead>
+                <tr>
+                    <th>Dependency</th>
+                    <th>Version</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            <tr>
-                <td class="cb-api-table__name">.NET SDK</td>
-                <td class="cb-api-table__type">10.0+</td>
-                <td>Required for all Blazor projects</td>
-            </tr>
+            <tbody>
+                <tr>
+                    <td class="cb-api-table__name">.NET SDK</td>
+                    <td class="cb-api-table__type">10.0+</td>
+                    <td>Required for all Blazor projects</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Mediator.SourceGenerator</td>
-                <td class="cb-api-table__type">3.0.2+</td>
-                <td>Source-generated pipeline — included transitively</td>
-            </tr>
+                <tr>
+                    <td class="cb-api-table__name">Mediator.SourceGenerator</td>
+                    <td class="cb-api-table__type">3.0.2+</td>
+                    <td>Source-generated pipeline — included transitively</td>
+                </tr>
 
-            <tr>
-                <td class="cb-api-table__name">Blazor WebAssembly or Server</td>
-                <td class="cb-api-table__type">10.0+</td>
-                <td>Both hosting models supported</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+                <tr>
+                    <td class="cb-api-table__name">Blazor WebAssembly or Server</td>
+                    <td class="cb-api-table__type">10.0+</td>
+                    <td>Both hosting models supported</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<div class="cb-section">
-    <p class="cb-section-description">
-        Ready to add it to your project? Head to
-        <a href="/installation">Installation</a> for the complete, copy-pasteable setup steps.
-    </p>
-</div>
+    <div class="cb-section">
+        <p class="cb-section-description">
+            Ready to add it to your project? Head to
+            <a href="/installation">Installation</a> for the complete, copy-pasteable setup steps.
+        </p>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

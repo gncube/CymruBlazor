@@ -1,66 +1,139 @@
 @page "/navigation"
 @namespace CymruBlazor.Demo.Pages.Components.Navigation
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Navigation Components</h1>
-    <p class="cb-page-description">
-        Wayfinding and structural navigation components designed for NHS Wales services:
-        global headers, primary navigation menus, page headers, breadcrumbs, footers, tabs, and skip links.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Llywio</h1>
+        <p class="cb-page-description">
+            Cydrannau canfod llwybr a llywio strwythurol wedi'u cynllunio ar gyfer gwasanaethau GIG Cymru:
+            penawdau byd-eang, dewislenni llywio sylfaenol, penawdau tudalen, briwsion bara, troedynnau, tabiau, a dolenni hepgor.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components</h2>
-    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
-        <CyCard Href="/navigation/breadcrumb">
-            <Header><strong>CyBreadcrumb</strong></Header>
-            <ChildContent>Hierarchical location trail showing user position within the app.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/header">
-            <Header><strong>CyHeader</strong></Header>
-            <ChildContent>Top-level site chrome with branding, navigation links, and action slots.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/navigation">
-            <Header><strong>CyNavigation</strong></Header>
-            <ChildContent>Primary site navigation bar with responsive mobile menu support.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/page-header">
-            <Header><strong>CyPageHeader</strong></Header>
-            <ChildContent>Titled header with subtitle, action buttons, and breadcrumb slot.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/skip-link">
-            <Header><strong>CySkipLink</strong></Header>
-            <ChildContent>Accessible keyboard shortcut jumping directly to the main content landmark.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/footer">
-            <Header><strong>CyFooter</strong></Header>
-            <ChildContent>Standardised bottom landmark with copyright, links, and license information.</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/tabs">
-            <Header><strong>CyTabs</strong></Header>
-            <ChildContent>Tabbed interface for organizing related content panels in the same view.</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/navigation/breadcrumb">
+                <Header><strong>CyBreadcrumb</strong></Header>
+                <ChildContent>Llwybr lleoliad hierarchaidd sy'n dangos safle'r defnyddiwr o fewn yr ap.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/header">
+                <Header><strong>CyHeader</strong></Header>
+                <ChildContent>Cromlin safle lefel uchaf gyda brandio, dolenni llywio, a slotiau gweithredu.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/navigation">
+                <Header><strong>CyNavigation</strong></Header>
+                <ChildContent>Bar llywio safle sylfaenol gyda chefnogaeth ddewislen symudol ymatebol.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/page-header">
+                <Header><strong>CyPageHeader</strong></Header>
+                <ChildContent>Pennawd gyda theitl, is-deitl, botymau gweithredu, a slot briwsion bara.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/skip-link">
+                <Header><strong>CySkipLink</strong></Header>
+                <ChildContent>Llwybr byr bysellfwrdd hygyrch sy'n neidio'n uniongyrchol i dirnod y prif gynnwys.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/footer">
+                <Header><strong>CyFooter</strong></Header>
+                <ChildContent>Tirnod gwaelod safonol gyda hawlfraint, dolenni, a gwybodaeth drwydded.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/tabs">
+                <Header><strong>CyTabs</strong></Header>
+                <ChildContent>Rhyngwyneb tabiau ar gyfer trefnu paneli cynnwys cysylltiedig yn yr un wedd.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Semantic landmarks.</strong> Every navigation component outputs standard HTML5
-            landmarks (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;footer&gt;</code>)
-            with descriptive ARIA labels to support screen-reader navigation.
-        </li>
-        <li>
-            <strong>Keyboard wayfinding.</strong> Skip links allow users to bypass repetitive chrome,
-            while tabs and menus support standard Arrow and Tab key interactions.
-        </li>
-        <li>
-            <strong>Responsive mobile drawers.</strong> On narrow viewports, primary navigation
-            seamlessly collapses into accessible fly-out menus with focus trapping.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Tirnodau semantig.</strong> Mae pob cydran lywio yn allbynnu tirnodau HTML5 safonol
+                (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;footer&gt;</code>)
+                gyda labeli ARIA disgrifiadol i gefnogi llywio darllenydd sgrin.
+            </li>
+            <li>
+                <strong>Canfod llwybr bysellfwrdd.</strong> Mae dolenni hepgor yn galluogi defnyddwyr i osgoi
+                cromlin ailadroddus, tra bod tabiau a dewislenni'n cefnogi rhyngweithiadau bysellau Saeth a Tab safonol.
+            </li>
+            <li>
+                <strong>Droriau symudol ymatebol.</strong> Ar ffenestri gwylio cul, mae'r prif lywio'n cwympo'n
+                ddi-dor i mewn i ddewislenni hedfan allan hygyrch gyda thrapio ffocws.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Navigation Components</h1>
+        <p class="cb-page-description">
+            Wayfinding and structural navigation components designed for NHS Wales services:
+            global headers, primary navigation menus, page headers, breadcrumbs, footers, tabs, and skip links.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/navigation/breadcrumb">
+                <Header><strong>CyBreadcrumb</strong></Header>
+                <ChildContent>Hierarchical location trail showing user position within the app.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/header">
+                <Header><strong>CyHeader</strong></Header>
+                <ChildContent>Top-level site chrome with branding, navigation links, and action slots.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/navigation">
+                <Header><strong>CyNavigation</strong></Header>
+                <ChildContent>Primary site navigation bar with responsive mobile menu support.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/page-header">
+                <Header><strong>CyPageHeader</strong></Header>
+                <ChildContent>Titled header with subtitle, action buttons, and breadcrumb slot.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/skip-link">
+                <Header><strong>CySkipLink</strong></Header>
+                <ChildContent>Accessible keyboard shortcut jumping directly to the main content landmark.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/footer">
+                <Header><strong>CyFooter</strong></Header>
+                <ChildContent>Standardised bottom landmark with copyright, links, and license information.</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/tabs">
+                <Header><strong>CyTabs</strong></Header>
+                <ChildContent>Tabbed interface for organizing related content panels in the same view.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Semantic landmarks.</strong> Every navigation component outputs standard HTML5
+                landmarks (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;footer&gt;</code>)
+                with descriptive ARIA labels to support screen-reader navigation.
+            </li>
+            <li>
+                <strong>Keyboard wayfinding.</strong> Skip links allow users to bypass repetitive chrome,
+                while tabs and menus support standard Arrow and Tab key interactions.
+            </li>
+            <li>
+                <strong>Responsive mobile drawers.</strong> On narrow viewports, primary navigation
+                seamlessly collapses into accessible fly-out menus with focus trapping.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

@@ -1,55 +1,117 @@
 @page "/feedback"
 @namespace CymruBlazor.Demo.Pages.Components.Feedback
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Feedback Components</h1>
-    <p class="cb-page-description">
-        Status, progress, and notification components that communicate asynchronous activity,
-        system state, and user actions.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Adborth</h1>
+        <p class="cb-page-description">
+            Cydrannau statws, cynnydd, a hysbysu sy'n cyfathrebu gweithgaredd anghydamserol,
+            cyflwr y system, a gweithredoedd defnyddwyr.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components</h2>
-    <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
-        <CyCard Href="/feedback/dialog">
-            <Header><strong>CyDialog</strong></Header>
-            <ChildContent>A modal dialog on the native dialog element with backdrop and focus trap.</ChildContent>
-        </CyCard>
-        <CyCard Href="/feedback/toast-service">
-            <Header><strong>Toast Service</strong></Header>
-            <ChildContent>Timed, non-blocking toast notifications driven via IToastService.</ChildContent>
-        </CyCard>
-        <CyCard Href="/feedback/progress">
-            <Header><strong>CyProgress</strong></Header>
-            <ChildContent>Determinate and indeterminate progress indicators for long tasks.</ChildContent>
-        </CyCard>
-        <CyCard Href="/feedback/spinner">
-            <Header><strong>CySpinner</strong></Header>
-            <ChildContent>Accessible animated loading indicator with localized text alternatives.</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau</h2>
+        <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
+            <CyCard Href="/feedback/dialog">
+                <Header><strong>CyDialog</strong></Header>
+                <ChildContent>Deialog foddol ar yr elfen ddeialog frodorol gyda chefndir a thrap ffocws.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/toast-service">
+                <Header><strong>Toast Service</strong></Header>
+                <ChildContent>Hysbysiadau tost wedi'u hamseru, nad ydynt yn rhwystro, a yrrir drwy IToastService.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/progress">
+                <Header><strong>CyProgress</strong></Header>
+                <ChildContent>Dangosyddion cynnydd pendant ac amhendant ar gyfer tasgau hir.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/spinner">
+                <Header><strong>CySpinner</strong></Header>
+                <ChildContent>Dangosydd llwytho animeiddiedig hygyrch gyda dewisiadau testun lleoledig amgen.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Polite announcements.</strong> Dynamic feedback and toast notifications use
-            <code>aria-live="polite"</code> regions so screen reader users are notified without having their
-            current reading position interrupted.
-        </li>
-        <li>
-            <strong>Native modal inertia.</strong> <code>CyDialog</code> leverages the browser's native
-            <code>&lt;dialog&gt;</code> element, automatically making the document behind inert and
-            managing <kbd>Escape</kbd> dismissal.
-        </li>
-        <li>
-            <strong>Explicit loading indicators.</strong> Spinners and progress bars always include
-            accessible names and hidden text alternatives so loading states are perceptible by all users.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Cyhoeddiadau cwrtais.</strong> Mae adborth deinamig a hysbysiadau tost yn defnyddio
+                rhanbarthau <code>aria-live="polite"</code> fel bod defnyddwyr darllenydd sgrin yn cael eu hysbysu heb dorri ar draws eu
+                safle darllen presennol.
+            </li>
+            <li>
+                <strong>Anadweithrwydd moddol brodorol.</strong> Mae <code>CyDialog</code> yn trochi elfen frodorol
+                <code>&lt;dialog&gt;</code> y porwr, gan wneud y ddogfen y tu ôl yn anadweithiol yn awtomatig a
+                rheoli diswyddo <kbd>Escape</kbd>.
+            </li>
+            <li>
+                <strong>Dangosyddion llwytho eglur.</strong> Mae troellwyr a bariau cynnydd bob amser yn cynnwys
+                enwau hygyrch a thestun amgen cudd fel bod cyflyrau llwytho yn ganfyddadwy i bob defnyddiwr.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Feedback Components</h1>
+        <p class="cb-page-description">
+            Status, progress, and notification components that communicate asynchronous activity,
+            system state, and user actions.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components</h2>
+        <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
+            <CyCard Href="/feedback/dialog">
+                <Header><strong>CyDialog</strong></Header>
+                <ChildContent>A modal dialog on the native dialog element with backdrop and focus trap.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/toast-service">
+                <Header><strong>Toast Service</strong></Header>
+                <ChildContent>Timed, non-blocking toast notifications driven via IToastService.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/progress">
+                <Header><strong>CyProgress</strong></Header>
+                <ChildContent>Determinate and indeterminate progress indicators for long tasks.</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/spinner">
+                <Header><strong>CySpinner</strong></Header>
+                <ChildContent>Accessible animated loading indicator with localized text alternatives.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Polite announcements.</strong> Dynamic feedback and toast notifications use
+                <code>aria-live="polite"</code> regions so screen reader users are notified without having their
+                current reading position interrupted.
+            </li>
+            <li>
+                <strong>Native modal inertia.</strong> <code>CyDialog</code> leverages the browser's native
+                <code>&lt;dialog&gt;</code> element, automatically making the document behind inert and
+                managing <kbd>Escape</kbd> dismissal.
+            </li>
+            <li>
+                <strong>Explicit loading indicators.</strong> Spinners and progress bars always include
+                accessible names and hidden text alternatives so loading states are perceptible by all users.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

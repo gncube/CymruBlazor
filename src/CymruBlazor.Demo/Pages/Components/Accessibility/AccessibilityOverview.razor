@@ -1,67 +1,136 @@
 @page "/accessibility"
 @namespace CymruBlazor.Demo.Pages.Components.Accessibility
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Accessibility Components</h1>
-    <p class="cb-page-description">
-        Non-visual and assistive-technology-focused building blocks. These
-        components render little or nothing visually themselves — they exist
-        to manage focus and announce state to screen reader users, and are
-        typically composed into other components rather than used alone.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Hygyrchedd</h1>
+        <p class="cb-page-description">
+            Blociau adeiladu anweledol ac sy'n canolbwyntio ar dechnoleg gynorthwyol. Ychydig neu ddim y mae'r cydrannau hyn
+            yn ei rendro'n weledol eu hunain — maent yn bodoli i reoli ffocws a chyhoeddi cyflwr i ddefnyddwyr darllenydd sgrin,
+            ac fe'u cyfansoddir fel arfer i mewn i gydrannau eraill yn hytrach na'u defnyddio ar eu pennau eu hunain.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components &amp; Primitives</h2>
-    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
-        <CyCard Href="/accessibility/live-region">
-            <Header><strong>CyLiveRegion</strong></Header>
-            <ChildContent>Announces dynamic content changes to screen readers.</ChildContent>
-        </CyCard>
-        <CyCard Href="/accessibility/screen-reader-only">
-            <Header><strong>CyScreenReaderOnly</strong></Header>
-            <ChildContent>Hides content visually while keeping it available to screen readers.</ChildContent>
-        </CyCard>
-        <CyCard Href="/foundations/focus-trap">
-            <Header><strong>CyFocusTrap</strong></Header>
-            <ChildContent>Keeps keyboard focus inside a region and returns it afterwards (Foundations).</ChildContent>
-        </CyCard>
-        <CyCard Href="/feedback/dialog">
-            <Header><strong>CyDialog</strong></Header>
-            <ChildContent>A modal dialog on the native dialog element with backdrop and focus trap (Feedback).</ChildContent>
-        </CyCard>
-        <CyCard Href="/navigation/skip-link">
-            <Header><strong>CySkipLink</strong></Header>
-            <ChildContent>Keyboard shortcut allowing users to jump directly to main content (Navigation).</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau a Phrifelfennau</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/accessibility/live-region">
+                <Header><strong>CyLiveRegion</strong></Header>
+                <ChildContent>Cyhoeddi newidiadau cynnwys deinamig i ddarllenwyr sgrin.</ChildContent>
+            </CyCard>
+            <CyCard Href="/accessibility/screen-reader-only">
+                <Header><strong>CyScreenReaderOnly</strong></Header>
+                <ChildContent>Cuddio cynnwys yn weledol tra'n ei gadw ar gael i ddarllenwyr sgrin.</ChildContent>
+            </CyCard>
+            <CyCard Href="/foundations/focus-trap">
+                <Header><strong>CyFocusTrap</strong></Header>
+                <ChildContent>Cadw ffocws bysellfwrdd y tu mewn i ranbarth a'i ddychwelyd wedi hynny (Seiliau).</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/dialog">
+                <Header><strong>CyDialog</strong></Header>
+                <ChildContent>Deialog foddol ar yr elfen ddeialog frodorol gyda chefndir a thrap ffocws (Adborth).</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/skip-link">
+                <Header><strong>CySkipLink</strong></Header>
+                <ChildContent>Llwybr byr bysellfwrdd sy'n galluogi defnyddwyr i neidio'n uniongyrchol i'r prif gynnwys (Llywio).</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Behaviour, not appearance.</strong> None of these
-            components apply visible styling of their own beyond what's
-            needed for their function (e.g. visually hiding content while
-            keeping it in the accessibility tree).
-        </li>
-        <li>
-            <strong>Compose into overlays and forms.</strong>
-            <code>CyFocusTrap</code> wraps drawer-style content that must keep focus
-            inside it, <code>CyDialog</code> provides a full modal dialog,
-            and <code>CyLiveRegion</code> is meant to be registered once in
-            a shell layout and driven via the Mediator pipeline from
-            anywhere in the app.
-        </li>
-        <li>
-            <strong>WCAG-mapped.</strong> Each component exists to satisfy a
-            specific WCAG success criterion — focus order, status messages,
-            and name/role/value for visually hidden content — documented on
-            each component's own Accessibility tab.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Ymddygiad, nid ymddangosiad.</strong> Nid oes yr un o'r cydrannau hyn yn cymhwyso
+                steilio gweladwy eu hunain y tu hwnt i'r hyn sydd ei angen ar gyfer eu swyddogaeth (e.e. cuddio cynnwys
+                yn weledol wrth ei gadw yn y goeden hygyrchedd).
+            </li>
+            <li>
+                <strong>Cyfansoddi i mewn i drosluniau a ffurflenni.</strong>
+                Mae <code>CyFocusTrap</code> yn lapio cynnwys ar ffurf drôr y mae'n rhaid iddo gadw ffocws y tu mewn iddo,
+                mae <code>CyDialog</code> yn darparu deialog foddol lawn, ac mae <code>CyLiveRegion</code> i fod i gael ei gofrestru
+                unwaith mewn cynllun cragen a'i yrru drwy biblinell y Cyfryngwr o unrhyw le yn yr ap.
+            </li>
+            <li>
+                <strong>Wedi'i fapio i WCAG.</strong> Mae pob cydran yn bodoli i fodloni maen prawf llwyddiant
+                WCAG penodol — trefn ffocws, negeseuon statws, ac enw/rôl/gwerth ar gyfer cynnwys wedi'i guddio'n weledol —
+                wedi'i ddogfennu ar dab Hygyrchedd pob cydran ei hun.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Accessibility Components</h1>
+        <p class="cb-page-description">
+            Non-visual and assistive-technology-focused building blocks. These
+            components render little or nothing visually themselves — they exist
+            to manage focus and announce state to screen reader users, and are
+            typically composed into other components rather than used alone.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components &amp; Primitives</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/accessibility/live-region">
+                <Header><strong>CyLiveRegion</strong></Header>
+                <ChildContent>Announces dynamic content changes to screen readers.</ChildContent>
+            </CyCard>
+            <CyCard Href="/accessibility/screen-reader-only">
+                <Header><strong>CyScreenReaderOnly</strong></Header>
+                <ChildContent>Hides content visually while keeping it available to screen readers.</ChildContent>
+            </CyCard>
+            <CyCard Href="/foundations/focus-trap">
+                <Header><strong>CyFocusTrap</strong></Header>
+                <ChildContent>Keeps keyboard focus inside a region and returns it afterwards (Foundations).</ChildContent>
+            </CyCard>
+            <CyCard Href="/feedback/dialog">
+                <Header><strong>CyDialog</strong></Header>
+                <ChildContent>A modal dialog on the native dialog element with backdrop and focus trap (Feedback).</ChildContent>
+            </CyCard>
+            <CyCard Href="/navigation/skip-link">
+                <Header><strong>CySkipLink</strong></Header>
+                <ChildContent>Keyboard shortcut allowing users to jump directly to main content (Navigation).</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Behaviour, not appearance.</strong> None of these
+                components apply visible styling of their own beyond what's
+                needed for their function (e.g. visually hiding content while
+                keeping it in the accessibility tree).
+            </li>
+            <li>
+                <strong>Compose into overlays and forms.</strong>
+                <code>CyFocusTrap</code> wraps drawer-style content that must keep focus
+                inside it, <code>CyDialog</code> provides a full modal dialog,
+                and <code>CyLiveRegion</code> is meant to be registered once in
+                a shell layout and driven via the Mediator pipeline from
+                anywhere in the app.
+            </li>
+            <li>
+                <strong>WCAG-mapped.</strong> Each component exists to satisfy a
+                specific WCAG success criterion — focus order, status messages,
+                and name/role/value for visually hidden content — documented on
+                each component's own Accessibility tab.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

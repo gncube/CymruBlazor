@@ -1,75 +1,156 @@
 @page "/forms"
 @namespace CymruBlazor.Demo.Pages.Components.Forms
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Enums
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Form Components</h1>
-    <p class="cb-page-description">
-        Labelled, validation-aware controls for collecting user input, built
-        on top of Blazor's <code>EditForm</code>/<code>EditContext</code>
-        pipeline so field errors and <code>CyValidationSummary</code> stay in
-        sync automatically.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Cydrannau Ffurflen</h1>
+        <p class="cb-page-description">
+            Rheolaethau wedi'u labelu ac sy'n ymwybodol o ddilysu ar gyfer casglu mewnbwn defnyddwyr, wedi'u hadeiladu
+            ar ben piblinell <code>EditForm</code>/<code>EditContext</code> Blazor fel bod gwallau meysydd a
+            <code>CyValidationSummary</code> yn aros mewn cysoni awtomatig.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Components</h2>
-    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
-        <CyCard Href="/forms/button">
-            <Header><strong>CyButton</strong></Header>
-            <ChildContent>Trigger actions and submit forms.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/textbox">
-            <Header><strong>CyTextBox</strong></Header>
-            <ChildContent>A labelled single-line text input with hint and validation support.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/select">
-            <Header><strong>CySelect</strong></Header>
-            <ChildContent>A labelled dropdown selection field.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/checkbox">
-            <Header><strong>CyCheckbox</strong></Header>
-            <ChildContent>A single labelled checkbox field.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/radio-group">
-            <Header><strong>CyRadioGroup</strong></Header>
-            <ChildContent>A fieldset of mutually exclusive options.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/textarea">
-            <Header><strong>CyTextArea</strong></Header>
-            <ChildContent>A multi-line text field with an optional live character count.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/date-input">
-            <Header><strong>CyDateInput</strong></Header>
-            <ChildContent>A three-field day/month/year date input.</ChildContent>
-        </CyCard>
-        <CyCard Href="/forms/validation-summary">
-            <Header><strong>CyValidationSummary</strong></Header>
-            <ChildContent>A titled summary of an EditForm's current validation errors.</ChildContent>
-        </CyCard>
-    </CyGrid>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Cydrannau</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/forms/button">
+                <Header><strong>CyButton</strong></Header>
+                <ChildContent>Ysgogi gweithredoedd a chyflwyno ffurflenni.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/textbox">
+                <Header><strong>CyTextBox</strong></Header>
+                <ChildContent>Mewnbwn testun llinell sengl wedi'i labelu gyda chefnogaeth awgrymiadau a dilysu.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/select">
+                <Header><strong>CySelect</strong></Header>
+                <ChildContent>Maes dewis gwymplen wedi'i labelu.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/checkbox">
+                <Header><strong>CyCheckbox</strong></Header>
+                <ChildContent>Blwch ticio sengl wedi'i labelu.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/radio-group">
+                <Header><strong>CyRadioGroup</strong></Header>
+                <ChildContent>Set feysydd o opsiynau sy'n annibynnol ar ei gilydd.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/textarea">
+                <Header><strong>CyTextArea</strong></Header>
+                <ChildContent>Maes testun aml-linell gyda chyfrif nodau byw dewisol.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/date-input">
+                <Header><strong>CyDateInput</strong></Header>
+                <ChildContent>Mewnbwn dyddiad tri maes diwrnod/mis/blwyddyn.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/validation-summary">
+                <Header><strong>CyValidationSummary</strong></Header>
+                <ChildContent>Crynodeb dan bennawd o wallau dilysu cyfredol EditForm.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">Design principles</h2>
-    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
-        <li>
-            <strong>Label first.</strong> Every field component renders its own
-            <code>&lt;label&gt;</code> — there is no label-less variant, so
-            fields are always identifiable to assistive technology.
-        </li>
-        <li>
-            <strong><code>EditContext</code>-aware.</strong> Field components
-            read validation state from the ambient <code>EditContext</code>
-            when used inside an <code>EditForm</code>, and surface errors
-            inline as well as through <code>CyValidationSummary</code>.
-        </li>
-        <li>
-            <strong>Consistent sizing.</strong> All controls share the same
-            <code>ComponentSize</code> scale as <code>CyButton</code>, so a
-            form's inputs and its submit button line up visually.
-        </li>
-    </ul>
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">Egwyddorion dylunio</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Label yn gyntaf.</strong> Mae pob cydran maes yn rendro ei
+                <code>&lt;label&gt;</code> ei hun — nid oes amrywiad heb label, felly
+                mae meysydd bob amser yn adnabyddadwy i dechnoleg gynorthwyol.
+            </li>
+            <li>
+                <strong>Ymwybodol o <code>EditContext</code>.</strong> Mae cydrannau meysydd
+                yn darllen cyflwr dilysu o'r <code>EditContext</code> amgylchynol
+                pan gânt eu defnyddio y tu mewn i <code>EditForm</code>, ac yn cyflwyno gwallau
+                yn fewnol yn ogystal â thrwy <code>CyValidationSummary</code>.
+            </li>
+            <li>
+                <strong>Maint cyson.</strong> Mae pob rheolydd yn rhannu'r un raddfa
+                <code>ComponentSize</code> â <code>CyButton</code>, fel bod
+                mewnbynnau ffurflen a'i botwm cyflwyno yn cyd-fynd yn weledol.
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Form Components</h1>
+        <p class="cb-page-description">
+            Labelled, validation-aware controls for collecting user input, built
+            on top of Blazor's <code>EditForm</code>/<code>EditContext</code>
+            pipeline so field errors and <code>CyValidationSummary</code> stay in
+            sync automatically.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Components</h2>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyCard Href="/forms/button">
+                <Header><strong>CyButton</strong></Header>
+                <ChildContent>Trigger actions and submit forms.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/textbox">
+                <Header><strong>CyTextBox</strong></Header>
+                <ChildContent>A labelled single-line text input with hint and validation support.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/select">
+                <Header><strong>CySelect</strong></Header>
+                <ChildContent>A labelled dropdown selection field.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/checkbox">
+                <Header><strong>CyCheckbox</strong></Header>
+                <ChildContent>A single labelled checkbox field.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/radio-group">
+                <Header><strong>CyRadioGroup</strong></Header>
+                <ChildContent>A fieldset of mutually exclusive options.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/textarea">
+                <Header><strong>CyTextArea</strong></Header>
+                <ChildContent>A multi-line text field with an optional live character count.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/date-input">
+                <Header><strong>CyDateInput</strong></Header>
+                <ChildContent>A three-field day/month/year date input.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/validation-summary">
+                <Header><strong>CyValidationSummary</strong></Header>
+                <ChildContent>A titled summary of an EditForm's current validation errors.</ChildContent>
+            </CyCard>
+        </CyGrid>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Design principles</h2>
+        <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+            <li>
+                <strong>Label first.</strong> Every field component renders its own
+                <code>&lt;label&gt;</code> — there is no label-less variant, so
+                fields are always identifiable to assistive technology.
+            </li>
+            <li>
+                <strong><code>EditContext</code>-aware.</strong> Field components
+                read validation state from the ambient <code>EditContext</code>
+                when used inside an <code>EditForm</code>, and surface errors
+                inline as well as through <code>CyValidationSummary</code>.
+            </li>
+            <li>
+                <strong>Consistent sizing.</strong> All controls share the same
+                <code>ComponentSize</code> scale as <code>CyButton</code>, so a
+                form's inputs and its submit button line up visually.
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}

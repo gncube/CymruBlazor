@@ -1,65 +1,132 @@
 @page "/installation"
 @namespace CymruBlazor.Demo.Pages.GettingStarted
+@implements IDisposable
 @using CymruBlazor.Demo.SharedComponents
 
-<div class="cb-page-header">
-    <h1 class="cb-page-title">Installation</h1>
-    <p class="cb-page-description">
-        The complete, copy-pasteable setup reference for adding CymruBlazor to a
-        Blazor WebAssembly or Blazor Server project. For what CymruBlazor is and
-        its design principles, see <a href="/getting-started">Getting Started</a>.
-    </p>
-</div>
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Gosod</h1>
+        <p class="cb-page-description">
+            Y cyfeirnod sefydlu cyflawn, y gellir ei gopïo a'i ludo, ar gyfer ychwanegu CymruBlazor at
+            brosiect Blazor WebAssembly neu Blazor Server. Am beth yw CymruBlazor a'i egwyddorion dylunio,
+            gweler <a href="/getting-started">Dechrau Arni</a>.
+        </p>
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">1. Install the package</h2>
-    <CyCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">1. Gosod y pecyn</h2>
+        <CyCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">2. Reference the stylesheet</h2>
-    <p class="cb-section-description">Add this to <code>App.razor</code> (Blazor Web App) or <code>wwwroot/index.html</code> (Blazor WebAssembly):</p>
-    <CyCodeBlock Code="@_stylesheetCode" Language="html" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">2. Cyfeirio at y ddalen arddull</h2>
+        <p class="cb-section-description">Ychwanegwch hwn at <code>App.razor</code> (Blazor Web App) neu <code>wwwroot/index.html</code> (Blazor WebAssembly):</p>
+        <CyCodeBlock Code="@_stylesheetCode" Language="html" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">3. Reference the theme script (optional)</h2>
-    <p class="cb-section-description">
-        Only needed if you want theme choice to persist across page loads and detect the OS colour-scheme
-        preference. Without it, <code>CyThemeProvider</code> still works for the current session.
-    </p>
-    <CyCodeBlock Code="@_themeScriptCode" Language="html" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">3. Cyfeirio at y sgript thema (dewisol)</h2>
+        <p class="cb-section-description">
+            Dim ond os ydych chi am i'r dewis thema barhau ar draws llwythi tudalen a chanfod dewis cynllun lliw y
+            system weithredu y mae ei angen. Hebddo, mae <code>CyThemeProvider</code> yn dal i weithio ar gyfer y sesiwn gyfredol.
+        </p>
+        <CyCodeBlock Code="@_themeScriptCode" Language="html" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">4. Register the services</h2>
-    <CyCodeBlock Code="@_programCsCode" Language="csharp" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">4. Cofrestru'r gwasanaethau</h2>
+        <CyCodeBlock Code="@_programCsCode" Language="csharp" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">5. Wrap your app in CyThemeProvider</h2>
-    <p class="cb-section-description">Once, in <code>MainLayout.razor</code>:</p>
-    <CyCodeBlock Code="@_mainLayoutCode" Language="razor" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">5. Lapio eich ap mewn CyThemeProvider</h2>
+        <p class="cb-section-description">Unwaith, yn <code>MainLayout.razor</code>:</p>
+        <CyCodeBlock Code="@_mainLayoutCode" Language="razor" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">6. Add global usings (optional)</h2>
-    <p class="cb-section-description">
-        Add these to your <code>_Imports.razor</code> to avoid repeating
-        <code>@@using</code> directives on every page.
-    </p>
-    <CyCodeBlock Code="@_globalUsingsCode" Language="razor" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">6. Ychwanegu defnyddiau byd-eang (dewisol)</h2>
+        <p class="cb-section-description">
+            Ychwanegwch y rhain at eich <code>_Imports.razor</code> er mwyn osgoi ailadrodd
+            cyfarwyddebau <code>@@using</code> ar bob tudalen.
+        </p>
+        <CyCodeBlock Code="@_globalUsingsCode" Language="razor" />
+    </div>
 
-<div class="cb-section">
-    <h2 class="cb-section-title">7. Set up bilingual localisation (optional)</h2>
-    <p class="cb-section-description">
-        For bilingual applications, register an <code>AppStrings</code> service in your DI container to manage language switching and string overrides. See <a href="/foundations/localisation">Localisation</a> for the reference implementation.
-    </p>
-    <CyCodeBlock Code="@_localisationSetupCode" Language="csharp" />
-</div>
+    <div class="cb-section">
+        <h2 class="cb-section-title">7. Sefydlu lleoleiddio dwyieithog (dewisol)</h2>
+        <p class="cb-section-description">
+            Ar gyfer cymwysiadau dwyieithog, cofrestrwch wasanaeth <code>AppStrings</code> yn eich cynhwysydd DI i reoli newid iaith a throsleisio llinynnau. Gweler <a href="/foundations/localisation">Lleoleiddio</a> am y gweithrediad cyfeirio.
+        </p>
+        <CyCodeBlock Code="@_localisationSetupCode" Language="csharp" />
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Installation</h1>
+        <p class="cb-page-description">
+            The complete, copy-pasteable setup reference for adding CymruBlazor to a
+            Blazor WebAssembly or Blazor Server project. For what CymruBlazor is and
+            its design principles, see <a href="/getting-started">Getting Started</a>.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">1. Install the package</h2>
+        <CyCodeBlock Code="dotnet add package CymruBlazor" Language="bash" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">2. Reference the stylesheet</h2>
+        <p class="cb-section-description">Add this to <code>App.razor</code> (Blazor Web App) or <code>wwwroot/index.html</code> (Blazor WebAssembly):</p>
+        <CyCodeBlock Code="@_stylesheetCode" Language="html" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">3. Reference the theme script (optional)</h2>
+        <p class="cb-section-description">
+            Only needed if you want theme choice to persist across page loads and detect the OS colour-scheme
+            preference. Without it, <code>CyThemeProvider</code> still works for the current session.
+        </p>
+        <CyCodeBlock Code="@_themeScriptCode" Language="html" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">4. Register the services</h2>
+        <CyCodeBlock Code="@_programCsCode" Language="csharp" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">5. Wrap your app in CyThemeProvider</h2>
+        <p class="cb-section-description">Once, in <code>MainLayout.razor</code>:</p>
+        <CyCodeBlock Code="@_mainLayoutCode" Language="razor" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">6. Add global usings (optional)</h2>
+        <p class="cb-section-description">
+            Add these to your <code>_Imports.razor</code> to avoid repeating
+            <code>@@using</code> directives on every page.
+        </p>
+        <CyCodeBlock Code="@_globalUsingsCode" Language="razor" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">7. Set up bilingual localisation (optional)</h2>
+        <p class="cb-section-description">
+            For bilingual applications, register an <code>AppStrings</code> service in your DI container to manage language switching and string overrides. See <a href="/foundations/localisation">Localisation</a> for the reference implementation.
+        </p>
+        <CyCodeBlock Code="@_localisationSetupCode" Language="csharp" />
+    </div>
+}
 
 @code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
     private const string _stylesheetCode =
         """<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />""";
 

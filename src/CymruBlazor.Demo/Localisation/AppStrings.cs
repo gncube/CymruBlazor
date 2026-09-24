@@ -165,6 +165,8 @@ public sealed record NavStrings
     public required string TableOfContents { get; init; }
     public required string Examples { get; init; }
     public required string ApiReference { get; init; }
+    public required string Api { get; init; }
+    public required string ComponentDocumentationTabs { get; init; }
 }
 
 /// <summary>One library parameter, with how to read its value from a <see cref="LibraryStrings"/>.</summary>
@@ -345,7 +347,9 @@ public sealed class AppStrings
         PageNavigation = "Page navigation",
         TableOfContents = "Table of contents",
         Examples = "Examples",
-        ApiReference = "API Reference"
+        ApiReference = "API Reference",
+        Api = "API",
+        ComponentDocumentationTabs = "Component Documentation Tabs"
     };
 
     public static NavStrings WelshNav { get; } = new()
@@ -389,7 +393,9 @@ public sealed class AppStrings
         PageNavigation = "Llywio tudalen",
         TableOfContents = "Tabl cynnwys",
         Examples = "Enghreifftiau",
-        ApiReference = "Cyfeirnod API"
+        ApiReference = "Cyfeirnod API",
+        Api = "Cyfeirnod API",
+        ComponentDocumentationTabs = "Tabiau Dogfennaeth Cydran"
     };
 
     /// <summary>Every library override parameter this release adds, for the catalogue table and the tests.</summary>

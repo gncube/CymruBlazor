@@ -15,15 +15,15 @@
     </Breadcrumb>
 </CyPageHeader>
 
-<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
     <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)"
             aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
-            @onclick="() => _activeTab = Tab.Examples">Examples</button>
+            @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
     <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)"
-            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+            class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
     <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)"
             aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
-            @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+            @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
 </div>
 
 @if (_activeTab == Tab.Examples)
