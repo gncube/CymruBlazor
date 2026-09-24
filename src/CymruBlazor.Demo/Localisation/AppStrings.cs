@@ -155,6 +155,9 @@ public sealed record NavStrings
     public required string Documentation { get; init; }
     public required string Community { get; init; }
     public required string Packages { get; init; }
+    public required string NotFoundTitle { get; init; }
+    public required string NotFoundBody { get; init; }
+    public required string NotFoundHome { get; init; }
 }
 
 /// <summary>One library parameter, with how to read its value from a <see cref="LibraryStrings"/>.</summary>
@@ -325,7 +328,10 @@ public sealed class AppStrings
         OnThisPage = "On this page",
         Documentation = "Documentation",
         Community = "Community",
-        Packages = "Packages"
+        Packages = "Packages",
+        NotFoundTitle = "Page not found",
+        NotFoundBody = "There is no page at this address. Check the URL or use the navigation to find what you are looking for.",
+        NotFoundHome = "← Back to home"
     };
 
     public static NavStrings WelshNav { get; } = new()
@@ -359,7 +365,10 @@ public sealed class AppStrings
         OnThisPage = "Ar y dudalen hon",
         Documentation = "Dogfennaeth",
         Community = "Cymuned",
-        Packages = "Pecynnau"
+        Packages = "Pecynnau",
+        NotFoundTitle = "Tudalen heb ei chanfod",
+        NotFoundBody = "Nid oes tudalen yn y cyfeiriad hwn. Gwiriwch yr URL neu ddefnyddiwch y llywio i ddod o hyd i'r hyn rydych chi'n chwilio amdano.",
+        NotFoundHome = "← Yn ôl i'r hafan"
     };
 
     /// <summary>Every library override parameter this release adds, for the catalogue table and the tests.</summary>

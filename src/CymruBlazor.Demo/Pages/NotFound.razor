@@ -1,6 +1,7 @@
 @page "/404"
-
+@implements IDisposable
 @namespace CymruBlazor.Demo.Pages
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 <CyContainer Size="ContainerSize.Medium">
     <CyCenter FullHeight="true" Style="min-height:60vh">
@@ -8,14 +9,30 @@
                  Gap="ComponentSize.Medium"
                  AlignItems="AlignItems.Center">
             <div style="font-size:4rem;line-height:1" aria-hidden="true">🔍</div>
-            <h1 style="font-size:var(--cymru-font-size-3xl);margin:0">Page not found</h1>
+            <h1 style="font-size:var(--cymru-font-size-3xl);margin:0">@Strings.Nav.NotFoundTitle</h1>
             <p style="margin:0;color:var(--cymru-color-text-muted);text-align:center;max-width:40ch">
-                There is no page at this address. Check the URL or use the
-                navigation to find what you are looking for.
+                @Strings.Nav.NotFoundBody
             </p>
             <a href="/" style="color:var(--cymru-color-primary);font-weight:600">
-                ← Back to home
+                @Strings.Nav.NotFoundHome
             </a>
         </CyStack>
     </CyCenter>
 </CyContainer>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
+    }
+}

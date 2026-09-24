@@ -51,6 +51,14 @@
     <CyCodeBlock Code="@_globalUsingsCode" Language="razor" />
 </div>
 
+<div class="cb-section">
+    <h2 class="cb-section-title">7. Set up bilingual localisation (optional)</h2>
+    <p class="cb-section-description">
+        For bilingual applications, register an <code>AppStrings</code> service in your DI container to manage language switching and string overrides. See <a href="/foundations/localisation">Localisation</a> for the reference implementation.
+    </p>
+    <CyCodeBlock Code="@_localisationSetupCode" Language="csharp" />
+</div>
+
 @code {
     private const string _stylesheetCode =
         """<link rel="stylesheet" href="_content/CymruBlazor/css/cymrublazor.css" />""";
@@ -92,5 +100,11 @@
         @using CymruBlazor.Enums
         @using CymruBlazor.Accessibility.Notifications
         @using Mediator
+        """;
+
+    private const string _localisationSetupCode =
+        """
+        // In Program.cs:
+        builder.Services.AddScoped<AppStrings>();
         """;
 }
