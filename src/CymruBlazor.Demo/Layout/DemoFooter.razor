@@ -1,16 +1,18 @@
 @namespace CymruBlazor.Demo.Layout
+@implements IDisposable
 @using CymruBlazor.Components.Layout
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 <CyFooter Copyright="@($"\u00a9 {DateTime.UtcNow.Year} CymruBlazor Contributors \u00b7 MIT License \u00b7 Built with Blazor WebAssembly")">
     <div class="cb-footer-col">
-        <h3 class="cb-footer-col__heading">Documentation</h3>
-        <a href="/getting-started">Getting Started</a>
-        <a href="/forms/button">Components</a>
-        <a href="/accessibility">Accessibility</a>
-        <a href="/foundations/theme-provider">Theming</a>
+        <h3 class="cb-footer-col__heading">@Strings.Nav.Documentation</h3>
+        <a href="/getting-started">@Strings.Nav.GettingStarted</a>
+        <a href="/layouts/stack">@Strings.Nav.Components</a>
+        <a href="/foundations">@Strings.Nav.Foundations</a>
+        <a href="/accessibility">@Strings.Nav.Accessibility</a>
     </div>
     <div class="cb-footer-col">
-        <h3 class="cb-footer-col__heading">Community</h3>
+        <h3 class="cb-footer-col__heading">@Strings.Nav.Community</h3>
         <a href="https://github.com/gncube/CymruBlazor" target="_blank" rel="noopener noreferrer">
             GitHub<span class="u-sr-only"> (opens in new tab)</span>
         </a>
@@ -22,9 +24,26 @@
         </a>
     </div>
     <div class="cb-footer-col">
-        <h3 class="cb-footer-col__heading">Packages</h3>
+        <h3 class="cb-footer-col__heading">@Strings.Nav.Packages</h3>
         <a href="https://www.nuget.org/packages/CymruBlazor" target="_blank" rel="noopener noreferrer">
             NuGet<span class="u-sr-only"> (opens in new tab)</span>
         </a>
     </div>
 </CyFooter>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
+    }
+}

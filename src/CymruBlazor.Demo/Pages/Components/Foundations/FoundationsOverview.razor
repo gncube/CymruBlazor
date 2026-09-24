@@ -1,0 +1,58 @@
+@page "/foundations"
+@namespace CymruBlazor.Demo.Pages.Components.Foundations
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Foundations</h1>
+    <p class="cb-page-description">
+        Core visual and technical building blocks: design tokens, theme provider,
+        typography scale, localisation service, and focus management primitives.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Core Foundations</h2>
+    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+        <CyCard Href="/foundations/tokens">
+            <Header><strong>Design Tokens</strong></Header>
+            <ChildContent>Colour, spacing, and font scale tokens aligned to NHS Wales branding.</ChildContent>
+        </CyCard>
+        <CyCard Href="/foundations/theme-provider">
+            <Header><strong>Theme Provider</strong></Header>
+            <ChildContent>App-wide runtime theming with light, dark, and high-contrast modes.</ChildContent>
+        </CyCard>
+        <CyCard Href="/foundations/typography">
+            <Header><strong>Typography</strong></Header>
+            <ChildContent>Accessible type scale and semantic heading hierarchy.</ChildContent>
+        </CyCard>
+        <CyCard Href="/foundations/localisation">
+            <Header><strong>Localisation</strong></Header>
+            <ChildContent>Bilingual English and Welsh string service with runtime switching.</ChildContent>
+        </CyCard>
+        <CyCard Href="/foundations/focus-trap">
+            <Header><strong>CyFocusTrap</strong></Header>
+            <ChildContent>Keyboard focus containment primitive for custom overlays and drawers.</ChildContent>
+        </CyCard>
+    </CyGrid>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>Token-first styling.</strong> All components consume CSS custom properties
+            (<code>--cymru-*</code>) rather than hardcoded colors or pixel values, ensuring consistent
+            branding and effortless theming.
+        </li>
+        <li>
+            <strong>Bilingual by design.</strong> Welsh and English have equal status from the outset;
+            components provide default English labels and full parameter overrides for Cymraeg.
+        </li>
+        <li>
+            <strong>Standardized accessibility.</strong> Focus order, contrast ratios, and WCAG 2.2 AA
+            compliance are built directly into the foundation tokens and primitives.
+        </li>
+    </ul>
+</div>

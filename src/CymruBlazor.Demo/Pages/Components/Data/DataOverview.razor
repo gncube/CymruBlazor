@@ -1,0 +1,46 @@
+@page "/data"
+@namespace CymruBlazor.Demo.Pages.Components.Data
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Data Components</h1>
+    <p class="cb-page-description">
+        Components for displaying, scanning, and paginating tabular datasets in
+        clinical, administrative, and public-facing services.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Components</h2>
+    <CyGrid Columns="GridColumns.Two" Gap="GridGap.Medium">
+        <CyCard Href="/data/table">
+            <Header><strong>CyTable</strong></Header>
+            <ChildContent>Accessible data tables with captions, striped rows, and bordered variants.</ChildContent>
+        </CyCard>
+        <CyCard Href="/data/pagination">
+            <Header><strong>CyPagination</strong></Header>
+            <ChildContent>Keyboard-navigable pagination controls with bilingual ARIA announcements.</ChildContent>
+        </CyCard>
+    </CyGrid>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>Accessible structure first.</strong> Tables require descriptive captions
+            and semantic column headers (<code>&lt;th scope="col"&gt;</code>) to ensure screen-reader
+            clarity across complex clinical data.
+        </li>
+        <li>
+            <strong>Keyboard-friendly paging.</strong> Pagination controls support Tab navigation,
+            clear active-state indicators, and customizable page size and boundary display.
+        </li>
+        <li>
+            <strong>Bilingual status announcements.</strong> Paging controls and labels are fully
+            translatable into Cymraeg via parameter overrides or the shared <code>AppStrings</code> service.
+        </li>
+    </ul>
+</div>

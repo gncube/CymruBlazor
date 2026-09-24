@@ -1,0 +1,66 @@
+@page "/navigation"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+<div class="cb-page-header">
+    <h1 class="cb-page-title">Navigation Components</h1>
+    <p class="cb-page-description">
+        Wayfinding and structural navigation components designed for NHS Wales services:
+        global headers, primary navigation menus, page headers, breadcrumbs, footers, tabs, and skip links.
+    </p>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Components</h2>
+    <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+        <CyCard Href="/navigation/breadcrumb">
+            <Header><strong>CyBreadcrumb</strong></Header>
+            <ChildContent>Hierarchical location trail showing user position within the app.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/header">
+            <Header><strong>CyHeader</strong></Header>
+            <ChildContent>Top-level site chrome with branding, navigation links, and action slots.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/navigation">
+            <Header><strong>CyNavigation</strong></Header>
+            <ChildContent>Primary site navigation bar with responsive mobile menu support.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/page-header">
+            <Header><strong>CyPageHeader</strong></Header>
+            <ChildContent>Titled header with subtitle, action buttons, and breadcrumb slot.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/skip-link">
+            <Header><strong>CySkipLink</strong></Header>
+            <ChildContent>Accessible keyboard shortcut jumping directly to the main content landmark.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/footer">
+            <Header><strong>CyFooter</strong></Header>
+            <ChildContent>Standardised bottom landmark with copyright, links, and license information.</ChildContent>
+        </CyCard>
+        <CyCard Href="/navigation/tabs">
+            <Header><strong>CyTabs</strong></Header>
+            <ChildContent>Tabbed interface for organizing related content panels in the same view.</ChildContent>
+        </CyCard>
+    </CyGrid>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Design principles</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>
+            <strong>Semantic landmarks.</strong> Every navigation component outputs standard HTML5
+            landmarks (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;footer&gt;</code>)
+            with descriptive ARIA labels to support screen-reader navigation.
+        </li>
+        <li>
+            <strong>Keyboard wayfinding.</strong> Skip links allow users to bypass repetitive chrome,
+            while tabs and menus support standard Arrow and Tab key interactions.
+        </li>
+        <li>
+            <strong>Responsive mobile drawers.</strong> On narrow viewports, primary navigation
+            seamlessly collapses into accessible fly-out menus with focus trapping.
+        </li>
+    </ul>
+</div>

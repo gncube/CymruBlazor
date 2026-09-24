@@ -20,6 +20,8 @@ public static class DemoNavigationIndex
             "NuGet package, stylesheet, theme script, and service registration."),
 
         // 2. Foundations
+        new("Foundations", "Overview", "/foundations",
+            "Core design tokens, theme provider, typography, localisation, and focus primitives."),
         new("Foundations", "Design Tokens", "/foundations/tokens",
             "Colour, spacing, and typography tokens sourced from the DHCW design system.",
             Aliases: ["/design-tokens"]),
@@ -43,7 +45,7 @@ public static class DemoNavigationIndex
 
         // 4. Layout
         new("Layout", "Overview", "/layouts",
-            "Six layout primitives that compose to build any NHS Wales page structure."),
+            "Layout components and primitives that compose to build any NHS Wales page structure."),
         new("Layout", "Container", "/layouts/container",
             "Constrains content to a maximum readable width."),
         new("Layout", "Stack", "/layouts/stack",
@@ -60,6 +62,8 @@ public static class DemoNavigationIndex
             "A prominent page-top hero banner with title, subtitle, and action controls."),
 
         // 5. Navigation
+        new("Navigation", "Overview", "/navigation",
+            "Wayfinding and structural navigation components designed for NHS Wales services."),
         new("Navigation", "Breadcrumb", "/navigation/breadcrumb",
             "A breadcrumb trail showing the current page's location in the site hierarchy."),
         new("Navigation", "Header", "/navigation/header",
@@ -114,12 +118,16 @@ public static class DemoNavigationIndex
             "A labelled, read-only code sample with a copy-to-clipboard button."),
 
         // 8. Data
+        new("Data", "Overview", "/data",
+            "Components for presenting, scanning, and paginating tabular datasets."),
         new("Data", "Table", "/data/table",
             "A styled semantic table, with a required caption and a keyboard-accessible scroll container."),
         new("Data", "Pagination", "/data/pagination",
             "Page navigation for a result set too large to show at once, with boundary/sibling ellipsis truncation."),
 
         // 9. Feedback
+        new("Feedback", "Overview", "/feedback",
+            "Status, progress, and notification components that communicate asynchronous activity."),
         new("Feedback", "Dialog", "/feedback/dialog",
             "A modal dialog on the native dialog element: inert background, Escape, focus return.",
             Aliases: ["/accessibility/dialog"]),
