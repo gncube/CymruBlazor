@@ -1,8 +1,10 @@
 @namespace CymruBlazor.Demo.Layout
+@implements IDisposable
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 <aside class="cb-shell-toc">
     <div class="cb-toc-sticky">
-        <h2 class="cb-toc-title">On This Page</h2>
+        <h2 class="cb-toc-title">@Strings.Nav.OnThisPage</h2>
         <nav aria-label="Table of contents">
             <ul class="cb-toc-list">
                 <li><a href="#examples">Examples</a></li>
@@ -12,3 +14,20 @@
         </nav>
     </div>
 </aside>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
+    }
+}

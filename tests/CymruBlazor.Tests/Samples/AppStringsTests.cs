@@ -61,6 +61,25 @@ public sealed class AppStringsTests : TestContextBase
     }
 
     [Fact]
+    public void Welsh_Nav_Strings_Are_Complete_And_Differ_From_English()
+    {
+        var english = Values(AppStrings.EnglishNav);
+        var welsh = Values(AppStrings.WelshNav);
+
+        welsh.Keys.ShouldBe(english.Keys, ignoreOrder: true);
+
+        foreach (var (name, value) in welsh)
+        {
+            value.ShouldNotBeNullOrWhiteSpace(name);
+            if (name == nameof(NavStrings.Data))
+            {
+                continue;
+            }
+            value.ShouldNotBe(english[name], $"{name} has not been translated.");
+        }
+    }
+
+    [Fact]
     public void Catalogue_Covers_Every_Library_String_Exactly_Once()
     {
         // Each property is set to its own name, so the catalogue's selectors reveal which property they read.
@@ -119,6 +138,7 @@ public sealed class AppStringsTests : TestContextBase
 
         strings.Language.ShouldBe(AppLanguage.English);
         strings.Library.ShouldBeSameAs(AppStrings.EnglishLibrary);
+        strings.Nav.ShouldBeSameAs(AppStrings.EnglishNav);
         strings.LangTag.ShouldBe("en");
 
         strings.SetLanguage(AppLanguage.Welsh);
@@ -126,6 +146,7 @@ public sealed class AppStringsTests : TestContextBase
 
         changes.ShouldBe(1);
         strings.Library.ShouldBeSameAs(AppStrings.WelshLibrary);
+        strings.Nav.ShouldBeSameAs(AppStrings.WelshNav);
         strings.Content.ShouldBeSameAs(AppStrings.WelshContent);
         strings.LangTag.ShouldBe("cy");
     }

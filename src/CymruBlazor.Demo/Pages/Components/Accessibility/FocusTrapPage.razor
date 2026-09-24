@@ -1,9 +1,10 @@
+@page "/foundations/focus-trap"
 @page "/accessibility/focus-trap"
 @namespace CymruBlazor.Demo.Pages.Components.Accessibility
 @inject IFocusManager FocusManager
 
 <div class="cb-page-header">
-    <h1 class="cb-page-title">FocusTrap</h1>
+    <h1 class="cb-page-title">CyFocusTrap</h1>
     <a class="cb-open-in-github"
        href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Accessibility/CyFocusTrap.razor"
        target="_blank" rel="noopener noreferrer">
@@ -13,7 +14,7 @@
         A wrapper that keeps keyboard focus inside its content: focus moves in when the
         trap activates, <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> wrap at both ends, and
         focus returns to where it came from when the trap is removed. For a modal dialog use
-        <a href="/accessibility/dialog"><code>CyDialog</code></a> instead.
+        <a href="/feedback/dialog"><code>CyDialog</code></a> instead.
     </p>
 </div>
 
@@ -175,7 +176,7 @@ builder.Services.AddScoped&lt;IFocusManager, MyFocusManager&gt;();</code></pre>
         </li>
         <li>
             It does not hide the rest of the page from assistive technology. For a modal
-            dialog use <a href="/accessibility/dialog"><code>CyDialog</code></a>, which uses the
+            dialog use <a href="/feedback/dialog"><code>CyDialog</code></a>, which uses the
             native <code>&lt;dialog&gt;</code> so the background is inert, <kbd>Escape</kbd> closes it and
             the dialog has a proper role and name.
         </li>

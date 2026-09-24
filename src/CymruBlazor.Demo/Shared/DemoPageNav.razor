@@ -1,6 +1,7 @@
 @namespace CymruBlazor.Demo.SharedComponents
 @implements IDisposable
 @inject NavigationManager NavigationManager
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 @if (_previous is not null || _next is not null)
 {
@@ -8,7 +9,7 @@
         @if (_previous is not null)
         {
             <a class="cb-page-nav__link cb-page-nav__link--prev" href="@_previous.Href">
-                <span class="cb-page-nav__direction">&larr; Previous</span>
+                <span class="cb-page-nav__direction">&larr; @Strings.Nav.Previous</span>
                 <span class="cb-page-nav__title">@_previous.Category / @_previous.Title</span>
             </a>
         }
@@ -20,7 +21,7 @@
         @if (_next is not null)
         {
             <a class="cb-page-nav__link cb-page-nav__link--next" href="@_next.Href">
-                <span class="cb-page-nav__direction">Next &rarr;</span>
+                <span class="cb-page-nav__direction">@Strings.Nav.Next &rarr;</span>
                 <span class="cb-page-nav__title">@_next.Category / @_next.Title</span>
             </a>
         }
@@ -34,7 +35,13 @@
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += HandleLocationChanged;
+        Strings.Changed += HandleStringsChanged;
         Recalculate();
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
@@ -55,5 +62,6 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= HandleLocationChanged;
+        Strings.Changed -= HandleStringsChanged;
     }
 }

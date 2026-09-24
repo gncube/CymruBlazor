@@ -120,6 +120,40 @@ public sealed record SampleContent
     public required string NotificationText { get; init; }
 }
 
+/// <summary>
+/// Shell and navigation copy across English and Welsh.
+/// </summary>
+public sealed record NavStrings
+{
+    public required string GettingStarted { get; init; }
+    public required string Foundations { get; init; }
+    public required string Branding { get; init; }
+    public required string Layout { get; init; }
+    public required string Navigation { get; init; }
+    public required string Forms { get; init; }
+    public required string Content { get; init; }
+    public required string Data { get; init; }
+    public required string Feedback { get; init; }
+    public required string Accessibility { get; init; }
+    public required string Overview { get; init; }
+    public required string Components { get; init; }
+    public required string Docs { get; init; }
+    public required string Search { get; init; }
+    public required string SearchPlaceholder { get; init; }
+    public required string SearchAriaLabel { get; init; }
+    public required string SearchTitle { get; init; }
+    public required string OpenNavigationMenu { get; init; }
+    public required string CloseNavigationMenu { get; init; }
+    public required string DocumentationNavigation { get; init; }
+    public required string PrimaryNavigation { get; init; }
+    public required string ToggleDarkMode { get; init; }
+    public required string SwitchToLightMode { get; init; }
+    public required string SwitchToDarkMode { get; init; }
+    public required string Previous { get; init; }
+    public required string Next { get; init; }
+    public required string OnThisPage { get; init; }
+}
+
 /// <summary>One library parameter, with how to read its value from a <see cref="LibraryStrings"/>.</summary>
 public sealed record StringEntry(string Component, string Parameter, Func<LibraryStrings, string> Get);
 
@@ -257,6 +291,68 @@ public sealed class AppStrings
         NotificationText = "Cadwyd eich newidiadau."
     };
 
+    public static NavStrings EnglishNav { get; } = new()
+    {
+        GettingStarted = "Getting Started",
+        Foundations = "Foundations",
+        Branding = "Branding",
+        Layout = "Layout",
+        Navigation = "Navigation",
+        Forms = "Forms",
+        Content = "Content",
+        Data = "Data",
+        Feedback = "Feedback",
+        Accessibility = "Accessibility",
+        Overview = "Overview",
+        Components = "Components",
+        Docs = "Docs",
+        Search = "Search...",
+        SearchPlaceholder = "Search components and docs...",
+        SearchAriaLabel = "Search documentation",
+        SearchTitle = "Search (Ctrl+K)",
+        OpenNavigationMenu = "Open navigation menu",
+        CloseNavigationMenu = "Close navigation menu",
+        DocumentationNavigation = "Documentation navigation",
+        PrimaryNavigation = "Primary",
+        ToggleDarkMode = "Toggle dark mode",
+        SwitchToLightMode = "Switch to light mode",
+        SwitchToDarkMode = "Switch to dark mode",
+        Previous = "Previous",
+        Next = "Next",
+        OnThisPage = "On this page"
+    };
+
+    public static NavStrings WelshNav { get; } = new()
+    {
+        GettingStarted = "Dechrau Arni",
+        Foundations = "Seiliau",
+        Branding = "Brandio",
+        Layout = "Cynllun",
+        Navigation = "Llywio",
+        Forms = "Ffurflenni",
+        Content = "Cynnwys",
+        Data = "Data",
+        Feedback = "Adborth",
+        Accessibility = "Hygyrchedd",
+        Overview = "Trosolwg",
+        Components = "Cydrannau",
+        Docs = "Dogfennau",
+        Search = "Chwilio...",
+        SearchPlaceholder = "Chwilio cydrannau a dogfennau...",
+        SearchAriaLabel = "Chwilio'r ddogfennaeth",
+        SearchTitle = "Chwilio (Ctrl+K)",
+        OpenNavigationMenu = "Agor y ddewislen lywio",
+        CloseNavigationMenu = "Cau'r ddewislen lywio",
+        DocumentationNavigation = "Llywio'r ddogfennaeth",
+        PrimaryNavigation = "Prif ddewislen",
+        ToggleDarkMode = "Toglo modd tywyll",
+        SwitchToLightMode = "Newid i fodd golau",
+        SwitchToDarkMode = "Newid i fodd tywyll",
+        Previous = "Blaenorol",
+        Next = "Nesaf",
+        OnThisPage = "Ar y dudalen hon"
+    };
+
     /// <summary>Every library override parameter this release adds, for the catalogue table and the tests.</summary>
     public static IReadOnlyList<StringEntry> Catalogue { get; } =
     [
@@ -305,6 +401,9 @@ public sealed class AppStrings
 
     /// <summary>The library strings for <see cref="Language"/>.</summary>
     public LibraryStrings Library => Language == AppLanguage.Welsh ? WelshLibrary : EnglishLibrary;
+
+    /// <summary>The shell navigation strings for <see cref="Language"/>.</summary>
+    public NavStrings Nav => Language == AppLanguage.Welsh ? WelshNav : EnglishNav;
 
     /// <summary>The demo page's own copy for <see cref="Language"/>.</summary>
     public SampleContent Content => Language == AppLanguage.Welsh ? WelshContent : EnglishContent;

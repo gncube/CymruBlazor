@@ -1,0 +1,110 @@
+@page "/layouts/hero-banner"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyHeroBanner" Subtitle="A prominent page-top hero banner with title, subtitle, and action controls.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyHeroBanner" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="padding:0; overflow:hidden; border-radius:var(--cymru-radius-md);">
+        <CyHeroBanner Title="@_title" Subtitle="@(_hasSubtitle ? _subtitle : null)" Background="_background" Style="width:100%;">
+            @if (_hasAction)
+            {
+                <CyButton Variant="ComponentColour.Tertiary">Get started</CyButton>
+            }
+        </CyHeroBanner>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Title" @bind-Value="_title" />
+            <DemoPropertySwitch Label="Include Subtitle" @bind-Value="_hasSubtitle" />
+            @if (_hasSubtitle)
+            {
+                <DemoPropertyTextInput Label="Subtitle" @bind-Value="_subtitle" />
+            }
+            <DemoPropertySelect Label="Background" @bind-Value="_background" Options="_bgOptions" TValue="HeroBackground" />
+            <DemoPropertySwitch Label="Include Action Button" @bind-Value="_hasAction" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyHeroBanner.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private string _title = "Digital Health and Care Wales";
+    private bool _hasSubtitle = true;
+    private string _subtitle = "Empowering digital healthcare across NHS Wales.";
+    private HeroBackground _background = HeroBackground.Primary;
+    private bool _hasAction = true;
+
+    private readonly IReadOnlyList<HeroBackground> _bgOptions =
+    [
+        HeroBackground.Primary,
+        HeroBackground.Accent,
+        HeroBackground.Plain
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CyHeroBanner Title="{_title}"{(_hasSubtitle ? $" Subtitle=\"{_subtitle}\"" : "")} Background="HeroBackground.{_background}">
+        {(_hasAction ? "    <CyButton Variant=\"ComponentColour.Tertiary\">Get started</CyButton>\n" : "")}</CyHeroBanner>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Title", "string", "string.Empty", "The main heading text displayed inside the banner (rendered as H1)."),
+        new("Subtitle", "string?", "null", "Optional secondary explanatory text rendered beneath the title."),
+        new("Background", "HeroBackground", "HeroBackground.Primary", "Background treatment: Primary (NHS Blue), Accent (Navy), or Plain."),
+        new("ChildContent", "RenderFragment?", "null", "Action content rendered inside the banner (e.g. primary buttons, search, or links).")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Semantic Landmark", "Renders an accessible <section> landmark containing a structured H1 heading."),
+        new("Automatic Contrast Rescoping", "On dark backgrounds (Primary and Accent), text and links automatically switch to high-contrast inverse color tokens to ensure WCAG 2.2 AA contrast compliance."),
+        new("Action Focusability", "Interactive elements placed in ChildContent preserve standard keyboard focus indicators.")
+    ];
+}

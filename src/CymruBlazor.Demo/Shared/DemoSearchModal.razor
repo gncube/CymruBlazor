@@ -1,9 +1,10 @@
 @namespace CymruBlazor.Demo.SharedComponents
 @inject NavigationManager NavigationManager
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
 <CyDialog Open="IsOpen"
           OpenChanged="HandleOpenChanged"
-          Title="Search documentation"
+          Title="@Strings.Nav.SearchAriaLabel"
           Size="ComponentSize.Large"
           CloseOnBackdropClick="true"
           Class="cb-search-dialog">
@@ -16,8 +17,8 @@
                            class="cb-search-modal__input"
                            type="text"
                            autofocus
-                           aria-label="Search components and docs"
-                           placeholder="Search components and docs..."
+                           aria-label="@Strings.Nav.SearchPlaceholder"
+                           placeholder="@Strings.Nav.SearchPlaceholder"
                            autocomplete="off"
                            value="@_query"
                            @oninput="HandleInput"
