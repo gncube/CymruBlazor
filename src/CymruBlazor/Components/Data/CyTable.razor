@@ -1,0 +1,47 @@
+@inherits CyLayoutComponentBase
+
+@if (ScrollContainer)
+{
+    <div
+        id="@ScrollContainerId"
+        class="cy-table__scroll"
+        role="region"
+        tabindex="0"
+        aria-labelledby="@CaptionId">
+
+        <table
+            id="@Id"
+            class="@CssClass"
+            style="@CssStyle"
+            @attributes="AdditionalAttributes">
+
+            <caption
+                id="@CaptionId"
+                class="@(CaptionVisuallyHidden ? "u-sr-only" : "cy-table__caption")">
+                @Caption
+            </caption>
+
+            @ChildContent
+
+        </table>
+
+    </div>
+}
+else
+{
+    <table
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        @attributes="AdditionalAttributes">
+
+        <caption
+            id="@CaptionId"
+            class="@(CaptionVisuallyHidden ? "u-sr-only" : "cy-table__caption")">
+            @Caption
+        </caption>
+
+        @ChildContent
+
+    </table>
+}

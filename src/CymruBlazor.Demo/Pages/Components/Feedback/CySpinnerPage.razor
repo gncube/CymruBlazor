@@ -1,0 +1,119 @@
+@page "/feedback/spinner"
+@namespace CymruBlazor.Demo.Pages.Components.Feedback
+@using CymruBlazor.Components.Feedback
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CySpinner" Subtitle="An indeterminate loading indicator with its own accessible name.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Feedback" />
+            <CyBreadcrumbItem Text="CySpinner" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview">
+            <CySpinner Label="@_label" ShowLabel="_showLabel" Colour="_colour" Size="_size" />
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertyTextInput Label="Label" @bind-Value="_label" />
+                <DemoPropertySwitch Label="Show label visibly" @bind-Value="_showLabel" />
+                <DemoPropertySelect Label="Colour" TValue="ComponentColour" @bind-Value="_colour" Options="_colourOptions" />
+                <DemoPropertyToggleGroup Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Feedback/CySpinner.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            <code>CyButton</code>'s own <code>Loading</code> state has its own inline spinner already, tied
+            to the button's <code>aria-busy</code>/<code>disabled</code> handling - use <code>CySpinner</code>
+            for a region or panel that is loading independently of any button, not as a replacement for it.
+        </p>
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private string _label = "Loading appointments";
+    private bool _showLabel;
+    private ComponentColour _colour = ComponentColour.Primary;
+    private ComponentSize _size = ComponentSize.Medium;
+
+    private readonly IReadOnlyList<ComponentColour> _colourOptions =
+    [
+        ComponentColour.Primary,
+        ComponentColour.Secondary,
+        ComponentColour.Tertiary,
+        ComponentColour.Success,
+        ComponentColour.Warning,
+        ComponentColour.Danger,
+        ComponentColour.Info,
+        ComponentColour.Surface,
+        ComponentColour.Neutral
+    ];
+
+    private readonly IReadOnlyList<ComponentSize> _sizeOptions =
+    [
+        ComponentSize.Small,
+        ComponentSize.Medium,
+        ComponentSize.Large
+    ];
+
+    private string GeneratedCode =>
+        $"""
+        <CySpinner Label="{_label}"{(_showLabel ? " ShowLabel=\"true\"" : "")}{(_colour != ComponentColour.Primary ? $" Colour=\"ComponentColour.{_colour}\"" : "")}{(_size != ComponentSize.Medium ? $" Size=\"ComponentSize.{_size}\"" : "")} />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Size", "ComponentSize", "Medium", "The spinner's size."),
+        new("Colour", "ComponentColour", "Primary", "The spinner's semantic colour. Any value except Unspecified."),
+        new("Label", "string?", "\"Loading\"", "Accessible name announced to screen readers."),
+        new("ShowLabel", "bool", "false", "When true, Label is also shown visually next to the spinner, instead of only via visually-hidden text.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Announced as a status region", "CySpinner renders role=\"status\", so assistive technology announces its accessible name without the user needing to navigate to it."),
+        new("Always has an accessible name", "Label defaults to \"Loading\" and is exposed via visually-hidden text unless ShowLabel is set - there is no way to render a CySpinner with no accessible name at all."),
+        new("Motion is reduced, not removed", "The spin animation's duration lengthens under prefers-reduced-motion: reduce rather than stopping outright, keeping the \"still loading\" signal available to reduced-motion users.")
+    ];
+}

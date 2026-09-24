@@ -1,0 +1,106 @@
+@page "/data/pagination"
+@namespace CymruBlazor.Demo.Pages.Components.Data
+@using CymruBlazor.Components.Data
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyPagination" Subtitle="Page navigation for a result set too large to show at once.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Data" />
+            <CyBreadcrumbItem Text="CyPagination" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="flex-direction: column; align-items: flex-start; gap: var(--cymru-space-3);">
+            <p style="color: var(--docs-text-muted); margin: 0;">
+                Showing page @_currentPage of @_totalPages
+            </p>
+            <CyPagination @bind-CurrentPage="_currentPage" TotalPages="_totalPages" />
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySelect Label="Total pages" TValue="int" @bind-Value="_totalPages" Options="_totalPagesOptions" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Data/CyPagination.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            Page numbers truncate with an ellipsis for large page counts, padding the visible range near
+            either end (rather than the minimum possible set) so the control's width doesn't jump sharply
+            as you page through - the same boundary/sibling model GOV.UK's and Material UI's pagination use.
+            Try setting "Total pages" to 25 and clicking through.
+        </p>
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private int _currentPage = 1;
+    private int _totalPages = 10;
+
+    private readonly IReadOnlyList<int> _totalPagesOptions = [3, 10, 25, 50];
+
+    private string GeneratedCode =>
+        $"""
+        <CyPagination @bind-CurrentPage="currentPage" TotalPages="{_totalPages}" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CurrentPage", "int", "1", "The current page, 1-based. Two-way bindable via @bind-CurrentPage."),
+        new("CurrentPageChanged", "EventCallback<int>", "-", "Raised when a page control is activated."),
+        new("TotalPages", "int", "0", "The total number of pages. Renders nothing when 0 or 1 - there is nothing to page between."),
+        new("BoundaryCount", "int", "1", "How many page numbers are always shown at the very start and end of the sequence."),
+        new("SiblingCount", "int", "1", "How many page numbers are shown immediately either side of the current page."),
+        new("AriaLabel", "string?", "\"Pagination\"", "Accessible name of the pagination landmark."),
+        new("PreviousLabel", "string?", "\"Previous\"", "Label for the \"previous page\" control."),
+        new("NextLabel", "string?", "\"Next\"", "Label for the \"next page\" control."),
+        new("PageAriaLabelFormat", "string?", "\"Page {0}\"", "Composite format string for each non-current page button's accessible name."),
+        new("CurrentPageAriaLabelFormat", "string?", "\"Current page, page {0}\"", "Composite format string for the current page's accessible name.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Landmark and labelled controls", "The whole control is a <nav aria-label=\"Pagination\">, and every page button has its own accessible name (e.g. \"Page 4\") rather than relying on visible text alone."),
+        new("Current page isn't a dead button", "The current page renders as a non-interactive <span aria-current=\"page\">, not a disabled <button> - a disabled button can drop out of some screen readers' reading order entirely, where aria-current keeps it discoverable while making clear it isn't actionable."),
+        new("Previous/Next disable at the ends", "The \"Previous\" control is disabled on page 1 and \"Next\" is disabled on the last page, so there's no dead click at either boundary."),
+        new("44x44px touch targets", "Every control and the current-page indicator meet the WCAG 2.2 SC 2.5.8 minimum touch target size.")
+    ];
+}

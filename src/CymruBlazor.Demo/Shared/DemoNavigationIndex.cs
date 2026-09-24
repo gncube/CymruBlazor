@@ -71,6 +71,18 @@ public static class DemoNavigationIndex
         new("Content", "Code Block", "/content/code-block",
             "A labelled, read-only code sample with a copy-to-clipboard button."),
 
+        new("Data", "Table", "/data/table",
+            "A styled semantic table, with a required caption and a keyboard-accessible scroll container."),
+        new("Data", "Pagination", "/data/pagination",
+            "Page navigation for a result set too large to show at once, with boundary/sibling ellipsis truncation."),
+
+        new("Feedback", "Toast Service", "/feedback/toast-service",
+            "Accessible toast notifications, shown from anywhere - a component, a service, or the Mediator pipeline."),
+        new("Feedback", "Progress", "/feedback/progress",
+            "A progress indicator built on the native <progress> element - determinate and indeterminate."),
+        new("Feedback", "Spinner", "/feedback/spinner",
+            "An indeterminate loading indicator with its own accessible name."),
+
         new("Branding", "Brand Logo", "/branding/brand-logo",
             "The CymruBlazor/product logo mark and wordmark."),
         new("Branding", "Language Toggle", "/branding/language-toggle",

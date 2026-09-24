@@ -1,0 +1,139 @@
+@page "/data/table"
+@namespace CymruBlazor.Demo.Pages.Components.Data
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Data
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyTable" Subtitle="A styled semantic table, with a required caption and a keyboard-accessible scroll container.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Data" />
+            <CyBreadcrumbItem Text="CyTable" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="Component Documentation Tabs">
+    <button type="button" role="tab" id="tab-examples" aria-selected="@(_activeTab == Tab.Examples)" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-selected="@(_activeTab == Tab.Api)" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">API</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-selected="@(_activeTab == Tab.Accessibility)" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start;">
+            <CyTable Caption="Number of patients waiting per specialty" CaptionVisuallyHidden="_captionVisuallyHidden" ScrollContainer="_scrollContainer">
+                <thead>
+                    <tr>
+                        <th scope="col">Specialty</th>
+                        <th scope="col">Waiting</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Cardiology</th>
+                        <td>214</td>
+                        <td><CyBadge Variant="ComponentColour.Danger">18 at risk</CyBadge></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Dermatology</th>
+                        <td>87</td>
+                        <td><CyBadge Variant="ComponentColour.Success">None</CyBadge></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Orthopaedics</th>
+                        <td>326</td>
+                        <td><CyBadge Variant="ComponentColour.Warning">4 at risk</CyBadge></td>
+                    </tr>
+                </tbody>
+            </CyTable>
+        </div>
+
+        <div class="cb-playground-grid">
+            <DemoPropertyControls>
+                <DemoPropertySwitch Label="Visually hide caption" @bind-Value="_captionVisuallyHidden" />
+                <DemoPropertySwitch Label="Scroll container" @bind-Value="_scrollContainer" />
+            </DemoPropertyControls>
+
+            <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+                <span class="cb-panel-caption">Generated code</span>
+                <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+                <a class="cb-open-in-github"
+                   href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Data/CyTable.razor"
+                   target="_blank" rel="noopener noreferrer">
+                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="cb-section-description" style="margin-top:1.5rem;">
+            <code>CyTable</code> does not implement sorting, filtering or virtualisation - style
+            <code>Microsoft.AspNetCore.Components.QuickGrid</code> for that instead. It renders your own
+            <code>&lt;thead&gt;</code>/<code>&lt;tbody&gt;</code> markup (including <code>scope</code> on your own
+            <code>&lt;th&gt;</code> elements) inside a required caption and, by default, a keyboard-focusable
+            scroll region.
+        </p>
+
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private bool _captionVisuallyHidden;
+    private bool _scrollContainer = true;
+
+    private string GeneratedCode =>
+        $"""
+        <CyTable Caption="Number of patients waiting per specialty"{(_captionVisuallyHidden ? "\n        CaptionVisuallyHidden=\"true\"" : "")}{(!_scrollContainer ? "\n        ScrollContainer=\"false\"" : "")}>
+            <thead>
+                <tr>
+                    <th scope="col">Specialty</th>
+                    <th scope="col">Waiting</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Cardiology</th>
+                    <td>214</td>
+                    <td><CyBadge Variant="ComponentColour.Danger">18 at risk</CyBadge></td>
+                </tr>
+                @* ...one <tr> per row... *@
+            </tbody>
+        </CyTable>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Caption", "string", "-", "The table's caption - required, so every table has an accessible name and a plain-text summary."),
+        new("CaptionVisuallyHidden", "bool", "false", "Keeps the caption in the accessibility tree but hides it visually - use when a preceding heading already names the table for sighted users."),
+        new("ScrollContainer", "bool", "true", "Wraps the table in a horizontally scrollable, keyboard-focusable region (role=\"region\", tabindex=\"0\") so a wide table can be reached without a mouse instead of silently overflowing."),
+        new("ChildContent", "RenderFragment", "-", "Your own <thead>/<tbody> markup, including scope=\"col\"/scope=\"row\" on your own <th> elements.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Every table has a name", "Caption is required, not optional - there is no way to render a CyTable without an accessible name and a plain-text summary of what it contains."),
+        new("Wide tables stay reachable by keyboard", "The default scroll container is a role=\"region\" with tabindex=\"0\", named by the caption via aria-labelledby, so a table wider than its container can still be scrolled without a mouse rather than silently overflowing the page."),
+        new("Row/column headers are your responsibility", "CyTable renders your own <thead>/<tbody> markup unchanged - always add scope=\"col\" to column headers and scope=\"row\" to any header cells within a row, so assistive technology can announce which header a cell belongs to.")
+    ];
+}

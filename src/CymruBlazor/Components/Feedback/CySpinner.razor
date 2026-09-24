@@ -1,0 +1,21 @@
+@inherits CyLayoutComponentBase
+
+<span
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="status"
+    @attributes="AdditionalAttributes">
+
+    <span class="cy-spinner__ring" aria-hidden="true"></span>
+
+    @if (ShowLabel)
+    {
+        <span class="cy-spinner__label">@ComputedLabel</span>
+    }
+    else
+    {
+        <span class="u-sr-only">@ComputedLabel</span>
+    }
+
+</span>
