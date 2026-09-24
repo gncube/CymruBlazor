@@ -1,15 +1,16 @@
 @page "/forms/textbox"
 @namespace CymruBlazor.Demo.Pages.Components.Forms
+@implements IDisposable
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Components.Forms
 @using CymruBlazor.Demo.SharedComponents
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 
-<CyPageHeader Title="CyTextBox" Subtitle="A labelled single-line text input with hint and validation support.">
+<CyPageHeader Title="CyTextBox" Subtitle="@(Strings.Language == AppLanguage.Welsh ? "Mewnbwn testun llinell sengl wedi'i labelu gyda chefnogaeth awgrymiadau a dilysu." : "A labelled single-line text input with hint and validation support.")">
     <Breadcrumb>
         <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="@(Strings.Language == AppLanguage.Welsh ? "Ffurflenni" : "Forms")" Href="/forms" />
             <CyBreadcrumbItem Text="CyTextBox" />
         </CyBreadcrumb>
     </Breadcrumb>
@@ -24,13 +25,13 @@
 @if (_activeTab == Tab.Examples)
 {
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
-    <span class="cb-panel-caption">Preview</span>
+    <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
     <div class="cb-workbench-preview" style="justify-content: flex-start;">
         <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
             <DataAnnotationsValidator />
             <CyTextBox @bind-Value="_model.FullName"
-                       Label="Full name"
-                       HintText="As it appears on your NHS record"
+                       Label="@(Strings.Language == AppLanguage.Welsh ? "Enw llawn" : "Full name")"
+                       HintText="@(Strings.Language == AppLanguage.Welsh ? "Fel y mae'n ymddangos ar eich cofnod GIG" : "As it appears on your NHS record")"
                        Type="@_type"
                        Required="_required"
                        Disabled="_disabled" />
@@ -39,18 +40,18 @@
 
     <div class="cb-playground-grid">
         <DemoPropertyControls>
-            <DemoPropertySelect Label="Type" @bind-Value="_type" Options="_typeOptions" TValue="string" />
-            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
-            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+            <DemoPropertySelect Label="@(Strings.Language == AppLanguage.Welsh ? "Math" : "Type")" @bind-Value="_type" Options="_typeOptions" TValue="string" />
+            <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Gofynnol" : "Required")" @bind-Value="_required" />
+            <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Anabl" : "Disabled")" @bind-Value="_disabled" />
         </DemoPropertyControls>
 
         <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-            <span class="cb-panel-caption">Generated code</span>
+            <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Cod a gynhyrchwyd" : "Generated code")</span>
             <CyCodeBlock Code="@GeneratedCode" Language="razor" />
             <a class="cb-open-in-github"
                href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyTextBox.razor"
                target="_blank" rel="noopener noreferrer">
-                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                @(Strings.Language == AppLanguage.Welsh ? "Agor yn GitHub" : "Open in GitHub")<span class="u-sr-only"> (opens in new tab)</span>
             </a>
         </div>
     </div>
@@ -59,13 +60,13 @@
 else if (_activeTab == Tab.Api)
 {
     <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-    <DemoApiTable Parameters="_apiDocs" />
+    <DemoApiTable Parameters="ApiDocs" />
     </div>
 }
 else
 {
     <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-    <DemoAccessibilityChecklist Items="_a11yItems" />
+    <DemoAccessibilityChecklist Items="A11yItems" />
     </div>
 }
 
@@ -83,32 +84,51 @@ else
     private bool _disabled;
     private string _type = "text";
 
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
     private readonly IReadOnlyList<string> _typeOptions = ["text", "email", "tel"];
 
     private string GeneratedCode =>
         $"""
         <CyTextBox
             @bind-Value="model.FullName"
-            Label="Full name"
-            HintText="As it appears on your NHS record"{(_type != "text" ? $"\n    Type=\"{_type}\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+            Label="{(Strings.Language == AppLanguage.Welsh ? "Enw llawn" : "Full name")}"
+            HintText="{(Strings.Language == AppLanguage.Welsh ? "Fel y mae'n ymddangos ar eich cofnod GIG" : "As it appears on your NHS record")}"{(_type != "text" ? $"\n    Type=\"{_type}\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
         """;
 
-    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
-    [
-        new("Label", "string", "-", "The field's visible, programmatically-associated label. Always required - there is no placeholder-as-label option."),
-        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
-        new("Required", "bool", "false", "Adds aria-required and a visual indicator. Does not perform validation itself."),
-        new("Disabled", "bool", "false", "Disables the field."),
-        new("Placeholder", "string?", "null", "Native placeholder text."),
-        new("MaxLength", "int?", "null", "Native maxlength attribute."),
-        new("Type", "string", "\"text\"", "Native input type (text, email, tel, etc.)."),
-        new("Value", "string", "-", "The bound value; use @bind-Value.")
-    ];
+    private IReadOnlyList<DemoApiTable.ApiParameterDoc> ApiDocs => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Label", "string", "-", "Label gweladwy'r maes, wedi'i gysylltu'n rhaglennol. Bob amser yn ofynnol — nid oes opsiwn 'placeholder-fel-label'."),
+            new("HintText", "string?", "null", "Testun ategol dewisol, wedi'i gysylltu drwy aria-describedby."),
+            new("Required", "bool", "false", "Ychwanegu aria-required a dangosydd gweledol. Nid yw'n perfformio dilysu ar ei ben ei hun."),
+            new("Disabled", "bool", "false", "Analluogi'r maes."),
+            new("Placeholder", "string?", "null", "Testun dalfan (placeholder) brodorol."),
+            new("MaxLength", "int?", "null", "Priodoledd hyd mwyaf (maxlength) brodorol."),
+            new("Type", "string", "\"text\"", "Math mewnbwn brodorol (text, email, tel, ac ati)."),
+            new("Value", "string", "-", "Y gwerth rhwymedig; defnyddiwch @bind-Value.")
+        ]
+        : [
+            new("Label", "string", "-", "The field's visible, programmatically-associated label. Always required - there is no placeholder-as-label option."),
+            new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
+            new("Required", "bool", "false", "Adds aria-required and a visual indicator. Does not perform validation itself."),
+            new("Disabled", "bool", "false", "Disables the field."),
+            new("Placeholder", "string?", "null", "Native placeholder text."),
+            new("MaxLength", "int?", "null", "Native maxlength attribute."),
+            new("Type", "string", "\"text\"", "Native input type (text, email, tel, etc.)."),
+            new("Value", "string", "-", "The bound value; use @bind-Value.")
+        ];
 
-    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
-    [
-        new("Label always present", "Label is an [EditorRequired] parameter, so every CyTextBox ships with a programmatically associated <label>."),
-        new("Hint and errors announced", "HintText and validation errors are wired into aria-describedby, so assistive technology announces them alongside the field."),
-        new("Validation uses role=\"alert\"", "Error messages are rendered with role=\"alert\" so screen readers announce them immediately when they appear.")
-    ];
+    private IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> A11yItems => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Label bob amser yn bresennol", "Mae Label yn baramedr [EditorRequired], felly mae pob CyTextBox yn dod gyda <label> wedi'i gysylltu'n rhaglennol."),
+            new("Cyhoeddir awgrymiadau a gwallau", "Mae HintText a gwallau dilysu wedi'u gwifro i mewn i aria-describedby, fel bod technoleg gynorthwyol yn eu cyhoeddi ochr yn ochr â'r maes."),
+            new("Mae dilysu'n defnyddio role=\"alert\"", "Rendir negeseuon gwall gyda role=\"alert\" fel bod darllenwyr sgrin yn eu cyhoeddi ar unwaith pan fyddant yn ymddangos.")
+        ]
+        : [
+            new("Label always present", "Label is an [EditorRequired] parameter, so every CyTextBox ships with a programmatically associated <label>."),
+            new("Hint and errors announced", "HintText and validation errors are wired into aria-describedby, so assistive technology announces them alongside the field."),
+            new("Validation uses role=\"alert\"", "Error messages are rendered with role=\"alert\" so screen readers announce them immediately when they appear.")
+        ];
 }

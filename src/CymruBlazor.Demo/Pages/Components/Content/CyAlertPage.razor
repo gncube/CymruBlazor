@@ -1,14 +1,15 @@
 @page "/content/alert"
 @namespace CymruBlazor.Demo.Pages.Components.Content
+@implements IDisposable
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Demo.SharedComponents
 @using CymruBlazor.Enums
 
-<CyPageHeader Title="CyAlert" Subtitle="An inline status/alert banner.">
+<CyPageHeader Title="CyAlert" Subtitle="@(Strings.Language == AppLanguage.Welsh ? "Baner statws/rhybudd fewnol." : "An inline status/alert banner.")">
     <Breadcrumb>
         <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Content" />
+            <CyBreadcrumbItem Text="@(Strings.Language == AppLanguage.Welsh ? "Cynnwys" : "Content")" Href="/content" />
             <CyBreadcrumbItem Text="CyAlert" />
         </CyBreadcrumb>
     </Breadcrumb>
@@ -23,36 +24,36 @@
 @if (_activeTab == Tab.Examples)
 {
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
-    <span class="cb-panel-caption">Preview</span>
+    <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
     <div class="cb-workbench-preview" style="justify-content: flex-start;">
         @if (_visible)
         {
-            <CyAlert Severity="_severity" TitleLevel="2" Title="@_title" Dismissible="_dismissible" OnDismiss="() => _visible = false" Style="width:100%;">
-                Your appointment has been confirmed for Tuesday at 10:30am.
+            <CyAlert Severity="_severity" TitleLevel="2" Title="@EffectiveTitle" Dismissible="_dismissible" OnDismiss="() => _visible = false" Style="width:100%;">
+                @(Strings.Language == AppLanguage.Welsh ? "Mae eich apwyntiad wedi'i gadarnhau ar gyfer dydd Mawrth am 10:30yb." : "Your appointment has been confirmed for Tuesday at 10:30am.")
             </CyAlert>
         }
         else
         {
             <button type="button" class="cb-demo-btn cb-demo-btn--secondary" @onclick="() => _visible = true">
-                Dismissed - show again
+                @(Strings.Language == AppLanguage.Welsh ? "Wedi'i ddiystyru - dangos eto" : "Dismissed - show again")
             </button>
         }
     </div>
 
     <div class="cb-playground-grid">
         <DemoPropertyControls>
-            <DemoPropertySelect Label="Severity" @bind-Value="_severity" Options="_severityOptions" TValue="ComponentColour" />
-            <DemoPropertyTextInput Label="Title" @bind-Value="_title" />
-            <DemoPropertySwitch Label="Dismissible" @bind-Value="_dismissible" />
+            <DemoPropertySelect Label="@(Strings.Language == AppLanguage.Welsh ? "Difrifoldeb" : "Severity")" @bind-Value="_severity" Options="_severityOptions" TValue="ComponentColour" />
+            <DemoPropertyTextInput Label="@(Strings.Language == AppLanguage.Welsh ? "Teitl" : "Title")" @bind-Value="_title" />
+            <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Gellir ei ddiystyru" : "Dismissible")" @bind-Value="_dismissible" />
         </DemoPropertyControls>
 
         <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-            <span class="cb-panel-caption">Generated code</span>
+            <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Cod a gynhyrchwyd" : "Generated code")</span>
             <CyCodeBlock Code="@GeneratedCode" Language="razor" />
             <a class="cb-open-in-github"
                href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyAlert.razor"
                target="_blank" rel="noopener noreferrer">
-                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                @(Strings.Language == AppLanguage.Welsh ? "Agor yn GitHub" : "Open in GitHub")<span class="u-sr-only"> (opens in new tab)</span>
             </a>
         </div>
     </div>
@@ -61,13 +62,13 @@
 else if (_activeTab == Tab.Api)
 {
     <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-    <DemoApiTable Parameters="_apiDocs" />
+    <DemoApiTable Parameters="ApiDocs" />
     </div>
 }
 else
 {
     <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-    <DemoAccessibilityChecklist Items="_a11yItems" />
+    <DemoAccessibilityChecklist Items="A11yItems" />
     </div>
 }
 
@@ -76,9 +77,17 @@ else
 
     private Tab _activeTab = Tab.Examples;
     private ComponentColour _severity = ComponentColour.Info;
-    private string _title = "Appointment confirmed";
+    private string _title = "";
     private bool _dismissible;
     private bool _visible = true;
+
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
+    private string EffectiveTitle => !string.IsNullOrEmpty(_title)
+        ? _title
+        : (Strings.Language == AppLanguage.Welsh ? "Apwyntiad wedi'i gadarnhau" : "Appointment confirmed");
 
     private readonly IReadOnlyList<ComponentColour> _severityOptions =
     [
@@ -87,23 +96,34 @@ else
 
     private string GeneratedCode =>
         $"""
-        <CyAlert Severity="ComponentColour.{_severity}" Title="{_title}"{(_dismissible ? "\n    Dismissible=\"true\" OnDismiss=\"HandleDismiss\"" : "")}>
-            Your appointment has been confirmed for Tuesday at 10:30am.
+        <CyAlert Severity="ComponentColour.{_severity}" Title="{EffectiveTitle}"{(_dismissible ? "\n    Dismissible=\"true\" OnDismiss=\"HandleDismiss\"" : "")}>
+            {(Strings.Language == AppLanguage.Welsh ? "Mae eich apwyntiad wedi'i gadarnhau ar gyfer dydd Mawrth am 10:30yb." : "Your appointment has been confirmed for Tuesday at 10:30am.")}
         </CyAlert>
         """;
 
-    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
-    [
-        new("Severity", "ComponentColour", "ComponentColour.Info", "Must be Info, Success, Warning, or Danger. Drives both styling and the ARIA role."),
-        new("Title", "string?", "null", "Optional bold title above the message."),
-        new("Dismissible", "bool", "false", "Renders a dismiss button. The parent owns removing the alert from the DOM."),
-        new("OnDismiss", "EventCallback", "-", "Raised when the dismiss button is activated."),
-        new("ChildContent", "RenderFragment", "null", "The alert's message content.")
-    ];
+    private IReadOnlyList<DemoApiTable.ApiParameterDoc> ApiDocs => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Severity", "ComponentColour", "ComponentColour.Info", "Rhaid iddo fod yn Info, Success, Warning, neu Danger. Mae'n llywodraethu'r arddull weledol a'r rôl ARIA."),
+            new("Title", "string?", "null", "Teitl trwm dewisol uwchben y neges."),
+            new("Dismissible", "bool", "false", "Yn rendro botwm diystyru. Y rhiant sy'n berchen ar dynnu'r rhybudd o'r DOM."),
+            new("OnDismiss", "EventCallback", "-", "Wedi'i godi pan fydd y botwm diystyru yn cael ei actifadu."),
+            new("ChildContent", "RenderFragment", "null", "Cynnwys neges y rhybudd.")
+        ]
+        : [
+            new("Severity", "ComponentColour", "ComponentColour.Info", "Must be Info, Success, Warning, or Danger. Drives both styling and the ARIA role."),
+            new("Title", "string?", "null", "Optional bold title above the message."),
+            new("Dismissible", "bool", "false", "Renders a dismiss button. The parent owns removing the alert from the DOM."),
+            new("OnDismiss", "EventCallback", "-", "Raised when the dismiss button is activated."),
+            new("ChildContent", "RenderFragment", "null", "The alert's message content.")
+        ];
 
-    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
-    [
-        new("Correct live-region role", "Warning/Danger render role=\"alert\" (assertive) since the user must not miss them; Info/Success render role=\"status\" (polite) so they don't interrupt."),
-        new("Colour is not the only signal", "Severity is also conveyed through the optional Title text, not colour alone.")
-    ];
+    private IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> A11yItems => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Rôl rhanbarth byw gywir", "Mae Warning/Danger yn rendro role=\"alert\" (hynod daer) gan na ddylai'r defnyddiwr eu methu; mae Info/Success yn rendro role=\"status\" (cwrtais) fel nad ydynt yn torri ar draws."),
+            new("Nid lliw yw'r unig arwydd", "Cyfleir difrifoldeb hefyd drwy destun Teitl dewisol, nid lliw yn unig.")
+        ]
+        : [
+            new("Correct live-region role", "Warning/Danger render role=\"alert\" (assertive) since the user must not miss them; Info/Success render role=\"status\" (polite) so they don't interrupt."),
+            new("Colour is not the only signal", "Severity is also conveyed through the optional Title text, not colour alone.")
+        ];
 }

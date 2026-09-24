@@ -1,14 +1,15 @@
 @page "/data/table"
 @namespace CymruBlazor.Demo.Pages.Components.Data
+@implements IDisposable
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Data
 @using CymruBlazor.Demo.SharedComponents
 @using CymruBlazor.Enums
 
-<CyPageHeader Title="CyTable" Subtitle="A styled semantic table, with a required caption and a keyboard-accessible scroll container.">
+<CyPageHeader Title="CyTable" Subtitle="@(Strings.Language == AppLanguage.Welsh ? "Tabl semantig wedi'i steilio, gyda chapsiwn gofynnol a chynhwysydd sgrolio sy'n hygyrch drwy fysellfwrdd." : "A styled semantic table, with a required caption and a keyboard-accessible scroll container.")">
     <Breadcrumb>
         <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Data" />
+            <CyBreadcrumbItem Text="@(Strings.Language == AppLanguage.Welsh ? "Data" : "Data")" Href="/data" />
             <CyBreadcrumbItem Text="CyTable" />
         </CyBreadcrumb>
     </Breadcrumb>
@@ -24,31 +25,31 @@
 {
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
 
-        <span class="cb-panel-caption">Preview</span>
+        <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
         <div class="cb-workbench-preview" style="justify-content: flex-start;">
-            <CyTable Caption="Number of patients waiting per specialty" CaptionVisuallyHidden="_captionVisuallyHidden" ScrollContainer="_scrollContainer">
+            <CyTable Caption="@(Strings.Language == AppLanguage.Welsh ? "Nifer y cleifion sy'n aros fesul arbenigedd" : "Number of patients waiting per specialty")" CaptionVisuallyHidden="_captionVisuallyHidden" ScrollContainer="_scrollContainer">
                 <thead>
                     <tr>
-                        <th scope="col">Specialty</th>
-                        <th scope="col">Waiting</th>
-                        <th scope="col">Status</th>
+                        <th scope="col">@(Strings.Language == AppLanguage.Welsh ? "Arbenigedd" : "Specialty")</th>
+                        <th scope="col">@(Strings.Language == AppLanguage.Welsh ? "Yn aros" : "Waiting")</th>
+                        <th scope="col">@(Strings.Language == AppLanguage.Welsh ? "Statws" : "Status")</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">Cardiology</th>
+                        <th scope="row">@(Strings.Language == AppLanguage.Welsh ? "Cardioleg" : "Cardiology")</th>
                         <td>214</td>
-                        <td><CyBadge Variant="ComponentColour.Danger">18 at risk</CyBadge></td>
+                        <td><CyBadge Variant="ComponentColour.Danger">@(Strings.Language == AppLanguage.Welsh ? "18 mewn perygl" : "18 at risk")</CyBadge></td>
                     </tr>
                     <tr>
-                        <th scope="row">Dermatology</th>
+                        <th scope="row">@(Strings.Language == AppLanguage.Welsh ? "Dermatoleg" : "Dermatology")</th>
                         <td>87</td>
-                        <td><CyBadge Variant="ComponentColour.Success">None</CyBadge></td>
+                        <td><CyBadge Variant="ComponentColour.Success">@(Strings.Language == AppLanguage.Welsh ? "Dim" : "None")</CyBadge></td>
                     </tr>
                     <tr>
-                        <th scope="row">Orthopaedics</th>
+                        <th scope="row">@(Strings.Language == AppLanguage.Welsh ? "Orthopedeg" : "Orthopaedics")</th>
                         <td>326</td>
-                        <td><CyBadge Variant="ComponentColour.Warning">4 at risk</CyBadge></td>
+                        <td><CyBadge Variant="ComponentColour.Warning">@(Strings.Language == AppLanguage.Welsh ? "4 mewn perygl" : "4 at risk")</CyBadge></td>
                     </tr>
                 </tbody>
             </CyTable>
@@ -56,27 +57,41 @@
 
         <div class="cb-playground-grid">
             <DemoPropertyControls>
-                <DemoPropertySwitch Label="Visually hide caption" @bind-Value="_captionVisuallyHidden" />
-                <DemoPropertySwitch Label="Scroll container" @bind-Value="_scrollContainer" />
+                <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Cuddio capsiwn yn weledol" : "Visually hide caption")" @bind-Value="_captionVisuallyHidden" />
+                <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Cynhwysydd sgrolio" : "Scroll container")" @bind-Value="_scrollContainer" />
             </DemoPropertyControls>
 
             <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-                <span class="cb-panel-caption">Generated code</span>
+                <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Cod a gynhyrchwyd" : "Generated code")</span>
                 <CyCodeBlock Code="@GeneratedCode" Language="razor" />
                 <a class="cb-open-in-github"
                    href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Data/CyTable.razor"
                    target="_blank" rel="noopener noreferrer">
-                    Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                    @(Strings.Language == AppLanguage.Welsh ? "Agor yn GitHub" : "Open in GitHub")<span class="u-sr-only"> (opens in new tab)</span>
                 </a>
             </div>
         </div>
 
         <p class="cb-section-description" style="margin-top:1.5rem;">
-            <code>CyTable</code> does not implement sorting, filtering or virtualisation - style
-            <code>Microsoft.AspNetCore.Components.QuickGrid</code> for that instead. It renders your own
-            <code>&lt;thead&gt;</code>/<code>&lt;tbody&gt;</code> markup (including <code>scope</code> on your own
-            <code>&lt;th&gt;</code> elements) inside a required caption and, by default, a keyboard-focusable
-            scroll region.
+            @if (Strings.Language == AppLanguage.Welsh)
+            {
+                <span>
+                    Nid yw <code>CyTable</code> yn gweithredu trefnu, hidlo na rhitholi — steiliwch
+                    <code>Microsoft.AspNetCore.Components.QuickGrid</code> ar gyfer hynny yn hytrach. Mae'n rendro eich marcio
+                    <code>&lt;thead&gt;</code>/<code>&lt;tbody&gt;</code> eich hun (gan gynnwys <code>scope</code> ar eich elfennau
+                    <code>&lt;th&gt;</code> eich hun) y tu mewn i gapsiwn gofynnol ac, yn ddiofyn, ranbarth sgrolio y gellir ei ffocysu drwy fysellfwrdd.
+                </span>
+            }
+            else
+            {
+                <span>
+                    <code>CyTable</code> does not implement sorting, filtering or virtualisation - style
+                    <code>Microsoft.AspNetCore.Components.QuickGrid</code> for that instead. It renders your own
+                    <code>&lt;thead&gt;</code>/<code>&lt;tbody&gt;</code> markup (including <code>scope</code> on your own
+                    <code>&lt;th&gt;</code> elements) inside a required caption and, by default, a keyboard-focusable
+                    scroll region.
+                </span>
+            }
         </p>
 
     </div>
@@ -84,13 +99,13 @@
 else if (_activeTab == Tab.Api)
 {
     <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-        <DemoApiTable Parameters="_apiDocs" />
+        <DemoApiTable Parameters="ApiDocs" />
     </div>
 }
 else
 {
     <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-        <DemoAccessibilityChecklist Items="_a11yItems" />
+        <DemoAccessibilityChecklist Items="A11yItems" />
     </div>
 }
 
@@ -101,39 +116,54 @@ else
     private bool _captionVisuallyHidden;
     private bool _scrollContainer = true;
 
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
     private string GeneratedCode =>
         $"""
-        <CyTable Caption="Number of patients waiting per specialty"{(_captionVisuallyHidden ? "\n        CaptionVisuallyHidden=\"true\"" : "")}{(!_scrollContainer ? "\n        ScrollContainer=\"false\"" : "")}>
+        <CyTable Caption="{(Strings.Language == AppLanguage.Welsh ? "Nifer y cleifion sy'n aros fesul arbenigedd" : "Number of patients waiting per specialty")}"{(_captionVisuallyHidden ? "\n        CaptionVisuallyHidden=\"true\"" : "")}{(!_scrollContainer ? "\n        ScrollContainer=\"false\"" : "")}>
             <thead>
                 <tr>
-                    <th scope="col">Specialty</th>
-                    <th scope="col">Waiting</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">{(Strings.Language == AppLanguage.Welsh ? "Arbenigedd" : "Specialty")}</th>
+                    <th scope="col">{(Strings.Language == AppLanguage.Welsh ? "Yn aros" : "Waiting")}</th>
+                    <th scope="col">{(Strings.Language == AppLanguage.Welsh ? "Statws" : "Status")}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th scope="row">Cardiology</th>
+                    <th scope="row">{(Strings.Language == AppLanguage.Welsh ? "Cardioleg" : "Cardiology")}</th>
                     <td>214</td>
-                    <td><CyBadge Variant="ComponentColour.Danger">18 at risk</CyBadge></td>
+                    <td><CyBadge Variant="ComponentColour.Danger">{(Strings.Language == AppLanguage.Welsh ? "18 mewn perygl" : "18 at risk")}</CyBadge></td>
                 </tr>
                 @* ...one <tr> per row... *@
             </tbody>
         </CyTable>
         """;
 
-    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
-    [
-        new("Caption", "string", "-", "The table's caption - required, so every table has an accessible name and a plain-text summary."),
-        new("CaptionVisuallyHidden", "bool", "false", "Keeps the caption in the accessibility tree but hides it visually - use when a preceding heading already names the table for sighted users."),
-        new("ScrollContainer", "bool", "true", "Wraps the table in a horizontally scrollable, keyboard-focusable region (role=\"region\", tabindex=\"0\") so a wide table can be reached without a mouse instead of silently overflowing."),
-        new("ChildContent", "RenderFragment", "-", "Your own <thead>/<tbody> markup, including scope=\"col\"/scope=\"row\" on your own <th> elements.")
-    ];
+    private IReadOnlyList<DemoApiTable.ApiParameterDoc> ApiDocs => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Caption", "string", "-", "Capsiwn y tabl — gofynnol, fel bod gan bob tabl enw hygyrch a chrynodeb testun plaen."),
+            new("CaptionVisuallyHidden", "bool", "false", "Yn cadw'r capsiwn yn y goeden hygyrchedd ond yn ei guddio'n weledol — defnyddiwch pan fydd pennawd blaenorol eisoes yn enwi'r tabl ar gyfer defnyddwyr sy'n gweld."),
+            new("ScrollContainer", "bool", "true", "Yn lapio'r tabl mewn rhanbarth sy'n sgrolio'n llorweddol ac sy'n hygyrch i fysellfwrdd (role=\"region\", tabindex=\"0\") fel y gellir cyrraedd tabl llydan heb lygoden yn lle gorlifo'n ddistaw."),
+            new("ChildContent", "RenderFragment", "-", "Eich marcio <thead>/<tbody> eich hun, gan gynnwys scope=\"col\"/scope=\"row\" ar eich elfennau <th> eich hun.")
+        ]
+        : [
+            new("Caption", "string", "-", "The table's caption - required, so every table has an accessible name and a plain-text summary."),
+            new("CaptionVisuallyHidden", "bool", "false", "Keeps the caption in the accessibility tree but hides it visually - use when a preceding heading already names the table for sighted users."),
+            new("ScrollContainer", "bool", "true", "Wraps the table in a horizontally scrollable, keyboard-focusable region (role=\"region\", tabindex=\"0\") so a wide table can be reached without a mouse instead of silently overflowing."),
+            new("ChildContent", "RenderFragment", "-", "Your own <thead>/<tbody> markup, including scope=\"col\"/scope=\"row\" on your own <th> elements.")
+        ];
 
-    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
-    [
-        new("Every table has a name", "Caption is required, not optional - there is no way to render a CyTable without an accessible name and a plain-text summary of what it contains."),
-        new("Wide tables stay reachable by keyboard", "The default scroll container is a role=\"region\" with tabindex=\"0\", named by the caption via aria-labelledby, so a table wider than its container can still be scrolled without a mouse rather than silently overflowing the page."),
-        new("Row/column headers are your responsibility", "CyTable renders your own <thead>/<tbody> markup unchanged - always add scope=\"col\" to column headers and scope=\"row\" to any header cells within a row, so assistive technology can announce which header a cell belongs to.")
-    ];
+    private IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> A11yItems => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Mae gan bob tabl enw", "Mae Caption yn ofynnol, nid yn ddewisol — nid oes modd rendro CyTable heb enw hygyrch a chrynodeb testun plaen o'r hyn y mae'n ei gynnwys."),
+            new("Mae tablau llydan yn parhau i fod yn hygyrch drwy fysellfwrdd", "Mae'r cynhwysydd sgrolio diofyn yn role=\"region\" gyda tabindex=\"0\", wedi'i enwi gan y capsiwn drwy aria-labelledby, fel y gellir sgrolio tabl sy'n lletach na'i gynhwysydd heb lygoden."),
+            new("Pennawd rhes/colofn yw eich cyfrifoldeb chi", "Mae CyTable yn rendro eich marcio <thead>/<tbody> eich hun heb ei newid — ychwanegwch scope=\"col\" bob amser at benawdau colofn a scope=\"row\" at unrhyw gelloedd pennawd o fewn rhes, fel y gall technoleg gynorthwyol gyhoeddi i ba bennawd y mae cell yn perthyn.")
+        ]
+        : [
+            new("Every table has a name", "Caption is required, not optional - there is no way to render a CyTable without an accessible name and a plain-text summary of what it contains."),
+            new("Wide tables stay reachable by keyboard", "The default scroll container is a role=\"region\" with tabindex=\"0\", named by the caption via aria-labelledby, so a table wider than its container can still be scrolled without a mouse rather than silently overflowing the page."),
+            new("Row/column headers are your responsibility", "CyTable renders your own <thead>/<tbody> markup unchanged - always add scope=\"col\" to column headers and scope=\"row\" to any header cells within a row, so assistive technology can announce which header a cell belongs to.")
+        ];
 }

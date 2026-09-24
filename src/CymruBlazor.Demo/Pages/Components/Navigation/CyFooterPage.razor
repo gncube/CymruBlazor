@@ -1,12 +1,14 @@
 @page "/navigation/footer"
 @namespace CymruBlazor.Demo.Pages.Components.Navigation
+@implements IDisposable
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
 
-<CyPageHeader Title="CyFooter" Subtitle="Site footer with optional link groups, copyright, and version display.">
+<CyPageHeader Title="CyFooter" Subtitle="@(Strings.Language == AppLanguage.Welsh ? "Troedyn gwefan gyda grwpiau dolenni dewisol, hawlfraint, ac arddangos fersiwn." : "Site footer with optional link groups, copyright, and version display.")">
     <Breadcrumb>
         <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Navigation" />
+            <CyBreadcrumbItem Text="@(Strings.Language == AppLanguage.Welsh ? "Llywio" : "Navigation")" Href="/navigation" />
             <CyBreadcrumbItem Text="CyFooter" />
         </CyBreadcrumb>
     </Breadcrumb>
@@ -21,9 +23,9 @@
 @if (_activeTab == Tab.Examples)
 {
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
-    <span class="cb-panel-caption">Preview</span>
+    <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
     <div class="cb-workbench-preview" style="justify-content: flex-start; padding:0;">
-        <CyFooter Background="_background" Copyright="@_copyright" Style="width:100%;">
+        <CyFooter Background="_background" Copyright="@EffectiveCopyright" Style="width:100%;">
             @foreach (var link in _links)
             {
                 <a href="@link.Href">@link.Text</a>
@@ -33,41 +35,43 @@
 
     <div class="cb-playground-grid">
         <DemoPropertyControls>
-            <DemoPropertySelect Label="Background" @bind-Value="_background" Options="_backgroundOptions" TValue="ComponentColour" />
-            <DemoPropertyTextInput Label="Copyright" @bind-Value="_copyright" />
+            <DemoPropertySelect Label="@(Strings.Language == AppLanguage.Welsh ? "Cefndir" : "Background")" @bind-Value="_background" Options="_backgroundOptions" TValue="ComponentColour" />
+            <DemoPropertyTextInput Label="@(Strings.Language == AppLanguage.Welsh ? "Hawlfraint" : "Copyright")" @bind-Value="_copyright" />
         </DemoPropertyControls>
 
         <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-            <span class="cb-panel-caption">Generated code</span>
+            <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Cod a gynhyrchwyd" : "Generated code")</span>
             <CyCodeBlock Code="@GeneratedCode" Language="razor" />
             <a class="cb-open-in-github"
                href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyFooter.razor"
                target="_blank" rel="noopener noreferrer">
-                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                @(Strings.Language == AppLanguage.Welsh ? "Agor yn GitHub" : "Open in GitHub")<span class="u-sr-only"> (opens in new tab)</span>
             </a>
         </div>
     </div>
 
     <p style="color: var(--docs-text-muted); font-size: 0.85rem; margin-top: 1.5rem;">
-        This demo site's own footer (<code>DemoHeader</code>'s sibling <code>DemoFooter</code>) uses exactly this
-        component - its four-column layout is just four <code>&lt;div&gt;</code> groups passed as
-        <code>ChildContent</code>, which <code>CyFooter</code>'s flex-wrap row lays out side by side for free.
-        <code>Background</code> defaults to <code>Primary</code> everywhere else in this demo; try
-        <code>Surface</code>/<code>Neutral</code> above to see the light-background, dark-text treatment meant
-        for footers that shouldn't stand out as strongly as the page header.
+        @if (Strings.Language == AppLanguage.Welsh)
+        {
+            <text>Mae troedyn y safle demo hwn ei hun (chwaer elfen <code>DemoHeader</code>, sef <code>DemoFooter</code>) yn defnyddio'r union gydran hon - mae ei gynllun pedair colofn yn ddim mwy na phedwar grŵp <code>&lt;div&gt;</code> a drosglwyddir fel <code>ChildContent</code>, y mae rhes flex-wrap <code>CyFooter</code> yn eu trefnu ochr yn ochr yn ddiymdrech. Mae <code>Background</code> yn ddiofyn yn <code>Primary</code> ym mhobman arall yn y demo hwn; rhowch gynnig ar <code>Surface</code>/<code>Neutral</code> uchod i weld y driniaeth cefndir golau, testun tywyll a fwriedir ar gyfer troedynnau na ddylent sefyll allan mor gryf â phennawd y dudalen.</text>
+        }
+        else
+        {
+            <text>This demo site's own footer (<code>DemoHeader</code>'s sibling <code>DemoFooter</code>) uses exactly this component - its four-column layout is just four <code>&lt;div&gt;</code> groups passed as <code>ChildContent</code>, which <code>CyFooter</code>'s flex-wrap row lays out side by side for free. <code>Background</code> defaults to <code>Primary</code> everywhere else in this demo; try <code>Surface</code>/<code>Neutral</code> above to see the light-background, dark-text treatment meant for footers that shouldn't stand out as strongly as the page header.</text>
+        }
     </p>
     </div>
 }
 else if (_activeTab == Tab.Api)
 {
     <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-    <DemoApiTable Parameters="_apiDocs" />
+    <DemoApiTable Parameters="ApiDocs" />
     </div>
 }
 else
 {
     <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-    <DemoAccessibilityChecklist Items="_a11yItems" />
+    <DemoAccessibilityChecklist Items="A11yItems" />
     </div>
 }
 
@@ -78,7 +82,15 @@ else
 
     private Tab _activeTab = Tab.Examples;
     private ComponentColour _background = ComponentColour.Primary;
-    private string _copyright = "© 2026 CymruBlazor · MIT License";
+    private string _copyright = "";
+
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
+    private string EffectiveCopyright => !string.IsNullOrEmpty(_copyright)
+        ? _copyright
+        : (Strings.Language == AppLanguage.Welsh ? "© 2026 CymruBlazor · Trwydded MIT" : "© 2026 CymruBlazor · MIT License");
 
     private readonly IReadOnlyList<FooterLink> _links =
     [
@@ -93,26 +105,39 @@ else
 
     private string GeneratedCode =>
         $"""
-        <CyFooter Background="ComponentColour.{_background}" Copyright="{_copyright}">
+        <CyFooter Background="ComponentColour.{_background}" Copyright="{EffectiveCopyright}">
             <a href="https://github.com/gncube/CymruBlazor">GitHub</a>
             <a href="https://www.nuget.org/packages/CymruBlazor">NuGet</a>
         </CyFooter>
         """;
 
-    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
-    [
-        new("ChildContent", "RenderFragment?", "null", "Link group content, rendered above the copyright line. Plain <a> tags are automatically readable against every Background value."),
-        new("Background", "ComponentColour", "Primary", "Must be Primary, Secondary, Surface, or Neutral. Surface/Neutral use dark text on a light background instead of light-on-dark."),
-        new("Copyright", "string?", "null", "Optional copyright line."),
-        new("ShowVersion", "bool", "false", "Renders a version line. When true and Version is unset, resolves the latest NuGet version for PackageId (an outbound HTTP call)."),
-        new("Version", "string?", "null", "Explicit version text; skips the NuGet lookup when set."),
-        new("PackageId", "string", "\"CymruBlazor\"", "Package id queried when ShowVersion is true and Version is unset."),
-        new("IncludePrerelease", "bool", "true", "Whether the automatic NuGet lookup may return a prerelease version.")
-    ];
+    private IReadOnlyList<DemoApiTable.ApiParameterDoc> ApiDocs => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("ChildContent", "RenderFragment?", "null", "Cynnwys grŵp dolenni, wedi'i rendro uwchben y llinell hawlfraint. Mae tagiau <a> plaen yn awtomatig yn ddarllenadwy yn erbyn pob gwerth Cefndir."),
+            new("Background", "ComponentColour", "Primary", "Rhaid iddo fod yn Primary, Secondary, Surface, neu Neutral. Mae Surface/Neutral yn defnyddio testun tywyll ar gefndir golau yn lle golau-ar-dywyll."),
+            new("Copyright", "string?", "null", "Llinell hawlfraint ddewisol."),
+            new("ShowVersion", "bool", "false", "Yn rendro llinell fersiwn. Pan fydd yn wir a heb osod Version, mae'n datrys y fersiwn NuGet diweddaraf ar gyfer PackageId (galwad HTTP allan)."),
+            new("Version", "string?", "null", "Testun fersiwn eglur; yn hepgor edrych ar NuGet pan gaiff ei osod."),
+            new("PackageId", "string", "\"CymruBlazor\"", "Id y pecyn a holir pan fydd ShowVersion yn wir a heb osod Version."),
+            new("IncludePrerelease", "bool", "true", "A gaiff y chwiliad NuGet awtomatig ddychwelyd fersiwn cyn-rhyddhau.")
+        ]
+        : [
+            new("ChildContent", "RenderFragment?", "null", "Link group content, rendered above the copyright line. Plain <a> tags are automatically readable against every Background value."),
+            new("Background", "ComponentColour", "Primary", "Must be Primary, Secondary, Surface, or Neutral. Surface/Neutral use dark text on a light background instead of light-on-dark."),
+            new("Copyright", "string?", "null", "Optional copyright line."),
+            new("ShowVersion", "bool", "false", "Renders a version line. When true and Version is unset, resolves the latest NuGet version for PackageId (an outbound HTTP call)."),
+            new("Version", "string?", "null", "Explicit version text; skips the NuGet lookup when set."),
+            new("PackageId", "string", "\"CymruBlazor\"", "Package id queried when ShowVersion is true and Version is unset."),
+            new("IncludePrerelease", "bool", "true", "Whether the automatic NuGet lookup may return a prerelease version.")
+        ];
 
-    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
-    [
-        new("Semantic landmark", "Renders as a real <footer> element, giving assistive tech a clear contentinfo landmark."),
-        new("No blocking network calls in the render path", "The optional NuGet version lookup happens asynchronously after first render, so it never blocks initial paint or interaction.")
-    ];
+    private IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> A11yItems => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Tirnod semantig", "Yn rendro fel elfen <footer> go iawn, gan roi tirnod gwybodaeth cynnwys (contentinfo) eglur i dechnoleg gynorthwyol."),
+            new("Dim galwadau rhwydwaith sy'n blocio yn y llwybr rendro", "Mae'r chwiliad fersiwn NuGet dewisol yn digwydd yn anghydamserol ar ôl y rendriad cyntaf, felly nid yw byth yn blocio paent cychwynnol na rhyngweithio.")
+        ]
+        : [
+            new("Semantic landmark", "Renders as a real <footer> element, giving assistive tech a clear contentinfo landmark."),
+            new("No blocking network calls in the render path", "The optional NuGet version lookup happens asynchronously after first render, so it never blocks initial paint or interaction.")
+        ];
 }

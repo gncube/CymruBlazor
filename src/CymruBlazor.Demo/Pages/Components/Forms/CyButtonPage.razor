@@ -1,14 +1,15 @@
 @page "/forms/button"
 @namespace CymruBlazor.Demo.Pages.Components.Forms
+@implements IDisposable
 @using CymruBlazor.Components.Button
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Demo.SharedComponents
 @using CymruBlazor.Enums
 
-<CyPageHeader Title="CyButton" Subtitle="Trigger actions and submit forms.">
+<CyPageHeader Title="CyButton" Subtitle="@(Strings.Language == AppLanguage.Welsh ? "Ysgogi gweithredoedd a chyflwyno ffurflenni." : "Trigger actions and submit forms.")">
     <Breadcrumb>
         <CyBreadcrumb>
-            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="@(Strings.Language == AppLanguage.Welsh ? "Ffurflenni" : "Forms")" Href="/forms" />
             <CyBreadcrumbItem Text="CyButton" />
         </CyBreadcrumb>
     </Breadcrumb>
@@ -35,28 +36,28 @@
 @if (_activeTab == Tab.Examples)
 {
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
-    <span class="cb-panel-caption">Preview</span>
+    <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
     <div class="cb-workbench-preview">
         <CyButton Variant="_variant" Size="_size" Disabled="_disabled" Loading="_loading">
-            Save changes
+            @(Strings.Language == AppLanguage.Welsh ? "Cadw newidiadau" : "Save changes")
         </CyButton>
     </div>
 
     <div class="cb-playground-grid">
         <DemoPropertyControls>
-            <DemoPropertySelect Label="Variant" @bind-Value="_variant" Options="_variantOptions" TValue="ComponentColour" />
-            <DemoPropertyToggleGroup Label="Size" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
-            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
-            <DemoPropertySwitch Label="Loading" @bind-Value="_loading" />
+            <DemoPropertySelect Label="@(Strings.Language == AppLanguage.Welsh ? "Amrywiad" : "Variant")" @bind-Value="_variant" Options="_variantOptions" TValue="ComponentColour" />
+            <DemoPropertyToggleGroup Label="@(Strings.Language == AppLanguage.Welsh ? "Maint" : "Size")" @bind-Value="_size" Options="_sizeOptions" TValue="ComponentSize" />
+            <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Anabl" : "Disabled")" @bind-Value="_disabled" />
+            <DemoPropertySwitch Label="@(Strings.Language == AppLanguage.Welsh ? "Llwytho" : "Loading")" @bind-Value="_loading" />
         </DemoPropertyControls>
 
         <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
-            <span class="cb-panel-caption">Generated code</span>
+            <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Cod a gynhyrchwyd" : "Generated code")</span>
             <CyCodeBlock Code="@GeneratedCode" Language="razor" />
             <a class="cb-open-in-github"
                href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Button/CyButton.razor"
                target="_blank" rel="noopener noreferrer">
-                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+                @(Strings.Language == AppLanguage.Welsh ? "Agor yn GitHub" : "Open in GitHub")<span class="u-sr-only"> (opens in new tab)</span>
             </a>
         </div>
     </div>
@@ -65,13 +66,13 @@
 else if (_activeTab == Tab.Api)
 {
     <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
-    <DemoApiTable Parameters="_apiDocs" />
+    <DemoApiTable Parameters="ApiDocs" />
     </div>
 }
 else
 {
     <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
-    <DemoAccessibilityChecklist Items="_a11yItems" />
+    <DemoAccessibilityChecklist Items="A11yItems" />
     </div>
 }
 
@@ -88,6 +89,10 @@ else
     private ComponentSize _size = ComponentSize.Medium;
     private bool _disabled;
     private bool _loading;
+
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
 
     private readonly IReadOnlyList<ComponentColour> _variantOptions =
     [
@@ -109,27 +114,43 @@ else
         <CyButton
             Variant="ComponentColour.{_variant}"
             Size="ComponentSize.{_size}"{(_disabled ? "\n    Disabled=\"true\"" : "")}{(_loading ? "\n    Loading=\"true\"" : "")}>
-            Save changes
+            {(Strings.Language == AppLanguage.Welsh ? "Cadw newidiadau" : "Save changes")}
         </CyButton>
         """;
 
-    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
-    [
-        new("Variant", "ComponentColour", "ComponentColour.Primary", "Visual style: Primary, Secondary, Tertiary, or Danger."),
-        new("Size", "ComponentSize", "ComponentSize.Medium", "Button size: Small, Medium, or Large."),
-        new("Disabled", "bool", "false", "Disables interaction and removes the button from the tab sequence."),
-        new("Loading", "bool", "false", "Shows a spinner and disables interaction without changing the button's width."),
-        new("Href", "string?", "null", "When set (and not Disabled), renders as an <a> for navigation instead of a <button>."),
-        new("Type", "string", "\"button\"", "Native button type attribute, used when not rendering as a link."),
-        new("OnClick", "EventCallback<MouseEventArgs>", "-", "Raised on activation, unless Disabled or Loading."),
-        new("ChildContent", "RenderFragment", "null", "Content rendered inside the button.")
-    ];
+    private IReadOnlyList<DemoApiTable.ApiParameterDoc> ApiDocs => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Variant", "ComponentColour", "ComponentColour.Primary", "Arddull weledol: Sylfaenol (Primary), Eilaidd (Secondary), Trydyddol (Tertiary), neu Berygl (Danger)."),
+            new("Size", "ComponentSize", "ComponentSize.Medium", "Maint y botwm: Bach (Small), Canolig (Medium), neu Fawr (Large)."),
+            new("Disabled", "bool", "false", "Analluogi rhyngweithio a thynnu'r botwm o'r dilyniant tabio."),
+            new("Loading", "bool", "false", "Dangos troellwr ac analluogi rhyngweithio heb newid lled y botwm."),
+            new("Href", "string?", "null", "Pan gaiff ei osod (ac nid yw'n Anabl), mae'n rendro fel <a> ar gyfer llywio yn hytrach na <button>."),
+            new("Type", "string", "\"button\"", "Priodoledd math botwm brodorol, a ddefnyddir pan na chaiff ei rendro fel dolen."),
+            new("OnClick", "EventCallback<MouseEventArgs>", "-", "Wedi'i godi wrth actifadu, oni bai ei fod yn Anabl neu'n Llwytho."),
+            new("ChildContent", "RenderFragment", "null", "Cynnwys a rendrir y tu mewn i'r botwm.")
+        ]
+        : [
+            new("Variant", "ComponentColour", "ComponentColour.Primary", "Visual style: Primary, Secondary, Tertiary, or Danger."),
+            new("Size", "ComponentSize", "ComponentSize.Medium", "Button size: Small, Medium, or Large."),
+            new("Disabled", "bool", "false", "Disables interaction and removes the button from the tab sequence."),
+            new("Loading", "bool", "false", "Shows a spinner and disables interaction without changing the button's width."),
+            new("Href", "string?", "null", "When set (and not Disabled), renders as an <a> for navigation instead of a <button>."),
+            new("Type", "string", "\"button\"", "Native button type attribute, used when not rendering as a link."),
+            new("OnClick", "EventCallback<MouseEventArgs>", "-", "Raised on activation, unless Disabled or Loading."),
+            new("ChildContent", "RenderFragment", "null", "Content rendered inside the button.")
+        ];
 
-    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
-    [
-        new("Minimum touch target", "Meets WCAG 2.2 SC 2.5.8 with a 44x44px minimum touch target at every size."),
-        new("Keyboard operable", "Reachable via Tab and activatable with Enter/Space; removed from the tab sequence when Disabled."),
-        new("Loading state announced", "aria-busy is set while Loading so screen readers know the action is in progress."),
-        new("Focus visibility", "A visible focus outline is always present and meets contrast requirements.")
-    ];
+    private IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> A11yItems => Strings.Language == AppLanguage.Welsh
+        ? [
+            new("Targed cyffwrdd lleiaf", "Yn bodloni WCAG 2.2 SC 2.5.8 gyda tharged cyffwrdd lleiaf o 44x44px ar bob maint."),
+            new("Gellir ei weithredu drwy fysellfwrdd", "Gellir ei gyrraedd drwy Tab a'i actifadu gydag Enter/Space; wedi'i dynnu o'r dilyniant tabio pan fydd yn Anabl."),
+            new("Cyhoeddir cyflwr llwytho", "Gosodir aria-busy tra bo'n Llwytho fel bod darllenwyr sgrin yn gwybod bod y weithred ar y gweill."),
+            new("Gwelededd ffocws", "Mae amlinelliad ffocws gweladwy bob amser yn bresennol ac yn bodloni gofynion cyferbyniad.")
+        ]
+        : [
+            new("Minimum touch target", "Meets WCAG 2.2 SC 2.5.8 with a 44x44px minimum touch target at every size."),
+            new("Keyboard operable", "Reachable via Tab and activatable with Enter/Space; removed from the tab sequence when Disabled."),
+            new("Loading state announced", "aria-busy is set while Loading so screen readers know the action is in progress."),
+            new("Focus visibility", "A visible focus outline is always present and meets contrast requirements.")
+        ];
 }
