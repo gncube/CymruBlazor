@@ -46,6 +46,7 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) {
   --cymru-color-link-visited: #ffff00;
 
   --cymru-color-success: #00ff00;
+  --cymru-color-success-text: #00ff00;
 
   --cymru-color-success-background: #000000;
 
@@ -54,6 +55,7 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) {
   --cymru-color-warning-background: #000000;
 
   --cymru-color-danger: #ff4040;
+  --cymru-color-danger-text: #ff4040;
 
   --cymru-color-danger-background: #000000;
 

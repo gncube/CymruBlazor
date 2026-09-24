@@ -114,11 +114,13 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
        ========================================================================== */
 
   --cymru-color-success: var(--cymru-green-100);
+  --cymru-color-success-text: var(--cymru-green-100);
   --cymru-color-success-background: var(--cymru-navy-900);
 
   --cymru-color-warning-background: var(--cymru-navy-700);
 
   --cymru-color-danger: var(--cymru-red-100);
+  --cymru-color-danger-text: var(--cymru-red-100);
   --cymru-color-danger-background: var(--cymru-blue-900);
 
   --cymru-color-info: var(--cymru-cyan-300);

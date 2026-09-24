@@ -13,6 +13,8 @@ public sealed class CyBadgeAccessibilityTests : AxeTestBase
     [InlineData(ComponentColour.Neutral)]
     [InlineData(ComponentColour.Warning)]
     [InlineData(ComponentColour.Surface)]
+    [InlineData(ComponentColour.Danger)]
+    [InlineData(ComponentColour.Success)]
     public async Task Should_Have_No_Violations_For_Each_Variant(ComponentColour variant)
     {
         // Act
@@ -44,9 +46,9 @@ public sealed class CyBadgeAccessibilityTests : AxeTestBase
     [InlineData("high-contrast")]
     public async Task Should_Have_No_Violations_For_All_Variants_In_Dark_And_High_Contrast_Themes(string theme)
     {
-        // Arrange - the four variants under test above, plus a dismissible one
+        // Arrange - the variants under test above, plus a dismissible one
         ComponentColour[] variants =
-            [ComponentColour.Primary, ComponentColour.Neutral, ComponentColour.Warning, ComponentColour.Surface];
+            [ComponentColour.Primary, ComponentColour.Neutral, ComponentColour.Warning, ComponentColour.Surface, ComponentColour.Danger, ComponentColour.Success];
 
         var markup = string.Join(
             Environment.NewLine,
