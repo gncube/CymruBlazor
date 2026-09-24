@@ -158,6 +158,13 @@ public sealed record NavStrings
     public required string NotFoundTitle { get; init; }
     public required string NotFoundBody { get; init; }
     public required string NotFoundHome { get; init; }
+    public required string SearchResults { get; init; }
+    public required string SearchEmptyFormat { get; init; }
+    public required string SearchHint { get; init; }
+    public required string PageNavigation { get; init; }
+    public required string TableOfContents { get; init; }
+    public required string Examples { get; init; }
+    public required string ApiReference { get; init; }
 }
 
 /// <summary>One library parameter, with how to read its value from a <see cref="LibraryStrings"/>.</summary>
@@ -331,7 +338,14 @@ public sealed class AppStrings
         Packages = "Packages",
         NotFoundTitle = "Page not found",
         NotFoundBody = "There is no page at this address. Check the URL or use the navigation to find what you are looking for.",
-        NotFoundHome = "← Back to home"
+        NotFoundHome = "← Back to home",
+        SearchResults = "Search results",
+        SearchEmptyFormat = "No pages match \"{0}\".",
+        SearchHint = "Type to search across every component and doc page.",
+        PageNavigation = "Page navigation",
+        TableOfContents = "Table of contents",
+        Examples = "Examples",
+        ApiReference = "API Reference"
     };
 
     public static NavStrings WelshNav { get; } = new()
@@ -368,7 +382,14 @@ public sealed class AppStrings
         Packages = "Pecynnau",
         NotFoundTitle = "Tudalen heb ei chanfod",
         NotFoundBody = "Nid oes tudalen yn y cyfeiriad hwn. Gwiriwch yr URL neu ddefnyddiwch y llywio i ddod o hyd i'r hyn rydych chi'n chwilio amdano.",
-        NotFoundHome = "← Yn ôl i'r hafan"
+        NotFoundHome = "← Yn ôl i'r hafan",
+        SearchResults = "Canlyniadau chwilio",
+        SearchEmptyFormat = "Dim tudalennau'n cyfateb i \"{0}\".",
+        SearchHint = "Teipiwch i chwilio ar draws pob cydran a thudalen ddogfennaeth.",
+        PageNavigation = "Llywio tudalen",
+        TableOfContents = "Tabl cynnwys",
+        Examples = "Enghreifftiau",
+        ApiReference = "Cyfeirnod API"
     };
 
     /// <summary>Every library override parameter this release adds, for the catalogue table and the tests.</summary>
@@ -439,4 +460,20 @@ public sealed class AppStrings
         Language = language;
         Changed?.Invoke();
     }
+
+    /// <summary>Translates a top-level category name according to the active language.</summary>
+    public string GetCategory(string category) => category switch
+    {
+        "Getting Started" => Nav.GettingStarted,
+        "Foundations" => Nav.Foundations,
+        "Branding" => Nav.Branding,
+        "Layout" => Nav.Layout,
+        "Navigation" => Nav.Navigation,
+        "Forms" => Nav.Forms,
+        "Content" => Nav.Content,
+        "Data" => Nav.Data,
+        "Feedback" => Nav.Feedback,
+        "Accessibility" => Nav.Accessibility,
+        _ => category
+    };
 }

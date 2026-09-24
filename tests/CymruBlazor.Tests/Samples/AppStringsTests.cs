@@ -80,6 +80,32 @@ public sealed class AppStringsTests : TestContextBase
     }
 
     [Fact]
+    public void GetCategory_Returns_Correct_Localized_Category_Name()
+    {
+        var strings = new AppStrings();
+        strings.GetCategory("Foundations").ShouldBe("Foundations");
+        strings.GetCategory("Accessibility").ShouldBe("Accessibility");
+        strings.GetCategory("Custom").ShouldBe("Custom");
+
+        strings.SetLanguage(AppLanguage.Welsh);
+        strings.GetCategory("Foundations").ShouldBe("Seiliau");
+        strings.GetCategory("Accessibility").ShouldBe("Hygyrchedd");
+        strings.GetCategory("Custom").ShouldBe("Custom");
+    }
+
+    [Fact]
+    public void Bilingual_Search_Ranks_Welsh_Category_Queries()
+    {
+        var results = CymruBlazor.Demo.SharedComponents.DemoNavigationIndex.Search("hygyrchedd");
+        results.ShouldNotBeEmpty();
+        results.All(r => r.Category == "Accessibility").ShouldBeTrue();
+
+        var foundationsResults = CymruBlazor.Demo.SharedComponents.DemoNavigationIndex.Search("seiliau");
+        foundationsResults.ShouldNotBeEmpty();
+        foundationsResults.All(r => r.Category == "Foundations").ShouldBeTrue();
+    }
+
+    [Fact]
     public void Catalogue_Covers_Every_Library_String_Exactly_Once()
     {
         // Each property is set to its own name, so the catalogue's selectors reveal which property they read.

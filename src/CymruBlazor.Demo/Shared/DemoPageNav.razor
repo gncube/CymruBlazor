@@ -5,12 +5,12 @@
 
 @if (_previous is not null || _next is not null)
 {
-    <nav class="cb-page-nav" aria-label="Page navigation">
+    <nav class="cb-page-nav" aria-label="@Strings.Nav.PageNavigation">
         @if (_previous is not null)
         {
             <a class="cb-page-nav__link cb-page-nav__link--prev" href="@_previous.Href">
                 <span class="cb-page-nav__direction">&larr; @Strings.Nav.Previous</span>
-                <span class="cb-page-nav__title">@_previous.Category / @_previous.Title</span>
+                <span class="cb-page-nav__title">@Strings.GetCategory(_previous.Category) / @_previous.Title</span>
             </a>
         }
         else
@@ -22,7 +22,7 @@
         {
             <a class="cb-page-nav__link cb-page-nav__link--next" href="@_next.Href">
                 <span class="cb-page-nav__direction">@Strings.Nav.Next &rarr;</span>
-                <span class="cb-page-nav__title">@_next.Category / @_next.Title</span>
+                <span class="cb-page-nav__title">@Strings.GetCategory(_next.Category) / @_next.Title</span>
             </a>
         }
     </nav>

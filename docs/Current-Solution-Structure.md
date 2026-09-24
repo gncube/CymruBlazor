@@ -110,6 +110,7 @@ CymruBlazor/
 │     │  │  ├─ Accessibility/
 │     │  │  ├─ Branding/
 │     │  │  ├─ Content/
+│     │  │  ├─ Data/
 │     │  │  ├─ Feedback/
 │     │  │  ├─ Forms/
 │     │  │  ├─ Foundations/

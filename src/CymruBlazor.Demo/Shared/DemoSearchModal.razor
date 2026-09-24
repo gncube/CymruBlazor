@@ -1,4 +1,5 @@
 @namespace CymruBlazor.Demo.SharedComponents
+@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
@@ -28,7 +29,7 @@
 
                 @if (_results.Count > 0)
                 {
-                    <ul class="cb-search-modal__results" role="listbox" aria-label="Search results">
+                    <ul class="cb-search-modal__results" role="listbox" aria-label="@Strings.Nav.SearchResults">
                         @for (var i = 0; i < _results.Count; i++)
                         {
                             var index = i;
@@ -39,7 +40,7 @@
                                    @onclick="() => Navigate(entry.Href)"
                                    @onclick:preventDefault="true"
                                    @onmouseenter="() => _selectedIndex = index">
-                                    <span class="cb-search-modal__result-category">@entry.Category</span>
+                                    <span class="cb-search-modal__result-category">@Strings.GetCategory(entry.Category)</span>
                                     <span class="cb-search-modal__result-title">@entry.Title</span>
                                     <span class="cb-search-modal__result-desc">@entry.Description</span>
                                 </a>
@@ -49,11 +50,11 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(_query))
                 {
-                    <p class="cb-search-modal__empty">No pages match "@_query".</p>
+                    <p class="cb-search-modal__empty">@string.Format(Strings.Nav.SearchEmptyFormat, _query)</p>
                 }
                 else
                 {
-                    <p class="cb-search-modal__hint">Type to search across every component and doc page.</p>
+                    <p class="cb-search-modal__hint">@Strings.Nav.SearchHint</p>
                 }
 
             </div>
@@ -133,11 +134,26 @@
         NavigationManager.NavigateTo(href);
     }
 
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+    }
+
+    private void HandleStringsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     private async Task Close()
     {
         if (OnClose.HasDelegate)
         {
             await OnClose.InvokeAsync();
         }
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
     }
 }

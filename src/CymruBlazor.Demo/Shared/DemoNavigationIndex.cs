@@ -188,6 +188,20 @@ public static class DemoNavigationIndex
             .ToList();
     }
 
+    private static readonly Dictionary<string, string> WelshCategoryAliases = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Getting Started"] = "Dechrau Arni",
+        ["Foundations"] = "Seiliau",
+        ["Branding"] = "Brandio",
+        ["Layout"] = "Cynllun",
+        ["Navigation"] = "Llywio",
+        ["Forms"] = "Ffurflenni",
+        ["Content"] = "Cynnwys",
+        ["Data"] = "Data",
+        ["Feedback"] = "Adborth",
+        ["Accessibility"] = "Hygyrchedd"
+    };
+
     private static int Rank(Entry entry, string query)
     {
         if (entry.Title.Contains(query, StringComparison.OrdinalIgnoreCase))
@@ -195,7 +209,8 @@ public static class DemoNavigationIndex
             return 3;
         }
 
-        if (entry.Category.Contains(query, StringComparison.OrdinalIgnoreCase))
+        if (entry.Category.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            (WelshCategoryAliases.TryGetValue(entry.Category, out var welshCat) && welshCat.Contains(query, StringComparison.OrdinalIgnoreCase)))
         {
             return 2;
         }
