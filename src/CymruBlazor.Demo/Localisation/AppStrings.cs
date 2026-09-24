@@ -152,6 +152,9 @@ public sealed record NavStrings
     public required string Previous { get; init; }
     public required string Next { get; init; }
     public required string OnThisPage { get; init; }
+    public required string Documentation { get; init; }
+    public required string Community { get; init; }
+    public required string Packages { get; init; }
 }
 
 /// <summary>One library parameter, with how to read its value from a <see cref="LibraryStrings"/>.</summary>
@@ -319,7 +322,10 @@ public sealed class AppStrings
         SwitchToDarkMode = "Switch to dark mode",
         Previous = "Previous",
         Next = "Next",
-        OnThisPage = "On this page"
+        OnThisPage = "On this page",
+        Documentation = "Documentation",
+        Community = "Community",
+        Packages = "Packages"
     };
 
     public static NavStrings WelshNav { get; } = new()
@@ -350,7 +356,10 @@ public sealed class AppStrings
         SwitchToDarkMode = "Newid i fodd tywyll",
         Previous = "Blaenorol",
         Next = "Nesaf",
-        OnThisPage = "Ar y dudalen hon"
+        OnThisPage = "Ar y dudalen hon",
+        Documentation = "Dogfennaeth",
+        Community = "Cymuned",
+        Packages = "Pecynnau"
     };
 
     /// <summary>Every library override parameter this release adds, for the catalogue table and the tests.</summary>
