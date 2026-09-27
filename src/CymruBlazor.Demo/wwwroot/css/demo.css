@@ -704,6 +704,10 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-primary-preview {
   color: #000000;
 }
 
+.cy-theme-provider[data-theme="dark"] .cb-primary-preview {
+  color: #000000;
+}
+
 body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-home__hero .cb-demo-btn--primary {
   background-color: #ffffff;
   color: #000000;
