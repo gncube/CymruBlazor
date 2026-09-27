@@ -8,7 +8,11 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [Unreleased]
+## [1.5.1] - 2026-09-26
+
+Housekeeping, test coverage, documentation, and a bilingual
+documentation-site rework. No new public API; package validation runs
+against 1.5.0.
 
 ### Added
 
@@ -17,6 +21,22 @@ Full detail for every release is also available as auto-generated
   v1.5.0 (`CyPagination`, `CySpinner`), with illustrative Welsh translations.
 - `ComponentContractTests` extended to cover `CyProgress` and `CySpinner` under
   `IHasSize` and `IHasColour`.
+- Demo: category overview pages for Data, Feedback, Foundations and Navigation,
+  completing 100% information-architecture symmetry across all ten documentation
+  sections (every category now has an overview page), plus a `CyHeroBanner`
+  documentation page.
+- Demo: deep, page-level bilingual (English/Welsh) content across all ten
+  category overview pages, the Installation guide, and six high-traffic
+  component pages (`CyButton`, `CyTextBox`, `CyTable`, `CyAlert`, `CyHeader`,
+  `CyFooter`) - subtitles, breadcrumbs, interactive preview captions and
+  workbench data, generated-code notes, `ApiDocs` parameter descriptions, and
+  accessibility checklists all now re-render reactively on language toggle via
+  `AppStrings.Changed`. As with localisation step 1, this Welsh text is
+  illustrative and has not been translator-reviewed (see the backlog's
+  localisation-step-2 item).
+- Demo: all 36 component documentation pages' tab bars (Examples/API/
+  Accessibility) now read their labels from `Strings.Nav` instead of hardcoded
+  English, and site search indexing/ranking recognises Welsh terms.
 
 ### Changed
 
@@ -25,6 +45,17 @@ Full detail for every release is also available as auto-generated
   unhandled runtime exception.
 - `CyTextArea`: parameter validation now enforces that `MaxLength` is supplied
   when `ShowCharacterCount="true"`.
+- Demo navigation reorganised around a 10-step developer journey (Getting
+  Started, Foundations, Branding, Layouts, Navigation, Forms, Content, Data,
+  Feedback, Accessibility), replacing the previous ad hoc ordering; `Design
+  Tokens` moved under Foundations.
+- Demo: canonical routes established for `CyDialog` (now under Feedback) and
+  `Focus Trap` (now under Foundations), with the previous Accessibility routes
+  kept as aliases so bookmarked links and prev/next navigation keep working.
+  `DemoNavigationIndex` gained alias support to resolve both canonical and
+  legacy routes to the same navigation entry.
+- Demo footer's Accessibility link now points at the Accessibility category
+  overview instead of the old Focus Trap shortcut.
 
 ### Fixed
 
@@ -41,11 +72,16 @@ Full detail for every release is also available as auto-generated
   `.Forms`, etc.), and added dedicated usage sections for Forms, Data Display,
   Feedback, Overlays, and Localisation Strategy.
 - Modernised `README.md` to reference modern `App.razor` (Blazor Web App) and
-  `wwwroot/index.html` (Blazor WebAssembly) instead of obsolete `_Host.cshtml`.
+  `wwwroot/index.html` (Blazor WebAssembly) instead of obsolete `_Host.cshtml`,
+  and corrected its pre-release status banner to describe the current v1.5.x
+  scope instead of the original `0.1.0-preview.1` scope.
 - Corrected Demo `Installation.razor` layout structure (`CyThemeProvider` wrapping
-  layout `@Body` rather than `<Router>`) and expanded global usings snippet.
+  layout `@Body` rather than `<Router>`), added a dependency-injection
+  registration step, expanded the global usings snippet, and enhanced
+  cross-links to related pages.
 - Synchronised Demo `DesignTokens.razor` typography scale table with the DHCW
   discrete dual-tier desktop/mobile token specification in `typography.css`.
+- Localised the Demo's 404 (`NotFound`) page into Welsh.
 
 ### Removed
 
@@ -53,7 +89,13 @@ Full detail for every release is also available as auto-generated
   shipped as `_content/CymruBlazor/background.png` but nothing referenced it).
   No public API is affected.
 
-## [1.5.0] - Unreleased
+### Internal
+
+- `ToastPauseTests` rewritten to use `TimeProvider`/`FakeTimeProvider` instead
+  of real elapsed time, removing a source of CI flakiness in the pause-on-
+  hover/focus timing assertions.
+
+## [1.5.0] - 2026-09-24
 
 Data display and feedback. Everything is additive; package validation
 runs against 1.2.0. Deliberately does not include a data grid, sorting,
@@ -128,7 +170,7 @@ filtering or virtualisation (roadmap decision D5) - style
   checked only by manually tracing several page/total combinations by
   hand, not by running `CyPaginationTests`.
 
-## [1.3.0] - Unreleased
+## [1.3.0] - 2026-09-21
 
 Welsh strings and overlays. Everything is additive; package validation runs
 against 1.2.0.
@@ -213,7 +255,7 @@ against 1.2.0.
   (every route, light/dark/high-contrast, no console errors, axe clean).
   See `tests/CymruBlazor.AccessibilityTests/README.md`.
 
-## [1.4.0] - Unreleased
+## [1.4.0] - 2026-09-23
 
 Forms. Everything is additive; package validation runs against 1.2.0.
 Confirmed against the NHS Wales Design System (the DHCW component library)
@@ -267,7 +309,7 @@ in addition to GOV.UK/NHS.UK, per the roadmap's D-numeric/D4 decisions.
   (the DHCW reference marks only the offending segment). Tracked in the
   backlog.
 
-## [1.2.1] - Unreleased
+## [1.2.1] - 2026-09-19
 
 ### Fixed
 
