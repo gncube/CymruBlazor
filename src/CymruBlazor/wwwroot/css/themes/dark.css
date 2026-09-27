@@ -66,6 +66,7 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
 
      --cymru-color-primary: var(--cymru-cyan-400);
      --cymru-color-primary-hover: var(--cymru-cyan-300);
+     --cymru-color-primary-text: var(--cymru-grey-900);
 
   --cymru-color-secondary: var(--cymru-blue-300);
 
@@ -105,7 +106,7 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
        Links
        ========================================================================== */
 
-  --cymru-color-link: var(--cymru-cyan-400);
+     --cymru-color-link: var(--cymru-white);
   /* Inferred - no dark-mode hover value is documented. */
   --cymru-color-link-hover: var(--cymru-cyan-300);
 

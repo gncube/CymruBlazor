@@ -695,6 +695,11 @@ details[open] > summary .cb-nav-group__chevron {
   background-color: var(--cb-brand-primary-hover);
 }
 
+body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-home__hero .cb-demo-btn--primary {
+  background-color: #ffffff;
+  color: #000000;
+}
+
 .cb-demo-btn--secondary {
   background-color: var(--cb-bg-surface);
   color: var(--cb-text-primary);
