@@ -11,20 +11,24 @@ if (-not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-\(env:CYMRU_SMOKE_REPORT_DIR =\)ReportDir
+$env:CYMRU_SMOKE_REPORT_DIR = $ReportDir
 
 Write-Host "Restoring solution dependencies..."
-dotnet restore
+# Work around SSL certificate chain issues in Docker Desktop
+# Use older HTTP stack and disable certificate revocation checks
+$env:DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER = "0"
+$env:NUGET_CERT_REVOCATION_MODE = "offline"
+dotnet restore --verbosity minimal
 
 Write-Host "Publishing CymruBlazor.Demo (isolated to prevent NETSDK1152 duplicate asset collision)..."
 dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj -c Release -o $PublishPath --no-restore
 
-\(wwwroot = Join-Path\)PublishPath "wwwroot"
+$wwwroot = Join-Path $PublishPath "wwwroot"
 if (-not (Test-Path $wwwroot)) {
     throw "Published wwwroot directory not found at $wwwroot"
 }
 
-\(env:CYMRU_DEMO_DIR =\)wwwroot
+$env:CYMRU_DEMO_DIR = $wwwroot
 $env:CI = "true"
 
 Write-Host "Executing DemoSmokeTests with CYMRU_DEMO_DIR=$env:CYMRU_DEMO_DIR..."
@@ -34,7 +38,7 @@ dotnet test tests/CymruBlazor.AccessibilityTests/CymruBlazor.AccessibilityTests.
     --filter "FullyQualifiedName~DemoSmokeTests" `
     --logger "console;verbosity=normal"
 
-\(testExitCode =\)LASTEXITCODE
+$testExitCode = $LASTEXITCODE
 
 if ($testExitCode -ne 0) {
     throw "Accessibility smoke tests failed with exit code $testExitCode"

@@ -14,15 +14,15 @@ catch {
     exit 1
 }
 
-\(repoRoot = (Resolve-Path "\)PSScriptRoot/..").Path
-\(artifactDir = Join-Path\)repoRoot ".artifacts/accessibility"
+$repoRoot = (Resolve-Path "$PSScriptRoot/..").Path
+$artifactDir = Join-Path $repoRoot ".artifacts/accessibility"
 
 if (-not (Test-Path $artifactDir)) {
     New-Item -ItemType Directory -Path $artifactDir -Force | Out-Null
 }
 
 Write-Host "Building Docker image [$ImageTag]..."
-docker build -t \(ImageTag -f "\)repoRoot/docker/playwright/Dockerfile" "$repoRoot"
+docker build -t $ImageTag -f "$repoRoot/docker/playwright/Dockerfile" "$repoRoot"
 
 Write-Host "Running containerized Playwright accessibility tests..."
 docker run --rm `
@@ -34,7 +34,7 @@ docker run --rm `
     $ImageTag `
     -File ./scripts/Run-AccessibilityTests.Container.ps1
 
-\(exitCode =\)LASTEXITCODE
+$exitCode = $LASTEXITCODE
 
 if ($exitCode -ne 0) {
     Write-Error "Container test execution failed with exit code $exitCode."
