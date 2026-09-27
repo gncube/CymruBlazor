@@ -55,7 +55,7 @@
 }
 
 /* Colours */
-.cy-spinner--primary { color: var(--cymru-color-primary); }
+.cy-spinner--primary { color: var(--cymru-color-primary-on-surface); }
 .cy-spinner--secondary { color: var(--cymru-color-secondary); }
 .cy-spinner--tertiary { color: var(--cymru-color-brand-accent); }
 .cy-spinner--success { color: var(--cymru-color-success); }

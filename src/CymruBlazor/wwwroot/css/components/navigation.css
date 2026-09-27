@@ -28,9 +28,9 @@
   padding: var(--cymru-space-2) var(--cymru-space-6);
 
   background-color: var(--cymru-color-surface);
-  color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-on-surface);
 
-  border: var(--cymru-border-width-medium) solid var(--cymru-color-primary);
+  border: var(--cymru-border-width-medium) solid var(--cymru-color-primary-on-surface);
   border-radius: var(--cymru-radius-sm);
 
   font-weight: var(--cymru-font-weight-semibold);
@@ -276,7 +276,7 @@
 }
 
 .cy-navigation__link:hover {
-  color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-on-surface);
 }
 
 .cy-navigation__link--active {

@@ -68,6 +68,10 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
      --cymru-color-primary-hover: var(--cymru-cyan-800);
      --cymru-color-primary-text: var(--cymru-white);
 
+  /* cyan-900 is a surface fill: as text on a dark surface it is ~2.1:1.
+     Match the link colour, which is tuned for text on dark surfaces. */
+  --cymru-color-primary-on-surface: var(--cymru-cyan-400);
+
   --cymru-color-secondary: var(--cymru-blue-300);
 
   /* Inferred: no explicit dark-mode value is documented for the solid

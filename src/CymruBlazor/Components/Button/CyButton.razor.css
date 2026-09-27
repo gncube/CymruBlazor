@@ -7,7 +7,7 @@
   min-height: var(--cymru-touch-target-min);
 
   background: var(--cymru-color-primary);
-  color: var(--cymru-color-surface);
+  color: var(--cymru-color-primary-text);
   padding: var(--cymru-spacing-component-sm) var(--cymru-spacing-component-md);
   border: none;
   border-radius: var(--cymru-radius-sm);
@@ -64,7 +64,7 @@
 /* ── Variants ── */
 .cy-button--secondary {
   background: transparent;
-  color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-on-surface);
   border: 1px solid var(--cymru-color-border-strong);
   box-shadow: none;
 }
@@ -75,7 +75,7 @@
 
 .cy-button--tertiary {
   background: transparent;
-  color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-on-surface);
   border: none;
   box-shadow: none;
   padding-inline: var(--cymru-spacing-component-sm);
