@@ -1,4 +1,7 @@
 @inherits CyFormFieldComponentBase<DateOnly?>
+@{
+    var (dayInvalid, monthInvalid, yearInvalid) = InvalidSegments();
+}
 
 <fieldset class="@BuildFieldCssClass("cy-field cy-date-input-group")" role="group" aria-describedby="@ComputedAriaDescribedBy" @attributes="AdditionalAttributes">
 
@@ -26,7 +29,8 @@
                 maxlength="2"
                 class="cy-date-input__input cy-date-input__input--day"
                 autocomplete="@(AutocompleteDateOfBirth ? "bday-day" : null)"
-                aria-invalid="@(HasValidationError ? "true" : "false")"
+                aria-invalid="@(dayInvalid ? "true" : "false")"
+                aria-describedby="@(dayInvalid ? ErrorId : null)"
                 disabled="@Disabled"
                 @bind="_day"
                 @bind:event="onchange"
@@ -42,7 +46,8 @@
                 maxlength="2"
                 class="cy-date-input__input cy-date-input__input--month"
                 autocomplete="@(AutocompleteDateOfBirth ? "bday-month" : null)"
-                aria-invalid="@(HasValidationError ? "true" : "false")"
+                aria-invalid="@(monthInvalid ? "true" : "false")"
+                aria-describedby="@(monthInvalid ? ErrorId : null)"
                 disabled="@Disabled"
                 @bind="_month"
                 @bind:event="onchange"
@@ -58,7 +63,8 @@
                 maxlength="4"
                 class="cy-date-input__input cy-date-input__input--year"
                 autocomplete="@(AutocompleteDateOfBirth ? "bday-year" : null)"
-                aria-invalid="@(HasValidationError ? "true" : "false")"
+                aria-invalid="@(yearInvalid ? "true" : "false")"
+                aria-describedby="@(yearInvalid ? ErrorId : null)"
                 disabled="@Disabled"
                 @bind="_year"
                 @bind:event="onchange"
@@ -70,7 +76,7 @@
     @if (HasValidationError)
     {
         <p id="@ErrorId" class="cy-field__error" role="alert">
-            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+            @BuildErrorMessage()
         </p>
     }
 

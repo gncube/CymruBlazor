@@ -131,3 +131,51 @@
     transition: opacity 120ms ease;
   }
 }
+
+/*
+ * Viewport-edge flip. cymru-overlay.js measures the (already-laid-out, if
+ * hidden) .cy-tooltip__content on hover/focus and sets [data-tooltip-flip]
+ * when the chosen Placement would render off-screen; these rules swap the
+ * content (and its ::before pointer bridge) to the opposite side. Requires
+ * JS - without it the tooltip still shows in its declared Placement (see
+ * CyTooltip's remarks).
+ */
+.cy-tooltip--top[data-tooltip-flip] > .cy-tooltip__content {
+  inset-block-end: auto;
+  inset-block-start: calc(100% + var(--cymru-space-2));
+}
+
+.cy-tooltip--top[data-tooltip-flip] > .cy-tooltip__content::before {
+  inset-block-start: auto;
+  inset-block-end: 100%;
+}
+
+.cy-tooltip--bottom[data-tooltip-flip] > .cy-tooltip__content {
+  inset-block-start: auto;
+  inset-block-end: calc(100% + var(--cymru-space-2));
+}
+
+.cy-tooltip--bottom[data-tooltip-flip] > .cy-tooltip__content::before {
+  inset-block-end: auto;
+  inset-block-start: 100%;
+}
+
+.cy-tooltip--start[data-tooltip-flip] > .cy-tooltip__content {
+  inset-inline-end: auto;
+  inset-inline-start: calc(100% + var(--cymru-space-2));
+}
+
+.cy-tooltip--start[data-tooltip-flip] > .cy-tooltip__content::before {
+  inset-inline-start: auto;
+  inset-inline-end: 100%;
+}
+
+.cy-tooltip--end[data-tooltip-flip] > .cy-tooltip__content {
+  inset-inline-start: auto;
+  inset-inline-end: calc(100% + var(--cymru-space-2));
+}
+
+.cy-tooltip--end[data-tooltip-flip] > .cy-tooltip__content::before {
+  inset-inline-end: auto;
+  inset-inline-start: 100%;
+}

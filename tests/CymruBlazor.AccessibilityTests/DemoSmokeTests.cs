@@ -38,10 +38,13 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
     /// <summary>
     /// Themes in which <c>color-contrast</c> is reported but not yet enforced. The light theme is fully enforced.
-    /// The demo shell's own dark/high-contrast colours (nav links, header links, tab buttons, API-table names) and a
-    /// few library components in high contrast still fail; triaging them is tracked in
-    /// <c>plan/known-issues-and-backlog.md</c>. Every other axe rule is enforced in every theme. Remove a theme
-    /// from this list as soon as its contrast findings are fixed.
+    /// Roadmap 1.5.2-D fixed two root causes found by static analysis (computed contrast ratios; no live run was
+    /// available to confirm against): high contrast had no <c>.cy-theme-provider[data-theme="high-contrast"]</c>
+    /// token block at all, so components like <c>CyCard</c> and <c>.cb-api-table__name</c> mixed a switched
+    /// library colour with an unswitched demo-shell one (measured 1.18:1 and 1.25:1); the header's
+    /// semi-transparent background made <c>.cb-shell-header a</c>'s actual contrast depend on whatever page
+    /// content happened to render behind it, so it is now opaque. Both themes stay in this list until a real
+    /// <c>CYMRU_DEMO_DIR</c> run confirms they are clean - remove a theme only once that run is green.
     /// </summary>
     private static readonly HashSet<string> ThemesWithUnenforcedContrast = ["dark", "high-contrast"];
 

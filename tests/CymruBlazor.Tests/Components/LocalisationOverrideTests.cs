@@ -146,6 +146,11 @@ public sealed class LocalisationOverrideTests : TestContextBase
     [Fact]
     public void CySidebar_MobileDrawer_CloseLabel_Is_Overridable()
     {
+        // MobileOpen renders now also activate background-inert (roadmap F4) via a direct call
+        // into the overlay module; stub it so that call is a no-op for this parameter-override test.
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-overlay.js").Mode = JSRuntimeMode.Loose;
+
         var cut = Render<CySidebar>(p => p.Add(s => s.MobileOpen, true).Add(s => s.CloseLabel, "Cau'r bar ochr"));
 
         cut.Find(".cy-sidebar__close").GetAttribute("aria-label").ShouldBe("Cau'r bar ochr");

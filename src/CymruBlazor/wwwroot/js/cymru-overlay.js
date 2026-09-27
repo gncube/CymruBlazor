@@ -6,11 +6,12 @@
 // theme script). Kept deliberately small: it does only what Blazor cannot do
 // without the DOM - move focus, contain Tab, and drive the native <dialog>.
 //
-// Three groups of exports:
+// Five groups of exports:
 //   1. focus helpers      - focusElement / focusTarget / restoreFocus
 //   2. focus trap         - activateTrap / releaseTrap   (CyFocusTrap, CySidebar)
 //   3. modal dialog       - showDialog / updateDialog / disposeDialog (CyDialog)
 //   4. tooltips           - installTooltips                          (CyTooltip)
+//   5. background inert   - makeBackgroundInert / releaseBackgroundInert (CySidebar)
 
 const TABBABLE = [
   "a[href]",
@@ -279,11 +280,62 @@ function restoreAfterClose(state) {
 
 let tooltipsInstalled = false;
 
+const TOOLTIP_PLACEMENT_EDGE = {
+  "cy-tooltip--top": "top",
+  "cy-tooltip--bottom": "bottom",
+  "cy-tooltip--start": "start",
+  "cy-tooltip--end": "end",
+};
+
+/**
+ * Measures the (already-laid-out, even while `visibility: hidden`)
+ * `.cy-tooltip__content` against the viewport and sets/clears
+ * `data-tooltip-flip` on `tip` so tooltip.css's flip rules can swap it to the
+ * opposite side of its declared Placement when the original side would
+ * render off-screen.
+ */
+function checkFlip(tip) {
+  const content = tip.querySelector(".cy-tooltip__content");
+  if (!content) return;
+
+  const edgeClass = Object.keys(TOOLTIP_PLACEMENT_EDGE).find((cls) => tip.classList.contains(cls));
+  const edge = edgeClass ? TOOLTIP_PLACEMENT_EDGE[edgeClass] : null;
+  if (!edge) return;
+
+  const rect = content.getBoundingClientRect();
+  let overflows;
+  switch (edge) {
+    case "top":
+      overflows = rect.top < 0;
+      break;
+    case "bottom":
+      overflows = rect.bottom > window.innerHeight;
+      break;
+    case "start":
+      overflows = rect.left < 0;
+      break;
+    default: // "end"
+      overflows = rect.right > window.innerWidth;
+      break;
+  }
+
+  if (overflows) {
+    tip.setAttribute("data-tooltip-flip", "");
+  } else {
+    tip.removeAttribute("data-tooltip-flip");
+  }
+}
+
+function recheckVisibleTooltipFlips() {
+  document.querySelectorAll(".cy-tooltip:hover, .cy-tooltip:focus-within").forEach(checkFlip);
+}
+
 /**
  * One delegated pair of listeners for every CyTooltip on the page (idempotent).
- * Showing/hiding is pure CSS (:hover / :focus-within); this only adds WCAG 1.4.13
- * "dismissible": Escape hides the visible tooltip(s) without moving the pointer
- * or focus, and the tooltip comes back on the next hover/focus.
+ * Showing/hiding is pure CSS (:hover / :focus-within); this adds two things
+ * CSS alone cannot: WCAG 1.4.13 "dismissible" (Escape hides the visible
+ * tooltip(s) without moving the pointer or focus, and it comes back on the
+ * next hover/focus), and viewport-edge flipping (see checkFlip above).
  */
 export function installTooltips() {
   if (tooltipsInstalled) return;
@@ -301,10 +353,12 @@ export function installTooltips() {
     event.preventDefault();
   });
 
-  // Re-arm on a fresh interaction (entering the tooltip root, or focus arriving from outside).
+  // Re-arm on a fresh interaction (entering the tooltip root, or focus arriving from outside),
+  // and recompute whether it needs to flip now that it's about to be shown.
   document.addEventListener("mouseenter", (event) => {
     if (event.target instanceof Element && event.target.matches(".cy-tooltip")) {
       event.target.removeAttribute("data-dismissed");
+      checkFlip(event.target);
     }
   }, true);
 
@@ -312,6 +366,64 @@ export function installTooltips() {
     const tip = event.target instanceof Element ? event.target.closest(".cy-tooltip") : null;
     if (tip && !(event.relatedTarget instanceof Node && tip.contains(event.relatedTarget))) {
       tip.removeAttribute("data-dismissed");
+      checkFlip(tip);
     }
   });
+
+  // A resize (or, on mobile, an orientation change) can turn a fitting
+  // placement into an overflowing one while a tooltip is already open.
+  window.addEventListener("resize", recheckVisibleTooltipFlips);
+}
+
+// --------------------------------------------------------- 5. background inert
+
+const inertStacks = new Map();
+
+/**
+ * Makes everything outside `element` (walking up to <body>, inerting every
+ * sibling along the way) inert: unreachable by Tab, click or assistive tech.
+ * A native <dialog>'s showModal() gets this for free from the top layer;
+ * this is the same containment for overlays that are not a top-layer
+ * element, e.g. CySidebar's mobile drawer. options: { mediaQuery } - as
+ * activateTrap, only applies (and returns non-zero) if the query matches at
+ * activation time. Returns a token for releaseBackgroundInert.
+ */
+export function makeBackgroundInert(element, options) {
+  const opts = { mediaQuery: null, ...options };
+  if (opts.mediaQuery && !window.matchMedia(opts.mediaQuery).matches) return 0;
+
+  const token = nextToken++;
+  const inerted = [];
+
+  let node = element;
+  while (node && node !== document.body) {
+    const parent = node.parentElement;
+    if (parent) {
+      for (const sibling of parent.children) {
+        if (sibling !== node && !sibling.hasAttribute("inert")) {
+          sibling.setAttribute("inert", "");
+          inerted.push(sibling);
+        }
+      }
+    }
+    node = parent;
+  }
+
+  inertStacks.set(token, inerted);
+  return token;
+}
+
+/** As makeBackgroundInert, looking the element up by id. Returns 0 when it does not exist. */
+export function makeBackgroundInertById(id, options) {
+  const element = document.getElementById(id);
+  return element ? makeBackgroundInert(element, options) : 0;
+}
+
+/** Reverses makeBackgroundInert/makeBackgroundInertById. Safe to call with a token of 0. */
+export function releaseBackgroundInert(token) {
+  const inerted = inertStacks.get(token);
+  if (!inerted) return;
+
+  inertStacks.delete(token);
+  inerted.forEach((el) => el.removeAttribute("inert"));
 }

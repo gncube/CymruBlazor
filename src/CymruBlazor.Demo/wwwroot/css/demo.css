@@ -122,6 +122,53 @@
   --cb-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
 }
 
+/*
+ * High contrast was missing entirely here until now (roadmap 1.5.2-D):
+ * with no [data-theme="high-contrast"] override, every --cb-* shell/chrome
+ * token silently kept its LIGHT value while genuine CymruBlazor components
+ * correctly switched via high-contrast.css's --cymru-color-* tokens. Any
+ * place mixing the two - CyCard's `color: inherit` picking up the
+ * still-light --cb-text-primary while its own background switched to
+ * --cymru-color-surface (black), or .cb-api-table__name's
+ * --cymru-color-link (cyan) sitting on the still-white --cb-bg-canvas -
+ * broke badly (measured 1.18:1 and 1.25:1 respectively; both need 4.5:1).
+ * Mapped onto the library's own --cymru-color-* tokens, not a third
+ * parallel set of hex values, so the shell can never drift out of sync
+ * with whatever high-contrast.css defines again. High contrast collapses
+ * CymruBlazor's whole surface/border/text hierarchy to a handful of flat
+ * black/white/cyan roles, so several --cb-* tiers intentionally map to the
+ * same value here - there is no separate "muted" or "elevated" tier to
+ * preserve.
+ */
+.cy-theme-provider[data-theme="high-contrast"] {
+  --cb-bg-canvas: var(--cymru-color-background);
+  --cb-bg-subtle: var(--cymru-color-surface-alt);
+  --cb-bg-surface: var(--cymru-color-surface);
+  --cb-bg-surface-elevated: var(--cymru-color-surface);
+  --cb-bg-muted: var(--cymru-color-surface-alt);
+  --cb-bg-canvas-dots: var(--cymru-color-border);
+
+  --cb-border-subtle: var(--cymru-color-border);
+  --cb-border-strong: var(--cymru-color-border-strong);
+  --cb-border-focus: var(--cymru-color-focus);
+
+  --cb-text-primary: var(--cymru-color-text);
+  --cb-text-secondary: var(--cymru-color-text-muted);
+  --cb-text-muted: var(--cymru-color-text-muted);
+  --cb-text-subtle: var(--cymru-color-text-muted);
+  --cb-text-on-accent: var(--cymru-color-text-inverse);
+
+  --cb-code-bg: var(--cymru-color-surface);
+  --cb-code-border: var(--cymru-color-border);
+  --cb-code-header-bg: var(--cymru-color-surface);
+  --cb-code-text: var(--cymru-color-text);
+
+  /* High contrast relies on borders, not elevation, for depth cues. */
+  --cb-shadow-sm: none;
+  --cb-shadow-md: none;
+  --cb-shadow-lg: none;
+}
+
 body {
   margin: 0;
   background-color: #f0f4f5; /* Light default, overridden by app contents */
@@ -130,9 +177,14 @@ body {
   letter-spacing: -0.011em;
 }
 
-/* Glassmorphism Header & refined accent stripe */
+/* Header - was semi-transparent glassmorphism (rgba over backdrop-filter blur), which meant
+   .cb-shell-header a's actual composited contrast depended on whatever page content happened to
+   render behind it - axe (correctly) cannot verify contrast that varies with scroll position, and
+   a real user scrolling dark content under it could hit a genuinely low-contrast moment. Solid
+   background removes the ambiguity entirely; backdrop-filter is left in place but has no visible
+   effect at full opacity. */
 .cb-shell-header {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--cb-bg-canvas);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 2px solid var(--cb-brand-primary);
@@ -149,7 +201,10 @@ body {
 }
 
 .cy-theme-provider[data-theme="dark"] .cb-shell-header {
-  background-color: rgba(9, 13, 22, 0.8); /* --cb-bg-canvas with opacity */
+  border-top: 2px solid var(--cb-border-focus);
+}
+
+.cy-theme-provider[data-theme="high-contrast"] .cb-shell-header {
   border-top: 2px solid var(--cb-border-focus);
 }
 

@@ -1,3 +1,4 @@
+using Bunit;
 using CymruBlazor.Components.Content;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Enums;
@@ -9,6 +10,19 @@ namespace CymruBlazor.AccessibilityTests;
 
 public sealed class CySidebarAccessibilityTests : AxeTestBase
 {
+    private const string ModulePath = "./_content/CymruBlazor/js/cymru-overlay.js";
+
+    public CySidebarAccessibilityTests()
+    {
+        // ScanComponentAsync's initial Render<T> is a live bUnit render, so an open mobile drawer's
+        // new background-inert call (roadmap F4) needs a stubbed module here; the tests below that
+        // use LoadHostedAsync separately load the real module and call its exports directly instead
+        // (as CySidebar's own OnAfterRenderAsync would), since there is no live circuit driving that
+        // static hosted markup.
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule(ModulePath).Mode = JSRuntimeMode.Loose;
+    }
+
     private static RenderFragment DefaultBrandFragment() => builder =>
     {
         builder.AddContent(0, "Health Board");
@@ -113,5 +127,43 @@ public sealed class CySidebarAccessibilityTests : AxeTestBase
 
         // Assert
         result.Violations.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task OpenDrawerMakesTheRestOfThePageInertAndClosingItReleasesThat()
+    {
+        // No live Blazor circuit is driving this static hosted markup, so this test calls the real
+        // overlay module's exports directly - the same calls CySidebar.razor.cs's OnAfterRenderAsync
+        // makes - rather than relying on bUnit's fake JSRuntime.
+        var cut = Render<CySidebar>(parameters => parameters
+            .Add(p => p.MobileOpen, true)
+            .Add(p => p.ShowMobileBackdrop, true)
+            .Add(p => p.Brand, DefaultBrandFragment())
+            .Add(p => p.ChildContent, DefaultNavItems()));
+
+        var sidebarId = cut.Find("aside").Id;
+        var markup = cut.Markup +
+            "<main id=\"page-content\"><button id=\"page-button\" type=\"button\">Page action</button></main>";
+
+        await LoadHostedAsync(markup);
+
+        var token = await Page.EvaluateAsync<int>(
+            "id => window.overlay.makeBackgroundInertById(id)", sidebarId);
+        token.ShouldBeGreaterThan(0);
+
+        (await Page.EvaluateAsync<bool>("() => document.getElementById('page-content').hasAttribute('inert')"))
+            .ShouldBeTrue();
+
+        // An inert element cannot become the active element, even via a direct focus() call.
+        await Page.EvaluateAsync("() => document.getElementById('page-button').focus()");
+        (await ActiveElementIdAsync()).ShouldNotBe("page-button");
+
+        await Page.EvaluateAsync("token => window.overlay.releaseBackgroundInert(token)", token);
+
+        (await Page.EvaluateAsync<bool>("() => document.getElementById('page-content').hasAttribute('inert')"))
+            .ShouldBeFalse();
+
+        await Page.EvaluateAsync("() => document.getElementById('page-button').focus()");
+        (await ActiveElementIdAsync()).ShouldBe("page-button");
     }
 }

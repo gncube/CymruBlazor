@@ -144,4 +144,49 @@ public sealed class CyTooltipAccessibilityTests : AxeTestBase
         // Tooltips must not sit behind modals (tokens: tooltip z-index above modal).
         int.Parse(tip.ZIndex!, System.Globalization.CultureInfo.InvariantCulture).ShouldBeGreaterThan(1050);
     }
+
+    [Theory]
+    [InlineData(TooltipPlacement.Top, "position:fixed; inset-block-start:4px; inset-inline-start:50%;")]
+    [InlineData(TooltipPlacement.Bottom, "position:fixed; inset-block-end:4px; inset-inline-start:50%;")]
+    [InlineData(TooltipPlacement.Start, "position:fixed; inset-inline-start:4px; inset-block-start:50%;")]
+    [InlineData(TooltipPlacement.End, "position:fixed; inset-inline-end:4px; inset-block-start:50%;")]
+    public async Task Flips_To_The_Opposite_Side_When_The_Declared_Placement_Would_Overflow_The_Viewport(
+        TooltipPlacement placement, string edgeStyle)
+    {
+        var tooltip = Render<CyTooltip>(p => p
+            .Add(t => t.Text, "Occupied beds out of total available beds.")
+            .Add(t => t.Placement, placement)
+            .AddChildContent("About ward occupancy"));
+
+        // Pin the trigger right against the edge this Placement would overflow.
+        var markup = $"<div style=\"{edgeStyle}\">{tooltip.Markup}</div>";
+
+        await LoadHostedAsync(markup, width: 800, height: 500);
+        await InstallAsync();
+
+        var trigger = await Page.Locator(".cy-tooltip__trigger").BoundingBoxAsync();
+        await Page.Mouse.MoveAsync((float)(trigger!.X + trigger.Width / 2), (float)(trigger.Y + trigger.Height / 2));
+        (await VisibilityAsync()).ShouldBe("visible");
+
+        (await Page.EvaluateAsync<bool>("() => document.querySelector('.cy-tooltip').hasAttribute('data-tooltip-flip')"))
+            .ShouldBeTrue();
+
+        var tip = await MeasureAsync("[role=tooltip]");
+        tip.Visible.ShouldBeTrue(tip.ToString());
+        tip.InViewport.ShouldBeTrue(tip.ToString());
+    }
+
+    [Fact]
+    public async Task Does_Not_Flip_When_The_Declared_Placement_Already_Fits()
+    {
+        await LoadHostedAsync(RenderTooltip(TooltipPlacement.Top), width: 800, height: 500);
+        await InstallAsync();
+
+        var trigger = await Page.Locator(".cy-tooltip__trigger").BoundingBoxAsync();
+        await Page.Mouse.MoveAsync((float)(trigger!.X + trigger.Width / 2), (float)(trigger.Y + trigger.Height / 2));
+        (await VisibilityAsync()).ShouldBe("visible");
+
+        (await Page.EvaluateAsync<bool>("() => document.querySelector('.cy-tooltip').hasAttribute('data-tooltip-flip')"))
+            .ShouldBeFalse();
+    }
 }

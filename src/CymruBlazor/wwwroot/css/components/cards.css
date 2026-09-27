@@ -34,6 +34,11 @@
  * page - using it for a merely-emphasised card would misrepresent that
  * layering to the user. Medium/Large therefore intentionally resolve to
  * the same value as Small, not a deeper one.
+ *
+ * Decision recorded 2026-09-26 (roadmap D4): accepted as correct, not a
+ * bug. Closed in known-issues-and-backlog.md. Revisit only if a real
+ * consumer asks for graduated elevation and can point to a design-system
+ * update defining the missing shadow role(s) - don't invent one here.
  */
 
 .cy-card--elevation-none,

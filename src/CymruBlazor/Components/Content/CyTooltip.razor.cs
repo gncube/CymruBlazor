@@ -29,8 +29,11 @@ namespace CymruBlazor.Components.Content;
 /// </para>
 /// <para>
 /// Content is plain text by design: a tooltip cannot contain interactive controls. Use
-/// <see cref="Accessibility.CyDialog"/> for anything richer. The tooltip does not flip at
-/// viewport edges; choose a <see cref="Placement"/> with room.
+/// <see cref="Accessibility.CyDialog"/> for anything richer. On hover/focus, the JS module
+/// measures the tooltip against the viewport and flips it to the opposite side of the chosen
+/// <see cref="Placement"/> (top&#8596;bottom, start&#8596;end) if it would otherwise render
+/// off-screen. This needs the same JS as Escape-to-dismiss; without it, the tooltip still shows
+/// in its declared <see cref="Placement"/> - choose one with room if you cannot rely on JS.
 /// </para>
 /// </remarks>
 public partial class CyTooltip : CyLayoutComponentBase

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
@@ -15,16 +16,26 @@ namespace CymruBlazor.Components.Layout;
 /// <c>Tab</c> stays inside it, <c>Escape</c> closes it and focus returns to the
 /// control that opened it. Focus handling uses the registered
 /// <see cref="IFocusManager"/> if there is one (<c>AddCymruBlazor()</c> registers it);
-/// without one the drawer still closes on <c>Escape</c>.
+/// without one the drawer still closes on <c>Escape</c>. Independently of which
+/// <see cref="IFocusManager"/> is registered, the drawer also makes the rest of the
+/// page <c>inert</c> while open (unreachable by <c>Tab</c>, click or assistive tech) -
+/// the same containment a native <c>&lt;dialog&gt;</c> (see <see cref="Accessibility.CyDialog"/>)
+/// gets for free from the browser's top layer.
 /// </remarks>
 public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
 {
     private SidebarState _state = SidebarState.Expanded;
     private IAsyncDisposable? _drawerTrap;
     private bool _drawerTrapActive;
+    private IJSObjectReference? _overlayModule;
+    private int _inertToken;
+    private bool _backgroundInertActive;
 
     [Inject]
     private IServiceProvider Services { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the list of states through which the sidebar cycles.
@@ -343,31 +354,68 @@ public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
             _drawerTrapActive = true;
 
             var focusManager = Services.GetService(typeof(IFocusManager)) as IFocusManager;
-            if (focusManager is null)
+            if (focusManager is not null)
             {
-                return;
-            }
+                var trap = await focusManager.TrapAsync(
+                    Id,
+                    new FocusTrapOptions(
+                        AutoFocus: true,
+                        RestoreFocus: true,
+                        PreventScroll: true,
+                        MediaQuery: string.IsNullOrWhiteSpace(MobileBreakpoint) ? null : $"(max-width: {MobileBreakpoint})"));
 
-            var trap = await focusManager.TrapAsync(
-                Id,
-                new FocusTrapOptions(
-                    AutoFocus: true,
-                    RestoreFocus: true,
-                    PreventScroll: true,
-                    MediaQuery: string.IsNullOrWhiteSpace(MobileBreakpoint) ? null : $"(max-width: {MobileBreakpoint})"));
-
-            if (_drawerTrapActive)
-            {
-                _drawerTrap = trap;
-            }
-            else if (trap is not null)
-            {
-                await trap.DisposeAsync();
+                if (_drawerTrapActive)
+                {
+                    _drawerTrap = trap;
+                }
+                else
+                {
+                    await trap.DisposeAsync();
+                }
             }
         }
         else if (!MobileOpen && _drawerTrapActive)
         {
             await ReleaseDrawerTrapAsync();
+        }
+
+        if (MobileOpen && !_backgroundInertActive)
+        {
+            _backgroundInertActive = true;
+            await ActivateBackgroundInertAsync();
+        }
+        else if (!MobileOpen && _backgroundInertActive)
+        {
+            await ReleaseBackgroundInertAsync();
+        }
+    }
+
+    private async Task ActivateBackgroundInertAsync()
+    {
+        try
+        {
+            _overlayModule ??= await OverlayInterop.ImportAsync(JSRuntime);
+            if (_overlayModule is null)
+            {
+                _backgroundInertActive = false;
+                return;
+            }
+
+            _inertToken = await _overlayModule.InvokeAsync<int>(
+                "makeBackgroundInertById",
+                Id,
+                new
+                {
+                    mediaQuery = string.IsNullOrWhiteSpace(MobileBreakpoint)
+                        ? null
+                        : $"(max-width: {MobileBreakpoint})"
+                });
+        }
+        catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
+        {
+            // Without JS the drawer still closes on Escape/backdrop click; only
+            // background inertness is unavailable. Let a future render retry.
+            _backgroundInertActive = false;
         }
     }
 
@@ -391,12 +439,46 @@ public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
         }
     }
 
+    private async Task ReleaseBackgroundInertAsync()
+    {
+        var token = _inertToken;
+        _inertToken = 0;
+        _backgroundInertActive = false;
+
+        if (_overlayModule is not null && token != 0)
+        {
+            try
+            {
+                await _overlayModule.InvokeVoidAsync("releaseBackgroundInert", token);
+            }
+            catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
+            {
+                // Browser or circuit is already gone; nothing left to un-inert.
+            }
+        }
+    }
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
 
         await ReleaseDrawerTrapAsync();
+        await ReleaseBackgroundInertAsync();
+
+        if (_overlayModule is not null)
+        {
+            try
+            {
+                await _overlayModule.DisposeAsync();
+            }
+            catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
+            {
+                // Browser or circuit is already gone.
+            }
+
+            _overlayModule = null;
+        }
     }
 
     /// <summary>
