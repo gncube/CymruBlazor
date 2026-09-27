@@ -705,7 +705,7 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-primary-preview {
 }
 
 .cy-theme-provider[data-theme="dark"] .cb-primary-preview {
-  color: #000000;
+  color: #ffffff !important;
 }
 
 body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-home__hero .cb-demo-btn--primary {

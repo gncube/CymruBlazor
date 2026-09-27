@@ -284,6 +284,10 @@
   font-weight: var(--cymru-font-weight-semibold);
 }
 
+.cy-theme-provider[data-theme="dark"] .cy-navigation__link--active {
+  color: #ffffff;
+}
+
 /* Desktop: menu is always visible, laid out horizontally; toggle hidden. */
 
 @media (min-width: 64rem) {
