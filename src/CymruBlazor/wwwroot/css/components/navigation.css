@@ -280,7 +280,7 @@
 }
 
 .cy-navigation__link--active {
-  color: var(--cymru-color-primary);
+  color: var(--cymru-color-link);
   font-weight: var(--cymru-font-weight-semibold);
 }
 
