@@ -285,7 +285,11 @@
 }
 
 .cy-theme-provider[data-theme="dark"] .cy-navigation__link--active {
-  color: #ffffff;
+  color: #ffffff !important;
+}
+
+body:has(.cy-theme-provider[data-theme="dark"]) .cy-navigation__link--active {
+  color: #ffffff !important;
 }
 
 /* Desktop: menu is always visible, laid out horizontally; toggle hidden. */
