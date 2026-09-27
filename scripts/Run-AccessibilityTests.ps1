@@ -16,6 +16,24 @@ catch {
 
 $repoRoot = (Resolve-Path "$PSScriptRoot/..").Path
 $artifactDir = Join-Path $repoRoot ".artifacts/accessibility"
+$hostCaCertificateDer = Join-Path $env:TEMP "cymrublazor-host-ca.cer"
+$hostCaCertificate = Join-Path $env:TEMP "cymrublazor-host-ca.crt"
+$trustedHostCas = @(
+    Get-ChildItem Cert:\CurrentUser\Root, Cert:\CurrentUser\CA, Cert:\LocalMachine\Root, Cert:\LocalMachine\CA |
+        Where-Object { $_.Subject -like "*Zscaler*" -or $_.Issuer -like "*Zscaler*" } |
+        Sort-Object Thumbprint -Unique
+)
+
+if ($trustedHostCas.Count -gt 0) {
+    Remove-Item $hostCaCertificate -ErrorAction SilentlyContinue
+    foreach ($trustedHostCa in $trustedHostCas) {
+        Export-Certificate -Cert $trustedHostCa -FilePath $hostCaCertificateDer -Type CERT -Force | Out-Null
+        $encodedCertificate = Join-Path $env:TEMP "cymrublazor-host-ca-$($trustedHostCa.Thumbprint).crt"
+        certutil.exe -encode $hostCaCertificateDer $encodedCertificate | Out-Null
+        Get-Content $encodedCertificate | Add-Content $hostCaCertificate
+        Remove-Item $encodedCertificate -Force
+    }
+}
 
 if (-not (Test-Path $artifactDir)) {
     New-Item -ItemType Directory -Path $artifactDir -Force | Out-Null
@@ -31,6 +49,7 @@ docker run --rm `
     -v "${repoRoot}:/workspace" `
     -w /workspace `
     -e GITHUB_STEP_SUMMARY `
+    $(if (Test-Path $hostCaCertificate) { "-v"; "${hostCaCertificate}:/usr/local/share/ca-certificates/cymru-host-root.crt:ro" }) `
     $ImageTag `
     -File ./scripts/Run-AccessibilityTests.Container.ps1
 

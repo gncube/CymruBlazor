@@ -6,6 +6,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$mountedHostCa = "/usr/local/share/ca-certificates/cymru-host-root.crt"
+if (Test-Path $mountedHostCa) {
+    update-ca-certificates | Out-Host
+}
+
 Write-Host "Creating report destination directory: $ReportDir"
 if (-not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
@@ -14,9 +19,6 @@ if (-not (Test-Path $ReportDir)) {
 $env:CYMRU_SMOKE_REPORT_DIR = $ReportDir
 
 Write-Host "Restoring solution dependencies..."
-# Work around SSL certificate chain issues in Docker Desktop
-# Use older HTTP stack and disable certificate revocation checks
-$env:DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER = "0"
 $env:NUGET_CERT_REVOCATION_MODE = "offline"
 dotnet restore --verbosity minimal
 
