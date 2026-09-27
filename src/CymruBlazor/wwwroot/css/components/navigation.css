@@ -286,10 +286,14 @@
 
 .cy-theme-provider[data-theme="dark"] .cy-navigation__link--active {
   color: #ffffff !important;
+  background-color: var(--cymru-grey-900);
+  padding-inline: var(--cymru-space-2);
 }
 
 body:has(.cy-theme-provider[data-theme="dark"]) .cy-navigation__link--active {
   color: #ffffff !important;
+  background-color: var(--cymru-grey-900);
+  padding-inline: var(--cymru-space-2);
 }
 
 /* Desktop: menu is always visible, laid out horizontally; toggle hidden. */
