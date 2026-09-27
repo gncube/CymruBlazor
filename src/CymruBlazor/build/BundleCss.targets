@@ -23,18 +23,22 @@
     `dotnet build -c Release` never leaves the working tree dirty.
   -->
 
-  <Target Name="BundleCymruCss"
-          BeforeTargets="AssignTargetPaths"
-          Condition="'$(Configuration)' == 'Release'"
-          Inputs="wwwroot/css/cymrublazor.css"
-          Outputs="$(IntermediateOutputPath)css/cymrublazor.css">
+  <ItemGroup>
+    <_CymruCssSource Include="wwwroot/css/**/*.css" />
+  </ItemGroup>
+
+    <Target Name="BundleCymruCss"
+        BeforeTargets="AssignTargetPaths"
+        Condition="'$(Configuration)' == 'Release'"
+        Inputs="@(_CymruCssSource)"
+        Outputs="$(IntermediateOutputPath)css/cymrublazor.css">
 
     <Message Text="CymruBlazor: bundling CSS stylesheets..." Importance="high" />
 
     <Exec
-        Command="dotnet run --project ../../tools/CymruBlazor.CssBundler/CymruBlazor.CssBundler.csproj -- wwwroot/css/cymrublazor.css $(IntermediateOutputPath)css/cymrublazor.css"
-        WorkingDirectory="$(MSBuildProjectDirectory)"
-        ContinueOnError="false" />
+      Command="dotnet run --project ../../tools/CymruBlazor.CssBundler/CymruBlazor.CssBundler.csproj -- wwwroot/css/cymrublazor.css $(IntermediateOutputPath)css/cymrublazor.css"
+      WorkingDirectory="$(MSBuildProjectDirectory)"
+      ContinueOnError="false" />
 
     <Message Text="CymruBlazor: CSS bundling complete." Importance="high" />
   </Target>
@@ -48,8 +52,8 @@
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <Content Remove="wwwroot/css/cymrublazor.css" />
     <Content Include="$(IntermediateOutputPath)css/cymrublazor.css"
-             Link="wwwroot/css/cymrublazor.css"
-             CopyToOutputDirectory="PreserveNewest" />
+      Link="wwwroot/css/cymrublazor.css"
+      CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
