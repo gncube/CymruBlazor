@@ -45,8 +45,6 @@ namespace CymruBlazor.Components.Forms;
 /// before.
 /// </para>
 /// </remarks>
-/// before.
-/// </remarks>
 public partial class CyDateInput : CyFormFieldComponentBase<DateOnly?>
 {
     private string _day = string.Empty;

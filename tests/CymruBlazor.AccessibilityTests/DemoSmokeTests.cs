@@ -8,50 +8,38 @@ using Xunit.Abstractions;
 
 namespace CymruBlazor.AccessibilityTests;
 
-/// <summary>
-/// Smoke run over the <em>published</em> demo (roadmap 1.3.0-D): every <c>@page</c> route, in light, dark
+///
+/// Smoke run over the *published* demo (roadmap 1.3.0-D): every @page route, in light, dark
 /// and high-contrast, must render a heading, log no console errors or unhandled exceptions, and pass axe.
 /// It is the regression harness for everything the component-level suites cannot see: real routing,
 /// the real WebAssembly runtime, the real static web asset URLs and the components composed together.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Point <c>CYMRU_DEMO_DIR</c> at the <c>wwwroot</c> folder of a published demo:
-/// <code>dotnet publish src/CymruBlazor.Demo -c Release -o demo-publish</code>
-/// <code>$env:CYMRU_DEMO_DIR = "$PWD\demo-publish\wwwroot"; dotnet test tests/CymruBlazor.AccessibilityTests --filter DemoSmokeTests</code>
+///
+///
+///
+/// Point CYMRU_DEMO_DIR at the wwwroot folder of a published demo:
+/// `dotnet publish src/CymruBlazor.Demo -c Release -o demo-publish`
+/// `$env:CYMRU_DEMO_DIR = "$PWD\demo-publish\wwwroot"; dotnet test tests/CymruBlazor.AccessibilityTests --filter DemoSmokeTests`
 /// The test serves those files itself (with SPA fallback) from a fake origin, so no web server is needed.
-/// When the variable is not set the test is a no-op locally, but fails when <c>CI=true</c> so the
+/// When the variable is not set the test is a no-op locally, but fails when CI=true so the
 /// pipeline cannot silently skip it.
-/// </para>
-/// <para>
-/// A violation that is understood and tracked can be listed in <see cref="KnownIssues"/> as
-/// <c>"route|rule-id"</c> so the run stays green while the fix is scheduled; keep that list empty otherwise.
-/// </para>
-/// </remarks>
+///
+///
+/// A violation that is understood and tracked can be listed in  as
+/// "route|rule-id" so the run stays green while the fix is scheduled; keep that list empty otherwise.
+///
+///
 public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLifetime
 {
     private const string Origin = "https://demo.test";
     private static readonly string[] Themes = ["light", "dark", "high-contrast"];
 
-    /// <summary>Tracked, understood violations as "route|axe-rule-id". Keep empty.</summary>
-    private static readonly HashSet<string> KnownIssues = [];
-
-    /// <summary>
-    /// Themes in which <c>color-contrast</c> is reported but not yet enforced. The light theme is fully enforced.
-    /// Roadmap 1.5.2-D fixed two root causes found by static analysis (computed contrast ratios; no live run was
-    /// available to confirm against): high contrast had no <c>.cy-theme-provider[data-theme="high-contrast"]</c>
-    /// token block at all, so components like <c>CyCard</c> and <c>.cb-api-table__name</c> mixed a switched
-    /// library colour with an unswitched demo-shell one (measured 1.18:1 and 1.25:1); the header's
-    /// semi-transparent background made <c>.cb-shell-header a</c>'s actual contrast depend on whatever page
-    /// content happened to render behind it, so it is now opaque. Both themes stay in this list until a real
-    /// <c>CYMRU_DEMO_DIR</c> run confirms they are clean - remove a theme only once that run is green.
-    /// </summary>
-    private static readonly HashSet<string> ThemesWithUnenforcedContrast = ["dark", "high-contrast"];
+    /// Tracked, understood violations as "route|axe-rule-id". Keep empty.
+    private static readonly HashSet KnownIssues = [];
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
 
-    [GeneratedRegex("^@page\\s+\"(?<route>[^\"]+)\"", RegexOptions.Multiline)]
+    [GeneratedRegex("^@page\\s+\"(?[^\"]+)\"", RegexOptions.Multiline)]
     private static partial Regex PageDirective();
 
     public async Task InitializeAsync()
@@ -71,7 +59,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
     }
 
     [Fact]
-    public async Task Every_Demo_Route_Renders_In_Every_Theme_Without_Console_Errors_Or_Axe_Violations()
+    public async Task EveryDemoRouteRendersInEveryThemeWithoutConsoleErrorsOrAxeViolations()
     {
         var demoDirectory = Environment.GetEnvironmentVariable("CYMRU_DEMO_DIR");
 
@@ -92,44 +80,36 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         routes.Count.ShouldBeGreaterThan(10, "Route discovery found suspiciously few @page routes.");
         output.WriteLine($"Smoke testing {routes.Count} routes x {Themes.Length} themes.");
 
-        var failures = new List<string>();
-        var unenforced = new List<string>();
+        var failures = new List();
 
         foreach (var theme in Themes)
         {
-            await SmokeThemeAsync(demoDirectory, routes, theme, failures, unenforced);
+            await SmokeThemeAsync(demoDirectory, routes, theme, failures);
         }
 
-        foreach (var line in unenforced)
-        {
-            output.WriteLine($"not enforced: {line}");
-        }
-
-        WriteReport(routes.Count, failures, unenforced);
+        WriteReport(routes.Count, failures);
 
         failures.ShouldBeEmpty(string.Join(Environment.NewLine, failures));
     }
 
-    /// <summary>
-    /// Writes the full findings to <c>demo-smoke-report.md</c> (in <c>CYMRU_SMOKE_REPORT_DIR</c>, else next to the test
+    ///
+    /// Writes the full findings to demo-smoke-report.md (in CYMRU_SMOKE_REPORT_DIR, else next to the test
     /// binaries) and, on GitHub Actions, to the job summary, so a CI run can be read without downloading logs or
     /// running Playwright locally.
-    /// </summary>
-    private void WriteReport(int routeCount, List<string> failures, List<string> unenforced)
+    ///
+    private void WriteReport(int routeCount, List failures)
     {
-        var lines = new List<string>
+        var lines = new List
         {
             "# Demo smoke run",
             string.Empty,
-            $"{routeCount} routes x {Themes.Length} themes: **{failures.Count} failure(s)**, {unenforced.Count} unenforced contrast finding(s).",
+            $"{routeCount} routes x {Themes.Length} themes: **{failures.Count} failure(s)**.",
             string.Empty,
             "## Failures",
             string.Empty
         };
 
         lines.AddRange(failures.Count == 0 ? ["None."] : failures.Select(f => $"- {f.ReplaceLineEndings(" ")}"));
-        lines.AddRange(["", "## Not enforced (colour contrast in dark / high-contrast)", ""]);
-        lines.AddRange(unenforced.Count == 0 ? ["None."] : unenforced.Select(f => $"- {f.ReplaceLineEndings(" ")}"));
 
         var report = string.Join(Environment.NewLine, lines);
 
@@ -151,7 +131,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         }
     }
 
-    private async Task SmokeThemeAsync(string demoDirectory, List<string> routes, string theme, List<string> failures, List<string> unenforced)
+    private async Task SmokeThemeAsync(string demoDirectory, List routes, string theme, List failures)
     {
         await using var context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
@@ -165,7 +145,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
         var page = await context.NewPageAsync();
         var currentRoute = "(startup)";
-        var consoleErrors = new List<string>();
+        var consoleErrors = new List();
 
         page.Console += (_, message) =>
         {
@@ -184,7 +164,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
             try
             {
-                if (!string.Equals(await page.EvaluateAsync<string>("() => location.pathname"), route, StringComparison.Ordinal))
+                if (!string.Equals(await page.EvaluateAsync("() => location.pathname"), route, StringComparison.Ordinal))
                 {
                     // Mark the outgoing page's heading so a stale one is never mistaken for the new page's, even
                     // when two pages share the same heading text.
@@ -204,20 +184,13 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
                 var result = await page.RunAxe(new AxeRunOptions
                 {
-                    Rules = new Dictionary<string, RuleOptions> { ["page-has-heading-one"] = new() { Enabled = false } }
+                    Rules = new Dictionary { ["page-has-heading-one"] = new() { Enabled = false } }
                 });
 
                 foreach (var violation in result.Violations.Where(v => !KnownIssues.Contains($"{route}|{v.Id}")))
                 {
                     var first = violation.Nodes.FirstOrDefault()?.Html ?? string.Empty;
                     var summary = $"[{theme}] {route}: axe {violation.Id} ({violation.Nodes.Length} node(s)), e.g. {(first.Length > 120 ? first[..120] : first)}";
-
-                    if (violation.Id == "color-contrast" && ThemesWithUnenforcedContrast.Contains(theme))
-                    {
-                        unenforced.Add(summary);
-                        continue;
-                    }
-
                     failures.Add(summary);
                 }
             }
@@ -276,7 +249,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         _ => "application/octet-stream"
     };
 
-    private static List<string> DiscoverRoutes()
+    private static List DiscoverRoutes()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
