@@ -62,6 +62,14 @@ public sealed record LibraryStrings
 
     public required string DateYear { get; init; }
 
+    public required string DateDayRangeError { get; init; }
+
+    public required string DateMonthRangeError { get; init; }
+
+    public required string DateYearRangeError { get; init; }
+
+    public required string DateInvalidCombination { get; init; }
+
     public required string CharacterRemainingFormat { get; init; }
 
     public required string CharactersRemainingFormat { get; init; }
@@ -217,6 +225,10 @@ public sealed class AppStrings
         DateDay = "Day",
         DateMonth = "Month",
         DateYear = "Year",
+        DateDayRangeError = "Day must be a number between 1 and 31.",
+        DateMonthRangeError = "Month must be a number between 1 and 12.",
+        DateYearRangeError = "Year must be a 4-digit number.",
+        DateInvalidCombination = "Enter a real date - that day does not exist in that month.",
         CharacterRemainingFormat = "You have {0} character remaining",
         CharactersRemainingFormat = "You have {0} characters remaining",
         CharacterOverLimitFormat = "You have {0} character too many",
@@ -258,6 +270,10 @@ public sealed class AppStrings
         DateDay = "Diwrnod",
         DateMonth = "Mis",
         DateYear = "Blwyddyn",
+        DateDayRangeError = "Rhaid i'r diwrnod fod yn rif rhwng 1 a 31.",
+        DateMonthRangeError = "Rhaid i'r mis fod yn rif rhwng 1 a 12.",
+        DateYearRangeError = "Rhaid i'r flwyddyn fod yn rif 4 digid.",
+        DateInvalidCombination = "Rhowch ddyddiad go iawn - nid yw'r diwrnod hwnnw'n bodoli yn y mis hwnnw.",
         CharacterRemainingFormat = "Mae gennych {0} nod ar ôl",
         CharactersRemainingFormat = "Mae gennych {0} o nodau ar ôl",
         CharacterOverLimitFormat = "Mae gennych {0} nod gormod",
@@ -427,6 +443,10 @@ public sealed class AppStrings
         new("CyDateInput", "DayLabel", s => s.DateDay),
         new("CyDateInput", "MonthLabel", s => s.DateMonth),
         new("CyDateInput", "YearLabel", s => s.DateYear),
+        new("CyDateInput", "DayRangeErrorMessage", s => s.DateDayRangeError),
+        new("CyDateInput", "MonthRangeErrorMessage", s => s.DateMonthRangeError),
+        new("CyDateInput", "YearRangeErrorMessage", s => s.DateYearRangeError),
+        new("CyDateInput", "InvalidDateErrorMessage", s => s.DateInvalidCombination),
         new("CyTextArea", "CharacterRemainingFormat", s => s.CharacterRemainingFormat),
         new("CyTextArea", "CharactersRemainingFormat", s => s.CharactersRemainingFormat),
         new("CyTextArea", "CharacterOverLimitFormat", s => s.CharacterOverLimitFormat),

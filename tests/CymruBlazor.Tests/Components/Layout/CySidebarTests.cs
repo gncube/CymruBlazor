@@ -9,6 +9,15 @@ namespace CymruBlazor.Tests.Components.Layout;
 
 public sealed class CySidebarTests : TestContextBase
 {
+    public CySidebarTests()
+    {
+        // MobileOpen renders now also activate background-inert (roadmap F4) via a direct call
+        // into the overlay module; stub it so that call is a no-op here. See
+        // CySidebarBackgroundInertTests for dedicated coverage of that behaviour.
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-overlay.js").Mode = JSRuntimeMode.Loose;
+    }
+
     [Fact]
     public void Sidebar_Should_Render_With_Default_Parameters()
     {

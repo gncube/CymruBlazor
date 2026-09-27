@@ -22,6 +22,7 @@
   --cymru-color-primary: var(--cymru-blue-800);
   --cymru-color-primary-hover: var(--cymru-blue-900);
   --cymru-color-primary-subtle: var(--cymru-blue-100);
+  --cymru-color-primary-on-surface: var(--cymru-color-primary);
 
   --cymru-color-secondary: var(--cymru-navy-900);
   --cymru-color-brand-accent: var(--cymru-cyan-700);

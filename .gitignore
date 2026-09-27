@@ -510,3 +510,6 @@ local-package-versions.props
 /demo-smoke/
 Apply-Housekeeping-Deletions.ps1
 Pack-Solution.ps1
+
+# Test and build artifacts
+.artifacts/

@@ -14,6 +14,139 @@ Housekeeping, test coverage, documentation, and a bilingual
 documentation-site rework. No new public API; package validation runs
 against 1.5.0.
 
+Roadmap v1.5.2 ("Close the small stuff"). No new public API; two
+`[Obsolete]` deprecations. Package validation runs against 1.5.1.
+
+### Added
+
+- `CyTooltip`: flips to the opposite side of its declared `Placement`
+  (top&#8596;bottom, start&#8596;end) when it would otherwise render
+  off-screen. Detected client-side by measuring the (already laid out,
+  even while hidden) tooltip content against the viewport on
+  hover/focus, and re-checked on resize for any tooltip currently open;
+  requires the same JS as Escape-to-dismiss.
+- `CySidebar`: the mobile drawer now makes the rest of the page `inert`
+  while open (unreachable by Tab, click or assistive tech), the same
+  containment a native `<dialog>` gets for free from the browser's top
+  layer. This is a direct call into the overlay module, independent of
+  whichever `IFocusManager` is registered.
+- `CyDateInput`: `DayRangeErrorMessage`, `MonthRangeErrorMessage`,
+  `YearRangeErrorMessage` and `InvalidDateErrorMessage` parameters
+  (English defaults, overridable for Welsh), appended to the field's
+  error message when a specific segment (or the day/month pair, for an
+  impossible combination such as 31 February) is what's actually wrong.
+
+### Changed
+
+- `CyDateInput`: `aria-invalid` and `aria-describedby` are now applied to
+  whichever segment(s) are actually at fault, not all three together.
+  When the segments are individually well-formed and combine into a real
+  date, yet the field is still invalid (e.g. a custom "must be in the
+  past" rule), there is nothing segment-specific to blame, so all three
+  fall back to `aria-invalid="true"` together, as before.
+- Demo: `.cy-theme-provider` now has a `[data-theme="high-contrast"]`
+  token block. It didn't exist before, so every `--cb-*` shell/chrome
+  token silently kept its light-theme value in high contrast while
+  genuine CymruBlazor components correctly switched via
+  `high-contrast.css`'s `--cymru-color-*` tokens - anywhere the two mixed
+  (`CyCard`'s `color: inherit` against its own now-black background;
+  `.cb-api-table__name`'s `--cymru-color-link` against the still-white
+  shell background) broke badly (computed 1.18:1 and 1.25:1; both need
+  4.5:1). The new block maps `--cb-*` onto the library's own
+  `--cymru-color-*` tokens rather than a third parallel set of values.
+- Demo: `.cb-shell-header` is now opaque instead of a semi-transparent
+  `backdrop-filter: blur()` panel, in both light and dark. Its actual
+  contrast previously depended on whatever page content happened to
+  render behind it at a given scroll position - not something a static
+  or automated check can verify - and a real user scrolling dark content
+  underneath it could hit a genuinely low-contrast moment.
+
+### Fixed
+
+- **Stale CSS bundle could ship pre-fix component styles.**
+  `build/BundleCss.targets`'s `BundleCymruCss` target declared
+  `Inputs="wwwroot/css/cymrublazor.css"` - the single entry-point file,
+  not the ~25 `@import`ed partials it actually concatenates. Editing a
+  partial (e.g. `components/navigation.css`, `themes/dark.css`) left the
+  entry point's own timestamp unchanged, so MSBuild's up-to-date check
+  considered the target current and silently reused whatever bundle
+  already existed in `obj/` on any Release build/publish against a
+  working tree that hadn't been cleaned since a prior build. `Inputs`
+  now globs `wwwroot/css/**/*.css`, so editing any partial correctly
+  invalidates the cached output. Found via a live Docker/Playwright run
+  of `DemoSmokeTests` reporting a dark-mode `color-contrast` failure on
+  `CyNavigation`'s active link that a diff against source confirmed was
+  already fixed in `navigation.css` but absent from the actual published
+  bundle. `Run-AccessibilityTests.ps1` bind-mounts the host repo's
+  `obj`/`bin` straight into its container, so this could reproduce
+  locally even though a clean CI checkout (no `obj`/`bin` to reuse) was
+  never affected; run `git clean -fdx` once if local CSS edits don't
+  seem to take effect.
+- **`CyButton`'s default (primary) variant used the wrong text-colour
+  token in dark theme.** `color: var(--cymru-color-surface)` instead of
+  `color: var(--cymru-color-primary-text)`. In light theme
+  `--cymru-color-surface` happens to resolve to white, so the button
+  read correctly by coincidence and passed every existing (light-only)
+  `CyButton` axe suite; in dark theme `--cymru-color-surface` is navy,
+  giving near-invisible navy text on a teal button background (computed
+  ~2:1 against the 4.5:1 minimum). Corrected to
+  `--cymru-color-primary-text`, which was already themed white in both
+  light and dark and simply wasn't being referenced.
+- **`--cymru-color-primary` had no dark-mode-safe value for use as
+  foreground text on a surface, only as a background.**
+  `.cy-button--secondary`/`--tertiary` set
+  `color: var(--cymru-color-primary)`; that token is appropriately dark
+  in dark theme for background use (the case the previous fix relies
+  on) but unusable as text against another dark surface - e.g.
+  `CySidebar`'s "Widen" button read at ~2.1:1 against real sidebar
+  chrome. Added `--cymru-color-primary-on-surface` (defaults to
+  `--cymru-color-primary` in light theme, no visual change;
+  `--cymru-cyan-400` in dark, matching `--cymru-color-link`'s existing
+  dark-mode treatment; `#00ffff` in high contrast, matching
+  `--cymru-color-primary`/`--cymru-color-link` there) and applied it to
+  `CyButton`'s secondary/tertiary variants plus four more instances of
+  the same pattern found by grepping for the old token's use as text
+  rather than background: `CySkipLink`'s focus state (text and border),
+  `CyNavigation`'s hover link, `CySidebar`'s reveal-handle hover/focus,
+  and `CySpinner`'s primary variant. `CyTabs`'s bespoke
+  `[data-theme="dark"] .cy-tabs__tab--active` hand-rolled override (same
+  `cyan-400` value) was collapsed into the new token rather than kept as
+  a one-off. `CyBadge`'s and `CySidebar__item[aria-current="page"]`'s
+  primary-on-`--cymru-color-primary-subtle` pairings were checked and
+  deliberately left alone: that token isn't overridden in dark theme, so
+  both stay dark-text-on-light-tint and were never actually broken.
+- The three fixes above were found in sequence via a live
+  `Run-AccessibilityTests.ps1` (Docker/Playwright) run of
+  `DemoSmokeTests` against a real published build - each fix unmasked
+  the next failure until the full 61-route x 3-theme sweep passed clean.
+  This supersedes the "Known limitation" previously noted here (the two
+  colour-contrast fixes above it are now confirmed by that same live
+  run, not just static analysis) and closes the corresponding
+  `known-issues-and-backlog.md` items on Demo dark/high-contrast colour
+  contrast.
+
+### Deprecated
+
+- `IKeyboardNavigationService`, `KeyboardNavigationService`,
+  `KeyboardNavigationResult`, `KeyboardNavigationOptions` and
+  `FocusNavigationMode` are marked `[Obsolete]` (roadmap D5). Nothing in
+  CymruBlazor has ever registered or consumed them; kept for one more
+  cycle in case a consumer implemented against them directly. Scheduled
+  for removal in 2.0.0.
+
+### Documentation
+
+- `cards.css`: recorded the `CyCard.Elevation` product decision (roadmap
+  D4) - Small/Medium/Large intentionally rendering the same shadow is
+  accepted as correct, not a bug, and the corresponding
+  `known-issues-and-backlog.md` item is closed.
+
+## [1.5.1] - 2026-09-26
+
+Housekeeping, test coverage, documentation, and a bilingual
+documentation-site rework. No new public API; package validation runs
+against 1.5.0.
+
 ### Added
 
 - `AppStrings.Catalogue` and `LibraryStrings` in the Demo app now include all 13

@@ -93,6 +93,14 @@
   --cymru-color-primary: var(--cymru-blue-800);
   --cymru-color-primary-hover: var(--cymru-blue-900);
   --cymru-color-primary-subtle: var(--cymru-blue-100);
+   --cymru-color-primary-text: var(--cymru-white);
+
+  /* The accent colour when used as *text on a surface* rather than as a
+     filled background. --cymru-color-primary is deliberately dark in the
+     dark theme (it has to carry white text); reusing it as a foreground
+     on a dark surface drops below WCAG AA. Themes that darken primary
+     must give this token a lighter value. */
+  --cymru-color-primary-on-surface: var(--cymru-color-primary);
 
   /* sr.color.interactive.secondary */
   --cymru-color-secondary: var(--cymru-navy-900);

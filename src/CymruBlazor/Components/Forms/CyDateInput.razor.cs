@@ -25,14 +25,25 @@ namespace CymruBlazor.Components.Forms;
 /// <c>oninput</c> - so a user is never shown a validation error while
 /// still mid-digit. An incomplete or out-of-range combination (e.g. day
 /// 31, month 2) simply leaves the bound value <see langword="null"/>;
-/// this component does not synthesise its own per-segment error text; a
-/// <see langword="null"/> value with <c>Required</c> (or a
+/// a <see langword="null"/> value with <c>Required</c> (or a
 /// <c>DataAnnotations</c> attribute on the bound property) surfaces
 /// through the same <c>EditContext</c> validation path as every other
-/// CymruBlazor field. A known simplification, tracked in the backlog: the
-/// rendered error state (<c>aria-invalid</c>) applies to all three
-/// segments together, not to whichever specific segment is actually
-/// wrong, as the DHCW reference markup does for a single-field error.
+/// CymruBlazor field.
+/// <para>
+/// Once <c>EditContext</c> flags the field invalid, <c>aria-invalid</c> is
+/// applied to whichever segment(s) are actually at fault - not all three
+/// together - and, when a segment's own content is what's wrong (out of its
+/// own range, or a structurally-impossible day/month combination such as 31
+/// February), an additional segment-specific sentence
+/// (<see cref="DayRangeErrorMessage"/>, <see cref="MonthRangeErrorMessage"/>,
+/// <see cref="YearRangeErrorMessage"/>, <see cref="InvalidDateErrorMessage"/>)
+/// is appended to the shared error message so the one thing that's wrong is
+/// named specifically. When the segments are individually well-formed and
+/// combine into a real date, yet the field is still invalid (e.g. a custom
+/// "date must be in the past" rule), there is nothing segment-specific to
+/// blame, so all three fall back to <c>aria-invalid="true"</c> together, as
+/// before.
+/// </para>
 /// </remarks>
 public partial class CyDateInput : CyFormFieldComponentBase<DateOnly?>
 {
@@ -61,6 +72,35 @@ public partial class CyDateInput : CyFormFieldComponentBase<DateOnly?>
     /// </summary>
     [Parameter]
     public bool AutocompleteDateOfBirth { get; set; }
+
+    /// <summary>
+    /// Appended to the error message when the day segment is filled in but out
+    /// of its own valid range (not 1-31). Defaults to English; override for Welsh.
+    /// </summary>
+    [Parameter]
+    public string DayRangeErrorMessage { get; set; } = "Day must be a number between 1 and 31.";
+
+    /// <summary>
+    /// Appended to the error message when the month segment is filled in but out
+    /// of its own valid range (not 1-12). Defaults to English; override for Welsh.
+    /// </summary>
+    [Parameter]
+    public string MonthRangeErrorMessage { get; set; } = "Month must be a number between 1 and 12.";
+
+    /// <summary>
+    /// Appended to the error message when the year segment is filled in but is
+    /// not a 4-digit number. Defaults to English; override for Welsh.
+    /// </summary>
+    [Parameter]
+    public string YearRangeErrorMessage { get; set; } = "Year must be a 4-digit number.";
+
+    /// <summary>
+    /// Appended to the error message when day, month and year are each
+    /// individually in range but do not combine into a real date (e.g. 31
+    /// February). Defaults to English; override for Welsh.
+    /// </summary>
+    [Parameter]
+    public string InvalidDateErrorMessage { get; set; } = "Enter a real date - that day does not exist in that month.";
 
     private string DayId => $"{FieldId}-day";
 
@@ -116,6 +156,70 @@ public partial class CyDateInput : CyFormFieldComponentBase<DateOnly?>
 
         date = default;
         return false;
+    }
+
+    private static bool SegmentInOwnRange(string value, int min, int max) =>
+        int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed) &&
+        parsed >= min && parsed <= max;
+
+    /// <summary>
+    /// Which segment(s) are at fault for the current validation error, computed only once
+    /// <see cref="CyFormFieldComponentBase{TValue}.HasValidationError"/> is true. A segment that is
+    /// empty or outside its own numeric range is blamed individually; if all three are individually
+    /// in range but do not combine into a real date, Day and Month share the blame (Year rarely
+    /// causes an otherwise-valid day/month to become impossible). If all three are fine on their own
+    /// terms and combine into a real date, whatever failed validation isn't attributable to one
+    /// segment (e.g. a custom "must be in the past" rule), so all three share it, as before.
+    /// </summary>
+    private (bool Day, bool Month, bool Year) InvalidSegments()
+    {
+        if (!HasValidationError)
+        {
+            return (false, false, false);
+        }
+
+        var dayInOwnRange = SegmentInOwnRange(_day, 1, 31);
+        var monthInOwnRange = SegmentInOwnRange(_month, 1, 12);
+        var yearInOwnRange = SegmentInOwnRange(_year, 1, 9999);
+
+        if (!dayInOwnRange || !monthInOwnRange || !yearInOwnRange)
+        {
+            return (!dayInOwnRange, !monthInOwnRange, !yearInOwnRange);
+        }
+
+        return TryBuildDate(out _) ? (true, true, true) : (true, true, false);
+    }
+
+    private string BuildErrorMessage()
+    {
+        var messages = EditContext.GetValidationMessages(FieldIdentifier).ToList();
+
+        var (dayInvalid, monthInvalid, yearInvalid) = InvalidSegments();
+        var dayInOwnRange = SegmentInOwnRange(_day, 1, 31);
+        var monthInOwnRange = SegmentInOwnRange(_month, 1, 12);
+        var yearInOwnRange = SegmentInOwnRange(_year, 1, 9999);
+
+        if (dayInvalid && !dayInOwnRange && !string.IsNullOrWhiteSpace(_day))
+        {
+            messages.Add(DayRangeErrorMessage);
+        }
+
+        if (monthInvalid && !monthInOwnRange && !string.IsNullOrWhiteSpace(_month))
+        {
+            messages.Add(MonthRangeErrorMessage);
+        }
+
+        if (yearInvalid && !yearInOwnRange && !string.IsNullOrWhiteSpace(_year))
+        {
+            messages.Add(YearRangeErrorMessage);
+        }
+
+        if (dayInvalid && monthInvalid && !yearInvalid && dayInOwnRange && monthInOwnRange)
+        {
+            messages.Add(InvalidDateErrorMessage);
+        }
+
+        return string.Join(' ', messages);
     }
 
     /// <summary>

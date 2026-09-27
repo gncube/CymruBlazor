@@ -12,11 +12,22 @@ namespace CymruBlazor.Tests.Components.Layout;
 /// <summary>
 /// The mobile drawer (roadmap F6): Escape closes it, focus is trapped while it is open on a small
 /// screen and returned afterwards. Works with no <see cref="IFocusManager"/> registered.
+/// Background-inert wiring (roadmap F4) is a separate, always-on direct call into the overlay
+/// module (see <see cref="CySidebarBackgroundInertTests"/>); the module is stubbed here purely so
+/// that call does not throw in these focus-trap-focused tests.
 /// </summary>
 public sealed class CySidebarDrawerFocusTests : TestContextBase
 {
+    private const string OverlayModulePath = "./_content/CymruBlazor/js/cymru-overlay.js";
+
     private readonly Mock<IFocusManager> _focusManager = new(MockBehavior.Loose);
     private readonly Mock<IAsyncDisposable> _handle = new();
+
+    public CySidebarDrawerFocusTests()
+    {
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule(OverlayModulePath).Mode = JSRuntimeMode.Loose;
+    }
 
     private void RegisterFocusManager()
     {

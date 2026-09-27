@@ -1,0 +1,55 @@
+name: Accessibility CI Gate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  demo-smoke:
+    name: Playwright Demo Smoke & Accessibility Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Artifacts Directory
+        run: mkdir -p .artifacts/accessibility
+
+      - name: Build Playwright Docker Image
+        run: |
+          docker build -t cymrublazor-playwright:1.62.0 -f docker/playwright/Dockerfile .
+
+      - name: Run Accessibility Smoke Tests in Container
+        run: |
+          docker run --rm \
+            --init \
+            --ipc=host \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            -e GITHUB_STEP_SUMMARY=/workspace/.github-step-summary.md \
+            cymrublazor-playwright:1.62.0 \
+            -File ./scripts/Run-AccessibilityTests.Container.ps1
+
+      - name: Append to GitHub Step Summary
+        if: always()
+        run: |
+          if [ -f "$GITHUB_WORKSPACE/.github-step-summary.md" ]; then
+            cat "$GITHUB_WORKSPACE/.github-step-summary.md" >> "$GITHUB_STEP_SUMMARY"
+            rm -f "$GITHUB_WORKSPACE/.github-step-summary.md"
+          fi
+
+      - name: Upload Accessibility Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-smoke-report
+          path: .artifacts/accessibility/demo-smoke-report.md
+          if-no-files-found: warn

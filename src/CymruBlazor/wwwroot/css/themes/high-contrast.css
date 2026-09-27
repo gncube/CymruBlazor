@@ -33,7 +33,11 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) {
 
   --cymru-color-primary: #00ffff;
 
+  --cymru-color-primary-on-surface: #00ffff;
+
   --cymru-color-primary-hover: #ffffff;
+
+  --cymru-color-primary-text: #000000;
 
   --cymru-color-primary-subtle: #000000;
 

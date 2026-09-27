@@ -5,6 +5,7 @@ namespace CymruBlazor.Accessibility.Focus;
 /// <summary>
 /// Default keyboard navigation implementation.
 /// </summary>
+[Obsolete("Nothing in CymruBlazor consumes this; it will be removed in 2.0.0.", error: false)]
 public sealed class KeyboardNavigationService
     : IKeyboardNavigationService
 {

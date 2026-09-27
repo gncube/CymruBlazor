@@ -8,6 +8,10 @@ using CymruBlazor.Accessibility.Focus;
 
 namespace CymruBlazor.Tests.Accessibility;
 
+// Roadmap D5: IKeyboardNavigationService and friends are [Obsolete] (unused, unregistered,
+// scheduled for removal in 2.0.0) but not yet removed; these tests keep exercising the existing
+// behaviour until then.
+#pragma warning disable CS0618
 public class KeyboardNavigationServiceTests
 {
     private readonly KeyboardNavigationService _service = new();
