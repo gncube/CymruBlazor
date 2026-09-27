@@ -64,8 +64,8 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
        Brand
        ========================================================================== */
 
-  --cymru-color-primary: var(--cymru-cyan-900);
-  --cymru-color-primary-hover: var(--cymru-cyan-800);
+     --cymru-color-primary: var(--cymru-cyan-400);
+     --cymru-color-primary-hover: var(--cymru-cyan-300);
 
   --cymru-color-secondary: var(--cymru-blue-300);
 
@@ -99,7 +99,7 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
 
   --cymru-color-text: var(--cymru-white);
   --cymru-color-text-muted: var(--cymru-grey-200);
-  --cymru-color-text-inverse: var(--cymru-grey-900);
+     --cymru-color-text-inverse: var(--cymru-white);
 
   /* ==========================================================================
        Links

@@ -141,6 +141,9 @@
  * preserve.
  */
 .cy-theme-provider[data-theme="high-contrast"] {
+  --cb-brand-primary: var(--cymru-color-primary);
+  --cb-brand-primary-hover: var(--cymru-color-primary-hover);
+
   --cb-bg-canvas: var(--cymru-color-background);
   --cb-bg-subtle: var(--cymru-color-surface-alt);
   --cb-bg-surface: var(--cymru-color-surface);

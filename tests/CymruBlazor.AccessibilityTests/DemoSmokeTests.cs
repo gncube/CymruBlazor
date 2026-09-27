@@ -135,6 +135,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
     {
         await using var context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
+            IgnoreHTTPSErrors = true,
             ServiceWorkers = ServiceWorkerPolicy.Block,
             ViewportSize = new ViewportSize { Width = 1280, Height = 900 }
         });
