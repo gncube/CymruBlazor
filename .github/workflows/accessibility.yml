@@ -42,7 +42,7 @@ jobs:
         if: always()
         run: |
           if [ -f "$GITHUB_WORKSPACE/.github-step-summary.md" ]; then
-            cat "\(GITHUB_WORKSPACE/.github-step-summary.md" >> "\)GITHUB_STEP_SUMMARY"
+            cat "$GITHUB_WORKSPACE/.github-step-summary.md" >> "$GITHUB_STEP_SUMMARY"
             rm -f "$GITHUB_WORKSPACE/.github-step-summary.md"
           fi
 
