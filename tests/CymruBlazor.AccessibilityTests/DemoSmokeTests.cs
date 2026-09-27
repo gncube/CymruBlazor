@@ -34,12 +34,12 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
     private static readonly string[] Themes = ["light", "dark", "high-contrast"];
 
     /// Tracked, understood violations as "route|axe-rule-id". Keep empty.
-    private static readonly HashSet KnownIssues = [];
+    private static readonly HashSet<string> KnownIssues = [];
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
 
-    [GeneratedRegex("^@page\\s+\"(?[^\"]+)\"", RegexOptions.Multiline)]
+    [GeneratedRegex("^@page\\s+\"(?<route>[^\"]+)\"", RegexOptions.Multiline)]
     private static partial Regex PageDirective();
 
     public async Task InitializeAsync()
@@ -80,7 +80,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         routes.Count.ShouldBeGreaterThan(10, "Route discovery found suspiciously few @page routes.");
         output.WriteLine($"Smoke testing {routes.Count} routes x {Themes.Length} themes.");
 
-        var failures = new List();
+        var failures = new List<string>();
 
         foreach (var theme in Themes)
         {
@@ -97,9 +97,9 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
     /// binaries) and, on GitHub Actions, to the job summary, so a CI run can be read without downloading logs or
     /// running Playwright locally.
     ///
-    private void WriteReport(int routeCount, List failures)
+    private void WriteReport(int routeCount, List<string> failures)
     {
-        var lines = new List
+        var lines = new List<string>
         {
             "# Demo smoke run",
             string.Empty,
@@ -131,7 +131,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         }
     }
 
-    private async Task SmokeThemeAsync(string demoDirectory, List routes, string theme, List failures)
+    private async Task SmokeThemeAsync(string demoDirectory, List<string> routes, string theme, List<string> failures)
     {
         await using var context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
@@ -145,7 +145,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
         var page = await context.NewPageAsync();
         var currentRoute = "(startup)";
-        var consoleErrors = new List();
+        var consoleErrors = new List<string>();
 
         page.Console += (_, message) =>
         {
@@ -164,7 +164,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
             try
             {
-                if (!string.Equals(await page.EvaluateAsync("() => location.pathname"), route, StringComparison.Ordinal))
+                if (!string.Equals(await page.EvaluateAsync<string>("() => location.pathname"), route, StringComparison.Ordinal))
                 {
                     // Mark the outgoing page's heading so a stale one is never mistaken for the new page's, even
                     // when two pages share the same heading text.
@@ -184,7 +184,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
 
                 var result = await page.RunAxe(new AxeRunOptions
                 {
-                    Rules = new Dictionary { ["page-has-heading-one"] = new() { Enabled = false } }
+                    Rules = new Dictionary<string, RuleOptions> { ["page-has-heading-one"] = new() { Enabled = false } }
                 });
 
                 foreach (var violation in result.Violations.Where(v => !KnownIssues.Contains($"{route}|{v.Id}")))
@@ -249,7 +249,7 @@ public sealed partial class DemoSmokeTests(ITestOutputHelper output) : IAsyncLif
         _ => "application/octet-stream"
     };
 
-    private static List DiscoverRoutes()
+    private static List<string> DiscoverRoutes()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
