@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Enums;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Feedback;
 
@@ -21,6 +22,10 @@ namespace CymruBlazor.Components.Feedback;
 /// </summary>
 public partial class CySpinner : CyLayoutComponentBase, IHasSize, IHasColour
 {
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="Label"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
     /// <summary>
     /// Gets or sets the spinner's size.
     /// </summary>
@@ -61,7 +66,7 @@ public partial class CySpinner : CyLayoutComponentBase, IHasSize, IHasColour
     protected override string BaseCssClass => "cy-spinner";
 
     private string ComputedLabel =>
-        string.IsNullOrWhiteSpace(Label) ? "Loading" : Label;
+        string.IsNullOrWhiteSpace(Label) ? (Localizer?.Strings.SpinnerLabel ?? "Loading") : Label;
 
     protected override string BuildCssClass()
     {

@@ -20,7 +20,7 @@
                 {
                     <button type="button"
                             class="cy-dialog__close"
-                            aria-label="@(CloseLabel ?? "Close")"
+                            aria-label="@(CloseLabel ?? Localizer?.Strings.DialogClose ?? "Close")"
                             @onclick="CloseFromUiAsync">
                         <span aria-hidden="true">&times;</span>
                     </button>

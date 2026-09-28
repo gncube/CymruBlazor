@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Layout;
 
@@ -15,6 +16,10 @@ namespace CymruBlazor.Components.Layout;
 public partial class CyNavigation : CyLayoutComponentBase
 {
     private bool _isMobileMenuOpen;
+
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="AriaLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
 
     /// <summary>
     /// Logo/wordmark slot, rendered at the start of the navigation bar.

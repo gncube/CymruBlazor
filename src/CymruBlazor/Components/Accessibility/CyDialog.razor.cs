@@ -4,6 +4,7 @@ using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Contracts;
 using CymruBlazor.Enums;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Accessibility;
 
@@ -99,6 +100,10 @@ public partial class CyDialog : CyLayoutComponentBase, IHasSize, IAsyncDisposabl
     /// <summary>Accessible name of the close button. Defaults to the English "Close".</summary>
     [Parameter]
     public string? CloseLabel { get; set; }
+
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="CloseLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
 
     protected override string BaseCssClass => "cy-dialog";
 

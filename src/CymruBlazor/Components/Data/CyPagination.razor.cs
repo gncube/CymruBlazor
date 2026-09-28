@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Data;
 
@@ -87,6 +88,10 @@ public partial class CyPagination : CyComponentBase
     [Parameter]
     public string? CurrentPageAriaLabelFormat { get; set; }
 
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See e.g. <see cref="AriaLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
     protected override string BaseCssClass => "cy-pagination";
 
     private IReadOnlyList<int?> PageItems =>
@@ -131,13 +136,13 @@ public partial class CyPagination : CyComponentBase
     private string FormatPageLabel(int page) =>
         string.Format(
             CultureInfo.CurrentCulture,
-            string.IsNullOrWhiteSpace(PageAriaLabelFormat) ? "Page {0}" : PageAriaLabelFormat,
+            string.IsNullOrWhiteSpace(PageAriaLabelFormat) ? (Localizer?.Strings.PageAriaLabelFormat ?? "Page {0}") : PageAriaLabelFormat,
             page);
 
     private string FormatCurrentPageLabel(int page) =>
         string.Format(
             CultureInfo.CurrentCulture,
-            string.IsNullOrWhiteSpace(CurrentPageAriaLabelFormat) ? "Current page, page {0}" : CurrentPageAriaLabelFormat,
+            string.IsNullOrWhiteSpace(CurrentPageAriaLabelFormat) ? (Localizer?.Strings.CurrentPageAriaLabelFormat ?? "Current page, page {0}") : CurrentPageAriaLabelFormat,
             page);
 
     private async Task GoToAsync(int page)
