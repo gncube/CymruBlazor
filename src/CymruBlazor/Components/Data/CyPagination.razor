@@ -7,7 +7,7 @@
         id="@Id"
         class="@CssClass"
         style="@CssStyle"
-        aria-label="@(AriaLabel ?? "Pagination")"
+        aria-label="@(AriaLabel ?? Localizer?.Strings.PaginationLabel ?? "Pagination")"
         @attributes="AdditionalAttributes">
 
         <ul class="cy-pagination__list">
@@ -19,7 +19,7 @@
                     disabled="@(CurrentPage <= 1)"
                     @onclick="() => GoToAsync(CurrentPage - 1)">
                     <CyIcon Name="chevron-left" Size="16" />
-                    <span>@(PreviousLabel ?? "Previous")</span>
+                    <span>@(PreviousLabel ?? Localizer?.Strings.PaginationPrevious ?? "Previous")</span>
                 </button>
             </li>
 
@@ -58,7 +58,7 @@
                     class="cy-pagination__control cy-pagination__control--next"
                     disabled="@(CurrentPage >= TotalPages)"
                     @onclick="() => GoToAsync(CurrentPage + 1)">
-                    <span>@(NextLabel ?? "Next")</span>
+                    <span>@(NextLabel ?? Localizer?.Strings.PaginationNext ?? "Next")</span>
                     <CyIcon Name="chevron-right" Size="16" />
                 </button>
             </li>

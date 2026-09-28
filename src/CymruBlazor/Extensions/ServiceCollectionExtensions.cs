@@ -5,6 +5,7 @@ using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Feedback;
+using CymruBlazor.Localisation;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
 
@@ -29,6 +30,14 @@ public static class ServiceCollectionExtensions
         // automatically where one is available (WASM and interactive
         // Server render modes both register it).
         services.AddScoped<IThemeService, ThemeService>();
+
+        // Register the step-2 localiser (ADR-0002, 1.6.0). Scoped to match
+        // the same per-circuit/per-session lifetime as IThemeService. This
+        // only makes ICyLocalizer resolvable/injectable - components only
+        // see it once it's cascaded via CyLocalizationProvider, so
+        // registering it has no effect on an app that doesn't add that
+        // provider to its layout.
+        services.AddScoped<ICyLocalizer, CyLocalizer>();
 
         // Register the NuGet package version lookup used by CyFooter's
         // ShowVersion parameter. Resolves an already-registered

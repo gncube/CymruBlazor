@@ -1,11 +1,12 @@
 @namespace CymruBlazor.Components.Feedback
 @using CymruBlazor.Components.Content
+@using CymruBlazor.Localisation
 @implements IDisposable
 @inject IToastService ToastService
 
 <div class="cy-toast-container"
      role="region"
-     aria-label="@(AriaLabel ?? "Notifications")"
+     aria-label="@(AriaLabel ?? Localizer?.Strings.ToastRegion ?? "Notifications")"
      aria-live="polite"
      aria-atomic="false">
     @foreach (var toast in ToastService.Toasts)
@@ -20,7 +21,7 @@
             <div class="cy-toast__content">
                 <span class="cy-toast__message">@toast.Message</span>
             </div>
-            <button type="button" class="cy-toast__close" aria-label="@(DismissAriaLabel ?? "Close notification")"
+            <button type="button" class="cy-toast__close" aria-label="@(DismissAriaLabel ?? Localizer?.Strings.ToastDismiss ?? "Close notification")"
                     @onclick="() => ToastService.Remove(toast.Id)">
                 <CyIcon Name="close" Size="14" />
             </button>
@@ -29,6 +30,10 @@
 </div>
 
 @code {
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="AriaLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
     /// <summary>
     /// Accessible name of the notifications region. Defaults to the English "Notifications".
     /// </summary>

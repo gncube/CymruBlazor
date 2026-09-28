@@ -28,7 +28,7 @@
         <button
             type="button"
             class="cy-alert__dismiss"
-            aria-label="@(DismissAriaLabel ?? "Dismiss")"
+            aria-label="@(DismissAriaLabel ?? Localizer?.Strings.AlertDismiss ?? "Dismiss")"
             @onclick="HandleDismissAsync">
 
             <span aria-hidden="true">&times;</span>

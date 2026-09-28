@@ -5,6 +5,7 @@ using CymruBlazor.Accessibility.Notifications;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Feedback;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Content;
 
@@ -123,15 +124,19 @@ public partial class CyCodeBlock : CyComponentBase
 
     protected override string BaseCssClass => "cy-code-block";
 
-    private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? (CodeLabel ?? "Code") : Language;
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="CodeLabel"/> etc.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
+    private string LanguageLabel => string.IsNullOrWhiteSpace(Language) ? (CodeLabel ?? Localizer?.Strings.CodeLabel ?? "Code") : Language;
 
     private string CopyButtonText => _copyFailed
-        ? (CopyFailedLabel ?? "Copy failed")
-        : (_copied ? (CopiedLabel ?? "Copied") : (CopyLabel ?? "Copy"));
+        ? (CopyFailedLabel ?? Localizer?.Strings.CopyFailedLabel ?? "Copy failed")
+        : (_copied ? (CopiedLabel ?? Localizer?.Strings.CopiedLabel ?? "Copied") : (CopyLabel ?? Localizer?.Strings.CopyLabel ?? "Copy"));
 
-    private string CopiedText => CopiedMessage ?? "Code copied to clipboard.";
+    private string CopiedText => CopiedMessage ?? Localizer?.Strings.CopiedMessage ?? "Code copied to clipboard.";
 
-    private string CopyFailedText => CopyFailedMessage ?? "Copying to clipboard failed.";
+    private string CopyFailedText => CopyFailedMessage ?? Localizer?.Strings.CopyFailedMessage ?? "Copying to clipboard failed.";
 
     private async Task CopyToClipboardAsync()
     {

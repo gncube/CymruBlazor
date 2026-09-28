@@ -1,4 +1,5 @@
 using CymruBlazor.Enums;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Demo.Localisation;
 
@@ -196,32 +197,38 @@ public sealed record StringEntry(string Component, string Parameter, Func<Librar
 /// </remarks>
 public sealed class AppStrings
 {
-    /// <summary>English: identical to CymruBlazor's built-in defaults.</summary>
+    /// <summary>
+    /// English: for every field the library's own <see cref="ICyLocalizer"/> now covers,
+    /// sourced directly from <see cref="CyLocalizer.English"/> (1.6.0) so there is exactly
+    /// one place these literals live. <c>CyDateInput</c>/<c>CyTextArea</c> fields aren't part
+    /// of <see cref="CyLocalizedStrings"/> (see <see cref="ICyLocalizer"/>'s remarks) and stay
+    /// as Demo literals, identical to those components' own built-in defaults.
+    /// </summary>
     public static LibraryStrings EnglishLibrary { get; } = new()
     {
-        AlertDismiss = "Dismiss",
-        BreadcrumbLabel = "Breadcrumb",
-        NavigationLabel = "Main",
-        NavigationOpen = "Open menu",
-        NavigationClose = "Close menu",
-        ToastRegion = "Notifications",
-        ToastDismiss = "Close notification",
-        DialogClose = "Close",
-        CodeLabel = "Code",
-        CopyLabel = "Copy",
-        CopiedLabel = "Copied",
-        CopyFailedLabel = "Copy failed",
-        CopiedMessage = "Code copied to clipboard.",
-        CopyFailedMessage = "Copying to clipboard failed.",
-        SidebarReveal = "Reveal sidebar",
-        SidebarClose = "Close sidebar",
-        SidebarSizeGroup = "Sidebar size",
-        SidebarExpand = "Expand sidebar",
-        SidebarCollapse = "Collapse sidebar",
-        SidebarCompact = "Show compact sidebar",
-        SidebarIconOnly = "Show icons only",
-        SidebarHide = "Hide sidebar",
-        SidebarResize = "Resize sidebar",
+        AlertDismiss = CyLocalizer.English.AlertDismiss,
+        BreadcrumbLabel = CyLocalizer.English.BreadcrumbLabel,
+        NavigationLabel = CyLocalizer.English.NavigationLabel,
+        NavigationOpen = CyLocalizer.English.NavigationOpen,
+        NavigationClose = CyLocalizer.English.NavigationClose,
+        ToastRegion = CyLocalizer.English.ToastRegion,
+        ToastDismiss = CyLocalizer.English.ToastDismiss,
+        DialogClose = CyLocalizer.English.DialogClose,
+        CodeLabel = CyLocalizer.English.CodeLabel,
+        CopyLabel = CyLocalizer.English.CopyLabel,
+        CopiedLabel = CyLocalizer.English.CopiedLabel,
+        CopyFailedLabel = CyLocalizer.English.CopyFailedLabel,
+        CopiedMessage = CyLocalizer.English.CopiedMessage,
+        CopyFailedMessage = CyLocalizer.English.CopyFailedMessage,
+        SidebarReveal = CyLocalizer.English.SidebarReveal,
+        SidebarClose = CyLocalizer.English.SidebarClose,
+        SidebarSizeGroup = CyLocalizer.English.SidebarSizeGroup,
+        SidebarExpand = CyLocalizer.English.SidebarExpand,
+        SidebarCollapse = CyLocalizer.English.SidebarCollapse,
+        SidebarCompact = CyLocalizer.English.SidebarCompact,
+        SidebarIconOnly = CyLocalizer.English.SidebarIconOnly,
+        SidebarHide = CyLocalizer.English.SidebarHide,
+        SidebarResize = CyLocalizer.English.SidebarResize,
         DateDay = "Day",
         DateMonth = "Month",
         DateYear = "Year",
@@ -233,40 +240,47 @@ public sealed class AppStrings
         CharactersRemainingFormat = "You have {0} characters remaining",
         CharacterOverLimitFormat = "You have {0} character too many",
         CharactersOverLimitFormat = "You have {0} characters too many",
-        PaginationLabel = "Pagination",
-        PaginationPrevious = "Previous",
-        PaginationNext = "Next",
-        PageAriaLabelFormat = "Page {0}",
-        CurrentPageAriaLabelFormat = "Current page, page {0}",
-        SpinnerLabel = "Loading"
+        PaginationLabel = CyLocalizer.English.PaginationLabel,
+        PaginationPrevious = CyLocalizer.English.PaginationPrevious,
+        PaginationNext = CyLocalizer.English.PaginationNext,
+        PageAriaLabelFormat = CyLocalizer.English.PageAriaLabelFormat,
+        CurrentPageAriaLabelFormat = CyLocalizer.English.CurrentPageAriaLabelFormat,
+        SpinnerLabel = CyLocalizer.English.SpinnerLabel
     };
 
-    /// <summary>Illustrative Welsh (Cymraeg). Not translator-reviewed.</summary>
+    /// <summary>
+    /// Illustrative Welsh (Cymraeg). For fields the library's <see cref="ICyLocalizer"/>
+    /// now covers, sourced from <see cref="CyLocalizer.Welsh"/> so the Demo and the library
+    /// agree - <b>this is still the same placeholder text carried over from 1.3.0/1.5.x,
+    /// not translator-reviewed</b> (see this class's remarks and <see cref="CyLocalizer"/>'s).
+    /// The remaining (<c>CyDateInput</c>/<c>CyTextArea</c>) fields are unchanged Demo literals,
+    /// equally unreviewed, pending the same translator handoff.
+    /// </summary>
     public static LibraryStrings WelshLibrary { get; } = new()
     {
-        AlertDismiss = "Diystyru",
-        BreadcrumbLabel = "Briwsion bara",
-        NavigationLabel = "Prif ddewislen",
-        NavigationOpen = "Agor y ddewislen",
-        NavigationClose = "Cau'r ddewislen",
-        ToastRegion = "Hysbysiadau",
-        ToastDismiss = "Cau'r hysbysiad",
-        DialogClose = "Cau",
-        CodeLabel = "Cod",
-        CopyLabel = "Copïo",
-        CopiedLabel = "Copïwyd",
-        CopyFailedLabel = "Methwyd copïo",
-        CopiedMessage = "Copïwyd y cod i'r clipfwrdd.",
-        CopyFailedMessage = "Methwyd copïo i'r clipfwrdd.",
-        SidebarReveal = "Dangos y bar ochr",
-        SidebarClose = "Cau'r bar ochr",
-        SidebarSizeGroup = "Maint y bar ochr",
-        SidebarExpand = "Ehangu'r bar ochr",
-        SidebarCollapse = "Cwympo'r bar ochr",
-        SidebarCompact = "Dangos bar ochr cryno",
-        SidebarIconOnly = "Dangos eiconau'n unig",
-        SidebarHide = "Cuddio'r bar ochr",
-        SidebarResize = "Newid maint y bar ochr",
+        AlertDismiss = CyLocalizer.Welsh.AlertDismiss,
+        BreadcrumbLabel = CyLocalizer.Welsh.BreadcrumbLabel,
+        NavigationLabel = CyLocalizer.Welsh.NavigationLabel,
+        NavigationOpen = CyLocalizer.Welsh.NavigationOpen,
+        NavigationClose = CyLocalizer.Welsh.NavigationClose,
+        ToastRegion = CyLocalizer.Welsh.ToastRegion,
+        ToastDismiss = CyLocalizer.Welsh.ToastDismiss,
+        DialogClose = CyLocalizer.Welsh.DialogClose,
+        CodeLabel = CyLocalizer.Welsh.CodeLabel,
+        CopyLabel = CyLocalizer.Welsh.CopyLabel,
+        CopiedLabel = CyLocalizer.Welsh.CopiedLabel,
+        CopyFailedLabel = CyLocalizer.Welsh.CopyFailedLabel,
+        CopiedMessage = CyLocalizer.Welsh.CopiedMessage,
+        CopyFailedMessage = CyLocalizer.Welsh.CopyFailedMessage,
+        SidebarReveal = CyLocalizer.Welsh.SidebarReveal,
+        SidebarClose = CyLocalizer.Welsh.SidebarClose,
+        SidebarSizeGroup = CyLocalizer.Welsh.SidebarSizeGroup,
+        SidebarExpand = CyLocalizer.Welsh.SidebarExpand,
+        SidebarCollapse = CyLocalizer.Welsh.SidebarCollapse,
+        SidebarCompact = CyLocalizer.Welsh.SidebarCompact,
+        SidebarIconOnly = CyLocalizer.Welsh.SidebarIconOnly,
+        SidebarHide = CyLocalizer.Welsh.SidebarHide,
+        SidebarResize = CyLocalizer.Welsh.SidebarResize,
         DateDay = "Diwrnod",
         DateMonth = "Mis",
         DateYear = "Blwyddyn",
@@ -278,12 +292,12 @@ public sealed class AppStrings
         CharactersRemainingFormat = "Mae gennych {0} o nodau ar ôl",
         CharacterOverLimitFormat = "Mae gennych {0} nod gormod",
         CharactersOverLimitFormat = "Mae gennych {0} o nodau gormod",
-        PaginationLabel = "Tudalennu",
-        PaginationPrevious = "Blaenorol",
-        PaginationNext = "Nesaf",
-        PageAriaLabelFormat = "Tudalen {0}",
-        CurrentPageAriaLabelFormat = "Tudalen {0}, tudalen gyfredol",
-        SpinnerLabel = "Wrthi'n llwytho"
+        PaginationLabel = CyLocalizer.Welsh.PaginationLabel,
+        PaginationPrevious = CyLocalizer.Welsh.PaginationPrevious,
+        PaginationNext = CyLocalizer.Welsh.PaginationNext,
+        PageAriaLabelFormat = CyLocalizer.Welsh.PageAriaLabelFormat,
+        CurrentPageAriaLabelFormat = CyLocalizer.Welsh.CurrentPageAriaLabelFormat,
+        SpinnerLabel = CyLocalizer.Welsh.SpinnerLabel
     };
 
     public static SampleContent EnglishContent { get; } = new()

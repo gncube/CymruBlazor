@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Enums;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Layout;
 
@@ -181,11 +182,15 @@ public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
     [Parameter]
     public string? ResizeLabel { get; set; }
 
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See e.g. <see cref="RevealLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
     protected override string BaseCssClass => "cy-sidebar";
 
-    private string ExpandText => ExpandLabel ?? "Expand sidebar";
+    private string ExpandText => ExpandLabel ?? Localizer?.Strings.SidebarExpand ?? "Expand sidebar";
 
-    private string CollapseText => CollapseLabel ?? "Collapse sidebar";
+    private string CollapseText => CollapseLabel ?? Localizer?.Strings.SidebarCollapse ?? "Collapse sidebar";
 
     /// <summary>
     /// Indicates whether the sidebar is currently in any non-expanded collapsed state.
@@ -243,9 +248,9 @@ public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
 
     private bool CanWiden => CurrentIndex > 0;
 
-    private string NarrowLabel => CanNarrow ? DescribeTarget(States[CurrentIndex + 1]) : ResizeLabel ?? "Resize sidebar";
+    private string NarrowLabel => CanNarrow ? DescribeTarget(States[CurrentIndex + 1]) : ResizeLabel ?? Localizer?.Strings.SidebarResize ?? "Resize sidebar";
 
-    private string WidenLabel => CanWiden ? DescribeTarget(States[CurrentIndex - 1]) : ResizeLabel ?? "Resize sidebar";
+    private string WidenLabel => CanWiden ? DescribeTarget(States[CurrentIndex - 1]) : ResizeLabel ?? Localizer?.Strings.SidebarResize ?? "Resize sidebar";
 
     // "Narrow" points towards the sidebar's own edge, "widen" points away from it.
     private string NarrowIconName => Position == SidebarPosition.Right ? "chevron-right" : "chevron-left";
@@ -255,10 +260,10 @@ public partial class CySidebar : CyLayoutComponentBase, IAsyncDisposable
     private string DescribeTarget(SidebarState target) => target switch
     {
         SidebarState.Expanded => ExpandText,
-        SidebarState.Compact => CompactLabel ?? "Show compact sidebar",
-        SidebarState.IconOnly => IconOnlyLabel ?? "Show icons only",
-        SidebarState.Hidden => HideLabel ?? "Hide sidebar",
-        _ => ResizeLabel ?? "Resize sidebar"
+        SidebarState.Compact => CompactLabel ?? Localizer?.Strings.SidebarCompact ?? "Show compact sidebar",
+        SidebarState.IconOnly => IconOnlyLabel ?? Localizer?.Strings.SidebarIconOnly ?? "Show icons only",
+        SidebarState.Hidden => HideLabel ?? Localizer?.Strings.SidebarHide ?? "Hide sidebar",
+        _ => ResizeLabel ?? Localizer?.Strings.SidebarResize ?? "Resize sidebar"
     };
 
     /// <summary>

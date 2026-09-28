@@ -8,8 +8,85 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.5.1] - 2026-09-26
+## [Unreleased]
 
+Roadmap v1.6.0 ("Localisation step 2"). No breaking changes; no new
+`[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched this release.
+
+### Added
+
+- `ICyLocalizer` (ADR-0002): a central, cascadable source of the strings
+  CymruBlazor components fall back to when their own override parameter
+  is left unset. Register the default implementation with
+  `AddCymruBlazor()`, wrap your layout's body in the new
+  `CyLocalizationProvider` to cascade it, and `CyAlert`, `CyBreadcrumb`,
+  `CyNavigation`, `CyToastContainer`, `CyDialog`, `CyCodeBlock`,
+  `CySidebar`, `CyPagination` and `CySpinner` pick it up automatically.
+  An explicit override parameter always wins, unchanged from the 1.3.0
+  step-1 pattern; a consumer who registers nothing, or never adds
+  `CyLocalizationProvider`, sees no behaviour change at all.
+- `CyLocalizedStrings`: the record of built-in English/Welsh fallback
+  text `ICyLocalizer` serves. Deliberately does not cover
+  `CyDateInput`'s day/month/year and range-error parameters or
+  `CyTextArea`'s character-count formats - those are plain (non-nullable)
+  `string` parameters with a hardcoded default rather than the
+  `string? ?? "..."` shape, so adding a localiser fallback there would
+  mean a breaking type change. Bind those directly to your own
+  catalogue instead (see the Demo's `AppStrings.Library` for the
+  pattern); no library change was needed for that.
+- Demo: `AppStrings.EnglishLibrary`/`WelshLibrary` now source every
+  field `ICyLocalizer` covers directly from `CyLocalizer.English`/
+  `CyLocalizer.Welsh`, so the built-in strings live in exactly one
+  place. The eleven `CyDateInput`/`CyTextArea` fields it doesn't cover
+  stay as Demo literals, unchanged.
+- `LocalisationPage`: new "Step 2" section replacing the old "proposed
+  in ADR-0002 (not built yet)" note.
+
+### Tests
+
+- `CyLocalizerTests`: the new service's language-switching behaviour in
+  isolation - defaults to English, `SetLanguage` switches `Strings`/
+  `LangTag` and raises `LanguageChanged` exactly once per real change
+  (a no-op setting the current language again does not re-raise, matching
+  `AppStrings.SetLanguage`'s existing contract), unsubscribed handlers
+  are not invoked, and `English`/`Welsh` are complete and distinct from
+  each other (same shape as `AppStringsTests`'s equivalent check).
+- `CyLocalizationProviderTests`: cascades to a nested component with no
+  override, an explicit override still wins over the cascaded value, a
+  language change re-renders, and - the important negative case - a
+  component *not* wrapped in the provider ignores a registered (but
+  never cascaded) `ICyLocalizer` and keeps its old English literal.
+- `AppStringsTests`/`LocalisationOverrideTests` needed no changes:
+  neither wraps its components in `CyLocalizationProvider`, so
+  `Localizer` cascades as `null` in both and every fallback still
+  resolves to the same English literal as before.
+
+### Known limitations
+
+- **The Welsh `ICyLocalizer` ships with, and the Demo's `WelshLibrary`
+  fields sourced from it, are the same illustrative text carried over
+  from 1.3.0/1.5.x - not translator-reviewed.** Proceeding without it
+  per an explicit decision; a translator-reviewed replacement is
+  expected within a fortnight and will land as a follow-up patch
+  touching only `CyLocalizer.Welsh` and the Demo's own
+  `WelshContent`/`WelshNav` (no code shape changes expected).
+- `ICyLocalizer` only wires the nine components above. A handful of
+  labels remain "Not covered by a parameter" for reasons noted on
+  `LocalisationPage` (e.g. `CyLanguageToggle`, `CyBrandLogo`).
+- Housekeeping items from the v1.6.0 roadmap entry (visual-regression
+  spike, icon semantic-naming pass, heading-level configurability audit
+  beyond `CyAlert`/`CyAccordionItem`, screen-reader spot-check of the
+  ARIA `tabpanel` retrofit) are unstarted; they were flagged as
+  non-gating for this release.
+- Written without being able to run the .NET test projects (no `dotnet`
+  in the authoring environment), same caveat as v1.3.0/v1.4.0/v1.5.x.
+  The cascading-parameter fallback chain in each component was checked
+  by tracing it by hand against the existing (unmodified) assertions in
+  `AppStringsTests`/`LocalisationOverrideTests`, not by actually running
+  them.
+
+
+## [1.5.1] - 2026-09-26
 Housekeeping, test coverage, documentation, and a bilingual
 documentation-site rework. No new public API; package validation runs
 against 1.5.0.

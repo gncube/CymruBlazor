@@ -174,8 +174,27 @@
         <li><code>CyLanguageToggle</code> labels itself in the language it switches <em>to</em>; override its accessible name with <code>AriaLabel</code>.</li>
         <li><code>CyBrandLogo</code> builds "{Text} Home"; set <code>AriaLabel</code>.</li>
         <li><code>CySkipLink</code> and <code>CyValidationSummary</code> take their text as content or a <code>Title</code> parameter you already set.</li>
-        <li>A central <code>ICyLocalizer</code> that removes the per-component wiring is proposed in ADR-0002 (not built yet).</li>
+        <li><code>CyDateInput</code>'s day/month/year and error-message text, and <code>CyTextArea</code>'s character-count formats, are plain (non-optional) <code>string</code> parameters, not the <code>string?</code> pattern - bind them directly to your own catalogue.</li>
     </ul>
+</div>
+
+<div class="cb-section">
+    <h2 class="cb-section-title">Step 2: a central ICyLocalizer (1.6.0)</h2>
+    <p style="color:var(--cymru-color-text);line-height:1.75">
+        <code>ICyLocalizer</code> (ADR-0002) removes the per-page wiring above for the strings it covers.
+        Register it with <code>AddCymruBlazor()</code>, wrap your layout's body in
+        <code>&lt;CyLocalizationProvider&gt;</code>, and every wired component (<code>CyAlert</code>,
+        <code>CyBreadcrumb</code>, <code>CyNavigation</code>, <code>CyToastContainer</code>,
+        <code>CyDialog</code>, <code>CyCodeBlock</code>, <code>CySidebar</code>, <code>CyPagination</code>,
+        <code>CySpinner</code>) falls back to it automatically when you don't pass an explicit override -
+        which still always wins, unchanged from step 1. This page keeps its explicit overrides above
+        deliberately, as a full reference table; a page happy with the built-in fallback needs neither
+        the overrides nor an <code>AppStrings</code> of its own.
+    </p>
+    <p style="color:var(--cymru-color-text);line-height:1.75">
+        <strong>The Welsh <code>ICyLocalizer</code> ships with is the same illustrative text as the table
+        above, not translator-reviewed</strong> - see <code>CyLocalizer</code>'s remarks.
+    </p>
 </div>
 
 @code {

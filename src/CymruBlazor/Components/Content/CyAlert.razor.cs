@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Layout;
 using CymruBlazor.Enums;
+using CymruBlazor.Localisation;
 
 namespace CymruBlazor.Components.Content;
 
@@ -15,6 +16,10 @@ namespace CymruBlazor.Components.Content;
 /// </summary>
 public partial class CyAlert : CyLayoutComponentBase, IHasColour
 {
+    /// <summary>The cascaded step-2 localiser (ADR-0002), if any. See <see cref="DismissAriaLabel"/>.</summary>
+    [CascadingParameter]
+    public ICyLocalizer? Localizer { get; set; }
+
     /// <summary>
     /// Gets or sets the alert's severity. Must be <see cref="ComponentColour.Info"/>,
     /// <see cref="ComponentColour.Success"/>, <see cref="ComponentColour.Warning"/>,

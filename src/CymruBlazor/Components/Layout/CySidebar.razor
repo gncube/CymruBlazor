@@ -14,7 +14,7 @@
 
     @if (State == SidebarState.Hidden && !MobileOpen)
     {
-        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="@(RevealLabel ?? "Reveal sidebar")">
+        <button type="button" class="cy-sidebar__reveal-handle" @onclick="ExpandAsync" aria-label="@(RevealLabel ?? Localizer?.Strings.SidebarReveal ?? "Reveal sidebar")">
             <CyIcon Name="@RevealIconName" Size="16" />
         </button>
     }
@@ -33,7 +33,7 @@
 
             @if (MobileOpen)
             {
-                <button type="button" class="cy-sidebar__close" @onclick="CloseMobileDrawerAsync" aria-label="@(CloseLabel ?? "Close sidebar")">
+                <button type="button" class="cy-sidebar__close" @onclick="CloseMobileDrawerAsync" aria-label="@(CloseLabel ?? Localizer?.Strings.SidebarClose ?? "Close sidebar")">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M18 6 6 18M6 6l12 12" />
@@ -42,7 +42,7 @@
             }
             else if (UseStepControls)
             {
-                <div class="cy-sidebar__steps" role="group" aria-label="@(SizeGroupLabel ?? "Sidebar size")">
+                <div class="cy-sidebar__steps" role="group" aria-label="@(SizeGroupLabel ?? Localizer?.Strings.SidebarSizeGroup ?? "Sidebar size")">
                     @if (Position == SidebarPosition.Left)
                     {
                         if (CanNarrow)
