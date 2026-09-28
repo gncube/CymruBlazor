@@ -8,22 +8,50 @@ component library implementing the NHS Wales Design System.
 - For anything beyond a small fix, please open an issue first to discuss
   the change - especially for new components, since they need to align
   with the NHS Wales Design System rather than introduce a new visual
-  language (see `PRD.md`, section 3, "Non Goals").
-- This repo's coding standards, testing standards, and modern .NET
-  conventions are documented as Copilot/agent skills under
-  `.github/skills/`. They apply to human contributors just as much as to
-  AI-assisted changes - skim them before your first PR.
+  language.
+- See `docs/Current-Solution-Structure.md` for a map of the repository, and
+  `docs/ADR/` for the design decisions behind existing components.
 
 ## Getting set up
 
 Requires the .NET 10 SDK.
 
 ```bash
-git clone [https://github.com/gncube/CymruBlazor.git](https://github.com/gncube/CymruBlazor.git)
+git clone https://github.com/gncube/CymruBlazor.git
 cd CymruBlazor
 dotnet restore CymruBlazor.slnx
 dotnet build CymruBlazor.slnx
 dotnet run --project src/CymruBlazor.Demo
+```
+
+`dotnet test CymruBlazor.slnx` runs both test projects, including the real
+axe-core/Chromium scans in `CymruBlazor.AccessibilityTests`. To skip those
+(faster, no browser install required) while iterating:
+
+```bash
+dotnet test CymruBlazor.slnx --filter "FullyQualifiedName!~CymruBlazor.AccessibilityTests"
+```
+
+`./test-local.ps1` runs exactly that restore/build/test sequence in one
+step, mirroring what CI does before the pack/publish stages.
+
+## Working on the samples (`samples/Dashboard`, `HealthcarePortal`, `StarterApp`)
+
+The samples restore CymruBlazor from a local NuGet feed rather than a
+published version, so they always build against your working copy of
+`src/CymruBlazor`, not whatever was last published to nuget.org. Before
+building or running a sample for the first time (and again after any change
+to `src/CymruBlazor` you want the samples to pick up), run:
+
+```powershell
+./New-LocalPackageFeed.ps1
+```
+
+This packs `src/CymruBlazor` into `./artifacts` and writes
+`local-package-versions.props`, which `Directory.Packages.props` imports to
+pin the samples' `CymruBlazor` package reference to whatever was just
+packed. See `docs/Current-Solution-Structure.md` ("NuGet configuration")
+for how the three `NuGet.*Config` files relate to this.
 
 ## Releasing and package validation
 
@@ -45,6 +73,8 @@ breaking API change, so 1.x patch and minor releases stay semver-compatible.
 - Release flow: update `CHANGELOG.md`, open a PR, merge, then
   `git tag -a vX.Y.Z -m "vX.Y.Z"` and push the tag (MinVer derives the version
   from the tag).
+- Marking something `[Obsolete]` ahead of a 2.0.0 removal? Add it to
+  `docs/MIGRATION-2.0.md` in the same PR, alongside the replacement API.
 
 ## Tests worth knowing about
 

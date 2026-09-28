@@ -92,11 +92,31 @@ breaking changes; no new `[Obsolete]` members, so
 - `ICyLocalizer` only wires the nine components above. A handful of
   labels remain "Not covered by a parameter" for reasons noted on
   `LocalisationPage` (e.g. `CyLanguageToggle`, `CyBrandLogo`).
-- Housekeeping items from the v1.6.0 roadmap entry (visual-regression
-  spike, icon semantic-naming pass, heading-level configurability audit
-  beyond `CyAlert`/`CyAccordionItem`, screen-reader spot-check of the
-  ARIA `tabpanel` retrofit) are unstarted; they were flagged as
-  non-gating for this release.
+- Housekeeping items from the v1.6.0 roadmap entry were triaged (see
+  `docs/Current-Solution-Structure.md` for the repository map referenced
+  below); still non-gating for this release:
+  - `docs/MIGRATION-2.0.md` has been drafted, documenting every current
+    `[Obsolete]` member (`CySidebar.Collapsed`/`CollapsedChanged`/
+    `CollapseMode`, `SidebarCollapseMode.Disabled`, the unconsumed
+    `Accessibility.Focus` keyboard-navigation types, and the unimplemented
+    `IHasIcon`/`IHasVariant`/`ComponentVariant`/`IconPosition` types) and
+    their replacements.
+  - The ARIA `tabpanel`/`aria-controls` retrofit is confirmed complete in
+    code (`CyTabs`/`CyTabPanel`: `role="tab"`/`"tabpanel"`, `aria-controls`,
+    `aria-selected`, `aria-labelledby`, roving `tabindex`) and covered by
+    `CyTabsAccessibilityTests`. The manual NVDA/VoiceOver/JAWS spot-check
+    itself still needs a person with that assistive tech - it isn't
+    something that can be completed without one.
+  - Heading-level configurability: confirmed `CyCard`'s `Header` slot is a
+    generic `RenderFragment?` with no heading semantics of its own (unlike
+    `CyAlert.Title`/`TitleLevel` and `CyAccordionItem.Title`/
+    `HeadingLevel`), so it remains the leading candidate; no API change
+    made yet pending a design decision on the parameter shape.
+  - Icon semantic-naming pass and the visual-regression spike remain
+    unstarted - both need design/tooling decisions (a design-system
+    naming review; a spike proposal for screenshot-diff tooling built on
+    the existing Playwright/Docker accessibility harness) rather than a
+    mechanical fix.
 - Written without being able to run the .NET test projects (no `dotnet`
   in the authoring environment), same caveat as v1.3.0/v1.4.0/v1.5.x.
   The cascading-parameter fallback chain in each component was checked
