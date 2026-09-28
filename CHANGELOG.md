@@ -10,8 +10,10 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
-Roadmap v1.6.0 ("Localisation step 2"). No breaking changes; no new
-`[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched this release.
+Roadmap v1.6.0 ("Localisation step 2"), plus a full illustrative Welsh
+pass across the Demo site while the translator review is arranged. No
+breaking changes; no new `[Obsolete]` members, so
+`docs/MIGRATION-2.0.md` is untouched this release.
 
 ### Added
 
@@ -41,6 +43,14 @@ Roadmap v1.6.0 ("Localisation step 2"). No breaking changes; no new
   stay as Demo literals, unchanged.
 - `LocalisationPage`: new "Step 2" section replacing the old "proposed
   in ADR-0002 (not built yet)" note.
+- Illustrative Welsh added, following the existing per-page
+  `Strings.Language == AppLanguage.Welsh ? ... : ...` convention, to
+  `Home`, `DesignTokens`, and their code-behind sample content
+  (previously English-only). Combined with pages already bilingual
+  from earlier releases, roughly 20 of the Demo's ~57 pages are now
+  fully bilingual; see the translation review pack's "Coverage status"
+  sheet for exactly which, and `Known limitations` below for what's
+  queued next.
 
 ### Tests
 
@@ -63,13 +73,22 @@ Roadmap v1.6.0 ("Localisation step 2"). No breaking changes; no new
 
 ### Known limitations
 
-- **The Welsh `ICyLocalizer` ships with, and the Demo's `WelshLibrary`
-  fields sourced from it, are the same illustrative text carried over
-  from 1.3.0/1.5.x - not translator-reviewed.** Proceeding without it
-  per an explicit decision; a translator-reviewed replacement is
-  expected within a fortnight and will land as a follow-up patch
-  touching only `CyLocalizer.Welsh` and the Demo's own
-  `WelshContent`/`WelshNav` (no code shape changes expected).
+- **All Welsh text across the Demo site remains illustrative, not
+  translator-reviewed** - proceeding without it per an explicit
+  decision, so the whole bilingual surface can be reviewed in one pass
+  once ready rather than piecemeal. A `CymruBlazor-Welsh-Translation-Review-Pack.xlsx`
+  work package (source English, illustrative Welsh draft, and blank
+  columns for the reviewed replacement and reviewer notes, organised
+  by shared strings vs. per-page copy, plus a coverage-status sheet)
+  has been handed to the translator. Expected back within a fortnight;
+  will land as a follow-up patch, expected to touch only string
+  literals (`CyLocalizer.Welsh`, `AppStrings`'s Welsh records, and the
+  per-page Welsh branches/ternaries) with no code-shape changes.
+- Roughly 37 of the Demo's ~57 pages (the individual `CyXxxPage`
+  component-reference pages, e.g. `CyBadgePage`, `CyDateInputPage`,
+  `CyTabsPage`) are still English-only and were out of scope for this
+  pass - see the review pack's "Coverage status" sheet for the full
+  list. Queued for a follow-up pass and a second, smaller review pack.
 - `ICyLocalizer` only wires the nine components above. A handful of
   labels remain "Not covered by a parameter" for reasons noted on
   `LocalisationPage` (e.g. `CyLanguageToggle`, `CyBrandLogo`).

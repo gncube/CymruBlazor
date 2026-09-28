@@ -1,5 +1,7 @@
 @page "/"
 @namespace CymruBlazor.Demo.Pages
+@implements IDisposable
+@inject CymruBlazor.Demo.Localisation.AppStrings Strings
 @using CymruBlazor.Components.Button
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Layout
@@ -11,15 +13,15 @@
     <section class="cb-home__hero">
         <div class="cb-home__hero-content">
             <div class="cb-home__hero-badge-wrap">
-                <span class="cb-home__badge">.NET 10 · Blazor WebAssembly · Accessible</span>
+                <span class="cb-home__badge">.NET 10 · Blazor WebAssembly · @(Strings.Language == AppLanguage.Welsh ? "Hygyrch" : "Accessible")</span>
             </div>
 
             <h1 class="cb-home__title">CymruBlazor</h1>
-            <p class="cb-home__subtitle">Accessible, composable Blazor components for Welsh NHS digital services.</p>
+            <p class="cb-home__subtitle">@(Strings.Language == AppLanguage.Welsh ? "Cydrannau Blazor hygyrch, cyfansoddadwy ar gyfer gwasanaethau digidol GIG Cymru." : "Accessible, composable Blazor components for Welsh NHS digital services.")</p>
 
             <div class="cb-home__actions">
-                <CyButton Href="layouts/stack" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--primary">Explore components →</CyButton>
-                <CyButton Href="getting-started" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--secondary">Get started</CyButton>
+                <CyButton Href="layouts/stack" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--primary">@(Strings.Language == AppLanguage.Welsh ? "Archwilio'r cydrannau →" : "Explore components →")</CyButton>
+                <CyButton Href="getting-started" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--secondary">@(Strings.Language == AppLanguage.Welsh ? "Dechrau arni" : "Get started")</CyButton>
             </div>
 
             <CyCluster Gap="ComponentSize.Small" JustifyContent="JustifyContent.Center" Class="cb-home__tech-badges">
@@ -27,13 +29,13 @@
                 <span class="cb-badge">C#</span>
                 <span class="cb-badge">Blazor WASM</span>
                 <span class="cb-badge">WCAG 2.2 AA</span>
-                <span class="cb-badge">MIT License</span>
+                <span class="cb-badge">@(Strings.Language == AppLanguage.Welsh ? "Trwydded MIT" : "MIT License")</span>
             </CyCluster>
         </div>
     </section>
 
     <section class="cb-home__features">
-        @foreach (var feature in _features)
+        @foreach (var feature in Features)
         {
             <div class="cb-home__feature">
                 <div class="cb-home__feature-icon" style="background: @feature.IconBackground;">
@@ -46,8 +48,15 @@
     </section>
 
     <section class="cb-home__quick-start">
-        <h2 class="cb-home__section-title">Quick start</h2>
-        <DemoQuickStart Steps="_quickStartSteps" />
+        <h2 class="cb-home__section-title">@(Strings.Language == AppLanguage.Welsh ? "Dechrau cyflym" : "Quick start")</h2>
+        <DemoQuickStart Steps="QuickStartSteps" />
     </section>
 
 </div>
+
+@code {
+    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+}
+
