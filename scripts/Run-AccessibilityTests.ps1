@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$ImageTag = "cymrublazor-playwright:1.62.0"
+    [string]$ImageTag = "cymrublazor-playwright:1.63.0"
 )
 
 $ErrorActionPreference = "Stop"
