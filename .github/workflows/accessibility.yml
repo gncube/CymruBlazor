@@ -23,9 +23,21 @@ jobs:
       - name: Create Artifacts Directory
         run: mkdir -p .artifacts/accessibility
 
+      - name: Resolve Playwright version
+        id: playwright
+        # Single source of truth: the Microsoft.Playwright package version.
+        # The Docker image must match it exactly (see docker/playwright/Dockerfile).
+        run: |
+          version=$(grep -oP 'Include="Microsoft\.Playwright"\s+Version="\K[^"]+' Directory.Packages.props)
+          test -n "$version" || { echo "Microsoft.Playwright version not found"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Build Playwright Docker Image
         run: |
-          docker build -t cymrublazor-playwright:1.62.0 -f docker/playwright/Dockerfile .
+          docker build \
+            --build-arg PLAYWRIGHT_VERSION=${{ steps.playwright.outputs.version }} \
+            -t cymrublazor-playwright:${{ steps.playwright.outputs.version }} \
+            -f docker/playwright/Dockerfile .
 
       - name: Run Accessibility Smoke Tests in Container
         run: |
@@ -35,7 +47,7 @@ jobs:
             -v "$GITHUB_WORKSPACE:/workspace" \
             -w /workspace \
             -e GITHUB_STEP_SUMMARY=/workspace/.github-step-summary.md \
-            cymrublazor-playwright:1.62.0 \
+            cymrublazor-playwright:${{ steps.playwright.outputs.version }} \
             -File ./scripts/Run-AccessibilityTests.Container.ps1
 
       - name: Append to GitHub Step Summary

@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$ImageTag = "cymrublazor-playwright:1.63.0"
+    # Defaults to cymrublazor-playwright:<Microsoft.Playwright version>.
+    [string]$ImageTag
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,6 +16,21 @@ catch {
 }
 
 $repoRoot = (Resolve-Path "$PSScriptRoot/..").Path
+
+# The container's Playwright must match the Microsoft.Playwright package, so
+# read the version from the single place it is pinned.
+$packagesProps = Join-Path $repoRoot "Directory.Packages.props"
+$playwrightMatch = [regex]::Match(
+    (Get-Content $packagesProps -Raw),
+    'Include="Microsoft\.Playwright"\s+Version="([^"]+)"')
+if (-not $playwrightMatch.Success) {
+    Write-Error "Could not find the Microsoft.Playwright version in $packagesProps."
+    exit 1
+}
+$playwrightVersion = $playwrightMatch.Groups[1].Value
+if (-not $ImageTag) {
+    $ImageTag = "cymrublazor-playwright:$playwrightVersion"
+}
 $artifactDir = Join-Path $repoRoot ".artifacts/accessibility"
 $hostCaCertificateDer = Join-Path $env:TEMP "cymrublazor-host-ca.cer"
 $hostCaCertificate = Join-Path $env:TEMP "cymrublazor-host-ca.crt"
@@ -40,7 +56,7 @@ if (-not (Test-Path $artifactDir)) {
 }
 
 Write-Host "Building Docker image [$ImageTag]..."
-docker build -t $ImageTag -f "$repoRoot/docker/playwright/Dockerfile" "$repoRoot"
+docker build --build-arg "PLAYWRIGHT_VERSION=$playwrightVersion" -t $ImageTag -f "$repoRoot/docker/playwright/Dockerfile" "$repoRoot"
 
 Write-Host "Running containerized Playwright accessibility tests..."
 docker run --rm `

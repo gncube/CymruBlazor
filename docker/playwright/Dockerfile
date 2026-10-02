@@ -1,4 +1,11 @@
-FROM mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
+# The image's Playwright version MUST equal the Microsoft.Playwright package
+# version in Directory.Packages.props, or the tests fail at browser launch
+# ("Executable doesn't exist ... please update docker image"). Don't edit the
+# default by hand: scripts/Run-AccessibilityTests.ps1 and
+# .github/workflows/accessibility.yml read the version from
+# Directory.Packages.props and pass it in as a build argument.
+ARG PLAYWRIGHT_VERSION=1.63.0
+FROM mcr.microsoft.com/playwright/dotnet:v${PLAYWRIGHT_VERSION}-noble
 
 WORKDIR /workspace
 

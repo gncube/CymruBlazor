@@ -8,11 +8,12 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.7.0] - not yet released
+## [Unreleased]
 
-> Phase A of `docs/IMPLEMENTATION-PLAN.md`. The `[Unreleased]` section below
-> is still the unreleased 1.6.0 and should be tagged first; see Phase 0.
-> Everything here is additive: no existing API, default or rendering changes.
+Roadmap v1.7.0 ("Quick wins and de-risking", Phase A of
+`docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
+API, default or rendering changes, and no new `[Obsolete]` members, so
+`docs/MIGRATION-2.0.md` is untouched. Package validation runs against 1.6.0.
 
 ### Added
 
@@ -62,6 +63,24 @@ Full detail for every release is also available as auto-generated
   `--check` (now a CI step) it fails if those are stale, or if a token derived
   from a theme-overridden token is declared only on `:root`.
 
+### Fixed
+
+- **Accessibility smoke tests failed at browser launch.**
+  `docker/playwright/Dockerfile` was pinned to Playwright 1.62.0 while the
+  `Microsoft.Playwright` package is 1.63.0, so Chromium was missing in the
+  container (`scripts/Run-AccessibilityTests.ps1` and the `Accessibility CI
+  Gate` workflow both failed). The image version is now derived from
+  `Directory.Packages.props` (Dockerfile `ARG PLAYWRIGHT_VERSION`, passed by
+  the script and by `accessibility.yml`), so a package bump cannot desync it
+  again.
+
+### Changed
+
+- `PackageValidationBaselineVersion` is now **1.6.0** (was 1.2.0), the last
+  published release, so package validation guards everything added since 1.2.0.
+- CHANGELOG housekeeping: the 1.5.2 release was filed under a duplicate
+  `[1.5.1]` heading (and carried 1.5.1's intro); `1.4.0` now precedes `1.3.0`.
+
 ### Notes
 
 - **`@onclick` on `<CyButton>` was already guarded.** The improvement
@@ -74,7 +93,7 @@ Full detail for every release is also available as auto-generated
 - `CyIcon`, `CyButton` and `IconRegistry` changes are source- and
   binary-compatible with 1.6.0.
 
-## [Unreleased]
+## [1.6.0] - 2026-09-28
 
 Roadmap v1.6.0 ("Localisation step 2"), plus a full illustrative Welsh
 pass across the Demo site while the translator review is arranged. No
@@ -184,17 +203,15 @@ breaking changes; no new `[Obsolete]` members, so
     the existing Playwright/Docker accessibility harness) rather than a
     mechanical fix.
 - Written without being able to run the .NET test projects (no `dotnet`
-  in the authoring environment), same caveat as v1.3.0/v1.4.0/v1.5.x.
-  The cascading-parameter fallback chain in each component was checked
-  by tracing it by hand against the existing (unmodified) assertions in
-  `AppStringsTests`/`LocalisationOverrideTests`, not by actually running
-  them.
+  in the authoring environment), same caveat as v1.3.0/v1.4.0/v1.5.x. The
+  cascading-parameter fallback chain in each component was checked by
+  tracing it by hand against the existing (unmodified) assertions in
+  `AppStringsTests`/`LocalisationOverrideTests`. **Since verified:** the
+  unit/component suite (`scripts/Run-TestsLocal.ps1`) has been run against
+  1.6.0 and passes.
 
 
-## [1.5.1] - 2026-09-26
-Housekeeping, test coverage, documentation, and a bilingual
-documentation-site rework. No new public API; package validation runs
-against 1.5.0.
+## [1.5.2] - 2026-09-27
 
 Roadmap v1.5.2 ("Close the small stuff"). No new public API; two
 `[Obsolete]` deprecations. Package validation runs against 1.5.1.
@@ -485,6 +502,60 @@ filtering or virtualisation (roadmap decision D5) - style
   checked only by manually tracing several page/total combinations by
   hand, not by running `CyPaginationTests`.
 
+## [1.4.0] - 2026-09-23
+
+Forms. Everything is additive; package validation runs against 1.2.0.
+Confirmed against the NHS Wales Design System (the DHCW component library)
+in addition to GOV.UK/NHS.UK, per the roadmap's D-numeric/D4 decisions.
+
+### Added
+
+- **`CyRadioGroup<TValue>`** and **`CyRadio`**: a native `<fieldset>`/
+  `<legend>` group of mutually exclusive options. `CyRadioGroup<TValue>`
+  parameters: `Label`, `HintText`, `Required`, `Disabled`, `ChildContent`
+  (one `CyRadio` per option), `Value`/`ValueChanged` (`@bind-Value`).
+  `CyRadio` parameters: `Value`, `Label`, `HintText`, `Disabled`. Selection
+  is reported up as a string and converted to `TValue` the same way
+  `CySelect<TValue>`'s `<option>` values are.
+- **`CyTextArea`**: a multi-line text field. Parameters: `Rows` (default
+  5), `MaxLength`, `ShowCharacterCount` (a live, `aria-live="polite"`
+  characters-remaining/too-many message, with correct singular/plural
+  wording and localisable `Character[s]RemainingFormat`/
+  `Character[s]OverLimitFormat` overrides), plus the usual
+  `Label`/`HintText`/`Required`/`Disabled`/`Value`.
+- **`CyDateInput`**: a three-field day/month/year date input (`DateOnly?`),
+  built ahead of any calendar `CyDatePicker` per roadmap decision D4.
+  Segments are plain `type="text" inputmode="numeric"` fields (not
+  `type="number"` or a `<select>` of months), never auto-advance focus
+  between each other, and are only combined into a date on `change`
+  (blur), not on every keystroke. Parameters: `Label`, `HintText`,
+  `DayLabel`/`MonthLabel`/`YearLabel` (English defaults, overridable),
+  `AutocompleteDateOfBirth`, `Required`, `Disabled`, `Value`/`ValueChanged`.
+- `CyTextBox.InputMode` and `CyTextBox.Autocomplete`: native `inputmode`
+  and `autocomplete` attributes. No `type="number"` variant was added
+  (roadmap D-numeric decision) - a native number input's spin buttons,
+  locale-dependent decimal separator and habit of silently discarding
+  non-numeric characters make it unsuitable for most of what looks like
+  "a number" in a form (postcodes, phone numbers, NHS numbers); use
+  `Type="text"` (the default) with `InputMode="numeric"` instead.
+
+### Tests
+
+- Unit tests for all three new components, plus `CyTextBox`'s new
+  `InputMode`/`Autocomplete` parameters.
+- Axe suites (light, dark, high-contrast) for `CyRadioGroup`/`CyRadio`,
+  `CyTextArea` and `CyDateInput`.
+- `ComponentContractTests` extended: `CyRadio`, `CyTextArea` and
+  `CyDateInput` implement `IHasDisabledState`; `CyTextArea`, `CyDateInput`
+  and `CyRadioGroup<TValue>` implement `IHasValidationState`.
+
+### Known limitations
+
+- `CyDateInput`'s `aria-invalid` applies to all three segments together
+  when the field is invalid, not to whichever specific segment is wrong
+  (the DHCW reference marks only the offending segment). Tracked in the
+  backlog.
+
 ## [1.3.0] - 2026-09-21
 
 Welsh strings and overlays. Everything is additive; package validation runs
@@ -569,60 +640,6 @@ against 1.2.0.
   computed-style/reflow checks, and a smoke run over the published demo
   (every route, light/dark/high-contrast, no console errors, axe clean).
   See `tests/CymruBlazor.AccessibilityTests/README.md`.
-
-## [1.4.0] - 2026-09-23
-
-Forms. Everything is additive; package validation runs against 1.2.0.
-Confirmed against the NHS Wales Design System (the DHCW component library)
-in addition to GOV.UK/NHS.UK, per the roadmap's D-numeric/D4 decisions.
-
-### Added
-
-- **`CyRadioGroup<TValue>`** and **`CyRadio`**: a native `<fieldset>`/
-  `<legend>` group of mutually exclusive options. `CyRadioGroup<TValue>`
-  parameters: `Label`, `HintText`, `Required`, `Disabled`, `ChildContent`
-  (one `CyRadio` per option), `Value`/`ValueChanged` (`@bind-Value`).
-  `CyRadio` parameters: `Value`, `Label`, `HintText`, `Disabled`. Selection
-  is reported up as a string and converted to `TValue` the same way
-  `CySelect<TValue>`'s `<option>` values are.
-- **`CyTextArea`**: a multi-line text field. Parameters: `Rows` (default
-  5), `MaxLength`, `ShowCharacterCount` (a live, `aria-live="polite"`
-  characters-remaining/too-many message, with correct singular/plural
-  wording and localisable `Character[s]RemainingFormat`/
-  `Character[s]OverLimitFormat` overrides), plus the usual
-  `Label`/`HintText`/`Required`/`Disabled`/`Value`.
-- **`CyDateInput`**: a three-field day/month/year date input (`DateOnly?`),
-  built ahead of any calendar `CyDatePicker` per roadmap decision D4.
-  Segments are plain `type="text" inputmode="numeric"` fields (not
-  `type="number"` or a `<select>` of months), never auto-advance focus
-  between each other, and are only combined into a date on `change`
-  (blur), not on every keystroke. Parameters: `Label`, `HintText`,
-  `DayLabel`/`MonthLabel`/`YearLabel` (English defaults, overridable),
-  `AutocompleteDateOfBirth`, `Required`, `Disabled`, `Value`/`ValueChanged`.
-- `CyTextBox.InputMode` and `CyTextBox.Autocomplete`: native `inputmode`
-  and `autocomplete` attributes. No `type="number"` variant was added
-  (roadmap D-numeric decision) - a native number input's spin buttons,
-  locale-dependent decimal separator and habit of silently discarding
-  non-numeric characters make it unsuitable for most of what looks like
-  "a number" in a form (postcodes, phone numbers, NHS numbers); use
-  `Type="text"` (the default) with `InputMode="numeric"` instead.
-
-### Tests
-
-- Unit tests for all three new components, plus `CyTextBox`'s new
-  `InputMode`/`Autocomplete` parameters.
-- Axe suites (light, dark, high-contrast) for `CyRadioGroup`/`CyRadio`,
-  `CyTextArea` and `CyDateInput`.
-- `ComponentContractTests` extended: `CyRadio`, `CyTextArea` and
-  `CyDateInput` implement `IHasDisabledState`; `CyTextArea`, `CyDateInput`
-  and `CyRadioGroup<TValue>` implement `IHasValidationState`.
-
-### Known limitations
-
-- `CyDateInput`'s `aria-invalid` applies to all three segments together
-  when the field is invalid, not to whichever specific segment is wrong
-  (the DHCW reference marks only the offending segment). Tracked in the
-  backlog.
 
 ## [1.2.1] - 2026-09-19
 
