@@ -1,0 +1,63 @@
+/*
+ * CymruBlazor Design Tokens - Semantic aliases (added 1.7.0)
+ *
+ * Names that consuming apps reasonably reach for, that now resolve to
+ * something sensible instead of silently falling through a
+ * `var(--x, #fallback)` to a hard-coded colour.
+ *
+ * SCOPING - read before editing. Every token here is derived from another
+ * token via var(). A var() is resolved on the element that DECLARES it, and
+ * the *computed* result is what children inherit. Themes are applied on
+ * `.cy-theme-provider[data-theme]` and on <body> (via :has()), never on
+ * :root, so an alias declared on :root alone would keep its light-theme value
+ * inside a dark provider. Declaring the alias on every theme scope makes it
+ * re-resolve there. scripts/GenerateTokens.cs --check enforces
+ * this for every derived token.
+ */
+
+:root,
+[data-theme],
+body:has(.cy-theme-provider[data-theme]) {
+  /* Surface */
+  --cymru-color-surface-subtle: var(--cymru-color-surface-alt);
+  /* Hover tint derived from the *current* surface and text colours, so it is
+     correct in light, dark and high-contrast without per-theme values. */
+  --cymru-color-surface-hover: color-mix(
+    in srgb,
+    var(--cymru-color-surface),
+    var(--cymru-color-text) 6%
+  );
+
+  /* Text */
+  --cymru-color-text-secondary: var(--cymru-color-text-muted);
+
+  /* Status: the border and text roles the original set was missing. Each
+     follows an existing token, so it flips with the theme automatically. */
+  --cymru-color-success-border: var(--cymru-color-success);
+  --cymru-color-warning-border: var(--cymru-color-warning);
+  --cymru-color-warning-text: var(--cymru-color-text);
+  --cymru-color-danger-border: var(--cymru-color-danger);
+  --cymru-color-info-border: var(--cymru-color-info);
+  --cymru-color-info-text: var(--cymru-color-info);
+
+  /* Focus ring */
+  --cymru-focus-ring-width: var(--cymru-border-width-focus);
+  --cymru-focus-ring-color: var(--cymru-color-focus-outline);
+  --cymru-focus-ring-offset: 2px;
+
+  /* Typography */
+  --cymru-font-family-mono: var(--cymru-font-family-monospace);
+  --cymru-font-mono: var(--cymru-font-family-monospace);
+
+  /* Shape and elevation */
+  --cymru-radius-full: var(--cymru-radius-pill);
+  /* Heavier than --cymru-shadow-xl (dialogs). Not for decoration: the design
+     system reserves shadow for a few roles (see elevation.css). */
+  --cymru-shadow-2xl: 0 16px 40px rgb(27 41 74 / 0.28);
+
+  /* Page width policy (CyPage Width = Narrow | Default | Wide | Full) */
+  --cymru-page-max-width-narrow: var(--cymru-container-md);
+  --cymru-page-max-width-default: var(--cymru-container-lg);
+  --cymru-page-max-width-wide: var(--cymru-container-xl);
+  --cymru-page-max-width-full: none;
+}

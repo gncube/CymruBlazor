@@ -21,6 +21,8 @@
 }
 
 .cy-table {
+  --cy-table-truncate-width: 20rem;
+
   inline-size: 100%;
   border-collapse: collapse;
   font-size: var(--cymru-font-size-sm);
@@ -39,6 +41,34 @@
   padding: var(--cymru-spacing-component-sm) var(--cymru-spacing-component-md);
   text-align: start;
   border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  white-space: nowrap;
+}
+
+/* Wrapping (opt-in) - see CyTable.Wrap. Table-wide, then per-cell overrides.
+   The per-cell selectors are one class more specific than the nowrap default
+   above, so they win regardless of source order. */
+.cy-table--wrap th,
+.cy-table--wrap td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cy-table .cy-table__cell--wrap {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cy-table .cy-table__cell--nowrap {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+/* Single line with an ellipsis. Needs a width cap to have anything to truncate
+   against; override --cy-table-truncate-width per table or cell. */
+.cy-table .cy-table__cell--truncate {
+  max-inline-size: var(--cy-table-truncate-width);
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

@@ -116,3 +116,27 @@
   transform: none;
   pointer-events: none;
 }
+
+/* ── Icons ── */
+.cy-button__icon {
+  flex: none;
+}
+
+.cy-button__icon--start {
+  margin-inline-end: var(--cymru-spacing-component-sm);
+}
+
+.cy-button__icon--end {
+  margin-inline-start: var(--cymru-spacing-component-sm);
+}
+
+/* Icon-only: a square target at least as large as the normal minimum
+   (WCAG 2.2 SC 2.5.8), with no text gap to leave room for. */
+.cy-button--icon-only {
+  min-inline-size: var(--cymru-touch-target-min);
+  padding-inline: var(--cymru-spacing-component-sm);
+}
+
+.cy-button--icon-only .cy-button__icon {
+  margin-inline: 0;
+}

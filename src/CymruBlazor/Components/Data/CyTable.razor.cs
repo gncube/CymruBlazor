@@ -52,6 +52,19 @@ public partial class CyTable : CyLayoutComponentBase
     [Parameter]
     public bool ScrollContainer { get; set; } = true;
 
+    /// <summary>
+    /// When <see langword="true"/>, cell text wraps instead of staying on one
+    /// line, so a long description no longer forces a horizontal scrollbar.
+    /// Defaults to <see langword="false"/> (single-line cells, as in every
+    /// earlier 1.x release) so existing tables don't reflow; wrapping is
+    /// expected to become the default in 2.0.0. Individual cells can opt in or
+    /// out with the <c>cy-table__cell--wrap</c> / <c>cy-table__cell--nowrap</c>
+    /// classes, or truncate with <c>cy-table__cell--truncate</c> (give the cell
+    /// a <c>title</c> so the full text stays available).
+    /// </summary>
+    [Parameter]
+    public bool Wrap { get; set; }
+
     protected override string BaseCssClass => "cy-table";
 
     private string ScrollContainerId => $"{Id}-scroll";
@@ -62,6 +75,7 @@ public partial class CyTable : CyLayoutComponentBase
         CssBuilder.Empty
             .AddClass(BaseCssClass)
             .AddClass(Class)
+            .AddClass("cy-table--wrap", Wrap)
             .Build();
 
     protected override void ValidateParameters()

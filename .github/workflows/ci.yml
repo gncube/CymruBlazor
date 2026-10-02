@@ -46,6 +46,9 @@ jobs:
           --no-build
           -o ./artifacts
 
+      - name: Check design tokens (generated files + theme scoping)
+        run: dotnet run scripts/GenerateTokens.cs -- --check
+
       - name: Restore solution
         # Use NuGet.CI.Config here too: the repo's default nuget.config
         # points a local feed at ./artifacts, which this workflow happens

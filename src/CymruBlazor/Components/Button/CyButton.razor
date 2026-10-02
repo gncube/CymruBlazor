@@ -1,4 +1,6 @@
 @inherits CyInteractiveComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
 
 @if (Href is not null && !Disabled)
 {
@@ -13,11 +15,7 @@
         tabindex="@ComputedTabIndex"
         @attributes="AdditionalAttributes">
 
-        @if (Loading)
-        {
-            <span class="cy-button__spinner" aria-hidden="true"></span>
-        }
-        <span class="cy-button__content">@ChildContent</span>
+        @Inner
 
     </a>
 }
@@ -26,22 +24,47 @@ else
     <button
         type="@Type"
         id="@Id"
-        class="@CssClass"
+        class="@EffectiveCssClass"
         style="@CssStyle"
-        disabled="@(Disabled || Loading)"
+        disabled="@(Disabled || IsBusy)"
         aria-label="@AriaLabel"
         aria-labelledby="@AriaLabelledBy"
         aria-describedby="@AriaDescribedBy"
-        aria-busy="@(Loading ? "true" : null)"
+        aria-busy="@(IsBusy ? "true" : null)"
         tabindex="@ComputedTabIndex"
         @onclick="HandleClickAsync"
         @attributes="AdditionalAttributes">
 
-        @if (Loading)
+        @Inner
+
+    </button>
+}
+
+@code {
+    // Shared by the <button> and <a> renderings so the two can't drift.
+    private RenderFragment Inner => @<text>
+        @if (IsBusy)
         {
             <span class="cy-button__spinner" aria-hidden="true"></span>
         }
-        <span class="cy-button__content">@ChildContent</span>
-
-    </button>
+        @if (HasIcon && IconPlacement == ButtonIconPlacement.Start)
+        {
+            <CyIcon Name="@(Icon!)" Size="@IconPixelSize" Class="cy-button__icon cy-button__icon--start" />
+        }
+        @if (IconOnly)
+        {
+            @if (ChildContent is not null)
+            {
+                <span class="u-sr-only">@ChildContent</span>
+            }
+        }
+        else
+        {
+            <span class="cy-button__content">@ChildContent</span>
+        }
+        @if (HasIcon && IconPlacement == ButtonIconPlacement.End)
+        {
+            <CyIcon Name="@(Icon!)" Size="@IconPixelSize" Class="cy-button__icon cy-button__icon--end" />
+        }
+    </text>;
 }

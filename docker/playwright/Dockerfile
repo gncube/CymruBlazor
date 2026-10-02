@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/dotnet:v1.62.0-noble
+FROM mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
 
 WORKDIR /workspace
 

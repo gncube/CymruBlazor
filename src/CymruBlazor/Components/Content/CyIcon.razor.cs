@@ -56,7 +56,11 @@ public partial class CyIcon : CyLayoutComponentBase
 
     protected override string BaseCssClass => "cy-icon";
 
-    private string IconMarkup => IconRegistry.GetMarkup(Name);
+    /// <summary>The name of the neutral placeholder rendered for an unknown icon in lenient mode.</summary>
+    internal const string FallbackIconName = "unknown";
+
+    private string IconMarkup =>
+        IconRegistry.GetMarkup(IconRegistry.Exists(Name) ? Name : FallbackIconName);
 
     private string? AriaRole => string.IsNullOrWhiteSpace(Label) ? null : "img";
 
@@ -66,11 +70,21 @@ public partial class CyIcon : CyLayoutComponentBase
     {
         base.ValidateParameters();
 
-        if (!IconRegistry.Exists(Name))
+        if (IconRegistry.Exists(Name))
         {
-            throw new ArgumentException(
-                $"Unknown icon name '{Name}'. See {nameof(IconRegistry)}.{nameof(IconRegistry.AllNames)} for the full list of available icons.",
-                nameof(Name));
+            return;
         }
+
+        var message =
+            $"Unknown icon name '{Name}'. See {nameof(IconRegistry)}.{nameof(IconRegistry.AllNames)} for the full list of available icons, " +
+            $"or add your own with {nameof(IconRegistry)}.{nameof(IconRegistry.Register)}.";
+
+        if (Diagnostics.IsStrict)
+        {
+            throw new ArgumentException(message, nameof(Name));
+        }
+
+        // Lenient (Production): one bad icon name must not take down the page.
+        Diagnostics.Warn("CY0001", message);
     }
 }

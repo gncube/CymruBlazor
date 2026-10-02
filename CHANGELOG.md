@@ -8,6 +8,72 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [1.7.0] - not yet released
+
+> Phase A of `docs/IMPLEMENTATION-PLAN.md`. The `[Unreleased]` section below
+> is still the unreleased 1.6.0 and should be tagged first; see Phase 0.
+> Everything here is additive: no existing API, default or rendering changes.
+
+### Added
+
+- **Diagnostics mode.** `services.AddCymruBlazor(options => ...)` (new
+  overload) accepts `CymruBlazorOptions.Diagnostics`: `Strict` (the default,
+  today's behaviour: misuse throws) or `Lenient` (log a warning, render a safe
+  fallback). The package ships as a Release build and so cannot detect
+  Development itself; set it from your own environment check, e.g.
+  `o.Diagnostics = env.IsDevelopment() ? Strict : Lenient`. Each distinct
+  warning is logged once per process. Components resolve the service
+  optionally, so hosts that never register it keep `Strict`.
+- **`CyIcon` in `Lenient` mode** renders a neutral `unknown` placeholder for an
+  unrecognised name instead of throwing (`CY0001`).
+- **`IconRegistry.Register(name, markup, domain?, overwrite?)`** for
+  app-specific icons. Thread-safe. Markup is rendered as raw HTML, so it is
+  validated against an allow-list (SVG shape elements and geometry/presentation
+  attributes only; scripts, event handlers, styles, links, namespaces, DTDs and
+  text are rejected). Built-in icons can never be replaced. `AllNames` now
+  returns a snapshot and includes registered icons.
+- **18 icons** (Lucide, ISC): `grip-vertical`, `arrow-up`, `arrow-down`,
+  `git-branch`, `layers`, `panel-right`, `monitor`, `tablet`, `smartphone`,
+  `list-checks`, `text-cursor-input`, `hash`, `calendar-days`, `circle-dot`,
+  `check-square`, `redo`, `search-check`, `unknown`. (`save` and `undo` were
+  already present.) Generic UI glyphs keep their Lucide names; domain concepts
+  keep semantic names.
+- **`CyButton`**: `Icon`, `IconPlacement` (new `ButtonIconPlacement`:
+  `Start`/`End`, logical so it mirrors in RTL) and `IconOnly`. An icon-only
+  button needs an accessible name from `AriaLabel`, `AriaLabelledBy`, or
+  `ChildContent` (kept visually hidden); without one it throws in `Strict` and
+  warns (`CY0004`) in `Lenient`.
+- **`CyButton.AutoLoading`** (opt-in): the button enters its loading state for
+  as long as `OnClick` is running, so an impatient second click cannot re-enter
+  an `async` handler. Off by default because existing handlers may rely on
+  re-entrancy.
+- **`CyTable.Wrap`** (opt-in) plus per-cell `cy-table__cell--wrap`,
+  `--nowrap` and `--truncate` classes. Cells still default to one line.
+- **Design tokens**: `--cymru-color-surface-subtle`, `-surface-hover`,
+  `-text-secondary`; status `-success-border`, `-warning-border`,
+  `-warning-text`, `-danger-border`, `-info-border`, `-info-text`;
+  `--cymru-focus-ring-{width,color,offset}`; `--cymru-font-family-mono` and
+  `--cymru-font-mono`; `--cymru-radius-full`; `--cymru-shadow-2xl`;
+  `--cymru-page-max-width-{narrow,default,wide,full}`; and a generated
+  `--cymru-colour-*` (UK spelling) alias for every `--cymru-color-*` token.
+  All are defined on every theme scope, so they follow dark and high-contrast.
+- **`scripts/GenerateTokens.cs`** generates `tokens.json`, `tokens.d.ts`,
+  `docs/design-tokens.md` and the colour aliases from the token CSS. With
+  `--check` (now a CI step) it fails if those are stale, or if a token derived
+  from a theme-overridden token is declared only on `:root`.
+
+### Notes
+
+- **`@onclick` on `<CyButton>` was already guarded.** The improvement
+  recommendations described it as a splatted attribute that bypasses the
+  `Disabled`/`Loading` guard. It does not: Blazor binds parameters
+  case-insensitively, so `@onclick` binds to the `OnClick` parameter. Verified
+  against the unmodified 1.6.0 code (0 handler calls while `Loading`). The real
+  gap was re-entrancy of an in-flight `async` handler, addressed by
+  `AutoLoading`; a regression test now locks the existing behaviour.
+- `CyIcon`, `CyButton` and `IconRegistry` changes are source- and
+  binary-compatible with 1.6.0.
+
 ## [Unreleased]
 
 Roadmap v1.6.0 ("Localisation step 2"), plus a full illustrative Welsh

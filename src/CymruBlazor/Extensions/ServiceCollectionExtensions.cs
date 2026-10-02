@@ -5,6 +5,7 @@ using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Feedback;
+using CymruBlazor.Diagnostics;
 using CymruBlazor.Localisation;
 using CymruBlazor.Services;
 using CymruBlazor.Themes;
@@ -17,11 +18,38 @@ namespace CymruBlazor.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
+    /// Registers CymruBlazor and configures library-wide
+    /// <see cref="CymruBlazorOptions"/>, e.g. the diagnostics mode.
+    /// </summary>
+    public static IServiceCollection AddCymruBlazor(
+        this IServiceCollection services,
+        Action<CymruBlazorOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(configure, nameof(configure));
+
+        var options = new CymruBlazorOptions();
+        configure(options);
+        services.Replace(ServiceDescriptor.Singleton(options));
+
+        return services.AddCymruBlazor();
+    }
+
+    /// <summary>
     /// Registers all framework core dependencies, id generators, theming, and Mediator pipeline infrastructure.
     /// </summary>
     public static IServiceCollection AddCymruBlazor(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        // Library-wide options + diagnostics (1.7.0). TryAdd so a prior
+        // AddCymruBlazor(options => ...) call keeps its configured options.
+        services.TryAddSingleton(new CymruBlazorOptions());
+        services.TryAddSingleton<ICyDiagnostics>(
+            sp => new CyDiagnostics(
+                sp.GetRequiredService<CymruBlazorOptions>(),
+                sp.GetService<Microsoft.Extensions.Logging.ILogger<CyDiagnostics>>()));
+
         // Register core unique ID generator utilities safely for client lifecycle scopes
         services.AddScoped<IComponentIdGenerator, ComponentIdGenerator>();
 

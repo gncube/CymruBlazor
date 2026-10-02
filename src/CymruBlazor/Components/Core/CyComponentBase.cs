@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
+using CymruBlazor.Diagnostics;
 using Microsoft.AspNetCore.Components;
 
 namespace CymruBlazor.Components.Core;
@@ -23,6 +24,18 @@ public abstract class CyComponentBase : ComponentBase
     /// </summary>
     [Inject]
     protected IComponentIdGenerator ComponentIdGenerator { get; set; } = default!;
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the library diagnostics service. Resolved optionally: when
+    /// <c>AddCymruBlazor()</c> did not register one (or in a test host that
+    /// only registers what it needs), this is a strict, non-logging default,
+    /// so existing behaviour is preserved.
+    /// </summary>
+    protected ICyDiagnostics Diagnostics =>
+        (ICyDiagnostics?)ServiceProvider?.GetService(typeof(ICyDiagnostics)) ?? CyDiagnostics.Default;
 
     /// <summary>
     /// Gets or sets additional HTML attributes that do not correspond

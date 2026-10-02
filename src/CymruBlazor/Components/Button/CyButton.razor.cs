@@ -70,6 +70,64 @@ public partial class CyButton : CyInteractiveComponentBase, IHasSize, IHasColour
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
+    /// <summary>
+    /// Optional icon name (see <see cref="CymruBlazor.Icons.IconRegistry"/>) drawn
+    /// next to the text. The icon is decorative; the button's accessible name
+    /// comes from its text (or, with <see cref="IconOnly"/>, from
+    /// <see cref="CyInteractiveComponentBase.AriaLabel"/>).
+    /// </summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>
+    /// Which side of the text the <see cref="Icon"/> is on. Defaults to
+    /// <see cref="ButtonIconPlacement.Start"/>.
+    /// </summary>
+    [Parameter]
+    public ButtonIconPlacement IconPlacement { get; set; } = ButtonIconPlacement.Start;
+
+    /// <summary>
+    /// Shows only the <see cref="Icon"/>. The button then needs an accessible
+    /// name from one of <see cref="CyInteractiveComponentBase.AriaLabel"/>,
+    /// <see cref="CyInteractiveComponentBase.AriaLabelledBy"/>, or
+    /// <see cref="ChildContent"/> (which is kept for assistive technology but
+    /// visually hidden). Without one the button would be announced as just
+    /// "button"; that is an error in <c>Strict</c> diagnostics mode and a
+    /// logged warning in <c>Lenient</c> mode.
+    /// </summary>
+    [Parameter]
+    public bool IconOnly { get; set; }
+
+    private bool HasIcon => !string.IsNullOrWhiteSpace(Icon);
+
+    private int IconPixelSize => Size switch
+    {
+        ComponentSize.Small => 16,
+        ComponentSize.Large => 24,
+        _ => 20,
+    };
+
+    /// <summary>
+    /// When <see langword="true"/>, the button puts itself into its
+    /// <see cref="Loading"/> state for as long as the <see cref="OnClick"/>
+    /// handler is running, so a double-click (or an impatient second tap)
+    /// cannot run an <c>async</c> handler twice. Off by default so existing
+    /// handlers that rely on being re-entrant keep working.
+    /// </summary>
+    [Parameter]
+    public bool AutoLoading { get; set; }
+
+    private bool _handling;
+
+    // Loading is a consumer-controlled flag; _handling is the AutoLoading
+    // flag. Either one blocks clicks and shows the busy affordances.
+    private bool IsBusy => Loading || _handling;
+
+    // CssClass is rebuilt only when parameters change, but _handling flips
+    // between parameter sets - so overlay the loading modifier at render time.
+    private string EffectiveCssClass =>
+        _handling && !Loading ? $"{CssClass} cy-button--loading" : CssClass;
+
     protected override string BaseCssClass => "cy-button";
 
     protected override string BuildCssClass()
@@ -82,7 +140,8 @@ public partial class CyButton : CyInteractiveComponentBase, IHasSize, IHasColour
             .AddClass(Class)
             .AddClass($"cy-button--{variantSuffix}")
             .AddClass($"cy-button--{sizeSuffix}")
-            .AddClass("cy-button--loading", Loading)
+            .AddClass("cy-button--loading", IsBusy)
+            .AddClass("cy-button--icon-only", IconOnly)
             .Build();
     }
 
@@ -108,18 +167,67 @@ public partial class CyButton : CyInteractiveComponentBase, IHasSize, IHasColour
                 $"{nameof(CyButton)}.{nameof(Size)} must be Small, Medium, or Large. " +
                 $"Received '{Size}'.");
         }
+
+        if (IconOnly)
+        {
+            if (!HasIcon)
+            {
+                ReportMisuse("CY0003",
+                    $"{nameof(CyButton)}.{nameof(IconOnly)} is set but {nameof(Icon)} is not, so the button would render nothing.");
+            }
+
+            if (string.IsNullOrWhiteSpace(AriaLabel)
+                && string.IsNullOrWhiteSpace(AriaLabelledBy)
+                && ChildContent is null)
+            {
+                ReportMisuse("CY0004",
+                    $"{nameof(CyButton)} is icon-only but has no accessible name. Set {nameof(AriaLabel)} " +
+                    $"(or {nameof(AriaLabelledBy)}, or supply {nameof(ChildContent)} for screen readers).");
+            }
+        }
     }
+
+    private void ReportMisuse(string code, string message)
+    {
+        if (Diagnostics.IsStrict)
+        {
+            throw new InvalidOperationException(message);
+        }
+
+        Diagnostics.Warn(code, message);
+    }
+
 
     private async Task HandleClickAsync(MouseEventArgs args)
     {
-        if (Disabled || Loading)
+        if (Disabled || IsBusy)
         {
             return;
         }
 
-        if (OnClick.HasDelegate)
+        if (!OnClick.HasDelegate)
+        {
+            return;
+        }
+
+        if (!AutoLoading)
         {
             await OnClick.InvokeAsync(args);
+            return;
+        }
+
+        _handling = true;
+        // Re-render now (not only when the handler finishes) so the button
+        // is visibly/programmatically disabled while the handler awaits.
+        StateHasChanged();
+
+        try
+        {
+            await OnClick.InvokeAsync(args);
+        }
+        finally
+        {
+            _handling = false;
         }
     }
 }
