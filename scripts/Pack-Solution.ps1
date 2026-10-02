@@ -3,8 +3,10 @@ param(
   [string]$OutZip,
   [string[]]$Targets = @(
     ".artifacts",
+    ".git",
     ".github",
     ".vscode",
+    "artifacts",
     "docker",
     "docs",
     "plan",
@@ -12,6 +14,7 @@ param(
     "scripts",
     "src",
     "tests",
+    "tools",
     ".editorconfig",
     ".gitignore",
     "LICENSE",
