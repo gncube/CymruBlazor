@@ -33,11 +33,10 @@ if (-not (Test-Path $wwwroot)) {
 $env:CYMRU_DEMO_DIR = $wwwroot
 $env:CI = "true"
 
-Write-Host "Executing DemoSmokeTests with CYMRU_DEMO_DIR=$env:CYMRU_DEMO_DIR..."
+Write-Host "Executing the full accessibility test project with CYMRU_DEMO_DIR=$env:CYMRU_DEMO_DIR..."
 dotnet test tests/CymruBlazor.AccessibilityTests/CymruBlazor.AccessibilityTests.csproj `
     -c Release `
     --no-restore `
-    --filter "FullyQualifiedName~DemoSmokeTests" `
     --logger "console;verbosity=normal"
 
 $testExitCode = $LASTEXITCODE

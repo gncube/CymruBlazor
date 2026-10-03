@@ -64,11 +64,11 @@ byte-identical markup inside an `EditForm` (checked on 14 scenarios).
 
 ### Notes
 
-- Tests for all of the above (`StandaloneFieldTests`, `CySelectItemsTests`,
-  `CyNumberInputTests`, `CyCheckboxGroupTests`, `CyFieldTests`, and axe scans
-  for the three new components) are written but, like Phase A's, were not run
-  by the author - CI is their first execution. The library compiles with no new
-  diagnostics and a 97-check render harness passes.
+- The new bUnit/xunit and axe tests for the Phase B work have passed in CI.
+  This includes `StandaloneFieldTests`, `CySelectItemsTests`,
+  `CyNumberInputTests`, `CyCheckboxGroupTests`, `CyFieldTests`, and the axe
+  scans for the new components. The library compiles with no new diagnostics
+  and a 97-check render harness passes.
 
 ## [1.7.0] - 2026/10/02
 
