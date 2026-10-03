@@ -21,6 +21,16 @@ namespace CymruBlazor.Components.Forms;
 /// Id generation and CSS class composition are duplicated here in minimal
 /// form to keep the same conventions as <c>CyComponentBase</c>-derived
 /// components.
+///
+/// <para>
+/// <b>Standalone mode (1.8.0).</b> A field does not need an
+/// <c>&lt;EditForm&gt;</c>: <see cref="InputBase{TValue}"/> itself tolerates a
+/// missing cascaded <see cref="EditContext"/>, and every member here is
+/// null-safe, so <c>&lt;CyTextBox @bind-Value="x" Label="..." /&gt;</c> works
+/// on any page. Without an <c>EditContext</c> there is no validation store, so
+/// the only error a field can show is one it raised itself (see
+/// <see cref="LocalError"/>); everything else about the field is unchanged.
+/// </para>
 /// </summary>
 public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHasDisabledState, IHasValidationState
 {
@@ -91,11 +101,46 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
     protected string ErrorId => $"{FieldId}-error";
 
     /// <summary>
-    /// Gets whether the field currently has one or more validation
-    /// messages, per the cascaded <see cref="InputBase{TValue}.EditContext"/>.
+    /// An error the field raised itself, shown when there is no
+    /// <see cref="EditContext"/> to carry it. Inside an <c>EditForm</c> a
+    /// parse failure is reported through the <c>EditContext</c> by
+    /// <see cref="InputBase{TValue}"/> and this stays <see langword="null"/>;
+    /// outside one the framework discards the message, so a component whose
+    /// parser produces user-facing messages (<see cref="CyNumberInput{TValue}"/>)
+    /// records it here instead. Derived components must only set this while
+    /// <see cref="EditContext"/> is <see langword="null"/>.
     /// </summary>
-    protected bool HasValidationError =>
-        EditContext.GetValidationMessages(FieldIdentifier).Any();
+    protected string? LocalError { get; set; }
+
+    /// <summary>
+    /// The field's current validation messages: those the cascaded
+    /// <see cref="InputBase{TValue}.EditContext"/> holds for this field (none
+    /// when there is no <c>EditContext</c>), followed by <see cref="LocalError"/>.
+    /// </summary>
+    protected IEnumerable<string> ValidationMessages
+    {
+        get
+        {
+            var fromContext = EditContext is null
+                ? Enumerable.Empty<string>()
+                : EditContext.GetValidationMessages(FieldIdentifier);
+
+            return LocalError is null ? fromContext : fromContext.Append(LocalError);
+        }
+    }
+
+    /// <summary>
+    /// <see cref="ValidationMessages"/> joined into the single string the
+    /// field markup renders inside its error paragraph.
+    /// </summary>
+    protected string ValidationMessageText => string.Join(' ', ValidationMessages);
+
+    /// <summary>
+    /// Gets whether the field currently has one or more validation
+    /// messages (see <see cref="ValidationMessages"/>). Safe to call with no
+    /// <see cref="EditContext"/>.
+    /// </summary>
+    protected bool HasValidationError => ValidationMessages.Any();
 
     /// <summary>
     /// Gets the field's current validation state.
@@ -104,8 +149,7 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
         HasValidationError ? ValidationState.Invalid : ValidationState.Unspecified;
 
     /// <inheritdoc />
-    ValidationState IHasValidationState.ValidationState =>
-        EditContext is null ? ValidationState.Unspecified : CurrentValidationState;
+    ValidationState IHasValidationState.ValidationState => CurrentValidationState;
 
     /// <summary>
     /// The space-separated ids this field's input should be described by
@@ -144,6 +188,9 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
             .AddClass(CssClass)
             .AddClass(Class)
             .AddClass("cy-field--required", Required)
+            // With an EditContext, InputBase's CssClass already supplies
+            // "invalid"; standalone fields have no EditContext, so mirror it.
+            .AddClass("cy-field--invalid", EditContext is null && HasValidationError)
             .Build();
 
     private string EnsureId()

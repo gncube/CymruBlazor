@@ -1,15 +1,15 @@
-@page "/forms/select"
+@page "/forms/checkbox-group"
 @namespace CymruBlazor.Demo.Pages.Components.Forms
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Components.Forms
 @using CymruBlazor.Demo.SharedComponents
 @using Microsoft.AspNetCore.Components.Forms
 
-<CyPageHeader Title="CySelect" Subtitle="A labelled dropdown selection field.">
+<CyPageHeader Title="CyCheckboxGroup" Subtitle="A fieldset of multiple selectable options.">
     <Breadcrumb>
         <CyBreadcrumb>
             <CyBreadcrumbItem Text="Forms" />
-            <CyBreadcrumbItem Text="CySelect" />
+            <CyBreadcrumbItem Text="CyCheckboxGroup" />
         </CyBreadcrumb>
     </Breadcrumb>
 </CyPageHeader>
@@ -25,20 +25,20 @@
     <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
     <span class="cb-panel-caption">Preview</span>
     <div class="cb-workbench-preview" style="justify-content: flex-start;">
-        <EditForm Model="_model" style="width: 100%; max-width: 22rem;">
-            <CySelect @bind-Value="_model.Clinic"
-                     Label="Preferred clinic"
-                     HintText="Choose your nearest health board"
-                     Placeholder="Select a clinic"
-                     Required="_required"
-                     Disabled="_disabled"
-                     TValue="string"
-                     Items="_clinicOptions" />
+        <EditForm Model="_model" style="width: 100%; max-width: 24rem;">
+            <CyCheckboxGroup TValue="string"
+                             @bind-Value="_model.Services"
+                             Label="Which services do you need?"
+                             HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                             Required="_required"
+                             Disabled="_disabled"
+                             Items="_serviceOptions" />
         </EditForm>
     </div>
 
     <div class="cb-playground-grid">
         <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Hint text" @bind-Value="_hintText" />
             <DemoPropertySwitch Label="Required" @bind-Value="_required" />
             <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
         </DemoPropertyControls>
@@ -47,7 +47,7 @@
             <span class="cb-panel-caption">Generated code</span>
             <CyCodeBlock Code="@GeneratedCode" Language="razor" />
             <a class="cb-open-in-github"
-               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CySelect.razor"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyCheckboxGroup.razor"
                target="_blank" rel="noopener noreferrer">
                 Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
             </a>
@@ -73,44 +73,45 @@ else
 
     private sealed class DemoModel
     {
-        public string? Clinic { get; set; }
+        public IEnumerable<string> Services { get; set; } = ["phone"];
     }
 
     private Tab _activeTab = Tab.Examples;
     private readonly DemoModel _model = new();
+    private string _hintText = string.Empty;
     private bool _required;
     private bool _disabled;
-    private readonly IReadOnlyList<CyOption<string>> _clinicOptions =
+    private readonly IReadOnlyList<CyOption<string>> _serviceOptions =
     [
-        new("cardiff", "Cardiff and Vale"),
-        new("swansea", "Swansea Bay"),
-        new("betsi", "Betsi Cadwaladr")
+        new CyOption<string>("phone", "Phone") { Hint = "We will call you during office hours." },
+        new CyOption<string>("email", "Email") { Hint = "We'll email your care plan updates." },
+        new CyOption<string>("sms", "Text message") { Hint = "Receive appointment reminders by SMS." },
+        new CyOption<string>("post", "Post") { Disabled = true }
     ];
 
     private string GeneratedCode =>
         $"""
-        <CySelect @bind-Value="model.Clinic"
-                 Label="Preferred clinic"
-                 HintText="Choose your nearest health board"
-                 Placeholder="Select a clinic"
-                 Items="clinicOptions"{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+        <CyCheckboxGroup TValue="string"
+                         @bind-Value="model.Services"
+                         Label="Which services do you need?"
+                         Items="serviceOptions"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
         """;
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
     [
-        new("Label", "string", "-", "The field's visible, programmatically-associated label."),
-        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
-        new("Required", "bool", "false", "Adds aria-required and a visual indicator."),
-        new("Disabled", "bool", "false", "Disables the field."),
-        new("Placeholder", "string?", "null", "Optional leading placeholder option displayed when the bound value is empty."),
-        new("Items", "IEnumerable<CyOption<TValue>>?", "null", "Option list rendered ahead of any ChildContent."),
-        new("ChildContent", "RenderFragment?", "null", "Additional option markup when you want to render custom option elements."),
-        new("Value", "TValue", "-", "The bound value; use @bind-Value.")
+        new("Label", "string", "-", "The fieldset's visible, programmatically-associated legend text."),
+        new("HintText", "string?", "null", "Optional supporting text for the whole group."),
+        new("Required", "bool", "false", "Adds a visual indicator for required selection, without a native group-level aria-required attribute."),
+        new("Disabled", "bool", "false", "Disables every option in the group."),
+        new("Items", "IEnumerable<CyOption<TValue>>?", "null", "The group's offered choices, rendered one checkbox per value."),
+        new("Comparer", "IEqualityComparer<TValue>?", "null", "Custom value comparison when model values should match by a non-default equality rule."),
+        new("Value", "IEnumerable<TValue>", "-", "The bound collection of selected values; use @bind-Value.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
-        new("Label always present", "Label is required on every CySelect, matching CyTextBox's approach."),
-        new("Native <select> semantics", "Renders a real <select>/<option> pair rather than a custom listbox widget, so keyboard and screen reader behaviour matches user expectations for free.")
+        new("Native fieldset/legend", "The group label is exposed through a native <fieldset>/<legend>, so screen readers announce the collection as one logical question."),
+        new("Per-option hints", "A choice-specific Hint is associated with that checkbox via aria-describedby without repeating the same text for the whole group."),
+        new("Multi-select semantics", "Each checkbox remains a real checkbox input with its own state, rather than a custom widget lacking native selection semantics.")
     ];
 }

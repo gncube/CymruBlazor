@@ -54,6 +54,8 @@ public sealed class ComponentContractTests : TestContextBase
     [InlineData(typeof(CyRadio))]
     [InlineData(typeof(CyTextArea))]
     [InlineData(typeof(CyDateInput))]
+    [InlineData(typeof(CyNumberInput<int?>))]
+    [InlineData(typeof(CyCheckboxGroup<string>))]
     public void Components_That_Can_Be_Disabled_Implement_IHasDisabledState(Type component)
     {
         typeof(IHasDisabledState).IsAssignableFrom(component).ShouldBeTrue();
@@ -63,6 +65,8 @@ public sealed class ComponentContractTests : TestContextBase
     [InlineData(typeof(CyTextBox))]
     [InlineData(typeof(CyTextArea))]
     [InlineData(typeof(CyDateInput))]
+    [InlineData(typeof(CyNumberInput<int?>))]
+    [InlineData(typeof(CyCheckboxGroup<string>))]
     public void Form_Fields_Implement_IHasValidationState(Type component)
     {
         typeof(IHasValidationState).IsAssignableFrom(component).ShouldBeTrue();

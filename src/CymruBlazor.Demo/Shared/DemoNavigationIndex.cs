@@ -90,6 +90,8 @@ public static class DemoNavigationIndex
             "A labelled dropdown selection field."),
         new("Forms", "Checkbox", "/forms/checkbox",
             "A single labelled checkbox field."),
+        new("Forms", "Checkbox Group", "/forms/checkbox-group",
+            "A fieldset of multiple selectable options."),
         new("Forms", "Radio Group", "/forms/radio-group",
             "A fieldset of mutually exclusive options."),
         new("Forms", "Text Area", "/forms/textarea",

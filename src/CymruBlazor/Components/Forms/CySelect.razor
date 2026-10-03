@@ -26,6 +26,19 @@
         disabled="@Disabled"
         @attributes="AdditionalAttributes">
 
+        @if (Items is not null)
+        {
+            @if (Placeholder is not null)
+            {
+                <option value="">@Placeholder</option>
+            }
+
+            @foreach (var item in Items)
+            {
+                <option value="@FormatValueAsString(item.Value)" disabled="@item.Disabled">@item.Text</option>
+            }
+        }
+
         @ChildContent
 
     </select>
@@ -33,7 +46,7 @@
     @if (HasValidationError)
     {
         <p id="@ErrorId" class="cy-field__error" role="alert">
-            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+            @ValidationMessageText
         </p>
     }
 

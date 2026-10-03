@@ -31,11 +31,8 @@
                           Label="Preferred contact method"
                           HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
                           Required="_required"
-                          Disabled="_disabled">
-                <CyRadio Value="email" Label="Email" HintText="We'll only use this to confirm or reschedule" />
-                <CyRadio Value="phone" Label="Phone" />
-                <CyRadio Value="post" Label="Post" />
-            </CyRadioGroup>
+                          Disabled="_disabled"
+                          Items="_contactOptions" />
         </EditForm>
     </div>
 
@@ -87,16 +84,19 @@ else
     private string _hintText = string.Empty;
     private bool _required;
     private bool _disabled;
+    private readonly IReadOnlyList<CyOption<string>> _contactOptions =
+    [
+        new CyOption<string>("email", "Email") { Hint = "We'll only use this to confirm or reschedule" },
+        new CyOption<string>("phone", "Phone"),
+        new CyOption<string>("post", "Post")
+    ];
 
     private string GeneratedCode =>
         $"""
         <CyRadioGroup TValue="string"
                       @bind-Value="model.ContactMethod"
-                      Label="Preferred contact method"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")}>
-            <CyRadio Value="email" Label="Email" HintText="We'll only use this to confirm or reschedule" />
-            <CyRadio Value="phone" Label="Phone" />
-            <CyRadio Value="post" Label="Post" />
-        </CyRadioGroup>
+                      Label="Preferred contact method"
+                      Items="contactOptions"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
         """;
 
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _groupApiDocs =
@@ -105,7 +105,8 @@ else
         new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby on the fieldset."),
         new("Required", "bool", "false", "Adds a visual indicator and aria-required on every radio in the group. Does not perform validation itself."),
         new("Disabled", "bool", "false", "Disables every radio in the group."),
-        new("ChildContent", "RenderFragment?", "null", "The group's options - one CyRadio per option."),
+        new("Items", "IEnumerable<CyOption<TValue>>?", "null", "The group's options, rendered as one CyRadio per value before any ChildContent."),
+        new("ChildContent", "RenderFragment?", "null", "Custom markup or additional option content when needed."),
         new("Value", "TValue", "-", "The bound selection; use @bind-Value.")
     ];
 

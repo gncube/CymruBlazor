@@ -1,0 +1,49 @@
+@typeparam TValue
+@inherits CyFormFieldComponentBase<TValue>
+
+<div class="@BuildFieldCssClass("cy-field cy-field--number")">
+
+    <label for="@FieldId" class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </label>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <div class="cy-input-affix">
+
+        <input
+            @attributes="AdditionalAttributes"
+            id="@FieldId"
+            type="text"
+            class="cy-textbox cy-number-input"
+            placeholder="@Placeholder"
+            inputmode="@ResolvedInputMode"
+            autocomplete="off"
+            @bind="CurrentValueAsString"
+            aria-required="@(Required ? "true" : "false")"
+            aria-invalid="@(HasValidationError ? "true" : "false")"
+            aria-describedby="@DescribedBy"
+            disabled="@Disabled" />
+
+        @if (!string.IsNullOrWhiteSpace(Unit))
+        {
+            <span id="@UnitId" class="cy-input-affix__suffix">@Unit</span>
+        }
+
+    </div>
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @ValidationMessageText
+        </p>
+    }
+
+</div>

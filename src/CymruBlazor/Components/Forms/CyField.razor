@@ -1,0 +1,55 @@
+@inherits CyComponentBase
+@implements IDisposable
+
+@if (Group)
+{
+    <fieldset class="@FieldCssClass" style="@CssStyle" aria-describedby="@FieldState.DescribedBy" @attributes="AdditionalAttributes">
+
+        <legend class="cy-field__label">
+            @Label
+            @if (Required)
+            {
+                <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+            }
+        </legend>
+
+        @if (FieldState.HintId is not null)
+        {
+            <p id="@FieldState.HintId" class="cy-field__hint">@HintText</p>
+        }
+
+        @ChildContent?.Invoke(FieldState)
+
+        @if (FieldState.ErrorId is not null)
+        {
+            <p id="@FieldState.ErrorId" class="cy-field__error" role="alert">@FieldState.ErrorText</p>
+        }
+
+    </fieldset>
+}
+else
+{
+    <div class="@FieldCssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+        <label for="@FieldState.InputId" class="cy-field__label">
+            @Label
+            @if (Required)
+            {
+                <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+            }
+        </label>
+
+        @if (FieldState.HintId is not null)
+        {
+            <p id="@FieldState.HintId" class="cy-field__hint">@HintText</p>
+        }
+
+        @ChildContent?.Invoke(FieldState)
+
+        @if (FieldState.ErrorId is not null)
+        {
+            <p id="@FieldState.ErrorId" class="cy-field__error" role="alert">@FieldState.ErrorText</p>
+        }
+
+    </div>
+}

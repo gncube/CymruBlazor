@@ -36,7 +36,7 @@
     @if (HasValidationError)
     {
         <p id="@ErrorId" class="cy-field__error" role="alert">
-            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+            @ValidationMessageText
         </p>
     }
 

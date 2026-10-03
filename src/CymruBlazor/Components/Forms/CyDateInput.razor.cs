@@ -192,7 +192,7 @@ public partial class CyDateInput : CyFormFieldComponentBase<DateOnly?>
 
     private string BuildErrorMessage()
     {
-        var messages = EditContext.GetValidationMessages(FieldIdentifier).ToList();
+        var messages = ValidationMessages.ToList();
 
         var (dayInvalid, monthInvalid, yearInvalid) = InvalidSegments();
         var dayInOwnRange = SegmentInOwnRange(_day, 1, 31);
