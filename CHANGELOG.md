@@ -12,7 +12,7 @@ Full detail for every release is also available as auto-generated
 
 Roadmap v1.8.0 ("Make forms adoptable", Phase B of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
-member is removed or changed (reflection diff against the 1.6.0 build: 0
+member is removed or changed (reflection diff against the 1.7.0 build: 0
 removed/changed, 6 new types), no new `[Obsolete]` members, so
 `docs/MIGRATION-2.0.md` is untouched. The existing form fields render
 byte-identical markup inside an `EditForm` (checked on 14 scenarios).
@@ -138,7 +138,7 @@ API, default or rendering changes, and no new `[Obsolete]` members, so
 
 ### Changed
 
-- `PackageValidationBaselineVersion` is now **1.6.0** (was 1.2.0), the last
+- `PackageValidationBaselineVersion` is now **1.7.0** (was 1.2.0), the last
   published release, so package validation guards everything added since 1.2.0.
 - CHANGELOG housekeeping: the 1.5.2 release was filed under a duplicate
   `[1.5.1]` heading (and carried 1.5.1's intro); `1.4.0` now precedes `1.3.0`.
