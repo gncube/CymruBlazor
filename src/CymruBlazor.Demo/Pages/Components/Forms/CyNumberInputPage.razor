@@ -1,0 +1,211 @@
+@page "/forms/number-input"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using System.Globalization
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CyNumberInput" Subtitle="A number field with a unit, range and step.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyNumberInput" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        Works with <code>int</code>, <code>long</code>, <code>short</code>, <code>float</code>, <code>double</code>
+        and <code>decimal</code>, and their nullable forms. It needs no <code>EditForm</code>: a value that is not
+        a number, or is out of range, shows its own error and is never written to your model.
+    </p>
+
+    <span class="cb-panel-caption">Preview: no EditForm</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; flex-direction: column; align-items: flex-start; gap: 1rem;">
+        <div style="width: 100%; max-width: 22rem;">
+            @if (_whole)
+            {
+                <CyNumberInput @bind-Value="_count"
+                               Label="@LabelText"
+                               HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                               Unit="@(string.IsNullOrEmpty(_unit) ? null : _unit)"
+                               Min="EffectiveMin"
+                               Max="EffectiveMax"
+                               Step="EffectiveStep"
+                               Required="_required"
+                               Disabled="_disabled" />
+            }
+            else
+            {
+                <CyNumberInput @bind-Value="_weight"
+                               Label="@LabelText"
+                               HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                               Unit="@(string.IsNullOrEmpty(_unit) ? null : _unit)"
+                               Min="EffectiveMin"
+                               Max="EffectiveMax"
+                               Step="EffectiveStep"
+                               Required="_required"
+                               Disabled="_disabled" />
+            }
+        </div>
+        <p style="margin:0; color:var(--cymru-color-text);" data-testid="bound-value">
+            Bound value: <strong>@(BoundValueText)</strong>
+        </p>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Hint text" @bind-Value="_hintText" />
+            <DemoPropertyTextInput Label="Unit" @bind-Value="_unit" />
+            <DemoPropertyTextInput Label="Min" @bind-Value="_minText" />
+            <DemoPropertyTextInput Label="Max" @bind-Value="_maxText" />
+            <DemoPropertyTextInput Label="Step" @bind-Value="_stepText" />
+            @if (RangeIsBackwards)
+            {
+                <p style="font-size: 0.8rem; color: var(--docs-text-muted); margin: -0.5rem 0 0;" role="status">
+                    Min is greater than Max, so both are ignored here. The component throws for this.
+                </p>
+            }
+            <DemoPropertySwitch Label="Whole numbers (int)" @bind-Value="_whole" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0; margin-top: var(--cymru-space-3);">
+                Decimal values in a parameter need the <code>m</code> suffix (<code>Min="0.5m"</code>); a plain
+                <code>0.5</code> is a <code>double</code> and will not compile.
+            </p>
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyNumberInput.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+
+    <span class="cb-panel-caption" style="margin-top: var(--cymru-space-8); display:block;">Inside an EditForm</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_form" style="width: 100%; max-width: 22rem; display:flex; flex-direction:column; gap:1rem;">
+            <CyValidationSummary />
+            <CyNumberInput @bind-Value="_form.Doses" Label="Number of doses" Unit="doses" Min="1m" Max="12m" HintText="Between 1 and 12" />
+        </EditForm>
+    </div>
+    <CyCodeBlock Code="@EditFormCode" Language="razor" />
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        The same component inside an <code>EditForm</code> reports its errors through the <code>EditContext</code>,
+        so <code>CyValidationSummary</code> lists them too. The message is still shown once on the field.
+    </p>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class DosesModel
+    {
+        public int? Doses { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly DosesModel _form = new();
+    private decimal? _weight;
+    private int? _count;
+    private string _hintText = "Without clothes";
+    private string _unit = "kg";
+    private string _minText = "0";
+    private string _maxText = "300";
+    private string _stepText = string.Empty;
+    private bool _whole;
+    private bool _required;
+    private bool _disabled;
+
+    private static decimal? Parse(string text) =>
+        decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : null;
+
+    private string LabelText => _whole ? "Number of tablets" : "Weight";
+
+    private decimal? Min => Parse(_minText);
+
+    private decimal? Max => Parse(_maxText);
+
+    // The component throws for Min > Max or Step <= 0; free text in the playground must not be able to do that.
+    private bool RangeIsBackwards => Min is { } low && Max is { } high && low > high;
+
+    private decimal? EffectiveMin => RangeIsBackwards ? null : Min;
+
+    private decimal? EffectiveMax => RangeIsBackwards ? null : Max;
+
+    private decimal? EffectiveStep => Parse(_stepText) is > 0 and var step ? step : null;
+
+    private string BoundValueText =>
+        (_whole ? _count?.ToString(CultureInfo.CurrentCulture) : _weight?.ToString(CultureInfo.CurrentCulture)) ?? "(empty)";
+
+    private string GeneratedCode =>
+        $"""
+        <CyNumberInput @bind-Value="model.{(_whole ? "Count" : "Weight")}"
+                       Label="{LabelText}"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n    HintText=\"{_hintText}\"")}{(string.IsNullOrEmpty(_unit) ? "" : $"\n    Unit=\"{_unit}\"")}{(EffectiveMin is { } min ? $"\n    Min=\"{min.ToString(CultureInfo.InvariantCulture)}m\"" : "")}{(EffectiveMax is { } max ? $"\n    Max=\"{max.ToString(CultureInfo.InvariantCulture)}m\"" : "")}{(EffectiveStep is { } step ? $"\n    Step=\"{step.ToString(CultureInfo.InvariantCulture)}m\"" : "")}{(_required ? "\n    Required=\"true\"" : "")}{(_disabled ? "\n    Disabled=\"true\"" : "")} />
+        """;
+
+    private const string EditFormCode =
+        """
+        <EditForm Model="form">
+            <CyValidationSummary />
+            <CyNumberInput @bind-Value="form.Doses" Label="Number of doses"
+                           Unit="doses" Min="1m" Max="12m" HintText="Between 1 and 12" />
+        </EditForm>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The field's visible, programmatically-associated label."),
+        new("HintText", "string?", "null", "Optional supporting text, associated via aria-describedby."),
+        new("Required", "bool", "false", "Adds aria-required and a visual indicator. Does not validate."),
+        new("Disabled", "bool", "false", "Disables the field."),
+        new("Unit", "string?", "null", "A short unit shown after the box (kg, mmol/L). It is part of the field's accessible description."),
+        new("Min", "decimal?", "null", "The smallest accepted value. Use the m suffix: Min=\"0.5m\"."),
+        new("Max", "decimal?", "null", "The largest accepted value. Throws if less than Min."),
+        new("Step", "decimal?", "null", "Only values a whole number of steps above Min (or zero) are accepted. Must be greater than zero."),
+        new("Culture", "CultureInfo?", "current", "The culture used to read and show the number (decimal separator)."),
+        new("InputMode", "string?", "auto", "Overrides the inputmode hint. Default is numeric for whole-number types, decimal otherwise, and none when Min is negative."),
+        new("Placeholder", "string?", "null", "Placeholder text. Never a substitute for Label."),
+        new("InvalidNumberMessage", "string", "\"Enter a number\"", "Shown when the text is not a number."),
+        new("BelowMinFormat", "string", "\"Enter a number that is {0} or more\"", "Shown below Min; {0} is the minimum."),
+        new("AboveMaxFormat", "string", "\"Enter a number that is {0} or less\"", "Shown above Max; {0} is the maximum."),
+        new("StepFormat", "string", "\"Enter a number in steps of {0}\"", "Shown off Step; {0} is the step."),
+        new("Value", "TValue", "-", "The bound number: int, long, short, float, double, decimal or a nullable form. Use @bind-Value.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Text input, not type=number", "Renders type=\"text\" with an inputmode hint. A native number input's spin buttons, mouse-wheel changes and locale-dependent separator make it unsafe for clinical values, so parsing is done in C# and the same on every browser."),
+        new("The unit is announced", "The unit is linked through aria-describedby, so a screen reader reads it with the field name rather than skipping it."),
+        new("Errors are announced", "Parse, range and step errors appear in a role=\"alert\" paragraph linked to the input, and the input is marked aria-invalid."),
+        new("Bad input never reaches your model", "Text that is not a number, or is out of range, is not written to the bound value. Empty is null for a nullable type and an error for a non-nullable one."),
+        new("Touch keypad", "On touch devices inputmode brings up the numeric or decimal keypad; it is dropped when negative values are allowed, because some keypads have no minus key.")
+    ];
+}

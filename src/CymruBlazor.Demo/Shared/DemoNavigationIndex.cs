@@ -86,6 +86,8 @@ public static class DemoNavigationIndex
             "Trigger actions and submit forms."),
         new("Forms", "TextBox", "/forms/textbox",
             "A labelled single-line text input with hint and validation support."),
+        new("Forms", "Number Input", "/forms/number-input",
+            "A number field with a unit, range and step."),
         new("Forms", "Select", "/forms/select",
             "A labelled dropdown selection field."),
         new("Forms", "Checkbox", "/forms/checkbox",
@@ -100,6 +102,8 @@ public static class DemoNavigationIndex
             "A three-field day/month/year date input."),
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
+        new("Forms", "Field", "/forms/field",
+            "Label, hint and error around any control, with no EditForm needed."),
 
         // 7. Content
         new("Content", "Overview", "/content",

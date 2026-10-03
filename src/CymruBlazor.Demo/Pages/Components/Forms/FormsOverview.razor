@@ -27,6 +27,10 @@
                 <Header><strong>CyTextBox</strong></Header>
                 <ChildContent>Mewnbwn testun llinell sengl wedi'i labelu gyda chefnogaeth awgrymiadau a dilysu.</ChildContent>
             </CyCard>
+            <CyCard Href="/forms/number-input">
+                <Header><strong>CyNumberInput</strong></Header>
+                <ChildContent>Mewnbwn rhif wedi'i labelu gydag uned, ystod a cham dewisol.</ChildContent>
+            </CyCard>
             <CyCard Href="/forms/select">
                 <Header><strong>CySelect</strong></Header>
                 <ChildContent>Maes dewis gwymplen wedi'i labelu.</ChildContent>
@@ -34,6 +38,10 @@
             <CyCard Href="/forms/checkbox">
                 <Header><strong>CyCheckbox</strong></Header>
                 <ChildContent>Blwch ticio sengl wedi'i labelu.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/checkbox-group">
+                <Header><strong>CyCheckboxGroup</strong></Header>
+                <ChildContent>Set o flychau ticio ar gyfer cwestiynau lle gellir dewis mwy nag un ateb.</ChildContent>
             </CyCard>
             <CyCard Href="/forms/radio-group">
                 <Header><strong>CyRadioGroup</strong></Header>
@@ -51,6 +59,10 @@
                 <Header><strong>CyValidationSummary</strong></Header>
                 <ChildContent>Crynodeb dan bennawd o wallau dilysu cyfredol EditForm.</ChildContent>
             </CyCard>
+            <CyCard Href="/forms/field">
+                <Header><strong>CyField</strong></Header>
+                <ChildContent>Label, awgrym a gwall o amgylch unrhyw reolydd, heb fod angen <code>EditForm</code>.</ChildContent>
+            </CyCard>
         </CyGrid>
     </div>
 
@@ -66,7 +78,7 @@
                 <strong>Ymwybodol o <code>EditContext</code>.</strong> Mae cydrannau meysydd
                 yn darllen cyflwr dilysu o'r <code>EditContext</code> amgylchynol
                 pan gânt eu defnyddio y tu mewn i <code>EditForm</code>, ac yn cyflwyno gwallau
-                yn fewnol yn ogystal â thrwy <code>CyValidationSummary</code>.
+                yn fewnol yn ogystal â thrwy <code>CyValidationSummary</code>. Gellir eu defnyddio hefyd heb <code>EditForm</code>; yn yr achos hwnnw, dim ond y gwallau y mae'r maes ei hun yn eu codi sy'n ymddangos.
             </li>
             <li>
                 <strong>Maint cyson.</strong> Mae pob rheolydd yn rhannu'r un raddfa
@@ -99,6 +111,10 @@ else
                 <Header><strong>CyTextBox</strong></Header>
                 <ChildContent>A labelled single-line text input with hint and validation support.</ChildContent>
             </CyCard>
+            <CyCard Href="/forms/number-input">
+                <Header><strong>CyNumberInput</strong></Header>
+                <ChildContent>A number field with a unit, range and step.</ChildContent>
+            </CyCard>
             <CyCard Href="/forms/select">
                 <Header><strong>CySelect</strong></Header>
                 <ChildContent>A labelled dropdown selection field.</ChildContent>
@@ -106,6 +122,10 @@ else
             <CyCard Href="/forms/checkbox">
                 <Header><strong>CyCheckbox</strong></Header>
                 <ChildContent>A single labelled checkbox field.</ChildContent>
+            </CyCard>
+            <CyCard Href="/forms/checkbox-group">
+                <Header><strong>CyCheckboxGroup</strong></Header>
+                <ChildContent>A set of checkboxes for "select all that apply" questions.</ChildContent>
             </CyCard>
             <CyCard Href="/forms/radio-group">
                 <Header><strong>CyRadioGroup</strong></Header>
@@ -123,6 +143,10 @@ else
                 <Header><strong>CyValidationSummary</strong></Header>
                 <ChildContent>A titled summary of an EditForm's current validation errors.</ChildContent>
             </CyCard>
+            <CyCard Href="/forms/field">
+                <Header><strong>CyField</strong></Header>
+                <ChildContent>Label, hint and error around any control, with no <code>EditForm</code> needed.</ChildContent>
+            </CyCard>
         </CyGrid>
     </div>
 
@@ -138,7 +162,7 @@ else
                 <strong><code>EditContext</code>-aware.</strong> Field components
                 read validation state from the ambient <code>EditContext</code>
                 when used inside an <code>EditForm</code>, and surface errors
-                inline as well as through <code>CyValidationSummary</code>.
+                inline as well as through <code>CyValidationSummary</code>. They also work without an <code>EditForm</code>; then a field shows only the errors it raises itself.
             </li>
             <li>
                 <strong>Consistent sizing.</strong> All controls share the same
