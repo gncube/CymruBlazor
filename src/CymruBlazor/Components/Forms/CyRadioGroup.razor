@@ -19,6 +19,17 @@
 
     <div class="cy-radios">
         <CascadingValue Value="(ICyRadioGroup)this">
+            @if (Items is not null)
+            {
+                @foreach (var item in Items)
+                {
+                    <CyRadio Value="@(FormatValueAsString(item.Value) ?? string.Empty)"
+                             Label="@item.Text"
+                             HintText="@item.Hint"
+                             Disabled="@item.Disabled" />
+                }
+            }
+
             @ChildContent
         </CascadingValue>
     </div>
@@ -26,7 +37,7 @@
     @if (HasValidationError)
     {
         <p id="@ErrorId" class="cy-field__error" role="alert">
-            @string.Join(' ', EditContext.GetValidationMessages(FieldIdentifier))
+            @ValidationMessageText
         </p>
     }
 

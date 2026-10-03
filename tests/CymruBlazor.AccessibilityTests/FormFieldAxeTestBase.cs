@@ -4,9 +4,7 @@ namespace CymruBlazor.AccessibilityTests;
 
 /// <summary>
 /// Shared fixture for scanning <c>CyFormFieldComponentBase&lt;TValue&gt;</c>-derived
-/// components, which require a cascaded <see cref="EditContext"/> to render
-/// at all (this is <see cref="InputBase{TValue}"/>'s own requirement, not
-/// something CymruBlazor adds). Mirrors
+/// components; the EditContext is optional since 1.8.0. Mirrors
 /// CymruBlazor.Tests.Components.Forms.FormFieldTestContext, duplicated here
 /// rather than referenced across test projects to keep this project's only
 /// dependency on the main library, not on the other test assembly.
@@ -22,6 +20,12 @@ public abstract class FormFieldAxeTestBase : AxeTestBase
         public string Choice { get; set; } = string.Empty;
 
         public DateOnly? Date { get; set; }
+
+        public int? Count { get; set; }
+
+        public decimal? Weight { get; set; }
+
+        public IEnumerable<string> Tags { get; set; } = [];
     }
 
     protected static EditContext CreateEditContext(TestFormModel model) => new(model);

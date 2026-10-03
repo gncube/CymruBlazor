@@ -10,6 +10,68 @@ Full detail for every release is also available as auto-generated
 
 ## [Unreleased]
 
+Roadmap v1.8.0 ("Make forms adoptable", Phase B of
+`docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
+member is removed or changed (reflection diff against the 1.6.0 build: 0
+removed/changed, 6 new types), no new `[Obsolete]` members, so
+`docs/MIGRATION-2.0.md` is untouched. The existing form fields render
+byte-identical markup inside an `EditForm` (checked on 14 scenarios).
+
+### Added
+
+- **Standalone mode (B3).** `CyTextBox`, `CySelect`, `CyCheckbox`,
+  `CyRadioGroup`, `CyTextArea` and `CyDateInput` now work with **no**
+  `<EditForm>`. `InputBase` itself tolerates a missing `EditContext`; the
+  library's own validation helpers dereferenced it unguarded and threw
+  `NullReferenceException`. They are now null-safe, so
+  `<CyTextBox @bind-Value="x" Label="Name" />` works on any page. Without an
+  `EditContext` there is no validation store, so a field shows only errors it
+  raised itself (see `CyNumberInput`). `@bind-Value` is still required (the
+  framework needs the `ValueExpression`).
+- **`CyField` (B1).** Label, hint, required marker and error around *any*
+  control, with the `for`/`id`/`aria-describedby`/`aria-invalid`/`aria-required`
+  wiring done for you via `context.Attributes`. Needs no `EditContext`: pass
+  `Error="..."`, or inside an `EditForm` pass `For="@(() => model.X)"` and it
+  shows and clears that field's messages as the form validates (`Error` wins
+  when both are set). `Group="true"` renders a `fieldset`/`legend` for a set of
+  controls that answer one question.
+- **`CyNumberInput<TValue>` (B4).** `int`/`long`/`short`/`float`/`double`/
+  `decimal` and nullable forms, with `Unit`, `Min`, `Max`, `Step`, `Culture`
+  and overridable messages. Renders `type="text"` with an `inputmode` hint (not
+  `type="number"`), parsing and range/step checks in C#. The unit is part of the
+  field's accessible description. Works with or without an `EditForm`.
+- **`CyCheckboxGroup<TValue>` (B4).** "Select all that apply" bound to an
+  `IEnumerable<TValue>`, rendered as `fieldset`/`legend`, with per-item hint
+  and disabled state and an optional `Comparer`.
+- **`Items` on `CySelect` and `CyRadioGroup` (B5)**, plus `Placeholder` on
+  `CySelect`. Both take `IEnumerable<CyOption<TValue>>` (`Value`, `Text`,
+  optional `Hint`, `Disabled`); `CyOptions.ToCyOptions(...)` projects any
+  sequence and `CyOptions.FromEnum<T>()` builds one from an enum. A single
+  shared record means **no new type parameter**, so existing
+  `CySelect<TValue>`/`CyRadioGroup<TValue>` usages compile unchanged;
+  `ChildContent` still works and renders after `Items`.
+- **CSS primitives for raw markup (B2):** `.cy-input`, `.cy-label` and
+  `.cy-hint` (and `.cy-select`/`.cy-textarea` for raw controls) are now
+  supported, theme-aware classes, including an `aria-invalid="true"` style, so
+  pages that keep a native control need no dark-mode overrides.
+
+### Changed
+
+- `CyFormFieldComponentBase<TValue>` gains protected `ValidationMessages`,
+  `ValidationMessageText` and `LocalError`; `HasValidationError` is now
+  null-safe. Derived components outside this library are unaffected unless
+  they declare members with these exact names.
+
+### Notes
+
+- Tests for all of the above (`StandaloneFieldTests`, `CySelectItemsTests`,
+  `CyNumberInputTests`, `CyCheckboxGroupTests`, `CyFieldTests`, and axe scans
+  for the three new components) are written but, like Phase A's, were not run
+  by the author - CI is their first execution. The library compiles with no new
+  diagnostics and a 97-check render harness passes.
+
+## [1.7.0] - 2026/10/02
+
 Roadmap v1.7.0 ("Quick wins and de-risking", Phase A of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
 API, default or rendering changes, and no new `[Obsolete]` members, so

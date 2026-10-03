@@ -51,9 +51,18 @@
 }
 
 .cy-field.invalid .cy-textbox,
+.cy-field.invalid .cy-input,
 .cy-field.invalid .cy-select,
 .cy-field--invalid .cy-textbox,
+.cy-field--invalid .cy-input,
 .cy-field--invalid .cy-select {
+  border-color: var(--cymru-color-danger);
+}
+
+/* A raw control inside a <CyField> (or any markup) is flagged by ARIA alone. */
+.cy-input[aria-invalid="true"],
+.cy-select[aria-invalid="true"],
+.cy-textarea[aria-invalid="true"] {
   border-color: var(--cymru-color-danger);
 }
 
@@ -62,6 +71,7 @@
    ========================================================================== */
 
 .cy-textbox,
+.cy-input,
 .cy-select {
   box-sizing: border-box;
 
@@ -82,12 +92,14 @@
 }
 
 .cy-textbox:focus-visible,
+.cy-input:focus-visible,
 .cy-select:focus-visible {
   outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
   outline-offset: 1px;
 }
 
 .cy-textbox:disabled,
+.cy-input:disabled,
 .cy-select:disabled {
   background-color: var(--cymru-color-surface-alt);
   color: var(--cymru-color-text-muted);
@@ -374,4 +386,105 @@
 .cy-validation-summary .validation-message {
   color: var(--cymru-color-danger);
   font-size: var(--cymru-font-size-body);
+}
+
+/* ==========================================================================
+   Supported primitives for raw markup (1.8.0)
+
+   .cy-input, .cy-select and .cy-textarea style a native control to match the
+   CymruBlazor fields, in every theme. .cy-label and .cy-hint are the same
+   label/hint typography as .cy-field__label / .cy-field__hint. They carry
+   their own colours from theme tokens, so raw markup needs no dark-mode
+   overrides. (.cy-textbox remains the class CyTextBox renders.)
+   ========================================================================== */
+
+.cy-label {
+  font-weight: var(--cymru-font-weight-semibold);
+  font-size: var(--cymru-font-size-body);
+  color: var(--cymru-color-text);
+}
+
+.cy-hint {
+  margin: 0;
+  font-size: var(--cymru-font-size-sm);
+  color: var(--cymru-color-text-muted);
+}
+
+/* ==========================================================================
+   CyField (group mode renders a fieldset)
+   ========================================================================== */
+
+fieldset.cy-field--group {
+  border: 0;
+  padding: 0;
+  margin-inline: 0;
+  min-width: 0;
+}
+
+fieldset.cy-field--group > legend.cy-field__label {
+  padding: 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   CyNumberInput - input with a trailing unit
+   ========================================================================== */
+
+.cy-input-affix {
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--cymru-space-2);
+}
+
+.cy-number-input {
+  /* A number rarely needs the full width; the unit sits beside it. */
+  width: auto;
+  max-inline-size: 12rem;
+}
+
+.cy-input-affix__suffix {
+  font-size: var(--cymru-font-size-body);
+  color: var(--cymru-color-text);
+}
+
+/* ==========================================================================
+   CyCheckboxGroup
+   ========================================================================== */
+
+.cy-checkbox-group {
+  border: 0;
+  padding: 0;
+  margin-inline: 0;
+  min-width: 0;
+}
+
+.cy-checkbox-group legend.cy-field__label {
+  padding: 0;
+  width: 100%;
+}
+
+.cy-checkboxes {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--cymru-space-3);
+}
+
+.cy-checkbox-group__item {
+  flex-wrap: wrap;
+}
+
+.cy-checkbox-group__item-hint {
+  flex-basis: 100%;
+
+  margin: 0;
+
+  /* Sits under the label text, not the checkbox - same convention as radios. */
+  margin-inline-start: calc(1.25rem + var(--cymru-space-2));
+
+  font-size: var(--cymru-font-size-sm);
+  color: var(--cymru-color-text-muted);
 }

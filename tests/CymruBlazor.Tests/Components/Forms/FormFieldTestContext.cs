@@ -4,9 +4,7 @@ namespace CymruBlazor.Tests.Components.Forms;
 
 /// <summary>
 /// Shared fixture for testing <c>CyFormFieldComponentBase&lt;TValue&gt;</c>-derived
-/// components, which require a cascaded <see cref="EditContext"/> to
-/// render at all (this is <see cref="InputBase{TValue}"/>'s own
-/// requirement, not something CymruBlazor adds).
+/// components; the EditContext is optional since 1.8.0 (see StandaloneFieldTests).
 /// </summary>
 public abstract class FormFieldTestContext : TestContextBase
 {
@@ -23,6 +21,12 @@ public abstract class FormFieldTestContext : TestContextBase
         public string Choice { get; set; } = string.Empty;
 
         public DateOnly? Date { get; set; }
+
+        public int? Count { get; set; }
+
+        public decimal? Weight { get; set; }
+
+        public IEnumerable<string> Tags { get; set; } = [];
     }
 
     protected static EditContext CreateEditContext(TestFormModel model) =>

@@ -1,0 +1,64 @@
+@typeparam TValue
+@inherits CyFormFieldComponentBase<IEnumerable<TValue>>
+
+<fieldset class="@BuildFieldCssClass("cy-field cy-checkbox-group")" aria-describedby="@ComputedAriaDescribedBy"
+          @attributes="AdditionalAttributes">
+
+    <legend class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </legend>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <div class="cy-checkboxes">
+        @if (Items is not null)
+        {
+            var index = 0;
+
+            @foreach (var item in Items)
+            {
+                var option = item;
+                var itemId = ItemId(index++);
+                var itemHintId = $"{itemId}-hint";
+                var hasHint = !string.IsNullOrWhiteSpace(option.Hint);
+
+                <div class="cy-checkbox cy-checkbox-group__item">
+
+                    <input
+                        id="@itemId"
+                        type="checkbox"
+                        class="cy-checkbox__input"
+                        name="@FieldId"
+                        checked="@IsSelected(option.Value)"
+                        disabled="@(Disabled || option.Disabled)"
+                        aria-invalid="@(HasValidationError ? "true" : "false")"
+                        aria-describedby="@(hasHint ? itemHintId : null)"
+                        @onchange="e => ToggleAsync(option.Value, e.Value is true)" />
+
+                    <label for="@itemId" class="cy-checkbox__label">@option.Text</label>
+
+                    @if (hasHint)
+                    {
+                        <p id="@itemHintId" class="cy-checkbox-group__item-hint">@option.Hint</p>
+                    }
+
+                </div>
+            }
+        }
+    </div>
+
+    @if (HasValidationError)
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">
+            @ValidationMessageText
+        </p>
+    }
+
+</fieldset>

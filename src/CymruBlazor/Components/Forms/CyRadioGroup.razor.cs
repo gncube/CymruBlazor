@@ -30,6 +30,16 @@ public partial class CyRadioGroup<[System.Diagnostics.CodeAnalysis.DynamicallyAc
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// The options to render, one <see cref="CyRadio"/> each, ahead of any
+    /// <see cref="ChildContent"/> (added in 1.8.0). Each
+    /// <see cref="CyOption{TValue}.Hint"/> becomes that radio's hint. Use
+    /// <see cref="ChildContent"/> instead (or as well) when you need markup
+    /// between options.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<CyOption<TValue>>? Items { get; set; }
+
     string ICyRadioGroup.GroupName => FieldId;
 
     string? ICyRadioGroup.SelectedValue => CurrentValueAsString;
