@@ -8,7 +8,7 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [Unreleased]
+## [1.7.0] - 02/10/2026
 
 Roadmap v1.7.0 ("Quick wins and de-risking", Phase A of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
