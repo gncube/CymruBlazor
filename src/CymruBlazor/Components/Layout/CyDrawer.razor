@@ -1,0 +1,70 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
+
+@{
+    RenderFragment panel = @<div class="cy-drawer__panel">
+
+        <div class="cy-drawer__header">
+            <CyTypography Variant="TypographyVariant.H4"
+                          As="@($"h{HeadingLevel}")"
+                          Id="@TitleId"
+                          Class="cy-drawer__title">
+                @Title
+            </CyTypography>
+
+            @if (Dismissible)
+            {
+                <button type="button"
+                        class="cy-drawer__close"
+                        aria-label="@(CloseLabel ?? Localizer?.Strings.DialogClose ?? "Close")"
+                        @onclick="CloseFromUiAsync">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            }
+        </div>
+
+        <div class="cy-drawer__body">
+            @ChildContent
+        </div>
+
+        @if (Footer is not null)
+        {
+            <div class="cy-drawer__footer">
+                @Footer
+            </div>
+        }
+
+    </div>;
+}
+
+@if (Modal)
+{
+    <dialog @ref="_dialog"
+            id="@Id"
+            class="@CssClass"
+            style="@CssStyle"
+            aria-labelledby="@(Open ? TitleId : null)"
+            @attributes="AdditionalAttributes">
+
+        @if (Open)
+        {
+            @panel
+        }
+
+    </dialog>
+}
+else if (Open)
+{
+    <aside id="@Id"
+           class="@CssClass"
+           style="@CssStyle"
+           tabindex="-1"
+           aria-labelledby="@TitleId"
+           @onkeydown="HandleKeyDownAsync"
+           @attributes="AdditionalAttributes">
+
+        @panel
+
+    </aside>
+}

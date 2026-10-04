@@ -1,0 +1,112 @@
+@page "/layouts/drawer"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyDrawer" Subtitle="A panel that slides in from an edge for editing in context.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyDrawer" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <CyButton OnClick="() => _modalOpen = true">Open modal drawer</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" OnClick="() => _inlineOpen = !_inlineOpen">Toggle inline drawer</CyButton>
+        </div>
+
+        <CyDrawer @bind-Open="_modalOpen" Title="Question settings">
+            <p>Settings for the selected question. Tab stays inside the drawer and Escape closes it.</p>
+            <CySwitch @bind-Value="_required" Label="Required" />
+            <Footer>
+                <CyButton Variant="ComponentColour.Secondary" OnClick="() => _modalOpen = false">Close</CyButton>
+            </Footer>
+        </CyDrawer>
+
+        <CyDrawer @bind-Open="_inlineOpen" Modal="false" Side="DrawerSide.Left" Title="Add question" HeadingLevel="3">
+            <p>A non-modal drawer leaves the page usable. Escape closes it while focus is inside.</p>
+        </CyDrawer>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyDrawer.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _modalOpen;
+    private bool _inlineOpen;
+    private bool _required;
+
+    private string GeneratedCode => """
+        <CyDrawer @bind-Open="open" Title="Question settings">
+            ...
+            <Footer>
+                <CyButton OnClick="() => open = false">Close</CyButton>
+            </Footer>
+        </CyDrawer>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Title", "string", "-", "The drawer's heading and accessible name. Required."),
+        new("Open", "bool", "false", "Whether the drawer is open; use @bind-Open."),
+        new("Side", "DrawerSide", "Right", "Which edge it attaches to."),
+        new("Modal", "bool", "true", "Modal drawers use a native dialog with a backdrop; non-modal ones leave the page usable."),
+        new("Size", "ComponentSize", "Medium", "Small, Medium or Large width."),
+        new("Dismissible", "bool", "true", "Shows the close button and allows Escape to close."),
+        new("CloseOnBackdropClick", "bool", "false", "Lets a click on the backdrop close a modal drawer."),
+        new("Footer", "RenderFragment?", "null", "Actions pinned below the body."),
+        new("HeadingLevel", "int", "2", "1 to 6."),
+        new("OnClosed", "EventCallback", "-", "Raised once the drawer has closed.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native dialog", "The modal drawer is a native dialog opened with showModal(): the page behind is inert, Tab is contained and Escape closes it."),
+        new("Focus return", "Focus moves into the drawer on open and returns to the control that opened it on close."),
+        new("Non-modal", "A non-modal drawer does not trap focus; Escape closes it while focus is inside, and focus returns to the opener."),
+        new("Reduced motion", "The slide animation is skipped when the user prefers reduced motion.")
+    ];
+}

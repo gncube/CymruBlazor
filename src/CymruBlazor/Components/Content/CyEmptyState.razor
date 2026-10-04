@@ -1,0 +1,40 @@
+@inherits CyLayoutComponentBase
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    @if (IconContent is not null)
+    {
+        <div class="cy-empty-state__icon" aria-hidden="true">
+            @IconContent
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <div class="cy-empty-state__icon" aria-hidden="true">
+            <CyIcon Name="@Icon" Size="48" />
+        </div>
+    }
+
+    <CyTypography Variant="TypographyVariant.H4" As="@($"h{HeadingLevel}")" Class="cy-empty-state__title">
+        @Title
+    </CyTypography>
+
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="cy-empty-state__description">@Description</p>
+    }
+
+    @ChildContent
+
+    @if (Actions is not null)
+    {
+        <div class="cy-empty-state__actions">
+            @Actions
+        </div>
+    }
+
+</div>

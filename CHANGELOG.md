@@ -8,7 +8,74 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.7.0] - 02/10/2026
+## [1.9.0] - Unreleased
+
+Roadmap v1.9.0 ("Editing experience", Phase C of
+`docs/IMPLEMENTATION-PLAN.md`): the primitives the Questionnaire Designer
+needs. Everything here is additive: no existing member is removed or changed,
+no new `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. R1 (the
+shared field-chrome refactor) stays deferred, so the DOM of existing form
+fields is unchanged. No third-party script or npm package is introduced.
+
+### Added
+
+- **`CySortableList<TItem>` and `CyDragHandle`.** Reorderable list with
+  `Items`, `ItemTemplate`, `KeySelector`, `Group`, `OnReorder`, `Disabled`,
+  `HandleOnly`, `ShowMoveActions`, `EmptyContent` and localisable `Text`. The
+  list never mutates `Items`; it raises `CyReorderEventArgs<TItem>` (item, old
+  and new index, source and target list ids) and the page applies the move.
+  Lists sharing a `Group` and item type can exchange items.
+  - Pointer drag uses Pointer Events in an on-demand module
+    (`sortable-list.js`), so mouse, touch and pen behave the same.
+  - **WCAG 2.5.7:** built-in Move up, Move down and "Move to..." buttons do
+    everything dragging does with a single click.
+  - **Keyboard:** Space picks up, Up/Down/Home/End move, Space or Enter drops,
+    Escape (or leaving the handle) cancels. The move is previewed with CSS
+    `order`, so the DOM and focus do not jump until the drop.
+  - **Announcements** for pick-up, each move, drop, cancel and cross-list
+    moves go through `ILiveRegionRegistry`, with a local live region as the
+    fallback when it is not registered.
+  - Handle and buttons are 44px (WCAG 2.5.8); `prefers-reduced-motion` and
+    forced-colours are respected.
+- **`CySwitch`** (`role="switch"`, `aria-checked`, `OnChange`), a
+  `CyFormFieldComponentBase<bool>` that works with or without an `EditForm`.
+- **`CyWorkspace` / `CyWorkspacePane`**: multi-pane tool layout with `Fill`,
+  `Width`, `MinWidth`, `Collapsible` / `@bind-Collapsed`. Collapsed content
+  stays in the DOM. `Width`/`MinWidth` accept plain lengths only. Panes stack
+  below 48rem.
+- **`CyDrawer`**: slide-over panel with `Open`, `Side`, `Size`, `Modal`,
+  `Footer`, `Dismissible`, `CloseOnBackdropClick`. Modal drawers are a native
+  `<dialog>` (ADR-0001: inert background, contained Tab, Escape); non-modal
+  drawers are an `<aside>` that takes and returns focus.
+- **`CyEmptyState`**: icon, title, description (always encoded), actions.
+- **`CyMenu` / `CyMenuItem`**: WAI-ARIA menu-button pattern with roving
+  `tabindex`, Arrow/Home/End/Escape/Tab handling, disabled and destructive
+  items.
+- **`CyToolbar`**: `role="toolbar"`, one tab stop with arrow-key navigation
+  (arrows left alone in text fields), `Orientation`, `Sticky` top/bottom.
+- Stylesheets `switch.css`, `sortable-list.css` and `editing.css`, token-only
+  so light, dark and high-contrast follow automatically.
+- Demo pages for all of the above, registered in the sidebar, search index and
+  the Forms, Content and Layout overviews.
+
+### Fixed
+
+- `SortableGroupRegistry` was not registered by `AddCymruBlazor()`, which
+  silently disabled every cross-list move. It is now registered (scoped).
+- The topmost changelog section was headed `[1.7.0]` but describes 1.8.0
+  (Phase B); relabelled `[1.8.0]`.
+
+### Notes
+
+- Written in a sandbox with no .NET SDK or NuGet access: **the C# was not
+  compiled and the bUnit tests were not run.** `sortable-list.js` and
+  `cymru-editing.js` were exercised in jsdom (toolbar roving focus,
+  vertical orientation, key guard, focusIn, dispose). Before tagging, run
+  the release gate in `docs/IMPLEMENTATION-PLAN.md` (TASK-022 to TASK-024):
+  build and test, visual pass in all three themes, the axe suite on the new
+  demo routes, and `dotnet pack` against the 1.8.0 baseline.
+
+## [1.8.0] - 02/10/2026
 
 Roadmap v1.8.0 ("Make forms adoptable", Phase B of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing

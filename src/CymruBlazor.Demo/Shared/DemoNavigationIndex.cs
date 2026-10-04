@@ -60,6 +60,14 @@ public static class DemoNavigationIndex
             "Horizontally centers content with an optional max width."),
         new("Layout", "Hero Banner", "/layouts/hero-banner",
             "A prominent page-top hero banner with title, subtitle, and action controls."),
+        new("Layout", "Workspace", "/layouts/workspace",
+            "A multi-pane layout for tool-style pages: palette, canvas and inspector."),
+        new("Layout", "Drawer", "/layouts/drawer",
+            "A panel that slides in from an edge for editing in context."),
+        new("Layout", "Menu", "/layouts/menu",
+            "An overflow menu button for per-row actions, with roving tabindex."),
+        new("Layout", "Toolbar", "/layouts/toolbar",
+            "A grouped set of actions with a single tab stop and arrow-key navigation."),
 
         // 5. Navigation
         new("Navigation", "Overview", "/navigation",
@@ -86,6 +94,8 @@ public static class DemoNavigationIndex
             "Trigger actions and submit forms."),
         new("Forms", "TextBox", "/forms/textbox",
             "A labelled single-line text input with hint and validation support."),
+        new("Forms", "Number Input", "/forms/number-input",
+            "A number field with a unit, range and step."),
         new("Forms", "Select", "/forms/select",
             "A labelled dropdown selection field."),
         new("Forms", "Checkbox", "/forms/checkbox",
@@ -100,6 +110,10 @@ public static class DemoNavigationIndex
             "A three-field day/month/year date input."),
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
+        new("Forms", "Field", "/forms/field",
+            "Label, hint and error around any control, with no EditForm needed."),
+        new("Forms", "Switch", "/forms/switch",
+            "An on/off control for a setting that takes effect immediately."),
 
         // 7. Content
         new("Content", "Overview", "/content",
@@ -118,6 +132,10 @@ public static class DemoNavigationIndex
             "A vertically stacked set of expand/collapse sections."),
         new("Content", "Code Block", "/content/code-block",
             "A labelled, read-only code sample with a copy-to-clipboard button."),
+        new("Content", "Sortable List", "/content/sortable-list",
+            "A reorderable list with pointer, keyboard and button alternatives."),
+        new("Content", "Empty State", "/content/empty-state",
+            "A placeholder for an empty list, canvas or search result, with a way forward."),
 
         // 8. Data
         new("Data", "Overview", "/data",

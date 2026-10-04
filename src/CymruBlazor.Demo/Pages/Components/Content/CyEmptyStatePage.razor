@@ -1,0 +1,99 @@
+@page "/content/empty-state"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyEmptyState" Subtitle="A placeholder for an empty list, canvas or search result, with a way forward.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyEmptyState" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyEmptyState Icon="layers"
+                      Title="No questions yet"
+                      Description="Add your first question to start building this questionnaire.">
+            <Actions>
+                <CyButton OnClick="() => _added++">Add question</CyButton>
+            </Actions>
+        </CyEmptyState>
+        <p aria-live="polite" style="text-align:center; margin:0;">Add question pressed @_added time(s).</p>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyEmptyState.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private int _added;
+
+    private string GeneratedCode => """
+        <CyEmptyState Icon="layers"
+                      Title="No questions yet"
+                      Description="Add your first question to start building this questionnaire.">
+            <Actions>
+                <CyButton OnClick="AddQuestion">Add question</CyButton>
+            </Actions>
+        </CyEmptyState>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Title", "string", "-", "The heading. Required."),
+        new("Description", "string?", "null", "Plain text under the heading. It is always encoded, never treated as markup."),
+        new("Icon", "string?", "null", "Name of a registered CyIcon. Decorative."),
+        new("IconContent", "RenderFragment?", "null", "Custom decorative graphic; wins over Icon."),
+        new("Actions", "RenderFragment?", "null", "Buttons or links shown below the text."),
+        new("HeadingLevel", "int", "2", "1 to 6, so the heading fits the page outline."),
+        new("ChildContent", "RenderFragment?", "null", "Extra content between the description and the actions.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Real heading", "The title is a heading at a level you choose, so the empty state appears in the page outline."),
+        new("Decorative icon", "The icon is hidden from assistive technology; the title carries the meaning."),
+        new("Safe text", "Description is rendered as encoded text, so user-supplied copy cannot inject markup.")
+    ];
+}

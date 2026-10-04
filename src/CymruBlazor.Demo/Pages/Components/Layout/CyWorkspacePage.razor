@@ -1,0 +1,104 @@
+@page "/layouts/workspace"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyWorkspace" Subtitle="A multi-pane layout for tool-style pages: palette, canvas and inspector side by side.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyWorkspace" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyWorkspace Style="--cy-workspace-height: 16rem">
+            <CyWorkspacePane Title="Palette" Collapsible="true" Width="12rem" MinWidth="8rem">
+                <p style="margin:0;">Question types</p>
+            </CyWorkspacePane>
+            <CyWorkspacePane Title="Canvas" Fill="true">
+                <p style="margin:0;">The questionnaire being edited fills the remaining width.</p>
+            </CyWorkspacePane>
+            <CyWorkspacePane Title="Inspector" Collapsible="true" @bind-Collapsed="_inspectorCollapsed" Width="14rem" MinWidth="10rem">
+                <p style="margin:0;">Settings for the selected question.</p>
+            </CyWorkspacePane>
+        </CyWorkspace>
+        <p aria-live="polite" style="margin:0;">Inspector is <strong>@(_inspectorCollapsed ? "collapsed" : "expanded")</strong>. Below 48rem the panes stack.</p>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyWorkspace.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _inspectorCollapsed;
+
+    private string GeneratedCode => """
+        <CyWorkspace Style="--cy-workspace-height: 70vh">
+            <CyWorkspacePane Title="Palette" Collapsible="true" Width="12rem" MinWidth="8rem">...</CyWorkspacePane>
+            <CyWorkspacePane Title="Canvas" Fill="true">...</CyWorkspacePane>
+            <CyWorkspacePane Title="Inspector" Collapsible="true" Width="14rem" MinWidth="10rem">...</CyWorkspacePane>
+        </CyWorkspace>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyWorkspacePane.Title", "string", "-", "The pane's heading and accessible name. Required."),
+        new("CyWorkspacePane.Fill", "bool", "false", "Takes the remaining width."),
+        new("CyWorkspacePane.Width", "string?", "18rem", "Preferred width, a plain length such as 16rem, 320px or 30%."),
+        new("CyWorkspacePane.MinWidth", "string?", "12rem", "The pane never shrinks below this."),
+        new("CyWorkspacePane.Collapsible", "bool", "false", "Shows a toggle that collapses the pane to a narrow rail."),
+        new("CyWorkspacePane.Collapsed", "bool", "false", "Whether the pane is collapsed; use @bind-Collapsed."),
+        new("CyWorkspacePane.Actions", "RenderFragment?", "null", "Controls shown in the pane header."),
+        new("CyWorkspacePane.HeadingLevel", "int", "2", "1 to 6."),
+        new("--cy-workspace-height", "CSS length", "auto", "Give the workspace a height and each pane scrolls on its own.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Labelled regions", "Each pane is a section named by its heading, so screen reader users can list and jump between panes."),
+        new("Disclosure toggle", "The collapse button has aria-expanded and aria-controls, and a name that says what it will do."),
+        new("Content stays in the DOM", "Collapsed content is hidden, not removed, so form state inside it is kept."),
+        new("Reading order", "Below 48rem panes stack in source order; put the most important pane first.")
+    ];
+}

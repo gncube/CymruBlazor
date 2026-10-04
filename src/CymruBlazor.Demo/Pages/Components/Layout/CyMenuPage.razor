@@ -1,0 +1,103 @@
+@page "/layouts/menu"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyMenu" Subtitle="An overflow menu button for per-row actions, with roving tabindex.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyMenu" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <span>Disease status</span>
+            <CyMenu Label="More actions for Disease status">
+                <CyMenuItem Text="Duplicate" Icon="copy" OnClick='() => _last = "Duplicate"' />
+                <CyMenuItem Text="Move to section" OnClick='() => _last = "Move to section"' />
+                <CyMenuItem Text="Archive (unavailable)" Disabled="true" />
+                <CyMenuItem Text="Remove" Destructive="true" OnClick='() => _last = "Remove"' />
+            </CyMenu>
+        </div>
+        <p aria-live="polite" style="margin:0;">Last action: <strong>@(_last ?? "none")</strong></p>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyMenu.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string? _last;
+
+    private string GeneratedCode => """
+        <CyMenu Label="More actions for Disease status">
+            <CyMenuItem Text="Duplicate" Icon="copy" OnClick="Duplicate" />
+            <CyMenuItem Text="Move to section" OnClick="Move" />
+            <CyMenuItem Text="Remove" Destructive="true" OnClick="Remove" />
+        </CyMenu>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Names the button when it shows only an icon. Required."),
+        new("Text", "string?", "null", "Visible text for the button; when set it names the button instead of Label."),
+        new("Icon", "string?", "more", "Icon for the button."),
+        new("Open", "bool", "false", "Whether the menu is open; use @bind-Open."),
+        new("AlignEnd", "bool", "true", "Aligns the list to the button's end edge."),
+        new("Disabled", "bool", "false", "Disables the button."),
+        new("CyMenuItem.Text / ChildContent", "string? / RenderFragment?", "null", "The item's label."),
+        new("CyMenuItem.Destructive", "bool", "false", "Marks a destructive action."),
+        new("CyMenuItem.Disabled", "bool", "false", "Stays focusable-by-arrow-skip: disabled items are skipped by the arrow keys."),
+        new("CyMenuItem.OnClick", "EventCallback", "-", "Raised when the item is chosen; the menu closes first and focus returns to the button.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Menu button pattern", "The button has aria-haspopup=\"menu\" and aria-expanded; the list is role=\"menu\" with role=\"menuitem\" children."),
+        new("Roving tabindex", "Only one item is in the tab order; Arrow Up/Down move through items and wrap, Home and End jump to the ends."),
+        new("Escape and Tab", "Escape closes the menu and returns focus to the button; Tab closes it and moves on."),
+        new("Target size", "The button and every item are at least 44px tall.")
+    ];
+}

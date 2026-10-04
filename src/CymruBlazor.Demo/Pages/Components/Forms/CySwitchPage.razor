@@ -1,0 +1,102 @@
+@page "/forms/switch"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CySwitch" Subtitle="An on/off control for a setting that takes effect immediately.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" Href="/forms" />
+            <CyBreadcrumbItem Text="CySwitch" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <div style="display:flex; flex-direction:column; gap:1rem; max-width:28rem;">
+            <CySwitch @bind-Value="_required"
+                      Label="Required"
+                      HintText="Respondents must answer before they can continue."
+                      Disabled="_disabled" />
+            <CySwitch @bind-Value="_enabled" Label="Enabled" Disabled="_disabled" />
+            <p aria-live="polite" style="margin:0;">Required is <strong>@(_required ? "on" : "off")</strong>; Enabled is <strong>@(_enabled ? "on" : "off")</strong>.</p>
+        </div>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertySwitch Label="Disabled" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+    </div>
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CySwitch.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _required = true;
+    private bool _enabled;
+    private bool _disabled;
+
+    private string GeneratedCode => """
+        <CySwitch @bind-Value="question.Required"
+                  Label="Required"
+                  HintText="Respondents must answer before they can continue."
+                  OnChange="SaveAsync" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The visible label; it is also the switch's accessible name."),
+        new("Value", "bool", "false", "Whether the switch is on; use @bind-Value."),
+        new("OnChange", "EventCallback<bool>", "-", "Raised after the user toggles the switch, with the new value."),
+        new("HintText", "string?", "null", "Supporting text, associated through aria-describedby."),
+        new("Required", "bool", "false", "Adds a visual required indicator to the label."),
+        new("Disabled", "bool", "false", "Stops the switch being toggled and removes it from the tab order.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("role=switch", "A native button with role=\"switch\" and aria-checked, so assistive technology announces on or off, not pressed."),
+        new("Keyboard", "Space and Enter toggle it through the button's own click, with a visible focus ring."),
+        new("Target size", "The hit area is 44px square, above the 24x24 CSS pixel minimum of WCAG 2.5.8."),
+        new("State is not colour alone", "On is shown by the thumb position as well as the fill, and survives forced-colours mode.")
+    ];
+}

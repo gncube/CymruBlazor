@@ -1,0 +1,217 @@
+@page "/forms/field"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+@using Microsoft.AspNetCore.Components.Forms
+
+<CyPageHeader Title="CyField" Subtitle="Label, hint and error around any control.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyField" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        <code>CyField</code> gives a native control the same label, hint, required marker and error as
+        <code>CyTextBox</code>, and wires <code>for</code>, <code>id</code> and <code>aria-describedby</code>
+        for you. It needs no <code>EditForm</code>. Splat <code>context.Attributes</code> onto your control.
+    </p>
+
+    <span class="cb-panel-caption">Preview: a native input, no EditForm</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 22rem;">
+            <CyField Label="Postcode"
+                     HintText="@(string.IsNullOrEmpty(_hintText) ? null : _hintText)"
+                     Required="_required"
+                     Error="@(_showError ? "Enter a postcode, like CF10 3NQ" : null)">
+                <input @attributes="context.Attributes" class="cy-input" type="text" disabled="@_disabled" @bind="_postcode" @bind:event="oninput" />
+            </CyField>
+        </div>
+    </div>
+
+    <div class="cb-playground-grid">
+        <DemoPropertyControls>
+            <DemoPropertyTextInput Label="Hint text" @bind-Value="_hintText" />
+            <DemoPropertySwitch Label="Required" @bind-Value="_required" />
+            <DemoPropertySwitch Label="Show error" @bind-Value="_showError" />
+            <DemoPropertySwitch Label="Disabled control" @bind-Value="_disabled" />
+        </DemoPropertyControls>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Generated code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CyField.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+
+    <span class="cb-panel-caption" style="margin-top: var(--cymru-space-8); display:block;">Inside an EditForm: For reads the validation messages</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <EditForm Model="_form" OnValidSubmit="HandleValidSubmit" style="width: 100%; max-width: 22rem; display:flex; flex-direction:column; gap:1rem;">
+            <DataAnnotationsValidator />
+            <CyField Label="Postcode" HintText="Submit the form to validate it" Required="true" For="@(() => _form.Postcode)" Context="field">
+                <input @attributes="field.Attributes" class="cy-input" type="text" @bind="_form.Postcode" />
+            </CyField>
+            <CyButton Type="submit">Check postcode</CyButton>
+            @if (_saved is not null)
+            {
+                <p role="status" style="margin:0;">Saved postcode: @_saved</p>
+            }
+        </EditForm>
+    </div>
+    <CyCodeBlock Code="@ForCode" Language="razor" />
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        A native control does not tell the <code>EditContext</code> it changed, so validation runs when the form
+        is submitted. Use <code>CyTextBox</code> if you want it to validate as the user types.
+    </p>
+
+    <span class="cb-panel-caption" style="margin-top: var(--cymru-space-8); display:block;">Group: several controls, one question</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 22rem;">
+            <CyField Group="true" Label="Appointment reminders" HintText="Select all that apply">
+                <div class="cy-checkboxes">
+                    <div class="cy-checkbox">
+                        <input id="demo-field-remind-sms" type="checkbox" class="cy-checkbox__input" @bind="_remindSms" />
+                        <label for="demo-field-remind-sms" class="cy-checkbox__label">Text message</label>
+                    </div>
+                    <div class="cy-checkbox">
+                        <input id="demo-field-remind-email" type="checkbox" class="cy-checkbox__input" @bind="_remindEmail" />
+                        <label for="demo-field-remind-email" class="cy-checkbox__label">Email</label>
+                    </div>
+                </div>
+            </CyField>
+        </div>
+    </div>
+    <CyCodeBlock Code="@GroupCode" Language="razor" />
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        For a real checkbox set, prefer <a href="/forms/checkbox-group"><code>CyCheckboxGroup</code></a>.
+    </p>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <p class="cb-panel-caption" style="margin-bottom: var(--cymru-space-4);">CyField</p>
+    <DemoApiTable Parameters="_apiDocs" />
+    <p class="cb-panel-caption" style="margin-block: var(--cymru-space-6) var(--cymru-space-4);">CyFieldContext (the <code>context</code> in the child content)</p>
+    <DemoApiTable Parameters="_contextDocs" />
+    <p class="cb-panel-caption" style="margin-block: var(--cymru-space-6) var(--cymru-space-4);">CSS primitives for raw markup</p>
+    <p style="color:var(--cymru-color-text); line-height:1.6;">
+        These classes are supported and follow the active theme (light, dark, high contrast), so a native control
+        needs no theme overrides: <code>.cy-input</code>, <code>.cy-select</code>, <code>.cy-textarea</code>,
+        <code>.cy-label</code> and <code>.cy-hint</code>. A control with <code>aria-invalid="true"</code> gets the
+        error border automatically.
+    </p>
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private sealed class PostcodeModel
+    {
+        [Required(ErrorMessage = "Enter a postcode")]
+        [StringLength(8, MinimumLength = 5, ErrorMessage = "A postcode is 5 to 8 characters")]
+        public string? Postcode { get; set; }
+    }
+
+    private Tab _activeTab = Tab.Examples;
+    private readonly PostcodeModel _form = new();
+    private string? _saved;
+    private string _postcode = string.Empty;
+    private string _hintText = "For example, CF10 3NQ";
+    private bool _required = true;
+    private bool _showError;
+    private bool _disabled;
+    private bool _remindSms = true;
+    private bool _remindEmail;
+
+    private void HandleValidSubmit() => _saved = _form.Postcode;
+
+    private string GeneratedCode =>
+        $"""
+        <CyField Label="Postcode"{(string.IsNullOrEmpty(_hintText) ? "" : $"\n         HintText=\"{_hintText}\"")}{(_required ? "\n         Required=\"true\"" : "")}{(_showError ? "\n         Error=\"Enter a postcode, like CF10 3NQ\"" : "")}>
+            <input @attributes="context.Attributes" class="cy-input" type="text"{(_disabled ? " disabled" : "")} @bind="postcode" />
+        </CyField>
+        """;
+
+    private const string ForCode =
+        """
+        <EditForm Model="form" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <CyField Label="Postcode" Required="true" For="@(() => form.Postcode)" Context="field">
+                <input @attributes="field.Attributes" class="cy-input" type="text" @bind="form.Postcode" />
+            </CyField>
+            <CyButton Type="submit">Check postcode</CyButton>
+        </EditForm>
+        """;
+
+    private const string GroupCode =
+        """
+        <CyField Group="true" Label="Appointment reminders" HintText="Select all that apply">
+            <div class="cy-checkboxes">
+                <div class="cy-checkbox">
+                    <input id="remind-sms" type="checkbox" class="cy-checkbox__input" @bind="remindSms" />
+                    <label for="remind-sms" class="cy-checkbox__label">Text message</label>
+                </div>
+                ...
+            </div>
+        </CyField>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The field's visible name. Required: every field needs a programmatic label."),
+        new("HintText", "string?", "null", "Optional supporting text under the label, linked via aria-describedby."),
+        new("Required", "bool", "false", "Shows the required marker and sets aria-required on the control. Does not validate."),
+        new("Error", "string?", "null", "An error to show, set by you. Wins over messages read through For."),
+        new("For", "Expression<Func<object>>?", "null", "Names the model property, e.g. For=\"@(() => model.Postcode)\", so its EditContext messages are shown and cleared as the form validates. Ignored with no EditContext."),
+        new("Group", "bool", "false", "Renders a fieldset and legend for several controls that answer one question, instead of a div and label."),
+        new("ChildContent", "RenderFragment<CyFieldContext>?", "null", "The control. context carries the id and ARIA attributes to put on it."),
+        new("Id", "string?", "generated", "The id given to the control (context.InputId); the label's for points at it."),
+        new("Class", "string?", "null", "Additional CSS classes for the field wrapper.")
+    ];
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _contextDocs =
+    [
+        new("Attributes", "IReadOnlyDictionary<string, object>", "-", "Splat onto the control with @attributes: id, plus aria-describedby, aria-invalid and aria-required only when they apply."),
+        new("InputId", "string", "-", "The id the control must carry."),
+        new("DescribedBy", "string?", "-", "The hint and/or error ids, space separated, or null."),
+        new("HintId", "string?", "-", "The hint paragraph's id, or null when there is no hint."),
+        new("ErrorId", "string?", "-", "The error paragraph's id, or null when there is no error."),
+        new("ErrorText", "string?", "-", "The error being shown, or null."),
+        new("Invalid", "bool", "-", "True when an error is showing."),
+        new("Required", "bool", "-", "Whether the field is marked required.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Label wired to the control", "The label's for attribute and the control's id come from the same value, so clicking the label focuses the control and screen readers announce it."),
+        new("Only describes what exists", "aria-describedby, aria-invalid and aria-required are added only when there is a hint, an error or the field is required, never as empty or false attributes."),
+        new("Errors are announced", "The error is text in a role=\"alert\" paragraph linked by aria-describedby, and the control is marked aria-invalid, so the error is not conveyed by colour alone."),
+        new("Group semantics", "With Group, the controls share a native fieldset and legend, so the question is announced with each control inside it."),
+        new("Required is a marker, not a rule", "Required shows the marker and sets aria-required. Enforcing it is the job of your validation, as with every CymruBlazor field.")
+    ];
+}
