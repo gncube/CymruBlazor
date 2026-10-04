@@ -10,7 +10,7 @@ namespace CymruBlazor.Components.Content;
 /// </summary>
 /// <remarks>
 /// The description is rendered as plain text (never as markup), so it is safe to
-/// bind to untrusted values. Use <see cref="ChildContent"/> or
+/// bind to untrusted values. Use <c>ChildContent</c> or
 /// <see cref="Actions"/> for anything richer. Pick <see cref="HeadingLevel"/>
 /// to fit the page outline; the visual size does not change with it.
 /// </remarks>

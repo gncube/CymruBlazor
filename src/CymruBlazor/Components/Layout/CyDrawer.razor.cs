@@ -11,7 +11,7 @@ namespace CymruBlazor.Components.Layout;
 
 /// <summary>
 /// A panel that slides in from the left or right edge: an inspector, an "add question" panel or a filter
-/// pane that keeps the page behind it in view. A <see cref="CyDialog"/> is centred and always blocks the page;
+/// pane that keeps the page behind it in view. A <see cref="CymruBlazor.Components.Accessibility.CyDialog"/> is centred and always blocks the page;
 /// a drawer is for editing in context.
 /// </summary>
 /// <remarks>

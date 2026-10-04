@@ -20,7 +20,10 @@ $env:CYMRU_SMOKE_REPORT_DIR = $ReportDir
 
 Write-Host "Restoring solution dependencies..."
 $env:NUGET_CERT_REVOCATION_MODE = "offline"
-dotnet restore --verbosity minimal
+# --force: the repository is bind-mounted from the host, so obj/ may hold restore output written by Visual
+# Studio on Windows (including its fallback package folder, which does not exist in this Linux container).
+# Without --force NuGet can treat that as up to date and the publish then fails in ResolvePackageAssets.
+dotnet restore --force --verbosity minimal
 
 Write-Host "Publishing CymruBlazor.Demo (isolated to prevent NETSDK1152 duplicate asset collision)..."
 dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj -c Release -o $PublishPath --no-restore

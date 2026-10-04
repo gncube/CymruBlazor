@@ -33,8 +33,10 @@
         </div>
 
         <CyDrawer @bind-Open="_modalOpen" Title="Question settings">
-            <p>Settings for the selected question. Tab stays inside the drawer and Escape closes it.</p>
-            <CySwitch @bind-Value="_required" Label="Required" />
+            <ChildContent>
+                <p>Settings for the selected question. Tab stays inside the drawer and Escape closes it.</p>
+                <CySwitch @bind-Value="_required" Label="Required" />
+            </ChildContent>
             <Footer>
                 <CyButton Variant="ComponentColour.Secondary" OnClick="() => _modalOpen = false">Close</CyButton>
             </Footer>
