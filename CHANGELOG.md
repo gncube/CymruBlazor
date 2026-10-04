@@ -67,13 +67,20 @@ fields is unchanged. No third-party script or npm package is introduced.
 
 ### Notes
 
-- Written in a sandbox with no .NET SDK or NuGet access: **the C# was not
-  compiled and the bUnit tests were not run.** `sortable-list.js` and
-  `cymru-editing.js` were exercised in jsdom (toolbar roving focus,
-  vertical orientation, key guard, focusIn, dispose). Before tagging, run
-  the release gate in `docs/IMPLEMENTATION-PLAN.md` (TASK-022 to TASK-024):
-  build and test, visual pass in all three themes, the axe suite on the new
-  demo routes, and `dotnet pack` against the 1.8.0 baseline.
+- Verified: the solution builds; the unit tests pass (no failures in
+  `CymruBlazor.Tests`); the containerised Playwright/axe suite passes 168 of
+  168, including every new demo route in light, dark and high-contrast. The
+  first axe run found one real violation (heading order on the sortable-list
+  demo), fixed before release.
+- `sortable-list.js` and `cymru-editing.js` were also exercised in jsdom
+  (toolbar roving focus, key guard, `focusIn`, dispose).
+- `scripts/Run-AccessibilityTests.Container.ps1` now builds from a clean copy
+  of the sources, so host `bin/` and `obj/` output (Windows paths) cannot break
+  the Linux container, and the container no longer writes into the host's
+  `obj/`.
+- Still to do before tagging: a visual pass in all three themes (the CSS has
+  not been looked at in a browser by a person) and `dotnet pack` against the
+  1.8.0 baseline.
 
 ## [1.8.0] - 02/10/2026
 
