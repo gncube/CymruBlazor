@@ -1,0 +1,95 @@
+@typeparam TItem
+@inherits CyComponentBase
+@using CymruBlazor.Components.Layout
+
+<ul @ref="_root"
+    id="@Id"
+    class="@ListCssClass"
+    style="@CssStyle"
+    aria-label="@Label"
+    data-cy-sortable
+    data-cy-list-id="@Id"
+    data-cy-group="@Group"
+    @attributes="AdditionalAttributes">
+
+    @for (var i = 0; i < _items.Count; i++)
+    {
+        var index = i;
+        var item = _items[index];
+        var name = NameOf(item);
+
+        <li @key="_keys[index]"
+            class="@ItemCssClass(index)"
+            style="@ItemStyle(index)"
+            data-cy-item
+            data-cy-index="@index">
+
+            <div class="cy-sortable__row">
+
+                <CyDragHandle Label="@Format(Strings.DragHandle, name)"
+                              Picked="@IsPicked(index)"
+                              Disabled="@Disabled"
+                              AriaDescribedBy="@InstructionsId"
+                              OnActivate="() => ActivateHandleAsync(index)"
+                              OnKeyDown="args => HandleKeyDownAsync(index, args)"
+                              OnBlur="() => HandleBlurAsync(index)" />
+
+                <div class="cy-sortable__content">
+                    @ItemTemplate(item)
+                </div>
+
+                @if (ShowMoveActions)
+                {
+                    <div class="cy-sortable__actions">
+
+                        <button type="button"
+                                class="cy-sortable__action"
+                                data-cy-action="up"
+                                aria-label="@Format(Strings.MoveUp, name)"
+                                disabled="@(Disabled || index == 0)"
+                                @onclick="() => MoveByAsync(index, -1)">
+                            <CyIcon Name="arrow-up" Size="18" />
+                        </button>
+
+                        <button type="button"
+                                class="cy-sortable__action"
+                                data-cy-action="down"
+                                aria-label="@Format(Strings.MoveDown, name)"
+                                disabled="@(Disabled || index == _items.Count - 1)"
+                                @onclick="() => MoveByAsync(index, +1)">
+                            <CyIcon Name="arrow-down" Size="18" />
+                        </button>
+
+                        @{ var peers = Peers(); }
+                        @if (peers.Count > 0 && !Disabled)
+                        {
+                            <CyMenu Label="@Format(Strings.MoveTo, name)" Icon="layers">
+                                @foreach (var peer in peers)
+                                {
+                                    var target = peer;
+                                    <CyMenuItem Text="@target.ListLabel" OnClick="() => MoveToListAsync(index, target)" />
+                                }
+                            </CyMenu>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+        </li>
+    }
+
+    @if (_items.Count == 0 && EmptyContent is not null)
+    {
+        <li class="cy-sortable__empty">@EmptyContent</li>
+    }
+
+</ul>
+
+<p id="@InstructionsId" class="cy-visually-hidden">@Strings.Instructions</p>
+
+@if (!_hasLiveRegionRegistry)
+{
+    <div class="cy-visually-hidden" aria-live="polite" aria-atomic="true">@_localMessage</div>
+}

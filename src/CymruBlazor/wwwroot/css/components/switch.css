@@ -1,0 +1,136 @@
+@layer components;
+
+/*
+ * CymruBlazor Forms - CySwitch
+ *
+ * Class names come from CySwitch.razor. Colours use semantic tokens only, which
+ * flip in the dark and high-contrast themes, so nothing here is theme-specific
+ * except forced-colors mode, handled at the end.
+ */
+
+.cy-field--switch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-spacing-form-hint-gap);
+}
+
+.cy-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-3);
+}
+
+.cy-switch__control {
+  /* The button is the hit target; the track is only its picture. */
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cy-switch__track {
+  position: relative;
+  display: inline-block;
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  border: var(--cymru-border-width-thick) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-surface);
+  box-sizing: border-box;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.cy-switch__thumb {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0.1875rem;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  border-radius: var(--cymru-radius-circle);
+  background-color: var(--cymru-color-border-strong);
+  transform: translateY(-50%);
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.cy-switch__control[aria-checked="true"] .cy-switch__track {
+  border-color: var(--cymru-color-primary);
+  background-color: var(--cymru-color-primary);
+}
+
+.cy-switch__control[aria-checked="true"] .cy-switch__thumb {
+  background-color: var(--cymru-color-text-inverse);
+  transform: translate(1.25rem, -50%);
+}
+
+[dir="rtl"] .cy-switch__control[aria-checked="true"] .cy-switch__thumb {
+  transform: translate(-1.25rem, -50%);
+}
+
+.cy-switch__control:hover:not(:disabled) .cy-switch__track {
+  border-color: var(--cymru-color-primary-hover);
+}
+
+.cy-switch__control:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: var(--cymru-focus-ring-offset);
+  border-radius: var(--cymru-radius-pill);
+}
+
+.cy-switch__control:disabled {
+  cursor: not-allowed;
+}
+
+.cy-switch__control:disabled .cy-switch__track {
+  border-color: var(--cymru-color-disabled);
+  background-color: var(--cymru-color-disabled-background);
+}
+
+.cy-switch__control:disabled .cy-switch__thumb {
+  background-color: var(--cymru-color-disabled);
+}
+
+.cy-switch__label {
+  cursor: pointer;
+  color: var(--cymru-color-text);
+}
+
+.cy-switch__control:disabled + .cy-switch__label {
+  color: var(--cymru-color-disabled-text);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cy-switch__track,
+  .cy-switch__thumb {
+    transition: none;
+  }
+}
+
+/* Forced colours drop background colours: keep state visible through the thumb position and a system-colour fill. */
+@media (forced-colors: active) {
+  .cy-switch__track {
+    border-color: ButtonText;
+  }
+
+  .cy-switch__thumb {
+    background-color: ButtonText;
+  }
+
+  .cy-switch__control[aria-checked="true"] .cy-switch__track {
+    background-color: Highlight;
+    border-color: Highlight;
+  }
+
+  .cy-switch__control[aria-checked="true"] .cy-switch__thumb {
+    background-color: HighlightText;
+  }
+
+  .cy-switch__control:disabled .cy-switch__track {
+    border-color: GrayText;
+  }
+}

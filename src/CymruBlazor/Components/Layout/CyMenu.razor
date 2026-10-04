@@ -1,0 +1,49 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+
+<div id="@Id"
+     @ref="_root"
+     class="@CssClass"
+     style="@CssStyle"
+     @attributes="AdditionalAttributes">
+
+    <button @ref="_trigger"
+            id="@TriggerId"
+            type="button"
+            class="@TriggerCssClass"
+            aria-haspopup="menu"
+            aria-expanded="@(Open ? "true" : "false")"
+            aria-controls="@(Open ? ListId : null)"
+            aria-label="@(HasVisibleText ? null : Label)"
+            disabled="@Disabled"
+            @onclick="ToggleAsync"
+            @onkeydown="HandleTriggerKeyDownAsync">
+
+        @if (!string.IsNullOrWhiteSpace(Icon))
+        {
+            <CyIcon Name="@Icon" Size="20" />
+        }
+
+        @if (HasVisibleText)
+        {
+            <span class="cy-menu__trigger-text">@Text</span>
+        }
+
+    </button>
+
+    @if (Open)
+    {
+        <ul id="@ListId"
+            class="@ListCssClass"
+            role="menu"
+            aria-labelledby="@TriggerId"
+            @onkeydown="HandleListKeyDownAsync">
+
+            <CascadingValue Value="this" IsFixed="true">
+                @ChildContent
+            </CascadingValue>
+
+        </ul>
+    }
+
+</div>

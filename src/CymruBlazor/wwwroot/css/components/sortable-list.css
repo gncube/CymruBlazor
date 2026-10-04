@@ -1,0 +1,191 @@
+@layer components;
+
+/*
+ * CymruBlazor Content - CySortableList / CyDragHandle
+ *
+ * Hooks written by CySortableList.razor and sortable-list.js:
+ *   data-cy-dragging        on the list being dragged from
+ *   data-cy-drag-source     on the item in the air (dimmed in place)
+ *   data-cy-drop="before|after" on the item next to the insertion point
+ *   data-cy-drop-target     on the list a drop would land in
+ *   data-cy-ghost           on the floating clone (appended to <body>)
+ *   data-cy-sorting         on <html> for the whole gesture
+ * The keyboard pick-up previews a move through inline `order`, so the list
+ * must be a flex/grid container.
+ */
+
+.cy-sortable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cy-sortable__item {
+  position: relative;
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+.cy-sortable__row {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-2) var(--cymru-space-3);
+}
+
+.cy-sortable__content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.cy-sortable__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  flex-shrink: 0;
+}
+
+.cy-sortable__empty {
+  padding: var(--cymru-space-4);
+  border: var(--cymru-border-width-thin) dashed var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-card);
+  color: var(--cymru-color-text-muted);
+}
+
+/* Handle and move buttons share one control size, never below the 24x24 minimum (WCAG 2.5.8). */
+.cy-drag-handle,
+.cy-sortable__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text-secondary);
+  cursor: pointer;
+}
+
+.cy-drag-handle {
+  cursor: grab;
+  touch-action: none; /* the script owns the gesture; the page must not scroll under it */
+}
+
+.cy-drag-handle:hover:not(:disabled),
+.cy-sortable__action:hover:not(:disabled) {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-drag-handle:focus-visible,
+.cy-sortable__action:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: var(--cymru-focus-ring-offset);
+}
+
+.cy-drag-handle:disabled,
+.cy-sortable__action:disabled {
+  color: var(--cymru-color-disabled-text);
+  cursor: not-allowed;
+}
+
+.cy-drag-handle--picked,
+.cy-drag-handle[data-cy-picked="true"] {
+  background-color: var(--cymru-color-primary);
+  color: var(--cymru-color-text-inverse);
+  cursor: grabbing;
+}
+
+.cy-sortable--handle-only .cy-sortable__content {
+  /* Text stays selectable; only the handle starts a drag. */
+  user-select: text;
+}
+
+.cy-sortable--disabled .cy-sortable__item {
+  opacity: 0.6;
+}
+
+/* Keyboard pick-up */
+.cy-sortable__item--picked {
+  border-color: var(--cymru-color-primary);
+  box-shadow: 0 0 0 var(--cymru-border-width-thick) var(--cymru-color-primary);
+}
+
+/* Pointer drag */
+[data-cy-sorting] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+[data-cy-drag-source] {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+[data-cy-drop-target] {
+  outline: var(--cymru-border-width-medium) dashed var(--cymru-color-primary);
+  outline-offset: var(--cymru-space-1);
+}
+
+[data-cy-drop="before"]::before,
+[data-cy-drop="after"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  block-size: 0.1875rem;
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-primary);
+  pointer-events: none;
+}
+
+[data-cy-drop="before"]::before {
+  inset-block-start: calc(-1 * var(--cymru-space-1) - 0.125rem);
+}
+
+[data-cy-drop="after"]::after {
+  inset-block-end: calc(-1 * var(--cymru-space-1) - 0.125rem);
+}
+
+/* The clone lives on <body>, outside the list, so it restyles itself. */
+[data-cy-ghost] {
+  list-style: none;
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-primary);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+  box-shadow: var(--cymru-shadow-xl);
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cy-sortable__item {
+    transition: box-shadow 120ms ease, border-color 120ms ease;
+  }
+}
+
+@media (forced-colors: active) {
+  .cy-sortable__item--picked,
+  [data-cy-ghost] {
+    border-color: Highlight;
+    box-shadow: none;
+    outline: 2px solid Highlight;
+  }
+
+  .cy-drag-handle[data-cy-picked="true"] {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  [data-cy-drop="before"]::before,
+  [data-cy-drop="after"]::after {
+    background-color: Highlight;
+  }
+}

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
+using CymruBlazor.Components.Content;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Feedback;
 using CymruBlazor.Diagnostics;
@@ -93,6 +94,12 @@ public static class ServiceCollectionExtensions
         // instance(s) - see ILiveRegionRegistry for why CyLiveRegion can't
         // safely implement INotificationHandler<> itself.
         services.AddScoped<ILiveRegionRegistry, LiveRegionRegistry>();
+
+        // CySortableList instances that share a Group find each other here so an
+        // item can move between lists ("Move to..." menu, drag across lists).
+        // Scoped like the live-region registry: one per circuit/session. Without
+        // it a list works on its own but cross-list moves are silently disabled.
+        services.AddScoped<SortableGroupRegistry>();
 
         // Register toast notifications and the Mediator handler that lets
         // ShowToastNotification be published through the pipeline below.

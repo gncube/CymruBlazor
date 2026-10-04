@@ -1,0 +1,45 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
+
+<section id="@Id"
+         class="@CssClass"
+         style="@CssStyle"
+         aria-labelledby="@TitleId"
+         @attributes="AdditionalAttributes">
+
+    <div class="cy-workspace-pane__header">
+
+        @if (Collapsible)
+        {
+            <button type="button"
+                    class="cy-workspace-pane__toggle"
+                    aria-expanded="@(IsCollapsed ? "false" : "true")"
+                    aria-controls="@BodyId"
+                    aria-label="@ToggleLabel"
+                    @onclick="ToggleAsync">
+                <CyIcon Name="@(IsCollapsed ? "chevron-right" : "chevron-down")" Size="18" />
+            </button>
+        }
+
+        <CyTypography Variant="TypographyVariant.H5"
+                      As="@($"h{HeadingLevel}")"
+                      Id="@TitleId"
+                      Class="cy-workspace-pane__title">
+            @Title
+        </CyTypography>
+
+        @if (Actions is not null && !IsCollapsed)
+        {
+            <div class="cy-workspace-pane__actions">
+                @Actions
+            </div>
+        }
+
+    </div>
+
+    <div id="@BodyId" class="cy-workspace-pane__body" hidden="@IsCollapsed">
+        @ChildContent
+    </div>
+
+</section>

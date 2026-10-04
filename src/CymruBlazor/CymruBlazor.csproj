@@ -66,7 +66,7 @@
       (2.0.0) are recorded in CompatibilitySuppressions.xml.
     -->
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>1.7.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>1.8.0</PackageValidationBaselineVersion>
 
     <!-- XML documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

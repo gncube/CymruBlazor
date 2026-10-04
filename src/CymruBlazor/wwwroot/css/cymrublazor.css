@@ -77,6 +77,9 @@
 @import "components/pagination.css" layer(components);
 @import "components/progress.css" layer(components);
 @import "components/spinner.css" layer(components);
+@import "components/switch.css" layer(components);
+@import "components/sortable-list.css" layer(components);
+@import "components/editing.css" layer(components);
 
 /* ==========================================================================
    Utilities

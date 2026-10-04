@@ -1,0 +1,20 @@
+@inherits CyComponentBase
+
+<button id="@Id"
+        type="button"
+        class="@CssClass"
+        style="@CssStyle"
+        data-cy-drag-handle
+        data-cy-picked="@(Picked ? "true" : null)"
+        aria-label="@Label"
+        aria-pressed="@(Picked ? "true" : "false")"
+        aria-describedby="@AriaDescribedBy"
+        disabled="@Disabled"
+        @onclick="HandleClickAsync"
+        @onkeydown="HandleKeyDownAsync"
+        @onfocusout="HandleFocusOutAsync"
+        @attributes="AdditionalAttributes">
+
+    <CyIcon Name="grip-vertical" Size="18" />
+
+</button>

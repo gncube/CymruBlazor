@@ -1,0 +1,475 @@
+@layer components;
+
+/*
+ * CymruBlazor Editing - CyMenu, CyToolbar, CyWorkspace, CyDrawer, CyEmptyState
+ *
+ * Class names come from the matching .razor/.razor.cs files; keep them in sync
+ * (see CONTRIBUTING.md). Semantic tokens only, so dark and high-contrast follow
+ * automatically.
+ */
+
+/* ==========================================================================
+   CyEmptyState
+   ========================================================================== */
+
+.cy-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-8) var(--cymru-space-4);
+  text-align: center;
+  color: var(--cymru-color-text);
+}
+
+.cy-empty-state__icon {
+  color: var(--cymru-color-text-secondary);
+}
+
+.cy-empty-state__title {
+  margin: 0;
+}
+
+.cy-empty-state__description {
+  max-inline-size: var(--cymru-max-width-body-text);
+  margin: 0;
+  color: var(--cymru-color-text-secondary);
+}
+
+.cy-empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--cymru-space-3);
+  margin-block-start: var(--cymru-space-2);
+}
+
+/* ==========================================================================
+   CyMenu
+   ========================================================================== */
+
+.cy-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.cy-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-2);
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0 var(--cymru-space-3);
+  border: var(--cymru-border-width-thin) solid transparent;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cy-menu__trigger--icon-only {
+  justify-content: center;
+  padding: 0;
+  color: var(--cymru-color-text-secondary);
+}
+
+.cy-menu__trigger:hover:not(:disabled),
+.cy-menu__trigger[aria-expanded="true"] {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-menu__trigger:disabled {
+  color: var(--cymru-color-disabled-text);
+  cursor: not-allowed;
+}
+
+.cy-menu__list {
+  position: absolute;
+  inset-block-start: 100%;
+  z-index: var(--cymru-z-dropdown);
+  min-inline-size: 12rem;
+  margin: var(--cymru-space-1) 0 0;
+  padding: var(--cymru-space-1);
+  list-style: none;
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+  box-shadow: var(--cymru-elevation-dropdown);
+}
+
+.cy-menu__list--start {
+  inset-inline-start: 0;
+}
+
+.cy-menu__list--end {
+  inset-inline-end: 0;
+}
+
+.cy-menu__item-wrapper {
+  margin: 0;
+  padding: 0;
+}
+
+.cy-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-2);
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+  padding: 0 var(--cymru-space-3);
+  border: 0;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.cy-menu__item:hover:not([aria-disabled="true"]),
+.cy-menu__item:focus-visible {
+  background-color: var(--cymru-color-surface-hover);
+}
+
+.cy-menu__item[aria-disabled="true"] {
+  color: var(--cymru-color-disabled-text);
+  cursor: not-allowed;
+}
+
+.cy-menu__item--destructive {
+  color: var(--cymru-color-danger-text);
+}
+
+.cy-menu__item-text {
+  flex: 1 1 auto;
+}
+
+.cy-menu__trigger:focus-visible,
+.cy-menu__item:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: calc(-1 * var(--cymru-focus-ring-width));
+}
+
+/* ==========================================================================
+   CyToolbar
+   ========================================================================== */
+
+.cy-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cymru-space-2);
+  padding: var(--cymru-space-2) var(--cymru-space-3);
+  border-block: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+.cy-toolbar--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.cy-toolbar--sticky-top,
+.cy-toolbar--sticky-bottom {
+  position: sticky;
+  z-index: var(--cymru-z-sticky);
+}
+
+.cy-toolbar--sticky-top {
+  inset-block-start: 0;
+}
+
+.cy-toolbar--sticky-bottom {
+  inset-block-end: 0;
+}
+
+/* ==========================================================================
+   CyWorkspace / CyWorkspacePane
+   ========================================================================== */
+
+.cy-workspace {
+  --cy-workspace-gap: var(--cymru-space-4);
+  --cy-workspace-height: auto;
+
+  display: flex;
+  align-items: stretch;
+  gap: var(--cy-workspace-gap);
+  inline-size: 100%;
+  block-size: var(--cy-workspace-height, auto);
+}
+
+.cy-workspace-pane {
+  --cy-pane-width: 18rem;
+  --cy-pane-min-width: 12rem;
+
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--cy-pane-width);
+  min-inline-size: var(--cy-pane-min-width);
+  min-block-size: 0;
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+.cy-workspace-pane--fill {
+  flex: 1 1 0;
+}
+
+.cy-workspace-pane__header {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-2);
+  padding: var(--cymru-space-2) var(--cymru-space-3);
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.cy-workspace-pane__title {
+  flex: 1 1 auto;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.cy-workspace-pane__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+}
+
+.cy-workspace-pane__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text-secondary);
+  cursor: pointer;
+}
+
+.cy-workspace-pane__toggle:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-workspace-pane__toggle:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: calc(-1 * var(--cymru-focus-ring-width));
+}
+
+.cy-workspace-pane__body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  padding: var(--cymru-space-3);
+  overflow: auto;
+}
+
+.cy-workspace-pane__body[hidden] {
+  display: none;
+}
+
+/* Collapsed: a narrow rail that keeps the toggle. */
+.cy-workspace-pane--collapsed {
+  flex: 0 0 auto;
+  min-inline-size: 0;
+}
+
+.cy-workspace-pane--collapsed .cy-workspace-pane__header {
+  border-block-end: 0;
+}
+
+.cy-workspace-pane--collapsed .cy-workspace-pane__title {
+  /* Hidden visually, still the section's accessible name. */
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 48rem) {
+  .cy-workspace {
+    flex-direction: column;
+    block-size: auto;
+  }
+
+  .cy-workspace-pane,
+  .cy-workspace-pane--fill {
+    flex: 0 0 auto;
+    min-inline-size: 0;
+  }
+}
+
+/* ==========================================================================
+   CyDrawer
+   ========================================================================== */
+
+.cy-drawer {
+  --cy-drawer-width: 24rem;
+
+  color: var(--cymru-color-text);
+  background-color: var(--cymru-color-surface);
+}
+
+.cy-drawer--sm {
+  --cy-drawer-width: 18rem;
+}
+
+.cy-drawer--md {
+  --cy-drawer-width: 24rem;
+}
+
+.cy-drawer--lg {
+  --cy-drawer-width: 36rem;
+}
+
+/* Modal: a <dialog> in the top layer, pinned to one edge. */
+dialog.cy-drawer {
+  inline-size: min(var(--cy-drawer-width), 100vw);
+  max-inline-size: 100vw;
+  block-size: 100dvh;
+  max-block-size: 100dvh;
+  margin-block: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: var(--cymru-elevation-dialog);
+}
+
+dialog.cy-drawer--right {
+  margin-inline: auto 0;
+  border-inline-start: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+}
+
+dialog.cy-drawer--left {
+  margin-inline: 0 auto;
+  border-inline-end: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+}
+
+dialog.cy-drawer::backdrop {
+  background: rgb(11 12 12 / 0.6);
+}
+
+html:has(dialog.cy-drawer[open]) {
+  overflow: hidden;
+}
+
+/* Inline (non-modal): an ordinary aside in the page flow. */
+aside.cy-drawer--inline {
+  inline-size: var(--cy-drawer-width);
+  max-inline-size: 100%;
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-card);
+}
+
+aside.cy-drawer--inline:focus {
+  outline: none;
+}
+
+aside.cy-drawer--inline:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: var(--cymru-focus-ring-offset);
+}
+
+.cy-drawer__panel {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  max-block-size: inherit;
+}
+
+.cy-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+.cy-drawer__title {
+  margin: 0;
+}
+
+.cy-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text);
+  font-size: var(--cymru-font-size-xl);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cy-drawer__close:hover {
+  background-color: var(--cymru-color-surface-hover);
+}
+
+.cy-drawer__close:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: calc(-1 * var(--cymru-focus-ring-width));
+}
+
+.cy-drawer__body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  padding: var(--cymru-space-4);
+  overflow: auto;
+}
+
+.cy-drawer__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--cymru-space-3);
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  dialog.cy-drawer[open] {
+    animation: cy-drawer-in 160ms ease-out;
+  }
+
+  dialog.cy-drawer--left[open] {
+    animation-name: cy-drawer-in-left;
+  }
+}
+
+@keyframes cy-drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes cy-drawer-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@media (forced-colors: active) {
+  .cy-workspace-pane,
+  .cy-sortable__item,
+  .cy-menu__list,
+  dialog.cy-drawer {
+    border: var(--cymru-border-width-thin) solid CanvasText;
+  }
+
+  .cy-menu__item:focus-visible,
+  .cy-menu__item:hover:not([aria-disabled="true"]) {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

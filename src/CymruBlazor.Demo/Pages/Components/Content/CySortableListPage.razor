@@ -1,0 +1,150 @@
+@page "/content/sortable-list"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CySortableList" Subtitle="A reorderable list with pointer, keyboard and button alternatives.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CySortableList" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <div class="cb-sortable-demo" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr)); gap:1.5rem;">
+            <div>
+                <h2 style="margin-top:0; font-size:var(--cymru-font-size-lg);">Section A</h2>
+                <CySortableList TItem="DemoQuestion" Id="demo-section-a" Label="Section A questions"
+                                Group="sections" Items="_sectionA"
+                                KeySelector="q => q.Id" ItemLabelSelector="q => q.Name"
+                                OnReorder="Apply">
+                    <ItemTemplate Context="q">@q.Name</ItemTemplate>
+                    <EmptyContent>No questions in this section.</EmptyContent>
+                </CySortableList>
+            </div>
+            <div>
+                <h2 style="margin-top:0; font-size:var(--cymru-font-size-lg);">Section B</h2>
+                <CySortableList TItem="DemoQuestion" Id="demo-section-b" Label="Section B questions"
+                                Group="sections" Items="_sectionB"
+                                KeySelector="q => q.Id" ItemLabelSelector="q => q.Name"
+                                OnReorder="Apply">
+                    <ItemTemplate Context="q">@q.Name</ItemTemplate>
+                    <EmptyContent>No questions in this section.</EmptyContent>
+                </CySortableList>
+            </div>
+        </div>
+        <p style="margin:0;">Drag a handle, or focus it and press Space, use the arrow keys, then Space again to drop (Escape cancels). The Up, Down and menu buttons do the same with a single click.</p>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CySortableList.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private sealed record DemoQuestion(int Id, string Name);
+
+    private readonly List<DemoQuestion> _sectionA =
+    [
+        new(1, "Disease status"),
+        new(2, "Age at onset"),
+        new(3, "Family history"),
+    ];
+
+    private readonly List<DemoQuestion> _sectionB =
+    [
+        new(4, "Current medication"),
+    ];
+
+    // The list reports the move; the page owns the data and applies it.
+    private void Apply(CyReorderEventArgs<DemoQuestion> e)
+    {
+        var source = e.SourceListId == "demo-section-a" ? _sectionA : _sectionB;
+        var target = e.TargetListId == "demo-section-a" ? _sectionA : _sectionB;
+
+        source.RemoveAt(e.OldIndex);
+        target.Insert(Math.Min(e.NewIndex, target.Count), e.Item);
+    }
+
+    private string GeneratedCode => """
+        <CySortableList TItem="Question" Label="Section A questions" Group="sections"
+                        Items="sectionA" KeySelector="q => q.Id" ItemLabelSelector="q => q.Name"
+                        OnReorder="Apply">
+            <ItemTemplate Context="q">@q.Name</ItemTemplate>
+        </CySortableList>
+
+        @code {
+            void Apply(CyReorderEventArgs<Question> e)
+            {
+                source.RemoveAt(e.OldIndex);
+                target.Insert(e.NewIndex, e.Item);
+            }
+        }
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Items", "IEnumerable<TItem>?", "null", "The items, in order. The list never changes this collection."),
+        new("ItemTemplate", "RenderFragment<TItem>", "-", "How one item is rendered. Required."),
+        new("KeySelector", "Func<TItem, object>", "-", "A stable, unique key per item. Required."),
+        new("Label", "string", "-", "Names the list. Required."),
+        new("Group", "string?", "null", "Lists with the same Group (and item type) can exchange items."),
+        new("OnReorder", "EventCallback<CyReorderEventArgs<TItem>>", "-", "Raised with the item, old and new index, and source and target list ids. The receiving list raises it."),
+        new("ItemLabelSelector", "Func<TItem, string>?", "ToString()", "The item's name for handles, buttons and announcements."),
+        new("Disabled", "bool", "false", "Turns off every way of reordering."),
+        new("HandleOnly", "bool", "true", "Only the handle starts a drag, so text in an item stays selectable."),
+        new("ShowMoveActions", "bool", "true", "Shows Move up, Move down and Move to... buttons."),
+        new("EmptyContent", "RenderFragment?", "null", "Shown when there are no items."),
+        new("Text", "CySortableListText?", "null", "Replaces the built-in announcement and label strings, for localisation.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Single-pointer alternative", "Move up, Move down and a Move to menu do everything dragging does with a single click, meeting WCAG 2.5.7."),
+        new("Keyboard", "Space picks up, Up and Down move, Home and End jump, Space or Enter drops, Escape cancels. Leaving the handle cancels."),
+        new("Announcements", "Pick-up, each move, drop and cancel are announced through the live region, with the item's position."),
+        new("Target size", "The handle and buttons are 44px square, above the 24x24 minimum of WCAG 2.5.8."),
+        new("Reduced motion", "Transitions are skipped when the user prefers reduced motion."),
+        new("No dependency", "Dragging uses Pointer Events in a small on-demand module, so mouse, touch and pen behave the same.")
+    ];
+}

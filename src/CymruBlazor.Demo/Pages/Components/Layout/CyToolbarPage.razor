@@ -1,0 +1,94 @@
+@page "/layouts/toolbar"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyToolbar" Subtitle="A grouped set of actions with a single tab stop and arrow-key navigation.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyToolbar" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyToolbar Label="Designer actions">
+            <CyButton Variant="ComponentColour.Secondary" OnClick='() => _status = "Undo"'>Undo</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" OnClick='() => _status = "Redo"'>Redo</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" OnClick='() => _status = "Preview"'>Preview</CyButton>
+            <CyButton OnClick='() => _status = "Publish"'>Publish</CyButton>
+        </CyToolbar>
+        <p aria-live="polite" style="margin:0;">Last action: <strong>@(_status ?? "none")</strong>. Tab once into the toolbar, then use the Left and Right arrow keys.</p>
+    </div>
+
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyToolbar.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string? _status;
+
+    private string GeneratedCode => """
+        <CyToolbar Label="Designer actions" Sticky="StickyPosition.Top">
+            <CyButton OnClick="Undo">Undo</CyButton>
+            <CyButton OnClick="Redo">Redo</CyButton>
+            <CyButton OnClick="Publish">Publish</CyButton>
+        </CyToolbar>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "The toolbar's accessible name. Required."),
+        new("Orientation", "Orientation", "Horizontal", "Horizontal toolbars use Left/Right; vertical ones use Up/Down."),
+        new("Sticky", "StickyPosition", "None", "Pins the toolbar to the top or bottom of its scroll container."),
+        new("ChildContent", "RenderFragment?", "null", "The controls.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("role=toolbar", "Exposes the group as a toolbar with a name and aria-orientation."),
+        new("One tab stop", "A roving tabindex puts one control in the tab order, so a long toolbar costs one Tab press to pass."),
+        new("Arrow keys", "Arrows move between controls and wrap; Home and End jump to the ends. Arrows are left alone inside text fields."),
+        new("Without script", "If the script cannot load, every control stays reachable with Tab.")
+    ];
+}
