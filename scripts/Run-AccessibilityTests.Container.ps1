@@ -18,12 +18,23 @@ if (-not (Test-Path $ReportDir)) {
 
 $env:CYMRU_SMOKE_REPORT_DIR = $ReportDir
 
+# The repository is bind-mounted from the host, so its bin/ and obj/ folders hold build and restore output
+# written on the host (Windows paths, Visual Studio's fallback package folder). Building from them inside this
+# Linux container fails in ResolvePackageAssets, and building here would also overwrite the host's restore state.
+# So build from a clean copy that leaves bin/ and obj/ behind. Reports and the published site still go to
+# /workspace/.artifacts, which is the host-visible location.
+$source = "/workspace"
+$work = "/tmp/cymru-build"
+Write-Host "Copying sources to $work (without bin/obj)..."
+if (Test-Path $work) { Remove-Item $work -Recurse -Force }
+New-Item -ItemType Directory -Path $work -Force | Out-Null
+tar -C $source --exclude=./.git --exclude=./.artifacts --exclude=bin --exclude=obj --exclude=node_modules -cf - . | tar -C $work -xf -
+if ($LASTEXITCODE -ne 0) { throw "Copying sources failed with exit code $LASTEXITCODE" }
+Set-Location $work
+
 Write-Host "Restoring solution dependencies..."
 $env:NUGET_CERT_REVOCATION_MODE = "offline"
-# --force: the repository is bind-mounted from the host, so obj/ may hold restore output written by Visual
-# Studio on Windows (including its fallback package folder, which does not exist in this Linux container).
-# Without --force NuGet can treat that as up to date and the publish then fails in ResolvePackageAssets.
-dotnet restore --force --verbosity minimal
+dotnet restore --verbosity minimal
 
 Write-Host "Publishing CymruBlazor.Demo (isolated to prevent NETSDK1152 duplicate asset collision)..."
 dotnet publish src/CymruBlazor.Demo/CymruBlazor.Demo.csproj -c Release -o $PublishPath --no-restore

@@ -102,7 +102,8 @@ public sealed class CyDrawerTests : TestContextBase
 
         await cut.InvokeAsync(() => cut.Instance.OnNativeClosed());
 
-        states.ShouldBe(new[] { false });
+        states.Count.ShouldBe(1);
+        states[0].ShouldBeFalse();
     }
 
     [Fact]
@@ -113,7 +114,8 @@ public sealed class CyDrawerTests : TestContextBase
 
         cut.Find("button.cy-drawer__close").Click();
 
-        states.ShouldBe(new[] { false });
+        states.Count.ShouldBe(1);
+        states[0].ShouldBeFalse();
     }
 
     [Fact]
@@ -227,7 +229,8 @@ public sealed class CyDrawerTests : TestContextBase
 
         cut.Find("aside").KeyDown(new KeyboardEventArgs { Key = "Escape" });
 
-        states.ShouldBe(new[] { false });
+        states.Count.ShouldBe(1);
+        states[0].ShouldBeFalse();
     }
 
     [Fact]

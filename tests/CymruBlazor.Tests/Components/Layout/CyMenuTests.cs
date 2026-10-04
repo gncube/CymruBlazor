@@ -180,7 +180,7 @@ public sealed class CyMenuTests : TestContextBase
         cut.Find("button.cy-menu__trigger").Click();
         cut.Find("[role='menu']").KeyDown(new KeyboardEventArgs { Key = "Escape" });
 
-        states.ShouldBe(new[] { true, false });
+        string.Join(",", states).ShouldBe("True,False");
     }
 
     [Fact]

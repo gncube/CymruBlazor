@@ -62,7 +62,7 @@ public sealed class CyWorkspaceTests : TestContextBase
         var cut = Render<CyWorkspace>(p => p.Add(c => c.ChildContent, Panes));
 
         var panes = cut.FindAll("section.cy-workspace-pane");
-        panes[0].GetAttribute("style").ShouldContain("--cy-pane-width:16rem");
+        panes[0].GetAttribute("style")!.ShouldContain("--cy-pane-width:16rem");
         panes[0].ClassList.ShouldNotContain("cy-workspace-pane--fill");
         panes[1].ClassList.ShouldContain("cy-workspace-pane--fill");
         (panes[1].GetAttribute("style") ?? string.Empty).ShouldNotContain("--cy-pane-width");
@@ -73,7 +73,7 @@ public sealed class CyWorkspaceTests : TestContextBase
     {
         var cut = RenderPane(p => p.Add(c => c.MinWidth, "14rem"));
 
-        cut.Find("section").GetAttribute("style").ShouldContain("--cy-pane-min-width:14rem");
+        cut.Find("section").GetAttribute("style")!.ShouldContain("--cy-pane-min-width:14rem");
     }
 
     [Theory]
@@ -161,7 +161,8 @@ public sealed class CyWorkspaceTests : TestContextBase
 
         cut.Find(".cy-workspace-pane__toggle").Click();
 
-        states.ShouldBe(new[] { true });
+        states.Count.ShouldBe(1);
+        states[0].ShouldBeTrue();
     }
 
     [Fact]

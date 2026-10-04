@@ -176,7 +176,7 @@ public sealed class SortableListTests : TestContextBase
 
         cut.FindAll("button[data-cy-action='down']")[0].Click();
 
-        source.Select(q => q.Id).ShouldBe(new[] { 1, 2, 3 });
+        string.Join(",", source.Select(q => q.Id)).ShouldBe("1,2,3");
         cut.FindAll("li[data-cy-item]")[0].TextContent.ShouldContain("Disease status");
     }
 
@@ -255,9 +255,9 @@ public sealed class SortableListTests : TestContextBase
 
         var items = cut.FindAll("li[data-cy-item]");
         items[0].TextContent.ShouldContain("Disease status");
-        items[0].GetAttribute("style").ShouldContain("order:1");
-        items[1].GetAttribute("style").ShouldContain("order:0");
-        items[2].GetAttribute("style").ShouldContain("order:2");
+        items[0].GetAttribute("style")!.ShouldContain("order:1");
+        items[1].GetAttribute("style")!.ShouldContain("order:0");
+        items[2].GetAttribute("style")!.ShouldContain("order:2");
     }
 
     [Fact]
