@@ -29,7 +29,7 @@
     <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
         <div class="cb-sortable-demo" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr)); gap:1.5rem;">
             <div>
-                <h3 style="margin-top:0;">Section A</h3>
+                <h2 style="margin-top:0; font-size:var(--cymru-font-size-lg);">Section A</h2>
                 <CySortableList TItem="DemoQuestion" Id="demo-section-a" Label="Section A questions"
                                 Group="sections" Items="_sectionA"
                                 KeySelector="q => q.Id" ItemLabelSelector="q => q.Name"
@@ -39,7 +39,7 @@
                 </CySortableList>
             </div>
             <div>
-                <h3 style="margin-top:0;">Section B</h3>
+                <h2 style="margin-top:0; font-size:var(--cymru-font-size-lg);">Section B</h2>
                 <CySortableList TItem="DemoQuestion" Id="demo-section-b" Label="Section B questions"
                                 Group="sections" Items="_sectionB"
                                 KeySelector="q => q.Id" ItemLabelSelector="q => q.Name"

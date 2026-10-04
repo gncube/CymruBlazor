@@ -30,6 +30,8 @@ if (Test-Path $work) { Remove-Item $work -Recurse -Force }
 New-Item -ItemType Directory -Path $work -Force | Out-Null
 tar -C $source --exclude=./.git --exclude=./.artifacts --exclude=bin --exclude=obj --exclude=node_modules -cf - . | tar -C $work -xf -
 if ($LASTEXITCODE -ne 0) { throw "Copying sources failed with exit code $LASTEXITCODE" }
+# The browser tests find the repository root by looking for a .git directory, which was left out of the copy.
+New-Item -ItemType Directory -Path (Join-Path $work ".git") -Force | Out-Null
 Set-Location $work
 
 Write-Host "Restoring solution dependencies..."
