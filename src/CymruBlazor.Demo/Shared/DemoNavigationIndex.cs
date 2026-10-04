@@ -110,10 +110,6 @@ public static class DemoNavigationIndex
             "A three-field day/month/year date input."),
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
-        new("Forms", "Field", "/forms/field",
-            "Label, hint and error around any control, with no EditForm needed."),
-        new("Forms", "Switch", "/forms/switch",
-            "An on/off control for a setting that takes effect immediately."),
 
         // 7. Content
         new("Content", "Overview", "/content",
