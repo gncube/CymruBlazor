@@ -283,6 +283,11 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
         _activeItem = item;
         StateHasChanged();
 
+        foreach (var menuItem in _items)
+        {
+            menuItem.RefreshState();
+        }
+
         await item.FocusAsync();
     }
 
