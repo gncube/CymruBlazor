@@ -99,7 +99,12 @@ public partial class CyToolbar : CyLayoutComponentBase, IAsyncDisposable
                 _element,
                 Orientation == Orientation.Vertical ? "vertical" : "horizontal");
         }
-        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
+        catch (Exception ex) when (
+            OverlayInterop.IsTeardown(ex)
+            || ex is JSException
+            || ex is JSDisconnectedException
+            || ex is InvalidOperationException
+            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
         {
             // Without the script every control stays in the tab order.
         }
@@ -124,7 +129,13 @@ public partial class CyToolbar : CyLayoutComponentBase, IAsyncDisposable
                 _module = null;
             }
         }
-        catch (Exception ex) when (ex is JSException or JSDisconnectedException or ObjectDisposedException or InvalidOperationException)
+        catch (Exception ex) when (
+            OverlayInterop.IsTeardown(ex)
+            || ex is JSException
+            || ex is JSDisconnectedException
+            || ex is ObjectDisposedException
+            || ex is InvalidOperationException
+            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
         {
             // Browser or circuit is already gone.
         }

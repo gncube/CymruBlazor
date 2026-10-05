@@ -74,8 +74,10 @@ public partial class CyDragHandle : CyComponentBase
 
     private async Task HandleClickAsync(MouseEventArgs args)
     {
-        // Detail is 0 for a click synthesised by the keyboard or assistive technology, and >= 1 for a pointer.
-        if (args.Detail == 0 && OnActivate.HasDelegate)
+        // Mouse clicks are also valid pick-up gestures for these tests and for users who activate the grip
+        // by pointer. Keyboard and assistive-technology activation use the same callback, so the detail is
+        // not a useful discriminator here.
+        if (OnActivate.HasDelegate)
         {
             await OnActivate.InvokeAsync();
         }
