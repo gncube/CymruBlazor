@@ -109,7 +109,7 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
         }
     }
 
-    internal bool IsActive(CyMenuItem item) => ReferenceEquals(ResolveActiveItem(), item);
+    internal bool IsActive(CyMenuItem item) => ReferenceEquals(_activeItem, item);
 
     internal void Register(CyMenuItem item)
     {
@@ -245,32 +245,12 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
             return;
         }
 
-        var currentItem = ResolveActiveItem();
-        var current = currentItem is null ? -1 : enabled.IndexOf(currentItem);
+        var current = _activeItem is null ? -1 : enabled.IndexOf(_activeItem);
         var next = current < 0
             ? (step > 0 ? 0 : enabled.Count - 1)
             : (current + step + enabled.Count) % enabled.Count;
 
         await FocusItemAsync(enabled[next]);
-    }
-
-    private CyMenuItem? ResolveActiveItem()
-    {
-        var enabled = _items.Where(i => !i.Disabled).ToList();
-
-        if (enabled.Count == 0)
-        {
-            _activeItem = null;
-            return null;
-        }
-
-        if (_activeItem is not null && enabled.Contains(_activeItem))
-        {
-            return _activeItem;
-        }
-
-        _activeItem = enabled[0];
-        return _activeItem;
     }
 
     private async Task FocusItemAsync(CyMenuItem? item)
@@ -282,11 +262,6 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
 
         _activeItem = item;
         StateHasChanged();
-
-        foreach (var menuItem in _items)
-        {
-            menuItem.RefreshState();
-        }
 
         await item.FocusAsync();
     }
@@ -322,11 +297,7 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
         {
             await element.FocusAsync();
         }
-        catch (Exception ex) when (
-            ex is JSException
-            || ex is JSDisconnectedException
-            || ex is InvalidOperationException
-            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
         {
             // Browser or circuit is gone, or the element was removed.
         }
@@ -345,11 +316,7 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
             _selfReference ??= DotNetObjectReference.Create(this);
             _token = await _module.InvokeAsync<int>("attachMenu", _root, _selfReference);
         }
-        catch (Exception ex) when (
-            ex is JSException
-            || ex is JSDisconnectedException
-            || ex is InvalidOperationException
-            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
         {
             // The menu still works without the script: keyboard and pointer are handled in .NET.
         }
@@ -374,12 +341,7 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
                 _module = null;
             }
         }
-        catch (Exception ex) when (
-            ex is JSException
-            || ex is JSDisconnectedException
-            || ex is ObjectDisposedException
-            || ex is InvalidOperationException
-            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or ObjectDisposedException or InvalidOperationException)
         {
             // Browser or circuit is already gone.
         }

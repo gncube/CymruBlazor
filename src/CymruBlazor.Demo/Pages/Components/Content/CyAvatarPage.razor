@@ -1,0 +1,119 @@
+@page "/content/avatar"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyAvatar" Subtitle="A person as a photo or initials, alone or in an overlapping group.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyAvatar" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--cymru-space-3);">
+            <CyAvatar Name="Gwen Davies" Size="ComponentSize.ExtraSmall" />
+            <CyAvatar Name="Gwen Davies" Size="ComponentSize.Small" />
+            <CyAvatar Name="Gwen Davies" />
+            <CyAvatar Name="Gwen Davies" Size="ComponentSize.Large" />
+            <CyAvatar Name="Gwen Davies" Size="ComponentSize.ExtraLarge" />
+        </div>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--cymru-space-3);">
+            <CyAvatar Name="Rhys ap Gruffudd" />
+            <CyAvatar Name="Megan Hughes" />
+            <CyAvatar Name="Owain Pritchard" />
+            <CyAvatar Name="Catrin Evans" />
+            <CyAvatar Name="Dafydd Morgan" />
+            <CyAvatar Name="Seren Lloyd" />
+        </div>
+        <div style="display:flex; align-items:center; gap:var(--cymru-space-3);">
+            <CyAvatar Name="Gwen Davies" Decorative="true" />
+            <span>Gwen Davies</span>
+        </div>
+        <CyAvatarGroup Label="Reviewers" Items="_people" Max="4" />
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyAvatar.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly IReadOnlyList<CyAvatarItem> _people =
+    [
+        new("Gwen Davies"),
+        new("Rhys ap Gruffudd"),
+        new("Megan Hughes"),
+        new("Owain Pritchard"),
+        new("Catrin Evans"),
+        new("Dafydd Morgan"),
+        new("Seren Lloyd")
+    ];
+
+    private string GeneratedCode => """
+        <CyAvatar Name="Gwen Davies" />
+
+        @* Beside a visible name, hide it from assistive technology: *@
+        <CyAvatar Name="Gwen Davies" Decorative="true" />
+        <span>Gwen Davies</span>
+
+        <CyAvatarGroup Label="Reviewers" Items="_people" Max="4" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyAvatar.Name", "string", "-", "The person name: accessible name, initials and colour. Required."),
+        new("CyAvatar.ImageUrl", "string?", "null", "Photo shown instead of initials. A failed load is not replaced."),
+        new("CyAvatar.Initials", "string?", "null", "Overrides the worked-out initials."),
+        new("CyAvatar.Size", "ComponentSize", "Medium", "ExtraSmall to ExtraLarge."),
+        new("CyAvatar.Decorative", "bool", "false", "Hide from assistive technology, for use beside a visible name."),
+        new("CyAvatarGroup.Items", "IEnumerable<CyAvatarItem>", "null", "The people: Name and optional ImageUrl."),
+        new("CyAvatarGroup.Max", "int", "4", "Avatars shown before the +N badge."),
+        new("CyAvatarGroup.Size", "ComponentSize", "Medium", "Size of every avatar."),
+        new("CyAvatarGroup.Label", "string?", "null", "Accessible name of the list."),
+        new("CyAvatarGroup.Text", "CyAvatarGroupText?", "null", "Localised \"and {0} more\".")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Named image", "An avatar is announced as an image named by the person name."),
+        new("No repeated names", "Use Decorative beside a visible name so it is not read twice."),
+        new("Initials hidden", "The letters are hidden from assistive technology; the name carries the meaning."),
+        new("Group as a list", "The group is a list, and the +N badge is read as \"and 3 more\"."),
+        new("Stable colour", "Colours come from theme tokens and are chosen from the name, so the same person always looks the same.")
+    ];
+}

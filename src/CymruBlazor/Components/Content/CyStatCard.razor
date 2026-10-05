@@ -1,0 +1,86 @@
+@namespace CymruBlazor.Components.Content
+@using CymruBlazor.Components.Feedback
+@using CymruBlazor.Enums
+@inherits CyLayoutComponentBase
+
+@{
+    RenderFragment body = @<text>
+        <div class="cy-stat-card__header">
+            @if (!string.IsNullOrWhiteSpace(Icon))
+            {
+                <span class="cy-stat-card__icon" aria-hidden="true">
+                    <CyIcon Name="@Icon" Size="20" />
+                </span>
+            }
+
+            @if (HeadingLevel is int level)
+            {
+                <CyTypography Variant="TypographyVariant.H6" As="@($"h{level}")" Class="cy-stat-card__label">@Label</CyTypography>
+            }
+            else
+            {
+                <p class="cy-stat-card__label">@Label</p>
+            }
+        </div>
+
+        @if (Loading)
+        {
+            <div class="cy-stat-card__value-skeleton">
+                <CySkeleton Width="5rem" Announce="false" />
+            </div>
+            <span class="u-sr-only">@Strings.Loading</span>
+        }
+        else
+        {
+            <p class="cy-stat-card__value">
+                <span class="cy-stat-card__number">@Value</span>
+                @if (!string.IsNullOrWhiteSpace(Unit))
+                {
+                    <span class="cy-stat-card__unit">@Unit</span>
+                }
+            </p>
+
+            @if (HasTrendText)
+            {
+                <p class="cy-stat-card__trend cy-stat-card__trend--@TrendModifier">
+                    @if (TrendIconName is not null)
+                    {
+                        <span class="cy-stat-card__trend-icon" aria-hidden="true"><CyIcon Name="@TrendIconName" Size="16" /></span>
+                    }
+                    @if (TrendPrefix is not null)
+                    {
+                        <span class="u-sr-only">@TrendPrefix </span>
+                    }
+                    <span>@TrendText</span>
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <p class="cy-stat-card__description">@Description</p>
+            }
+        }
+    </text>;
+}
+
+@if (Href is not null)
+{
+    <a id="@Id"
+       href="@Href"
+       class="@CssClass"
+       style="@CssStyle"
+       aria-busy="@(Loading ? "true" : null)"
+       @attributes="AdditionalAttributes">
+        @body
+    </a>
+}
+else
+{
+    <div id="@Id"
+         class="@CssClass"
+         style="@CssStyle"
+         aria-busy="@(Loading ? "true" : null)"
+         @attributes="AdditionalAttributes">
+        @body
+    </div>
+}

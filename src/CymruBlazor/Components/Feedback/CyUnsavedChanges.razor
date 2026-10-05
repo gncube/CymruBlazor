@@ -1,0 +1,19 @@
+@namespace CymruBlazor.Components.Feedback
+@using CymruBlazor.Components.Content
+@implements IDisposable
+@inherits CyComponentBase
+
+@if (ShowIndicator)
+{
+    <div id="@Id"
+         class="@CssClass"
+         style="@CssStyle"
+         role="status"
+         @attributes="AdditionalAttributes">
+        @if (IndicatorText is not null)
+        {
+            <span class="cy-unsaved__icon" aria-hidden="true"><CyIcon Name="@IconName" Size="16" /></span>
+            <span class="cy-unsaved__text">@IndicatorText</span>
+        }
+    </div>
+}

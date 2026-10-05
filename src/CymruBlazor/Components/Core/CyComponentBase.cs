@@ -122,20 +122,12 @@ public abstract class CyComponentBase : ComponentBase
             _id = ComponentIdGenerator.Create();
         }
 
-        RefreshCssState();
+        _cssClass = BuildCssClass();
+        _cssStyle = BuildCssStyle();
+
         ValidateParameters();
 
         OnParametersValidated();
-    }
-
-    /// <summary>
-    /// Recomputes the derived CSS class and inline style strings after internal state changes.
-    /// Use this for toggled state that does not come in through component parameters.
-    /// </summary>
-    protected void RefreshCssState()
-    {
-        _cssClass = BuildCssClass();
-        _cssStyle = BuildCssStyle();
     }
 
     /// <summary>

@@ -8,6 +8,78 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [1.10.0] - Unreleased
+
+Roadmap v1.10.0 ("Flow and review", Phase D of `docs/IMPLEMENTATION-PLAN.md`):
+the components for multi-step journeys, review pages, dashboards and safe
+editing. Everything here is additive: no existing member is removed or
+changed, no new `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched.
+No new required member on `CyLocalizedStrings`: every new phrase lives in a
+`Cy<Name>Text` record with English defaults. No third-party script or npm
+package is introduced, and no existing JavaScript file is changed.
+
+### Added
+
+- **`CyStepper` and `CyStepItem`** (Layout): horizontal or vertical progress
+  indicator. A `nav` with an ordered list; the current step has
+  `aria-current="step"`, other states are spoken as hidden text and shown by
+  icon or number. `Clickable` steps are buttons (or links with `Href`);
+  upcoming steps need `AllowForwardNavigation`. `@bind-Current`,
+  `OnStepSelected`, `CyStepperText`. Below 40rem the horizontal layout becomes
+  a "Step 2 of 4: Title" summary.
+- **`CySummaryList` and `CySummaryRow`** (Content): "check your answers" list
+  as a `dl` with key, value and a change link or button. The change action's
+  name includes the key ("Change Date of birth", WCAG 2.4.4). `Borders`,
+  `Card`, `CySummaryListText` ("Change", "Not provided").
+- **`CyStatCard`** (Content): key figure with `Unit`, `Trend` and `TrendText`
+  (always written out; the arrow is decorative), `TrendTone`, `Colour` accent,
+  `Href` (whole card is a link), `Loading` (skeleton plus `aria-busy`) and
+  optional `HeadingLevel`. `CyStatCardText`.
+- **`ICyConfirmService`, `CyConfirmService`, `CyConfirmOptions` and
+  `CyConfirmDialog`** (Accessibility): `await ConfirmAsync(...)` over
+  `CyDialog` (ADR-0001). One `CyConfirmDialog` host in the layout. Escape, the
+  close button, Cancel, a cancelled token and removing the host all answer
+  `false`, so the task never hangs; concurrent requests queue; a destructive
+  request focuses Cancel and uses the danger button. Without a host,
+  `ConfirmAsync` throws a clear `InvalidOperationException`. Registered
+  (scoped) by `AddCymruBlazor()`. `CyConfirmText`.
+- **`CyUnsavedChanges`** (Feedback): navigation guard plus a Saving / Saved /
+  Unsaved / Error indicator (`role="status"`, always present, announces on
+  change). Uses `NavigationManager.RegisterLocationChangingHandler` and asks
+  through `ICyConfirmService` when a host exists; otherwise cancels the
+  navigation and raises `OnNavigationBlocked`. Fragment-only changes are not
+  guarded. `CySaveState`, `CyUnsavedChangesText`.
+  *Limit:* reload, closing the tab and external links are not guarded (that
+  needs a `beforeunload` script).
+- **`CySkeleton`** (Feedback): text bars, rectangle or circle placeholder.
+  Shapes are `aria-hidden`; one hidden "Loading" text per skeleton (turn off
+  with `Announce` inside a group). `Width`/`Height` accept plain lengths only.
+  Shimmer stops under `prefers-reduced-motion`.
+- **`CySegmentedControl<TValue>`** (Forms): joined single-choice control on
+  native radios (arrow-key behaviour from the browser), `@bind-Value`, items
+  as `CyOption<TValue>`.
+- **`CyAvatar`, `CyAvatarGroup`, `CyAvatarItem`** (Content): photo or initials
+  on one of six theme-token colours chosen from the name; `Decorative` for use
+  beside a visible name; group with "+N" badge read as "and N more".
+- **`CyNotificationBell`** (Layout): button or link with an unread count in
+  its accessible name ("Notifications, 3 unread"), `Max` ("99+"), `Expanded`
+  for `aria-expanded`, optional polite `Announce`.
+- Stylesheets `flow.css` and `controls.css`, token-only so light, dark and
+  high-contrast follow automatically; `forced-colors` and
+  `prefers-reduced-motion` handled.
+- Demo pages for all of the above, registered in the sidebar, search index and
+  the Forms, Content, Feedback and Navigation overviews (English and Welsh).
+  `MainLayout` now hosts `<CyConfirmDialog />`.
+
+### Notes for consumers
+
+- To use `ICyConfirmService` (or the leave-the-page prompt in
+  `CyUnsavedChanges`), add `<CyConfirmDialog />` once to your layout.
+- The Welsh overview-card descriptions are first drafts and should be checked
+  by a Welsh speaker before release.
+
+---
+
 ## [1.9.0] - Unreleased
 
 Roadmap v1.9.0 ("Editing experience", Phase C of

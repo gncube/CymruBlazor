@@ -1,0 +1,40 @@
+@namespace CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Content
+@inherits CyComponentBase
+
+@{
+    RenderFragment inner = @<text>
+        <CyIcon Name="notification" Size="24" />
+        @if (Count > 0)
+        {
+            <span class="cy-bell__badge" aria-hidden="true">@CountText</span>
+        }
+    </text>;
+}
+
+<span id="@Id"
+      class="@CssClass"
+      style="@CssStyle"
+      @attributes="AdditionalAttributes">
+
+    @if (!string.IsNullOrWhiteSpace(Href))
+    {
+        <a class="cy-bell__control" href="@Href" aria-label="@AccessibleName">@inner</a>
+    }
+    else
+    {
+        <button type="button"
+                class="cy-bell__control"
+                aria-label="@AccessibleName"
+                aria-expanded="@ExpandedValue"
+                @onclick="OnClick">
+            @inner
+        </button>
+    }
+
+    @if (Announce)
+    {
+        <span class="u-sr-only" role="status">@(Count > 0 ? AccessibleName : null)</span>
+    }
+
+</span>

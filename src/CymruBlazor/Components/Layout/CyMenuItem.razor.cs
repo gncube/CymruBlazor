@@ -69,8 +69,6 @@ public partial class CyMenuItem : CyComponentBase, IDisposable
 
     private Task ActivateAsync() => Menu is null ? Task.CompletedTask : Menu.ActivateAsync(this);
 
-    internal void RefreshState() => InvokeAsync(StateHasChanged);
-
     internal async ValueTask FocusAsync()
     {
         try

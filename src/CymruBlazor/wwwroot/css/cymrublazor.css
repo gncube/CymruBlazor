@@ -80,6 +80,8 @@
 @import "components/switch.css" layer(components);
 @import "components/sortable-list.css" layer(components);
 @import "components/editing.css" layer(components);
+@import "components/flow.css" layer(components);
+@import "components/controls.css" layer(components);
 
 /* ==========================================================================
    Utilities

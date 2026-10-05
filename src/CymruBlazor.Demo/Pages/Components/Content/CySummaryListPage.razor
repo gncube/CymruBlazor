@@ -1,0 +1,101 @@
+@page "/content/summary-list"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CySummaryList" Subtitle="Check your answers: key, value and a change link.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CySummaryList" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CySummaryList>
+            <CySummaryRow Key="Name" Value="Gwen Davies" ChangeHref="/content/summary-list" />
+            <CySummaryRow Key="Date of birth" Value="1 May 1980" OnChange="ChangeDateOfBirth" />
+            <CySummaryRow Key="Address" ChangeHref="/content/summary-list">
+                <span>1 High Street<br />Cardiff<br />CF10 1AA</span>
+            </CySummaryRow>
+            <CySummaryRow Key="Allergies" ChangeHref="/content/summary-list" />
+            <CySummaryRow Key="NHS number" Value="Cannot be changed here" />
+        </CySummaryList>
+        <p aria-live="polite" style="margin:0;">@_message</p>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CySummaryList.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string _message = string.Empty;
+
+    private void ChangeDateOfBirth() => _message = "You pressed Change for Date of birth.";
+
+    private string GeneratedCode => """
+        <CySummaryList>
+            <CySummaryRow Key="Name" Value="Gwen Davies" ChangeHref="/details/name" />
+            <CySummaryRow Key="Date of birth" Value="1 May 1980" OnChange="ChangeDateOfBirth" />
+            <CySummaryRow Key="Address" ChangeHref="/details/address">
+                1 High Street, Cardiff
+            </CySummaryRow>
+            <CySummaryRow Key="Allergies" ChangeHref="/details/allergies" />
+        </CySummaryList>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CySummaryList.Borders", "bool", "true", "Line between rows."),
+        new("CySummaryList.Card", "bool", "false", "Draw the list inside a bordered card."),
+        new("CySummaryList.Text", "CySummaryListText?", "null", "Localised Change and Not provided text."),
+        new("CySummaryRow.Key", "string", "-", "The question or field name. Required."),
+        new("CySummaryRow.Value", "string?", "null", "The answer as encoded text. ChildContent wins when both are set."),
+        new("CySummaryRow.ChangeHref", "string?", "null", "Renders a change link. Wins over OnChange."),
+        new("CySummaryRow.OnChange", "EventCallback", "-", "Renders a change button and raises the callback."),
+        new("CySummaryRow.ChangeText", "string?", "null", "Overrides the visible Change text for this row."),
+        new("CySummaryRow.HiddenText", "string?", "Key", "Visually hidden text read after Change.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Description list", "Rendered as a dl, so screen readers announce each key with its value."),
+        new("Distinct link names", "Each change link reads \"Change Date of birth\", never just \"Change\" (WCAG 2.4.4)."),
+        new("Empty answers", "A row without a value shows \"Not provided\" rather than a blank cell."),
+        new("Narrow screens", "Below 40rem the key stacks above the value and the action stays beside it.")
+    ];
+}

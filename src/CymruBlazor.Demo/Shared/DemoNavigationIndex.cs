@@ -86,6 +86,10 @@ public static class DemoNavigationIndex
             "Site footer with optional link groups, copyright, and version display."),
         new("Navigation", "Tabs", "/navigation/tabs",
             "A set of tabs, each showing one child CyTabPanel at a time."),
+        new("Navigation", "Stepper", "/navigation/stepper",
+            "Progress through a multi-step journey, horizontally or vertically."),
+        new("Navigation", "Notification Bell", "/navigation/notification-bell",
+            "A bell button with an unread count for the application header."),
 
         // 6. Forms
         new("Forms", "Overview", "/forms",
@@ -110,6 +114,12 @@ public static class DemoNavigationIndex
             "A three-field day/month/year date input."),
         new("Forms", "Validation Summary", "/forms/validation-summary",
             "A titled summary of an EditForm's current validation errors."),
+        new("Forms", "Field", "/forms/field",
+            "Label, hint and error around any control, with no EditForm needed."),
+        new("Forms", "Switch", "/forms/switch",
+            "An on/off control for a setting that takes effect immediately."),
+        new("Forms", "Segmented Control", "/forms/segmented-control",
+            "A joined set of mutually exclusive choices, such as a view switch."),
 
         // 7. Content
         new("Content", "Overview", "/content",
@@ -132,6 +142,12 @@ public static class DemoNavigationIndex
             "A reorderable list with pointer, keyboard and button alternatives."),
         new("Content", "Empty State", "/content/empty-state",
             "A placeholder for an empty list, canvas or search result, with a way forward."),
+        new("Content", "Summary List", "/content/summary-list",
+            "A check-your-answers list: key, value and change link."),
+        new("Content", "Stat Card", "/content/stat-card",
+            "A key figure with a unit, a trend and a short description."),
+        new("Content", "Avatar", "/content/avatar",
+            "A person as a photo or initials, alone or in an overlapping group."),
 
         // 8. Data
         new("Data", "Overview", "/data",
@@ -153,6 +169,12 @@ public static class DemoNavigationIndex
             "A progress indicator built on the native <progress> element - determinate and indeterminate."),
         new("Feedback", "Spinner", "/feedback/spinner",
             "An indeterminate loading indicator with its own accessible name."),
+        new("Feedback", "Skeleton", "/feedback/skeleton",
+            "A placeholder shown while content loads: text, block or circle."),
+        new("Feedback", "Confirm Dialog", "/feedback/confirm-dialog",
+            "Ask for confirmation from code with ICyConfirmService.ConfirmAsync."),
+        new("Feedback", "Unsaved Changes", "/feedback/unsaved-changes",
+            "Warn before leaving with unsaved work, and show a Saving / Saved indicator."),
 
         // 10. Accessibility
         new("Accessibility", "Overview", "/accessibility",

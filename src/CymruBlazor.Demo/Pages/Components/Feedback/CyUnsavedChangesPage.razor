@@ -1,0 +1,106 @@
+@page "/feedback/unsaved-changes"
+@namespace CymruBlazor.Demo.Pages.Components.Feedback
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyUnsavedChanges" Subtitle="Warn before leaving with unsaved work, and show a Saving / Saved indicator.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Feedback" Href="/feedback" />
+            <CyBreadcrumbItem Text="CyUnsavedChanges" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CyUnsavedChanges Dirty="IsDirty" SaveState="_state" SavedAt="_savedAt" />
+        <CyTextBox @bind-Value="_text" Label="Questionnaire title" HintText="Change the text, then press Tab to commit it." />
+        <div style="display:flex; flex-wrap:wrap; gap:var(--cymru-space-3);">
+            <CyButton Disabled="@(!IsDirty || _state == CySaveState.Saving)" OnClick="SaveAsync">Save</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" Href="/content/summary-list">Go to another page</CyButton>
+        </div>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Feedback/CyUnsavedChanges.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string? _text = "Genomic referral";
+    private string? _saved = "Genomic referral";
+    private CySaveState _state;
+    private DateTimeOffset? _savedAt;
+
+    private bool IsDirty => _text != _saved;
+
+    private async Task SaveAsync()
+    {
+        _state = CySaveState.Saving;
+        StateHasChanged();
+
+        await Task.Delay(800);
+
+        _saved = _text;
+        _savedAt = DateTimeOffset.Now;
+        _state = CySaveState.Saved;
+    }
+
+    private string GeneratedCode => """
+        <CyUnsavedChanges Dirty="IsDirty" SaveState="_state" SavedAt="_savedAt" />
+
+        @* Add <CyConfirmDialog /> to the layout to get the leave-the-page prompt.
+           Without it navigation is cancelled and OnNavigationBlocked reports the target. *@
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Dirty", "bool", "false", "Whether there are unsaved changes. Turns the navigation guard on."),
+        new("SaveState", "CySaveState", "Idle", "Idle, Saving, Saved or Error."),
+        new("SavedAt", "DateTimeOffset?", "null", "Time of the last save, shown as given (pass local time)."),
+        new("Message", "string?", "null", "Message of the leave-the-page confirmation."),
+        new("ShowIndicator", "bool", "true", "Show the status text. The guard works either way."),
+        new("OnNavigationBlocked", "EventCallback<string>", "-", "Raised with the target URL whenever navigation was stopped."),
+        new("Text", "CyUnsavedChangesText?", "null", "Localised indicator and confirmation text.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Polite status", "The indicator is a role=\"status\" region that is always present, so changes are announced when they happen."),
+        new("Text, not just an icon", "Every state is written out: \"Saving...\", \"Saved at 14:32\", \"Unsaved changes\", \"Could not save\"."),
+        new("Navigation guard", "In-app navigation asks first through the accessible confirmation dialog. Fragment-only changes are ignored."),
+        new("Known limit", "Reload, closing the tab and external links are not guarded; that needs a beforeunload script, which the library does not ship.")
+    ];
+}
