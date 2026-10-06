@@ -95,6 +95,13 @@
   filter: brightness(0.9);
 }
 
+/* In the dark theme the danger fill is a pale red (--cymru-red-100), so the
+   usual inverse (white) label fails colour contrast. Use the dark surface
+   colour for the label; kept next to the fill so the two always travel together. */
+[data-theme="dark"] .cy-button--danger {
+  color: var(--cymru-blue-900);
+}
+
 /* ── Sizes ── */
 .cy-button--small {
   min-height: 2rem;

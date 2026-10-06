@@ -138,14 +138,3 @@ body:has(.cy-theme-provider[data-theme="dark"]) {
   /* Unchanged - the design system notes NHS/GDS focus yellow is highly
      visible on both light and dark. */
 }
-
-/* ==========================================================================
-     Danger button text
-     ========================================================================== */
-
-/* In the dark theme the danger fill is a pale red (--cymru-red-100), so the
-   usual white inverse text fails colour contrast. Use the dark surface colour
-   for the label instead; the pair is well above 4.5:1. */
-.cy-theme-provider[data-theme="dark"] .cy-button--danger {
-  color: var(--cymru-blue-900);
-}

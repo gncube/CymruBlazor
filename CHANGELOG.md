@@ -82,7 +82,7 @@ package is introduced, and no existing JavaScript file is changed.
 
 ### Fixed
 
-- **`CyButton` Danger in the dark theme** failed colour contrast (white text on the pale red fill). The label now uses the dark surface colour in the dark theme (`themes/dark.css`).
+- **`CyButton` Danger in the dark theme** failed colour contrast (white text on the pale red fill). The label now uses the dark surface colour in the dark theme (`CyButton.razor.css`).
 
 ## [1.9.0] - Unreleased
 
