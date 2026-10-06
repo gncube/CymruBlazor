@@ -1,0 +1,11 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyLayoutComponentBase
+
+<dl id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+    <CascadingValue Value="Strings" IsFixed="false" Name="CySummaryListText">
+        @ChildContent
+    </CascadingValue>
+</dl>

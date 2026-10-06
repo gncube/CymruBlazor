@@ -49,11 +49,10 @@ public sealed class SortableListTests : TestContextBase
 
     private IRenderedComponent<CySortableList<Question>> RenderList(
         IEnumerable<Question>? items = null,
-        Action<ComponentParameterCollectionBuilder<CySortableList<Question>>>? extra = null,
-        string label = "Questions") =>
+        Action<ComponentParameterCollectionBuilder<CySortableList<Question>>>? extra = null) =>
         Render<CySortableList<Question>>(p =>
         {
-            p.Add(c => c.Label, label)
+            p.Add(c => c.Label, "Questions")
              .Add(c => c.Items, items ?? Questions)
              .Add(c => c.ItemTemplate, Template)
              .Add(c => c.KeySelector, q => q.Id)
@@ -102,7 +101,12 @@ public sealed class SortableListTests : TestContextBase
     public void Should_Reject_An_Empty_Label()
     {
         Should.Throw<InvalidOperationException>(() =>
-            RenderList(label: ""));
+            Render<CySortableList<Question>>(p =>
+                p.Add(c => c.Label, "")
+                 .Add(c => c.Items, Questions)
+                 .Add(c => c.ItemTemplate, Template)
+                 .Add(c => c.KeySelector, q => q.Id)
+                 .Add(c => c.ItemLabelSelector, q => q.Name)));
     }
 
     [Fact]

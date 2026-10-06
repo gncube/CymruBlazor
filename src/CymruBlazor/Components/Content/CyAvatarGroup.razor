@@ -1,0 +1,28 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyComponentBase
+
+<ul id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="list"
+    aria-label="@(string.IsNullOrWhiteSpace(Label) ? null : Label)"
+    @attributes="AdditionalAttributes">
+
+    @foreach (var item in Visible)
+    {
+        <li class="cy-avatar-group__item">
+            <CyAvatar Name="@item.Name" ImageUrl="@item.ImageUrl" Size="@Size" />
+        </li>
+    }
+
+    @if (Hidden > 0)
+    {
+        <li class="cy-avatar-group__item">
+            <span class="@OverflowClass">
+                <span aria-hidden="true">+@Hidden</span>
+                <span class="u-sr-only">@OverflowText</span>
+            </span>
+        </li>
+    }
+
+</ul>

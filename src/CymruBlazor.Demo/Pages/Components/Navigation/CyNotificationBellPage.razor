@@ -1,0 +1,100 @@
+@page "/navigation/notification-bell"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyNotificationBell" Subtitle="A bell button with an unread count for the application header.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" Href="/navigation" />
+            <CyBreadcrumbItem Text="CyNotificationBell" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--cymru-space-3);">
+            <CyNotificationBell Count="_count" Expanded="_open" OnClick="Toggle" Announce="true" />
+            <CyButton Variant="ComponentColour.Secondary" OnClick="() => _count++">Add a notification</CyButton>
+        </div>
+        @if (_open)
+        {
+            <div class="cy-card" style="padding:var(--cymru-space-4);">
+                <p style="margin:0 0 var(--cymru-space-3);">You have @_count unread notification(s).</p>
+                <CyButton Variant="ComponentColour.Secondary" OnClick="MarkAllRead">Mark all as read</CyButton>
+            </div>
+        }
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyNotificationBell.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private int _count = 3;
+    private bool _open;
+
+    private void Toggle() => _open = !_open;
+
+    private void MarkAllRead() => _count = 0;
+
+    private string GeneratedCode => """
+        <CyNotificationBell Count="_count"
+                            Expanded="_open"
+                            OnClick="Toggle"
+                            Announce="true" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Count", "int", "0", "Unread notifications. Zero hides the badge."),
+        new("Max", "int", "99", "Highest count shown exactly; more shows as 99+."),
+        new("Label", "string?", "null", "Accessible name without the count. Defaults to the localised Notifications."),
+        new("Href", "string?", "null", "Makes the bell a link instead of a button."),
+        new("OnClick", "EventCallback<MouseEventArgs>", "-", "Raised when the button is pressed."),
+        new("Expanded", "bool?", "null", "Set when the bell opens a panel, to render aria-expanded."),
+        new("Announce", "bool", "false", "Politely announce the count when it changes."),
+        new("Text", "CyNotificationBellText?", "null", "Localised label and \"{0}, {1} unread\" format.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Count in the name", "The control is named \"Notifications, 3 unread\"; the visible badge is hidden so the number is not read twice."),
+        new("aria-expanded", "Set Expanded when the bell opens a panel so assistive technology knows its state."),
+        new("Target size", "The control is at least 44px square."),
+        new("Optional announcements", "Announce makes a polite announcement when the count changes while the user is on the page.")
+    ];
+}

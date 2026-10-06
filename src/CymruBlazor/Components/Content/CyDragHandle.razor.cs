@@ -74,9 +74,8 @@ public partial class CyDragHandle : CyComponentBase
 
     private async Task HandleClickAsync(MouseEventArgs args)
     {
-        // Mouse clicks are also valid pick-up gestures for these tests and for users who activate the grip
-        // by pointer. Keyboard and assistive-technology activation use the same callback, so the detail is
-        // not a useful discriminator here.
+        // In the list tests and keyboard models, clicking the grip is the pick-up path;
+        // pointer drag is handled by the script and should also reach here when it starts from the grip.
         if (OnActivate.HasDelegate)
         {
             await OnActivate.InvokeAsync();

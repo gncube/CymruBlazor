@@ -512,11 +512,7 @@ public partial class CySortableList<TItem> : CyComponentBase, ISortableList, IAs
                 await _module.InvokeAsync<bool>("focusIn", _root, request.Index, request.Selector);
             }
         }
-        catch (Exception ex) when (
-            OverlayInterop.IsTeardown(ex)
-            || ex is JSException
-            || ex is JSDisconnectedException
-            || ex.GetType().Name == "JSRuntimeUnhandledInvocationException")
+        catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
         {
             // Browser or circuit is gone, or the script is unavailable: buttons and keyboard still work.
         }
@@ -524,7 +520,14 @@ public partial class CySortableList<TItem> : CyComponentBase, ISortableList, IAs
 
     private async Task SyncScriptAsync()
     {
-        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", SortableInterop.ModulePath);
+        try
+        {
+            _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", SortableInterop.ModulePath);
+        }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
+        {
+            return;
+        }
 
         var options = new ScriptOptions(Group, HandleOnly, Disabled);
 

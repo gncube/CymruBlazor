@@ -1,0 +1,38 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyComponentBase
+
+@if (Decorative)
+{
+    <span id="@Id"
+          class="@CssClass"
+          style="@CssStyle"
+          aria-hidden="true"
+          @attributes="AdditionalAttributes">
+        @Content
+    </span>
+}
+else
+{
+    <span id="@Id"
+          class="@CssClass"
+          style="@CssStyle"
+          role="img"
+          aria-label="@Name"
+          @attributes="AdditionalAttributes">
+        @Content
+    </span>
+}
+
+@code {
+    private RenderFragment Content => __builder =>
+    {
+        if (!string.IsNullOrWhiteSpace(ImageUrl))
+        {
+            <img class="cy-avatar__image" src="@ImageUrl" alt="" />
+        }
+        else
+        {
+            <span class="cy-avatar__initials" aria-hidden="true">@InitialsText</span>
+        }
+    };
+}

@@ -1,0 +1,101 @@
+@page "/forms/segmented-control"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CySegmentedControl" Subtitle="A joined set of mutually exclusive choices, such as a view switch.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" Href="/forms" />
+            <CyBreadcrumbItem Text="CySegmentedControl" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CySegmentedControl TValue="string" Label="View" Items="_views" @bind-Value="_view" />
+        <p aria-live="polite" style="margin:0;">Selected view: @_view</p>
+        <CySegmentedControl TValue="string" Label="Density" Items="_density" @bind-Value="_chosenDensity" Size="ComponentSize.Small" FullWidth="true" />
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Forms/CySegmentedControl.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string _view = "list";
+    private string _chosenDensity = "comfortable";
+
+    private readonly IReadOnlyList<CyOption<string>> _views =
+    [
+        new("list", "List"),
+        new("grid", "Grid"),
+        new("map", "Map") { Disabled = true }
+    ];
+
+    private readonly IReadOnlyList<CyOption<string>> _density =
+    [
+        new("compact", "Compact"),
+        new("comfortable", "Comfortable"),
+        new("spacious", "Spacious")
+    ];
+
+    private string GeneratedCode => """
+        <CySegmentedControl TValue="string"
+                            Label="View"
+                            Items="_views"
+                            @bind-Value="_view" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Accessible name of the group. Required."),
+        new("Items", "IEnumerable<CyOption<TValue>>", "null", "The choices. Option Hint is not shown."),
+        new("Value", "TValue?", "default", "Selected value. Two-way bindable."),
+        new("Size", "ComponentSize", "Medium", "Small or Medium."),
+        new("FullWidth", "bool", "false", "Stretch and share the width equally."),
+        new("Name", "string?", "null", "The radio name. Defaults to a value derived from Id."),
+        new("Disabled", "bool", "false", "Disable every option.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native radios", "Built on radio inputs: Tab enters the group, arrow keys move and select, and screen readers announce \"n of m\"."),
+        new("Named group", "role=\"radiogroup\" with the Label as its name."),
+        new("Visible focus", "The focused segment gets the standard focus ring, which also works in forced-colours."),
+        new("When to use", "For settings that apply at once. Use tabs to switch panels and a radio group for a form answer.")
+    ];
+}

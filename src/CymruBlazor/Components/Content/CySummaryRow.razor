@@ -1,0 +1,39 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyLayoutComponentBase
+
+<div id="@Id"
+     class="@CssClass"
+     style="@CssStyle"
+     @attributes="AdditionalAttributes">
+
+    <dt class="cy-summary-list__key">@Key</dt>
+
+    <dd class="cy-summary-list__value">
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else if (!string.IsNullOrWhiteSpace(Value))
+        {
+            @Value
+        }
+        else
+        {
+            <span class="cy-summary-list__empty">@Strings.NotProvided</span>
+        }
+    </dd>
+
+    @if (!string.IsNullOrWhiteSpace(ChangeHref))
+    {
+        <dd class="cy-summary-list__actions">
+            <a class="cy-summary-list__link" href="@ChangeHref">@ChangeLabel <span class="u-sr-only">@HiddenTextValue</span></a>
+        </dd>
+    }
+    else if (OnChange.HasDelegate)
+    {
+        <dd class="cy-summary-list__actions">
+            <button type="button" class="cy-summary-list__link" @onclick="OnChange">@ChangeLabel <span class="u-sr-only">@HiddenTextValue</span></button>
+        </dd>
+    }
+
+</div>

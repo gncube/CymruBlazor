@@ -1,0 +1,28 @@
+@namespace CymruBlazor.Components.Feedback
+@inherits CyComponentBase
+
+<div id="@Id"
+     class="@CssClass"
+     style="@CssStyle"
+     @attributes="AdditionalAttributes">
+
+    <div class="cy-skeleton__shapes" aria-hidden="true">
+        @if (Shape == CySkeletonShape.Text)
+        {
+            for (var i = 0; i < LineCount; i++)
+            {
+                <span class="@LineClass(i)"></span>
+            }
+        }
+        else
+        {
+            <span class="cy-skeleton__block"></span>
+        }
+    </div>
+
+    @if (Announce)
+    {
+        <span class="u-sr-only">@LoadingText</span>
+    }
+
+</div>

@@ -19,7 +19,7 @@ namespace CymruBlazor.Components.Accessibility;
 /// (<see cref="LiveRegionAnnouncementHandler"/>) uses to forward
 /// announcements to whichever instance(s) are actually rendered.
 /// </summary>
-public partial class CyLiveRegion : CyComponentBase
+public partial class CyLiveRegion : CyComponentBase, IDisposable
 {
     private ElementReference _elementRef;
     private string _activeMessage = string.Empty;

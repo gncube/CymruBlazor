@@ -1,0 +1,29 @@
+@namespace CymruBlazor.Components.Forms
+@typeparam TValue
+@inherits CyInteractiveComponentBase
+
+<div id="@Id"
+     class="@CssClass"
+     style="@CssStyle"
+     role="radiogroup"
+     aria-label="@Label"
+     @attributes="AdditionalAttributes">
+
+    @for (var i = 0; i < _items.Count; i++)
+    {
+        var item = _items[i];
+        var selected = IsSelected(item);
+        var disabled = Disabled || item.Disabled;
+
+        <label class="@OptionClass(selected, disabled)">
+            <input type="radio"
+                   class="cy-segmented__input"
+                   name="@GroupName"
+                   checked="@selected"
+                   disabled="@disabled"
+                   @onchange="() => SelectAsync(item)" />
+            <span class="cy-segmented__label">@item.Text</span>
+        </label>
+    }
+
+</div>

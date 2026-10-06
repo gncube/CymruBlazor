@@ -1,0 +1,117 @@
+@page "/navigation/stepper"
+@namespace CymruBlazor.Demo.Pages.Components.Navigation
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyStepper" Subtitle="Progress through a multi-step journey, horizontally or vertically.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Navigation" Href="/navigation" />
+            <CyBreadcrumbItem Text="CyStepper" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CyStepper Label="Order progress" Steps="_steps" @bind-Current="_current" Clickable="true" />
+        <div style="display:flex; gap:var(--cymru-space-3);">
+            <CyButton Variant="ComponentColour.Secondary" Disabled="@(_current == 0)" OnClick="Back">Back</CyButton>
+            <CyButton Disabled="@(_current >= _steps.Count - 1)" OnClick="Next">Next</CyButton>
+        </div>
+        <p aria-live="polite" style="margin:0;">Current step: @_steps[_current].Title</p>
+        <CyStepper Label="Vertical progress" Steps="_steps" Current="1" Orientation="Orientation.Vertical" />
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyStepper.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private int _current = 1;
+
+    private readonly IReadOnlyList<CyStepItem> _steps =
+    [
+        new CyStepItem("Patient") { Description = "Who is the order for?" },
+        new CyStepItem("Test") { Description = "Choose the test" },
+        new CyStepItem("Sample") { Description = "Where it was taken" },
+        new CyStepItem("Review") { Description = "Check your answers" }
+    ];
+
+    private void Back() => _current = Math.Max(0, _current - 1);
+
+    private void Next() => _current = Math.Min(_steps.Count - 1, _current + 1);
+
+    private string GeneratedCode => """
+        <CyStepper Label="Order progress"
+                   Steps="_steps"
+                   @bind-Current="_current"
+                   Clickable="true" />
+
+        @code {
+            private int _current = 1;
+
+            private readonly IReadOnlyList<CyStepItem> _steps =
+            [
+                new CyStepItem("Patient"),
+                new CyStepItem("Test"),
+                new CyStepItem("Sample"),
+                new CyStepItem("Review")
+            ];
+        }
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Accessible name of the navigation landmark. Required."),
+        new("Steps", "IReadOnlyList<CyStepItem>", "[]", "The steps: Title, Description, Status, Disabled, Href."),
+        new("Current", "int", "0", "Zero-based current step. Two-way bindable."),
+        new("CurrentChanged", "EventCallback<int>", "-", "Raised when the user selects a step."),
+        new("OnStepSelected", "EventCallback<int>", "-", "Raised after CurrentChanged."),
+        new("Clickable", "bool", "false", "Completed and current steps become buttons (links with Href)."),
+        new("AllowForwardNavigation", "bool", "false", "Also lets users select steps they have not reached."),
+        new("Orientation", "Orientation", "Horizontal", "Horizontal or Vertical."),
+        new("Text", "CyStepperText?", "null", "Localised summary and hidden status words.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Landmark and list", "A named nav containing an ordered list; screen readers announce \"list, 4 items\"."),
+        new("aria-current", "The current step has aria-current=\"step\"."),
+        new("Status in words", "Completed, not started and error are spoken as hidden text and shown by icon or number, never by colour alone."),
+        new("Real controls", "Selectable steps are buttons or links, so keyboard and touch behave natively."),
+        new("Compact on small screens", "Below 40rem the horizontal stepper becomes \"Step 2 of 4: Test\".")
+    ];
+}

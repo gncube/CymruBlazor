@@ -1,0 +1,229 @@
+@layer components;
+
+/*
+ * CymruBlazor Controls - CySegmentedControl, CyAvatar, CyAvatarGroup, CyNotificationBell
+ *
+ * Class names come from the matching .razor/.razor.cs files. Semantic tokens
+ * only; forced-colors is handled per component.
+ */
+
+/* ==========================================================================
+   CySegmentedControl
+   ========================================================================== */
+
+.cy-segmented {
+  display: inline-flex;
+  border: var(--cymru-border-width-thick) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-control);
+  background-color: var(--cymru-color-surface);
+  overflow: hidden;
+}
+
+.cy-segmented--full {
+  display: flex;
+}
+
+.cy-segmented--full .cy-segmented__option {
+  flex: 1 1 0;
+}
+
+.cy-segmented__option {
+  position: relative;
+  display: flex;
+}
+
+.cy-segmented__option + .cy-segmented__option {
+  border-inline-start: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+}
+
+/* The input fills the label so the whole segment is the target; it is invisible, its sibling is the picture. */
+.cy-segmented__input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cy-segmented__label {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 2.75rem;
+  padding: 0 var(--cymru-space-4);
+  color: var(--cymru-color-text);
+  font-weight: var(--cymru-font-weight-semibold);
+  white-space: nowrap;
+}
+
+.cy-segmented--sm .cy-segmented__label {
+  min-block-size: 2rem;
+  padding: 0 var(--cymru-space-3);
+  font-size: var(--cymru-font-size-sm);
+}
+
+.cy-segmented__input:hover:not(:disabled) + .cy-segmented__label {
+  background-color: var(--cymru-color-surface-hover);
+}
+
+.cy-segmented__input:checked + .cy-segmented__label {
+  background-color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-text);
+}
+
+.cy-segmented__input:focus-visible + .cy-segmented__label {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: calc(-1 * var(--cymru-focus-ring-width));
+}
+
+.cy-segmented__input:disabled {
+  cursor: not-allowed;
+}
+
+.cy-segmented__input:disabled + .cy-segmented__label {
+  color: var(--cymru-color-disabled-text);
+  background-color: var(--cymru-color-disabled-background);
+}
+
+@media (forced-colors: active) {
+  .cy-segmented__input:checked + .cy-segmented__label {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ==========================================================================
+   CyAvatar / CyAvatarGroup
+   ========================================================================== */
+
+.cy-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: var(--cymru-radius-circle);
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+  font-size: var(--cymru-font-size-sm);
+  font-weight: var(--cymru-font-weight-bold);
+  line-height: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.cy-avatar--xs { inline-size: 1.5rem; block-size: 1.5rem; font-size: var(--cymru-font-size-xs); }
+.cy-avatar--sm { inline-size: 2rem; block-size: 2rem; font-size: var(--cymru-font-size-xs); }
+.cy-avatar--md { inline-size: 2.5rem; block-size: 2.5rem; }
+.cy-avatar--lg { inline-size: 3.5rem; block-size: 3.5rem; font-size: var(--cymru-font-size-lg); }
+.cy-avatar--xl { inline-size: 5rem; block-size: 5rem; font-size: var(--cymru-font-size-2xl); }
+
+.cy-avatar__image {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* Six colour pairs; each pairs a background with its own text token so contrast follows the theme. */
+.cy-avatar--tone-0 { background-color: var(--cymru-color-primary-subtle); color: var(--cymru-color-primary-on-surface); }
+.cy-avatar--tone-1 { background-color: var(--cymru-color-success-background); color: var(--cymru-color-success-text); }
+.cy-avatar--tone-2 { background-color: var(--cymru-color-info-background); color: var(--cymru-color-info-text); }
+.cy-avatar--tone-3 { background-color: var(--cymru-color-warning-background); color: var(--cymru-color-warning-text); }
+.cy-avatar--tone-4 { background-color: var(--cymru-color-danger-background); color: var(--cymru-color-danger-text); }
+.cy-avatar--tone-5 { background-color: var(--cymru-color-surface-alt); color: var(--cymru-color-text); }
+
+.cy-avatar-group {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cy-avatar-group__item {
+  display: inline-flex;
+}
+
+.cy-avatar-group__item + .cy-avatar-group__item {
+  margin-inline-start: calc(-1 * var(--cymru-space-2));
+}
+
+.cy-avatar-group .cy-avatar {
+  border: var(--cymru-border-width-thick) solid var(--cymru-color-surface);
+}
+
+.cy-avatar--overflow {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+@media (forced-colors: active) {
+  .cy-avatar {
+    border: var(--cymru-border-width-thin) solid CanvasText;
+  }
+}
+
+/* ==========================================================================
+   CyNotificationBell
+   ========================================================================== */
+
+.cy-bell {
+  position: relative;
+  display: inline-flex;
+}
+
+.cy-bell__control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: var(--cymru-border-width-thin) solid transparent;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.cy-bell__control:hover {
+  background-color: var(--cymru-color-surface-hover);
+}
+
+.cy-bell__control:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: var(--cymru-focus-ring-offset);
+}
+
+.cy-bell__badge {
+  position: absolute;
+  inset-block-start: 0.125rem;
+  inset-inline-end: 0.125rem;
+  min-inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0 var(--cymru-space-1);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-surface);
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-danger);
+  color: var(--cymru-color-text-inverse);
+  font-size: var(--cymru-font-size-xs);
+  font-weight: var(--cymru-font-weight-bold);
+  line-height: 1.125rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+  .cy-bell__badge {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

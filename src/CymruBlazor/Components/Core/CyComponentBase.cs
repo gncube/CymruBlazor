@@ -114,6 +114,16 @@ public abstract class CyComponentBase : ComponentBase
     /// </summary>
     protected virtual void ValidateParameters() { }
 
+    /// <summary>
+    /// Recomputes the generated CSS class and style strings after internal state changes.
+    /// Call this when a component toggles visual state without receiving new parameters.
+    /// </summary>
+    protected void RefreshCssState()
+    {
+        _cssClass = BuildCssClass();
+        _cssStyle = BuildCssStyle();
+    }
+
     /// <inheritdoc />
     protected sealed override void OnParametersSet()
     {
@@ -122,20 +132,12 @@ public abstract class CyComponentBase : ComponentBase
             _id = ComponentIdGenerator.Create();
         }
 
-        RefreshCssState();
+        _cssClass = BuildCssClass();
+        _cssStyle = BuildCssStyle();
+
         ValidateParameters();
 
         OnParametersValidated();
-    }
-
-    /// <summary>
-    /// Recomputes the derived CSS class and inline style strings after internal state changes.
-    /// Use this for toggled state that does not come in through component parameters.
-    /// </summary>
-    protected void RefreshCssState()
-    {
-        _cssClass = BuildCssClass();
-        _cssStyle = BuildCssStyle();
     }
 
     /// <summary>

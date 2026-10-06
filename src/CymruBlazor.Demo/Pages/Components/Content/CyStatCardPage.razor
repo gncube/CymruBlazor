@@ -1,0 +1,101 @@
+@page "/content/stat-card"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyStatCard" Subtitle="A key figure with a unit, a trend and a short description.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyStatCard" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CyButton Variant="ComponentColour.Secondary" OnClick="() => _loading = !_loading">@(_loading ? "Show the figures" : "Show the loading state")</CyButton>
+        <CyGrid Columns="GridColumns.Three" Gap="GridGap.Medium">
+            <CyStatCard Label="Median wait" Value="14" Unit="days" Icon="duration" HeadingLevel="2"
+                        Trend="CyTrend.Down" TrendText="3 days fewer than last month" TrendTone="ComponentColour.Success"
+                        Colour="ComponentColour.Success" Loading="_loading" />
+            <CyStatCard Label="Open referrals" Value="1,284" Icon="clipboard-list" HeadingLevel="2"
+                        Trend="CyTrend.Up" TrendText="62 more than last month" TrendTone="ComponentColour.Danger"
+                        Description="Waiting for triage" Loading="_loading" />
+            <CyStatCard Label="Reports issued" Value="96" Unit="%" Icon="chart" HeadingLevel="2"
+                        Trend="CyTrend.Flat" TrendText="Same as last month" Href="/content/stat-card" Loading="_loading" />
+        </CyGrid>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyStatCard.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _loading;
+
+    private string GeneratedCode => """
+        <CyStatCard Label="Median wait" Value="14" Unit="days" Icon="duration"
+                    HeadingLevel="2"
+                    Trend="CyTrend.Down"
+                    TrendText="3 days fewer than last month"
+                    TrendTone="ComponentColour.Success" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "What the figure measures. Required."),
+        new("Value", "string?", "null", "The figure as text, so you control formatting and culture."),
+        new("Unit", "string?", "null", "Shown after the value, for example days or %."),
+        new("Description", "string?", "null", "Short explanation under the figure."),
+        new("Icon", "string?", "null", "Name of a built-in icon beside the label. Decorative."),
+        new("Trend", "CyTrend", "None", "Up, Down or Flat. Shown only with TrendText."),
+        new("TrendText", "string?", "null", "Words describing the change. Always rendered."),
+        new("TrendTone", "ComponentColour", "Neutral", "Success (good), Danger (bad) or neutral. Colour only; never changes the words."),
+        new("Colour", "ComponentColour", "Unspecified", "Optional accent on the top edge."),
+        new("Href", "string?", "null", "Makes the whole card one link."),
+        new("Loading", "bool", "false", "Replaces the value with a skeleton and sets aria-busy."),
+        new("HeadingLevel", "int?", "null", "1 to 6 to expose the label as a heading; null renders a paragraph."),
+        new("Text", "CyStatCardText?", "null", "Localised hidden prefixes: Increase, Decrease, No change, Loading.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Trend in words", "The change is always written out. The arrow is decorative and colour only adds emphasis."),
+        new("Hidden prefix", "Assistive technology hears \"Increase:\" or \"Decrease:\" before the trend text."),
+        new("Whole-card link", "With Href the card is a single link, so one tab stop and one accessible name."),
+        new("Loading", "While loading the card is aria-busy and says \"Loading\" to screen readers.")
+    ];
+}

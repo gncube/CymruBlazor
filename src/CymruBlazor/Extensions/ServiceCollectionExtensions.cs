@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using CymruBlazor.Accessibility;
 using CymruBlazor.Accessibility.Focus;
+using CymruBlazor.Components.Accessibility;
 using CymruBlazor.Components.Content;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Feedback;
@@ -100,6 +101,13 @@ public static class ServiceCollectionExtensions
         // Scoped like the live-region registry: one per circuit/session. Without
         // it a list works on its own but cross-list moves are silently disabled.
         services.AddScoped<SortableGroupRegistry>();
+
+        // Confirmation dialogs (1.10.0). One CyConfirmService per circuit/session is shared by the
+        // CyConfirmDialog host in the layout and by every caller of ICyConfirmService, so both
+        // registrations resolve to the same instance. Without this the host cannot attach and
+        // ConfirmAsync throws.
+        services.AddScoped<CyConfirmService>();
+        services.AddScoped<ICyConfirmService>(sp => sp.GetRequiredService<CyConfirmService>());
 
         // Register toast notifications and the Mediator handler that lets
         // ShowToastNotification be published through the pipeline below.

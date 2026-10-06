@@ -1,0 +1,117 @@
+@page "/feedback/skeleton"
+@namespace CymruBlazor.Demo.Pages.Components.Feedback
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CySkeleton" Subtitle="A placeholder shown while content loads: text, block or circle.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Feedback" Href="/feedback" />
+            <CyBreadcrumbItem Text="CySkeleton" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CyButton Variant="ComponentColour.Secondary" OnClick="() => _loading = !_loading">@(_loading ? "Show the content" : "Show the loading state")</CyButton>
+        <div aria-busy="@(_loading ? "true" : "false")">
+            @if (_loading)
+            {
+                <div role="status">
+                    <div style="display:flex; gap:var(--cymru-space-4); align-items:flex-start;">
+                        <CySkeleton Shape="CySkeletonShape.Circle" Width="3rem" Announce="false" />
+                        <div style="flex:1;"><CySkeleton Lines="3" Announce="false" /></div>
+                    </div>
+                    <div style="margin-block-start:var(--cymru-space-4);">
+                        <CySkeleton Shape="CySkeletonShape.Rectangle" Height="6rem" Announce="false" />
+                    </div>
+                    <span class="u-sr-only">Loading profile</span>
+                </div>
+            }
+            else
+            {
+                <div style="display:flex; gap:var(--cymru-space-4); align-items:flex-start;">
+                    <CyAvatar Name="Gwen Davies" Size="ComponentSize.Large" Decorative="true" />
+                    <p style="margin:0;">Gwen Davies is a clinical lead in genomic medicine. She reviews referrals every Tuesday and signs off reports on Thursday.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Feedback/CySkeleton.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _loading = true;
+
+    private string GeneratedCode => """
+        <div aria-busy="@(_loading ? "true" : "false")">
+            @if (_loading)
+            {
+                <div role="status">
+                    <CySkeleton Shape="CySkeletonShape.Circle" Width="3rem" Announce="false" />
+                    <CySkeleton Lines="3" Announce="false" />
+                    <CySkeleton Shape="CySkeletonShape.Rectangle" Height="6rem" Announce="false" />
+                    <span class="u-sr-only">Loading profile</span>
+                </div>
+            }
+            else
+            {
+                <Profile />
+            }
+        </div>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Shape", "CySkeletonShape", "Text", "Text, Rectangle or Circle."),
+        new("Lines", "int", "1", "Number of text bars, 1 to 20. The last of several is shorter."),
+        new("Width", "string?", "null", "A plain length such as 12rem or 40%. Anything else throws."),
+        new("Height", "string?", "null", "A plain length. Used by Rectangle (default 8rem); Circle follows its width."),
+        new("Animated", "bool", "true", "Shimmer animation. Always off under prefers-reduced-motion."),
+        new("Announce", "bool", "true", "Render the visually hidden loading text. Set false inside a group that announces once."),
+        new("Label", "string?", "null", "The hidden loading text. Defaults to the localised spinner label (Loading).")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Decorative shapes", "The grey shapes are hidden from assistive technology; they carry no information."),
+        new("One announcement", "A group of skeletons should announce loading once. Set Announce to false on each and put one hidden message in a role=\"status\" wrapper."),
+        new("aria-busy", "Mark the region being loaded with aria-busy=\"true\" and clear it when the real content arrives."),
+        new("Reduced motion", "The shimmer stops when the user prefers reduced motion; forced-colours draws an outline instead.")
+    ];
+}

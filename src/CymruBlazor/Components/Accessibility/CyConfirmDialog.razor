@@ -1,0 +1,34 @@
+@namespace CymruBlazor.Components.Accessibility
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Enums
+@implements IDisposable
+@inject CyConfirmService Service
+
+@if (_request is not null)
+{
+    var request = _request;
+    var options = request.Options;
+    var confirmText = string.IsNullOrWhiteSpace(options.ConfirmText) ? Strings.Confirm : options.ConfirmText;
+    var cancelText = string.IsNullOrWhiteSpace(options.CancelText) ? Strings.Cancel : options.CancelText;
+
+    <CyDialog @key="request"
+              @bind-Open="_open"
+              OnClosed="() => CompleteAsync(request)"
+              Title="@options.Title"
+              Description="@options.Message"
+              Size="@options.Size"
+              Class="cy-confirm-dialog">
+        <Footer>
+            @if (options.Destructive)
+            {
+                <CyButton Variant="ComponentColour.Secondary" OnClick="() => Choose(false)" autofocus="autofocus">@cancelText</CyButton>
+                <CyButton Variant="ComponentColour.Danger" OnClick="() => Choose(true)">@confirmText</CyButton>
+            }
+            else
+            {
+                <CyButton Variant="ComponentColour.Secondary" OnClick="() => Choose(false)">@cancelText</CyButton>
+                <CyButton Variant="ComponentColour.Primary" OnClick="() => Choose(true)" autofocus="autofocus">@confirmText</CyButton>
+            }
+        </Footer>
+    </CyDialog>
+}

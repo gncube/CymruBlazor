@@ -1,0 +1,84 @@
+@namespace CymruBlazor.Components.Layout
+@using CymruBlazor.Components.Content
+@inherits CyComponentBase
+
+<nav id="@Id"
+     class="@CssClass"
+     style="@CssStyle"
+     aria-label="@Label"
+     @attributes="AdditionalAttributes">
+
+    @if (SummaryText is not null)
+    {
+        <p class="cy-stepper__summary">@SummaryText</p>
+    }
+
+    <ol class="cy-stepper__list">
+        @for (var i = 0; i < Steps.Count; i++)
+        {
+            var index = i;
+            var item = Steps[index];
+            var status = StatusOf(index);
+            var isCurrent = IsCurrent(index);
+            var hidden = HiddenStatusText(status);
+
+            <li class="@ItemClass(status, isCurrent)">
+                @if (IsSelectable(index))
+                {
+                    @if (!string.IsNullOrWhiteSpace(item.Href))
+                    {
+                        <a class="cy-stepper__step" href="@item.Href" aria-current="@(isCurrent ? "step" : null)">
+                            @StepBody(index, item, status, hidden)
+                        </a>
+                    }
+                    else
+                    {
+                        <button type="button" class="cy-stepper__step" aria-current="@(isCurrent ? "step" : null)" @onclick="() => SelectAsync(index)">
+                            @StepBody(index, item, status, hidden)
+                        </button>
+                    }
+                }
+                else
+                {
+                    <div class="cy-stepper__step" aria-current="@(isCurrent ? "step" : null)">
+                        @StepBody(index, item, status, hidden)
+                    </div>
+                }
+            </li>
+        }
+    </ol>
+
+</nav>
+
+@code {
+    private RenderFragment StepBody(int index, CyStepItem item, CyStepStatus status, string? hidden) => __builder =>
+    {
+        <span class="cy-stepper__marker" aria-hidden="true">
+            @if (status == CyStepStatus.Complete)
+            {
+                <CyIcon Name="check" Size="16" />
+            }
+            else if (status == CyStepStatus.Error)
+            {
+                <CyIcon Name="error-circle" Size="16" />
+            }
+            else
+            {
+                @(index + 1)
+            }
+        </span>
+        <span class="cy-stepper__text">
+            <span class="cy-stepper__title">
+                @item.Title
+                @if (hidden is not null)
+                {
+                    <span class="u-sr-only">, @hidden</span>
+                }
+            </span>
+            @if (!string.IsNullOrWhiteSpace(item.Description))
+            {
+                <span class="cy-stepper__description">@item.Description</span>
+            }
+        </span>
+    };
+}
