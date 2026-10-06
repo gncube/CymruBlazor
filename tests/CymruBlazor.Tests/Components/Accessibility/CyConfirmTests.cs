@@ -211,7 +211,7 @@ public sealed class CyConfirmTests : TestContextBase
         var answer = Service.ConfirmAsync("Publish?");
         host.WaitForAssertion(() => host.Find(".cy-dialog__title"));
 
-        DisposeComponents();
+        host.Dispose();
 
         (await WithTimeout(answer)).ShouldBeFalse();
         Should.Throw<InvalidOperationException>(() => Service.ConfirmAsync("Again?"));

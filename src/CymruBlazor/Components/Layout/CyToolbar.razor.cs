@@ -99,7 +99,7 @@ public partial class CyToolbar : CyLayoutComponentBase, IAsyncDisposable
                 _element,
                 Orientation == Orientation.Vertical ? "vertical" : "horizontal");
         }
-        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
+        catch (Exception)
         {
             // Without the script every control stays in the tab order.
         }

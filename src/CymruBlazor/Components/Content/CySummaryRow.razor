@@ -26,13 +26,13 @@
     @if (!string.IsNullOrWhiteSpace(ChangeHref))
     {
         <dd class="cy-summary-list__actions">
-            <a class="cy-summary-list__link" href="@ChangeHref">@ChangeLabel<span class="u-sr-only"> @HiddenTextValue</span></a>
+            <a class="cy-summary-list__link" href="@ChangeHref">@ChangeLabel <span class="u-sr-only">@HiddenTextValue</span></a>
         </dd>
     }
     else if (OnChange.HasDelegate)
     {
         <dd class="cy-summary-list__actions">
-            <button type="button" class="cy-summary-list__link" @onclick="OnChange">@ChangeLabel<span class="u-sr-only"> @HiddenTextValue</span></button>
+            <button type="button" class="cy-summary-list__link" @onclick="OnChange">@ChangeLabel <span class="u-sr-only">@HiddenTextValue</span></button>
         </dd>
     }
 

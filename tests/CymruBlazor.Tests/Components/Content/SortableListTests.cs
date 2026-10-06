@@ -101,7 +101,12 @@ public sealed class SortableListTests : TestContextBase
     public void Should_Reject_An_Empty_Label()
     {
         Should.Throw<InvalidOperationException>(() =>
-            RenderList(extra: p => p.Add(c => c.Label, "")));
+            Render<CySortableList<Question>>(p =>
+                p.Add(c => c.Label, "")
+                 .Add(c => c.Items, Questions)
+                 .Add(c => c.ItemTemplate, Template)
+                 .Add(c => c.KeySelector, q => q.Id)
+                 .Add(c => c.ItemLabelSelector, q => q.Name)));
     }
 
     [Fact]

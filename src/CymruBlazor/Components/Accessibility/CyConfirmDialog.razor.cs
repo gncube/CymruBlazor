@@ -54,6 +54,7 @@ public partial class CyConfirmDialog : ComponentBase, IDisposable
 
     private void Choose(bool result)
     {
+        Console.WriteLine($"Choose called with {result}; request={_request?.Options.Title}");
         _result = result;
         _open = false;
     }
@@ -68,8 +69,22 @@ public partial class CyConfirmDialog : ComponentBase, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        Service.Changed -= OnServiceChanged;
-        _hostHandle?.Dispose();
-        _hostHandle = null;
+        GC.SuppressFinalize(this);
+
+        try
+        {
+            if (_hostHandle is not null)
+            {
+                _hostHandle.Dispose();
+                _hostHandle = null;
+            }
+        }
+        finally
+        {
+            Service.Changed -= OnServiceChanged;
+            _request = null;
+            _open = false;
+            _result = false;
+        }
     }
 }

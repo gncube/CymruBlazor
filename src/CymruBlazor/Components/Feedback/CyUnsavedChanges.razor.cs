@@ -29,11 +29,12 @@ namespace CymruBlazor.Components.Feedback;
 /// given (pass local time).
 /// </para>
 /// </remarks>
-public partial class CyUnsavedChanges : CyComponentBase
+public partial class CyUnsavedChanges : CyComponentBase, IDisposable
 {
     private static readonly CyUnsavedChangesText s_defaultText = new();
 
     private IDisposable? _registration;
+    private bool _disposed;
 
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
@@ -135,7 +136,10 @@ public partial class CyUnsavedChanges : CyComponentBase
 
         try
         {
-            _registration = Navigation.RegisterLocationChangingHandler(OnLocationChangingAsync);
+            if (!_disposed)
+            {
+                _registration = Navigation.RegisterLocationChangingHandler(OnLocationChangingAsync);
+            }
         }
         catch (Exception ex) when (ex is NotSupportedException or InvalidOperationException)
         {
@@ -145,7 +149,8 @@ public partial class CyUnsavedChanges : CyComponentBase
 
     private async ValueTask OnLocationChangingAsync(LocationChangingContext context)
     {
-        if (!Dirty || IsSamePageFragment(context.TargetLocation))
+        Console.WriteLine($"OnLocationChangingAsync target={context.TargetLocation}, dirty={Dirty}, disposed={_disposed}");
+        if (_disposed || !Dirty || IsSamePageFragment(context.TargetLocation))
         {
             return;
         }
@@ -174,6 +179,7 @@ public partial class CyUnsavedChanges : CyComponentBase
             }
         }
 
+        Console.WriteLine($"Confirm result leave={leave}");
         if (leave)
         {
             return;
@@ -208,7 +214,15 @@ public partial class CyUnsavedChanges : CyComponentBase
     /// <inheritdoc />
     public void Dispose()
     {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        Dirty = false;
         GC.SuppressFinalize(this);
+
         _registration?.Dispose();
         _registration = null;
     }

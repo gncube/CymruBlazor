@@ -119,7 +119,9 @@ public sealed class CySegmentedControlTests : TestContextBase
     [Fact]
     public void Should_Reject_An_Empty_Label()
     {
-        Should.Throw<InvalidOperationException>(() => RenderControl(p => p.Add(c => c.Label, " ")));
+        Should.Throw<InvalidOperationException>(() => Render<CySegmentedControl<string>>(p =>
+            p.Add(c => c.Label, " ")
+             .Add(c => c.Items, Views())));
     }
 
     [Fact]

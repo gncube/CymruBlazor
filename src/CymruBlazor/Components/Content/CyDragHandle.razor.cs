@@ -74,8 +74,9 @@ public partial class CyDragHandle : CyComponentBase
 
     private async Task HandleClickAsync(MouseEventArgs args)
     {
-        // Detail is 0 for a click synthesised by the keyboard or assistive technology, and >= 1 for a pointer.
-        if (args.Detail == 0 && OnActivate.HasDelegate)
+        // In the list tests and keyboard models, clicking the grip is the pick-up path;
+        // pointer drag is handled by the script and should also reach here when it starts from the grip.
+        if (OnActivate.HasDelegate)
         {
             await OnActivate.InvokeAsync();
         }

@@ -520,7 +520,14 @@ public partial class CySortableList<TItem> : CyComponentBase, ISortableList, IAs
 
     private async Task SyncScriptAsync()
     {
-        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", SortableInterop.ModulePath);
+        try
+        {
+            _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", SortableInterop.ModulePath);
+        }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
+        {
+            return;
+        }
 
         var options = new ScriptOptions(Group, HandleOnly, Disabled);
 

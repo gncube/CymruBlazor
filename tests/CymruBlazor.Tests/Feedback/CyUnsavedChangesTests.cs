@@ -183,9 +183,9 @@ public sealed class CyUnsavedChangesTests : TestContextBase
     [Fact]
     public void Should_Stop_Guarding_After_It_Is_Disposed()
     {
-        _ = Render<CyUnsavedChanges>(p => p.Add(c => c.Dirty, true));
+        var cut = Render<CyUnsavedChanges>(p => p.Add(c => c.Dirty, true));
 
-        DisposeComponents();
+        cut.Dispose();
         Navigation.NavigateTo("/elsewhere");
 
         Navigation.Uri.ShouldEndWith("/elsewhere");

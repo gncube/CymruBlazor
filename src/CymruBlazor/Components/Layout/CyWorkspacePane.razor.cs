@@ -139,6 +139,7 @@ public partial class CyWorkspacePane : CyLayoutComponentBase
     private async Task ToggleAsync()
     {
         Collapsed = !Collapsed;
+        RefreshCssState();
 
         if (CollapsedChanged.HasDelegate)
         {

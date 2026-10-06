@@ -205,7 +205,9 @@ public sealed class CyStepperTests : TestContextBase
     [Fact]
     public void Should_Reject_An_Empty_Label()
     {
-        Should.Throw<InvalidOperationException>(() => RenderStepper(p => p.Add(c => c.Label, " ")));
+        Should.Throw<InvalidOperationException>(() => Render<CyStepper>(p =>
+            p.Add(c => c.Label, " ")
+             .Add(c => c.Steps, ThreeSteps())));
     }
 
     [Fact]

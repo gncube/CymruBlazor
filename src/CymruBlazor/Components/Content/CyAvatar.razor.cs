@@ -82,7 +82,7 @@ public partial class CyAvatar : CyComponentBase
     };
 
     /// <summary>A stable colour index: the same name always maps to the same tone (unlike <c>string.GetHashCode</c>).</summary>
-    internal static int ToneFor(string name)
+    public static int ToneFor(string name)
     {
         var hash = 17;
 
@@ -94,7 +94,7 @@ public partial class CyAvatar : CyComponentBase
         return Math.Abs(hash % ToneCount);
     }
 
-    internal static string ComputeInitials(string name)
+    public static string ComputeInitials(string name)
     {
         var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 

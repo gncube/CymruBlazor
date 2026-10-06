@@ -170,6 +170,10 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
         {
             _activeItem = null;
         }
+        else if (_activeItem is null)
+        {
+            _activeItem = _items.FirstOrDefault(i => !i.Disabled);
+        }
 
         if (changed && OpenChanged.HasDelegate)
         {
@@ -261,7 +265,11 @@ public partial class CyMenu : CyLayoutComponentBase, IAsyncDisposable
         }
 
         _activeItem = item;
-        StateHasChanged();
+
+        foreach (var menuItem in _items)
+        {
+            menuItem.RefreshVisualState();
+        }
 
         await item.FocusAsync();
     }
