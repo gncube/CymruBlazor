@@ -42,7 +42,6 @@ public sealed class CyConfirmService : ICyConfirmService
     /// <inheritdoc />
     public Task<bool> ConfirmAsync(CyConfirmOptions options, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine($"ConfirmAsync start: title={options.Title}, hostCount={_hosts}, queue={_queue.Count}");
         ArgumentNullException.ThrowIfNull(options);
 
         if (string.IsNullOrWhiteSpace(options.Title))
@@ -82,10 +81,8 @@ public sealed class CyConfirmService : ICyConfirmService
     /// <summary>Resolves a request. Safe to call more than once; only the first call counts.</summary>
     internal void Complete(CyConfirmRequest request, bool result)
     {
-        Console.WriteLine($"Complete request: result={result}, queueBefore={_queue.Count}");
         if (!request.TryComplete(result))
         {
-            Console.WriteLine($"Complete ignored because already completed");
             return;
         }
 

@@ -166,8 +166,18 @@ public sealed class CyUnsavedChangesTests : TestContextBase
         Navigation.Uri.ShouldBe(start);
     }
 
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(5);
+
+        while (!condition() && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(20);
+        }
+    }
+
     [Fact]
-    public void Should_Navigate_When_The_User_Confirms_Leaving()
+    public async Task Should_Navigate_When_The_User_Confirms_Leaving()
     {
         AddConfirmService();
         var host = Render<CyConfirmDialog>();
@@ -177,15 +187,22 @@ public sealed class CyUnsavedChangesTests : TestContextBase
 
         host.WaitForAssertion(() => host.Find(".cy-dialog__title"));
         host.FindAll("button").First(b => b.TextContent.Trim() == "Leave page").Click();
-        host.WaitForAssertion(() => Navigation.Uri.ShouldEndWith("/elsewhere"));
+        // The location change finishes after the handler's task completes, which need not cause a render.
+        await WaitUntilAsync(() => Navigation.Uri.EndsWith("/elsewhere", StringComparison.Ordinal));
+        Navigation.Uri.ShouldEndWith("/elsewhere");
     }
 
     [Fact]
     public void Should_Stop_Guarding_After_It_Is_Disposed()
     {
-        var cut = Render<CyUnsavedChanges>(p => p.Add(c => c.Dirty, true));
+        var wrapper = Render<RemovableHost>(p => p.Add(c => c.ChildContent, b =>
+        {
+            b.OpenComponent<CyUnsavedChanges>(0);
+            b.AddAttribute(1, nameof(CyUnsavedChanges.Dirty), true);
+            b.CloseComponent();
+        }));
 
-        cut.Dispose();
+        wrapper.Render(p => p.Add(c => c.Show, false));
         Navigation.NavigateTo("/elsewhere");
 
         Navigation.Uri.ShouldEndWith("/elsewhere");

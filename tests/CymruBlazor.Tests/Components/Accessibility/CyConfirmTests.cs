@@ -207,11 +207,15 @@ public sealed class CyConfirmTests : TestContextBase
     [Fact]
     public async Task Should_Answer_False_For_Pending_Requests_When_The_Host_Is_Removed()
     {
-        var host = RenderHost();
+        var wrapper = Render<RemovableHost>(p => p.Add(c => c.ChildContent, b =>
+        {
+            b.OpenComponent<CyConfirmDialog>(0);
+            b.CloseComponent();
+        }));
         var answer = Service.ConfirmAsync("Publish?");
-        host.WaitForAssertion(() => host.Find(".cy-dialog__title"));
+        wrapper.WaitForAssertion(() => wrapper.Find(".cy-dialog__title"));
 
-        host.Dispose();
+        wrapper.Render(p => p.Add(c => c.Show, false));
 
         (await WithTimeout(answer)).ShouldBeFalse();
         Should.Throw<InvalidOperationException>(() => Service.ConfirmAsync("Again?"));

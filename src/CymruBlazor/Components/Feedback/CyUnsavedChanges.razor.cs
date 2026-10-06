@@ -149,7 +149,6 @@ public partial class CyUnsavedChanges : CyComponentBase, IDisposable
 
     private async ValueTask OnLocationChangingAsync(LocationChangingContext context)
     {
-        Console.WriteLine($"OnLocationChangingAsync target={context.TargetLocation}, dirty={Dirty}, disposed={_disposed}");
         if (_disposed || !Dirty || IsSamePageFragment(context.TargetLocation))
         {
             return;
@@ -179,7 +178,6 @@ public partial class CyUnsavedChanges : CyComponentBase, IDisposable
             }
         }
 
-        Console.WriteLine($"Confirm result leave={leave}");
         if (leave)
         {
             return;

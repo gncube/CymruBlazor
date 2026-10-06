@@ -54,7 +54,6 @@ public partial class CyConfirmDialog : ComponentBase, IDisposable
 
     private void Choose(bool result)
     {
-        Console.WriteLine($"Choose called with {result}; request={_request?.Options.Title}");
         _result = result;
         _open = false;
     }
