@@ -575,3 +575,15 @@ Things to check first when you build: Razor inline template in `CyCard.razor` (t
 **Hand-off 1 result (2026-10-07):** build clean; 1115 of 1116 unit tests passed; axe suite 182/182 (including all three themes for `CyPagePhaseFAccessibilityTests` and the demo smoke run over every route, which covers `/layouts/page`). The one failure was in the new `AddCymruBlazorGuardTests`: the guard's assertion passed (every injected library service resolves), but the test disposed its scope synchronously and `ThemeService` only implements `IAsyncDisposable`. Fixed by using `CreateAsyncScope` and `await using`. Lesson for later tests: build providers with `await using` when `AddCymruBlazor()` registers an async-only disposable.
 
 **Second guard fix:** after the async-dispose fix the guard reached resolution and failed because `JsFocusManager` is registered but needs the host's `IJSRuntime`. The guard now treats "registered, but needs only host-provided services" as registered (it still fails for an unregistered library type or a missing library dependency). Everything else was green: 1115 of 1116 unit tests, build clean.
+
+### Phase F as built, hand-off 2a (F1 logic, no UI)
+
+Hand-off 1 closed green: 1116 of 1116 unit tests, axe 182 of 182. Hand-off 2 is split in two so a failure is easy to localise.
+
+**2a (this zip, not compiled)** is TASK-077 and TASK-079 plus their unit tests: `CyRuleModel.cs`, `CyRuleField.cs`, `CyRuleOperators.cs`, `CyRuleBuilderText.cs`, `CyRuleValues.cs` (internal), `CyRuleValidator.cs`, `CyRuleSummary.cs`, `CyRuleEdits.cs`; tests `CyRuleEditsTests`, `CyRuleOperatorsTests`, `CyRuleValidatorTests`, `CyRuleSummaryTests`. All in `Components/Forms` with namespace `CymruBlazor.Components.Forms`; none needs bUnit.
+
+Deviations from the REQ text: `CyRuleCondition` also has `Value2` (for "between") and `ValueLabel` / `Value2Label` (display text of a coded value, so the summary can name it); `MaxDepth` counts the root group as 1 (default 3 = root plus two nested levels); edit methods return the same root instance when an edit is refused (limit, root, unknown id), which the UI uses to announce "not allowed"; `CyRuleLimits` carries `MaxDepth`, `MaxConditions` and `MinConditions`; Boolean fields use the operators `true` and `false` (no value editor) instead of a switch.
+
+**2b (next)** is the UI: `CyRuleBuilder` (razor + code-behind), group and condition views, value editors, `rule-builder.css`, bUnit and axe tests, demo page, sidebar, search index, English and Welsh overview entries.
+
+Things to check first when you build 2a: collection expressions as lambda return values in `CyRuleEdits` (`node => [change(node)]`, `_ => []`), `is var d and > 0` in `DepthCore`, and the `en-GB` date test in `CyRuleSummaryTests` (needs ICU culture data).

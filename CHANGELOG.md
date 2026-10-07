@@ -31,6 +31,14 @@ Everything here is additive: no existing member is removed or changed, no new
   `Collapsible` with a two-way `Expanded` / `ExpandedChanged`. A collapsible card's title is
   a button (`aria-expanded`, `aria-controls`) over a `hidden` body; no script. It needs a
   `Title` and cannot be combined with `Href`.
+- **Rule model for `CyRuleBuilder`** (Forms; the editor component follows in this release): the
+  immutable model `CyRuleGroup` / `CyRuleCondition` (`CyRuleNode`, `CyRuleCombinator`), `CyRuleField`
+  (`CyRuleFieldType`: Text, Number, Date, Boolean, Choice, Coded) with the operator catalogue
+  `CyRuleOperators`, `CyRuleValidator` / `CyRuleIssue`, `CyRuleSummary` (the rule in plain language, with
+  word order and joiners overridable for Welsh), pure tree edits in `CyRuleEdits` (add, remove, duplicate,
+  wrap, ungroup, move, reorder, with `CyRuleLimits` for depth and condition counts) and
+  `CyRuleBuilderText`. The library edits and describes a rule; it does not evaluate it or generate SQL,
+  LINQ or JSON.
 - Demo page `/layouts/page`, a new example block and API rows on the `CyCard` page, with
   sidebar, search-index and English and Welsh overview entries.
 

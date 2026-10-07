@@ -2,6 +2,7 @@
   <Folder Name="/samples/">
     <Project Path="samples/Dashboard/Dashboard.csproj" />
     <Project Path="samples/HealthcarePortal/HealthcarePortal.csproj" />
+    <Project Path="samples/StarterApp/StarterApp.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/CymruBlazor.Demo/CymruBlazor.Demo.csproj" />
