@@ -8,6 +8,13 @@ namespace CymruBlazor.AccessibilityTests;
 
 public sealed class CyComboboxAccessibilityTests : FormFieldAxeTestBase
 {
+    public CyComboboxAccessibilityTests()
+    {
+        // The combobox loads one small script on first render; the scan renders markup only, so stub it.
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-inputs.js");
+    }
+
     private static readonly IReadOnlyList<CyOption<string>> Boards =
     [
         new("a", "Aneurin Bevan University Health Board"),

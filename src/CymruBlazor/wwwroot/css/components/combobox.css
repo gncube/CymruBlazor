@@ -112,8 +112,8 @@
 /* Selection is a tick and weight as well as a colour; the active option is an outline, not just a fill. */
 .cy-combobox__option--selected {
   font-weight: var(--cymru-font-weight-semibold);
-  background-color: var(--cymru-color-primary-subtle);
-  color: var(--cymru-color-primary-on-surface);
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
 }
 
 .cy-combobox__option--active {

@@ -101,14 +101,14 @@
 
 /* A selected row has a thick start edge as well as a tint. */
 .cy-data-table .cy-data-table__row--selected {
-  background-color: var(--cymru-color-primary-subtle);
-  color: var(--cymru-color-primary-on-surface);
-  box-shadow: inset var(--cymru-border-width-thick) 0 0 var(--cymru-color-primary);
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+  box-shadow: inset var(--cymru-border-width-thick) 0 0 var(--cymru-color-primary-on-surface);
 }
 
 .cy-data-table .cy-data-table__row--selected:hover {
-  background-color: var(--cymru-color-primary-subtle);
-  color: var(--cymru-color-primary-on-surface);
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
 }
 
 /* ---- states */
@@ -150,8 +150,9 @@
   outline-offset: 2px;
 }
 
+/* Busy is shown by skeleton rows and aria-busy. The table is not dimmed: opacity lowers text contrast below AA. */
 .cy-data-table--busy .cy-table__scroll {
-  opacity: 0.6;
+  cursor: progress;
 }
 
 /* ---- sticky header (MaxHeight) */

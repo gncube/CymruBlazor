@@ -16,6 +16,8 @@ public sealed class CyDataTableAccessibilityTests : AxeTestBase
         new(3, "Bethan Morgan", 30)
     ];
 
+    private int _tables;
+
     private static IReadOnlyList<CyDataColumn<Row>> Columns() =>
     [
         new CyDataColumn<Row> { Header = "Patient", Value = r => r.Name, Sortable = true, RowHeader = true },
@@ -25,7 +27,8 @@ public sealed class CyDataTableAccessibilityTests : AxeTestBase
     private string Markup(Action<ComponentParameterCollectionBuilder<CyDataTable<Row>>>? configure = null) =>
         Render<CyDataTable<Row>>(p =>
         {
-            p.Add(c => c.Caption, "Appointments");
+            // Each table is its own landmark, so each needs its own name (axe: landmark-unique).
+            p.Add(c => c.Caption, $"Appointments {++_tables}");
             p.Add(c => c.Columns, Columns());
             configure?.Invoke(p);
         }).Markup;
