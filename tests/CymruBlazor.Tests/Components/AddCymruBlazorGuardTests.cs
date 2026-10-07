@@ -46,6 +46,28 @@ public sealed class AddCymruBlazorGuardTests
         }
     }
 
+    /// <summary>
+    /// True when the service is registered. A registered service may need something only the host provides
+    /// (<c>IJSRuntime</c>, <c>NavigationManager</c>, <c>IMediator</c>); the container then throws "Unable to
+    /// resolve service for type" naming that host type. That still proves the library registration exists, so it
+    /// counts as registered. A missing library type (or a missing library dependency) does not.
+    /// </summary>
+    private static bool IsRegistered(IServiceProvider provider, Type service)
+    {
+        try
+        {
+            return provider.GetService(service) is not null;
+        }
+        catch (InvalidOperationException ex) when (NeedsOnlyHostServices(ex.Message))
+        {
+            return true;
+        }
+    }
+
+    private static bool NeedsOnlyHostServices(string message) =>
+        message.Contains("Unable to resolve service for type '", StringComparison.Ordinal) &&
+        !message.Contains("Unable to resolve service for type 'CymruBlazor", StringComparison.Ordinal);
+
     [Fact]
     public void The_Guard_Finds_Injected_Library_Services()
     {
@@ -64,7 +86,7 @@ public sealed class AddCymruBlazorGuardTests
         await using var scope = provider.CreateAsyncScope();
 
         var unresolved = InjectedLibraryServices()
-            .Where(pair => scope.ServiceProvider.GetService(pair.Service) is null)
+            .Where(pair => !IsRegistered(scope.ServiceProvider, pair.Service))
             .Select(pair => $"{pair.Component.Name} injects {pair.Service.FullName}")
             .Distinct()
             .ToList();
