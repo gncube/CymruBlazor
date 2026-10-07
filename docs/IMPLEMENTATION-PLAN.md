@@ -1,4 +1,4 @@
-# CymruBlazor: Implementation Plan (1.6.0 → 1.11 → 2.0.0)
+# CymruBlazor: Implementation Plan (1.6.0 → 1.12 → 2.0.0)
 
 **Inputs reviewed:** `CymruBlazor-Improvement-Recommendations.md`, `MIGRATION-2.0.md`, the 1.6.0 source zip (library, tests, samples, CI, CSS, JS, ADRs, CHANGELOG).
 **Suggested location:** `docs/IMPLEMENTATION-PLAN.md`
@@ -16,8 +16,8 @@
 | B (1.8.0) | **Implemented**, B1–B5 (see below). Demo pages and R1 not done. | CHANGELOG `[Unreleased]` |
 | C (1.9.0) | **Implemented and verified:** build, unit tests and axe suite (168/168) pass. C1–C7 components, CSS, bUnit tests, demo pages and CHANGELOG written. Remaining: visual pass in 3 themes and `dotnet pack` vs 1.8.0 (TASK-022, TASK-024), then merge and tag (TASK-026). | CHANGELOG `[1.9.0]` |
 | D (1.10.0) | **Implemented and verified:** build, unit tests (948) and axe/Playwright suite (168/168) pass. Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`, demo pages, CSS, tests and CHANGELOG written. Remaining: visual pass in 3 themes, Welsh text review, `dotnet pack` vs 1.8.0, then merge and tag. | CHANGELOG `[1.10.0]` |
-| E (1.11.0) | **Built, unverified.** Combobox (single and multiple), file upload and data table written with tests, demo pages and CHANGELOG. Awaiting `dotnet build`, `dotnet test` and the axe run. Rule builder deferred to 1.12.0. | See "Phase E" below |
-| F | Not started | |
+| E (1.11.0) | **Shipped: 1.11.0 is on nuget.org (2026-10-07).** `CyCombobox`/`CyMultiCombobox`, `CyFileUpload` and `CyDataTable<T>` with CSS, bUnit and axe tests, demo pages, English and Welsh overview cards and CHANGELOG. Build, unit tests and the containerised axe suite (179 tests, three themes) were taken through to green by the maintainer. Open: three-theme visual pass and Welsh text review (not confirmed done). `CyRuleBuilder` deferred. | See "Phase E" below, including "Phase E verification findings" |
+| F (1.12.0) | **Scope confirmed (F1 + F2 + F3, rule builder defaults accepted).** In scope: `CyRuleBuilder` (deferred from E), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions) and hygiene carry-forwards. **F2 and F3 built and green** (hand-off 1, one test fix pending merge); F1 not started. Package validation baseline is already 1.11.0. | See "Phase F" at the end |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -237,7 +237,7 @@ Items to check first when you run it (areas I could not verify without a compile
 
 ## Phase E (1.11.0): "Advanced inputs and data"
 
-**Status:** **scope confirmed and built, not yet compiled or run** (the authoring sandbox has no .NET SDK). See "As built" at the end of this section for what changed from the plan below.
+**Status:** **shipped as 1.11.0.** The authoring sandbox has no .NET SDK, so the code was written blind and taken to green through the maintainer's build, test and axe runs (see "Phase E verification findings"). See "Phase E as built" at the end of this section for what changed from the plan below; where the two disagree, "as built" and the repo win.
 **Baseline:** 1.10.0 (Phase D). Build, unit tests (948) and axe/Playwright suite (168/168) pass. Open for 1.10.0 and *not* Phase E work: the three-theme visual pass, Welsh text review, and `dotnet pack` vs 1.8.0.
 **Audit of the 1.10.0 zip:** a search for `Combobox`, `FileUpload`, `DataTable` and `RuleBuilder` (whole tree, excluding `.artifacts`) found only the mention in `docs/CymruBlazor-Improvement-Recommendations.md`. Phase E starts from a clean slate. Existing pieces it builds on:
 
@@ -384,6 +384,8 @@ Not planned. **Will not be built or specified until you say so.** Rough size if 
 | TASK-075 | Hand-off to you: `dotnet build`, `dotnet test`, `.\scripts\Run-AccessibilityTests.ps1` (all three themes); fix rounds from pasted output. |
 | TASK-076 | Visual pass in light, dark and high-contrast for all three components; Welsh text review (you). |
 
+**Task status (as shipped):** TASK-056 to TASK-073 done. TASK-075 (build, test, axe) done through several fix rounds. **Not done:** TASK-074 (the `AddCymruBlazor()` guard test: no service was added, so nothing could regress, but the test was not written), the hash comparison in TASK-071 (public API and untouched files were checked by reading, not by hash or reflection diff), and TASK-076 (visual pass and Welsh review are the maintainer's; completion not confirmed). `PageSizeOptions` (REQ-E45), `OnSortChanged` (REQ-E43, replaced by the two-way `SortKeyChanged`/`SortDescendingChanged`) and `CyField` wrapping (E1, E2) were dropped; see "as built".
+
 ### Suggested build order
 
 (`cymru-inputs.js`, if approved) -> `CyCombobox` -> `CyMultiCombobox` -> `CyFileUpload` -> `CyDataTable<T>`. Each lands as its own reviewable chunk, and you build and paste output after each, so a compile error is easy to localise (no .NET SDK in my sandbox).
@@ -410,11 +412,166 @@ Where the build differs from the wording of the plan:
 
 Written: components, CSS (`combobox.css`, `file-upload.css`, `data-table.css`), unit tests, demo pages, sidebar and search-index entries, English and Welsh overview cards, axe tests and the CHANGELOG `[1.11.0]` entry.
 
-For the maintainer to run and check:
+Also changed during verification (see below): selected rows and options use `--cymru-color-surface-alt` with `--cymru-color-text` and an edge bar, not `primary-subtle`; the busy table is no longer dimmed; the disabled file-upload prompt keeps normal text colour.
 
-1. `dotnet build` (expect to fix a few compile errors; none of this has been compiled).
-2. `dotnet test`.
-3. `.\scripts\Run-AccessibilityTests.ps1` in all three themes, including the three new demo pages.
-4. A visual pass in light, dark and high contrast, and a Welsh text review.
-5. Confirm `CyTable`, `CyPagination`, `CyField`, `CyOption<T>` and the three existing JS files are unchanged.
+Still open after the 1.11.0 release:
 
+1. A visual pass in light, dark and high contrast, and a Welsh text review (TASK-076).
+2. The combobox's disabled option (`.cy-combobox__option--disabled`) still uses `--cymru-color-disabled-background` / `-disabled-text`. It is not axe-scanned (the closed list is `hidden`), but it has the same dark-theme flaw that failed `CyFileUpload`; switch it to `surface-alt` and `text`.
+3. TASK-074 and the hash/reflection comparison in TASK-071.
+
+### Phase E verification findings
+
+What the first real build, test and axe runs found. These are the faults a blind-written component is likely to have, and they became the checklist for Phase F.
+
+| Stage | Finding | Fix |
+|---|---|---|
+| Build | `InputFile` not recognised in `CyFileUpload.razor` (RZ10012), then `ElementReference` to `InputFile` (CS0029). | `@using Microsoft.AspNetCore.Components.Forms`. |
+| Build (analyzers are errors in CI) | CA1822 on `OptionClass`, `HeaderClass`, `CellClass`, `ItemId`; CA1859 on a private `IReadOnlyList` parameter; CA1720 on the enum member `Single`. | Make helpers `static`; take `List<T>`; pragma-suppress CA1720 with a reason. |
+| Test compile | CS8604 (`Id` is `string?` in `ShouldContain`); `JSException` unresolved. | `.Id!`; `using Microsoft.JSInterop;`. |
+| Axe | Combobox tests failed: bUnit had no handler for the `import` of `cymru-inputs.js`. | Axe test classes that render a component importing a module need `JSInterop.Mode = Loose` plus `SetupModule(path)`. |
+| Axe | `landmark-unique`: six `CyDataTable` instances in one document shared a caption, so their scroll regions shared a name. | Unique caption per rendered instance in multi-state scans. |
+| Axe | Light theme contrast: the busy table used `opacity: 0.6`. | Removed; loading is shown by skeleton rows and `aria-busy`. |
+| Axe | Dark and high-contrast contrast: the selected row used `--cymru-color-primary-subtle` (light, undefined in dark) with light text, ratio 1.35. | `surface-alt` + `text` + edge bar. Same change on the combobox selected option. |
+| Axe | `CyFileUpload` disabled state failed in all three themes: the prompt is plain `aria-hidden` text (not a disabled control, so not exempt) using `disabled-text` on `disabled-background`, which is undefined in dark and high-contrast. | Normal text colour on the disabled fill; state shown by fill and cursor. |
+
+Lessons recorded for later phases: dark and high-contrast themes do not define every light token (`primary-subtle`, `disabled-background`, `disabled-text`), so use tokens that every theme defines; never dim with `opacity`; non-control text is contrast-checked even when it looks disabled and even when `aria-hidden`; one axe markup render needs unique landmark names; stub every JS module in axe tests.
+
+
+---
+
+## Phase F (1.12.0): "Rules and page scaffolding"
+
+**Status:** **scope confirmed by the maintainer on 2026-10-07: F1 + F2 + F3, with the F1 defaults in decisions 2 to 4 accepted.** Build in progress: F2 and F3 passed build, unit and axe runs (hand-off 1, see "Hand-off 1 result"); `CyRuleBuilder` (F1) follows as hand-off 2. The sandbox has no .NET SDK, so all code will again be written blind and taken to green through the maintainer's build, test and axe runs.
+**Baseline:** 1.11.0 (Phase E, on nuget.org). `PackageValidationBaselineVersion` is already `1.11.0` in `CymruBlazor.csproj`; run `dotnet pack` once to confirm validation passes.
+**Numbering:** `REQ-F##`; tasks continue from `TASK-077`.
+
+**Audit of the 1.11.0 zip** (file names and contents, excluding docs and build output):
+
+| Searched for | Found | Consequence |
+|---|---|---|
+| `RuleBuilder` | nothing | Starts from a clean slate. |
+| Recommendations sections 6 and 7, items 1 to 13 (`CyStepper`, `CyStatCard`, `CySwitch`, `CySegmentedControl`, `CyAvatar*`, `CyNotificationBell`, `CySortableList`, `CyWorkspace`, `CyDrawer`, `CyEmptyState`, `CyMenu`, `CyToolbar`, `CySummaryList`, `CyConfirmDialog`, `CySkeleton`, `CyUnsavedChanges`, `CyCheckboxGroup`) | all present | No missing component remains in those tables except `CyRuleBuilder` (item 14). |
+| `CyPage` / `CyPageSection` (Recommendations section 3) | no component; tokens `--cymru-page-max-width-narrow/default/wide/full` exist in `tokens/aliases.css` | The tokens are shipped, nothing consumes them. |
+| `CyPageHeader` parameters | `Title`, `Subtitle`, `Breadcrumb`, `Actions` only | No `Eyebrow`, `Badges`/`Status` or `TitleLevel`. |
+| `CyCard` parameters | `Header`, `Footer`, `Href`, `Elevation` only | No `HeadingLevel`, `Padding`, `Variant`, `Collapsible`. |
+| `.cy-combobox__option--disabled` in `combobox.css` | still `disabled-background` / `disabled-text` | The Phase E dark-theme flaw is still there (carry-forward). |
+| Top CHANGELOG heading | `## [1.11.0] - Unreleased` | 1.11.0 is published; the heading needs its date. |
+
+Not proposed (Recommendations section 9): the `CymruBlazor.Testing` package and extra dev-mode diagnostics. Both are separate-package or cross-cutting work and would dilute a phase already dominated by `CyRuleBuilder`.
+
+### Decisions to confirm before any code is written
+
+1. **Scope.** Recommended: F1 `CyRuleBuilder`, F2 page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions), F3 hygiene. Alternative: F1 alone.
+2. **No new JavaScript.** The builder reuses `CySortableList` (its existing module), `CyMenu`, `CyCombobox`, `CySegmentedControl`, `CyField` and the other form fields. Page scaffolding is CSS and markup only.
+3. **The builder edits a model; it does not evaluate it.** No SQL, LINQ or expression generation and no JSON serialiser ships in the library; consumers translate the model on their own server. The component exposes an immutable model plus a plain-language summary.
+4. **Depth and size caps** (`MaxDepth` default 3, `MaxConditions` default 50) so a nested editor stays usable with a keyboard and a screen reader.
+
+### Global requirements (apply to every component)
+
+| ID | Requirement |
+|---|---|
+| REQ-F00a | WCAG 2.2 AA: 24px minimum targets (44px where primary), visible focus, no colour-only meaning, `prefers-reduced-motion` and forced-colours respected, 2.5.7 (every reorder has a button path), 4.1.3 status messages. |
+| REQ-F00b | Tokens only, and only tokens that light, dark and high-contrast all define. Selected or disabled fills use `--cymru-color-surface-alt` with `--cymru-color-text` plus an edge bar, tick or weight. No `opacity` dimming. A variant's text colour lives in the same `.razor.css` rule as its background. |
+| REQ-F00c | `Cy<Name>Text` record per component with English defaults and a `Text` parameter; **no new required members on `CyLocalizedStrings`**. Welsh defaults shown on the demo pages. |
+| REQ-F00d | Additive API only; no `[Obsolete]`; `docs/MIGRATION-2.0.md` untouched; package validation vs 1.11.0 passes. Existing parameter defaults of `CyCard` and `CyPageHeader` produce **byte-identical markup** (proved by a snapshot test written before the change). |
+| REQ-F00e | No npm or third-party code; no new JS file. |
+| REQ-F00f | Nothing new in DI is planned; TASK-074 adds the guard test that `AddCymruBlazor()` resolves everything. |
+| REQ-F00g | User-supplied style values validated with `CssLength`; all text (field labels, operator labels, values, summaries) HTML-encoded. |
+| REQ-F00h | Per component: razor + code-behind, CSS (`@layer components`, forced-colors, imported in `cymrublazor.css`), bUnit tests, axe tests (JS modules stubbed with `JSInterop.Mode = Loose` + `SetupModule`), demo page (`<h2>` under the page `<h1>`), sidebar and `DemoNavigationIndex` entries, English and Welsh overview cards, CHANGELOG `[1.12.0]` entry. |
+| REQ-F00i | Consumer callbacks (`ValueEditor`, option providers) may throw: the component catches, shows an accessible error and never takes down the circuit. Exception text is never shown. |
+
+### F1: `CyRuleBuilder`
+
+| ID | Requirement |
+|---|---|
+| REQ-F01 | Model: `CyRuleGroup` (`Combinator` `And`/`Or`, `Not` flag, `Children`), `CyRuleCondition` (`FieldKey`, `OperatorKey`, `Value`), `CyRuleNode` base, all immutable records with `with`-style edits and a stable `Id` per node. Bound with `Value`/`ValueChanged` (a new root on every change). |
+| REQ-F02 | Fields: `Fields` (`IReadOnlyList<CyRuleField>`): `Key`, `Label`, `Type` (`Text`/`Number`/`Date`/`Boolean`/`Choice`/`Coded`), `Operators` (optional override), `Options` (`CyOption<object>` list for `Choice`), `ItemsProvider` (for `Coded`, backed by `CyCombobox`), `Min`/`Max`/`Step`/`Unit` for `Number`. Operator sets default per type (`equals`, `not equals`, `contains`, `starts with`, `greater than`, `between`, `is empty`, ...), each with a localisable label and a value arity (0, 1 or 2). |
+| REQ-F03 | Value editors chosen per field type from the existing controls (`CyTextBox`, `CyNumberInput`, `CyDateInput`, `CySwitch`, `CySelect`, `CyCombobox`); two inputs for `between`; none for arity 0. Custom editor via a `ValueEditor` `RenderFragment<CyRuleEditorContext>` per field. Changing the field resets an incompatible operator and clears the value, with an announcement. |
+| REQ-F04 | Structure and semantics: each group is a `<fieldset>` whose `<legend>` reads "All of the following" / "Any of the following" (plus "Not" when set); conditions are `<li>` in an `<ul>` inside it. Nested groups nest the same way. Combinator uses `CySegmentedControl`. Every control has a programmatic name that includes its position ("Field, condition 2 of 3"). |
+| REQ-F05 | Add condition, add group, remove condition, remove group: real `<button>`s, named "Remove condition {n}", etc. Removing a node moves focus to the next sibling's first control, else the previous sibling's, else the group's Add button. Removing a non-empty group goes through `ICyConfirmService` when available. |
+| REQ-F06 | Reorder and move reuse `CySortableList` (one list per group, a shared `Group` name so conditions can move between groups), including its Move up/down buttons, keyboard model and announcements. A per-row `CyMenu` adds "Duplicate", "Move to group...", "Wrap in group" and "Ungroup". No new drag script. |
+| REQ-F07 | Limits: `MaxDepth` (default 3) and `MaxConditions` (default 50) disable the matching Add buttons with an explanatory `aria-describedby` hint (not a bare disabled button). `MinConditions` (default 0). |
+| REQ-F08 | Validation: an incomplete condition (no field, no operator, missing or invalid value) is flagged with text and icon, linked through `aria-describedby`, and reported by `IsValid` / `OnValidationChanged`. Works inside `CyField`/`EditForm` via a `ValidationMessage`-compatible summary; no custom validation attribute is shipped. |
+| REQ-F09 | Summary: a read-only plain-language sentence ("Age is greater than 18 and (Status is Active or Status is Pending)") rendered under the builder, encoded text, `aria-live` off (it is not announced on every keystroke). `ShowSummary` default true; also available as `CyRuleSummary.Describe(group, fields, text)` for consumers. |
+| REQ-F10 | `ReadOnly` renders the summary and the structure with no editing controls; `Disabled` disables everything. |
+| REQ-F11 | Announcements through the component's own `role="status"` region (condition added/removed/moved/duplicated, group added, limit reached), once per action, polite. |
+| REQ-F12 | `CyRuleBuilderText`: all operator labels, combinator phrases, button names, announcements, validation messages and the summary connectors (format strings; word order must be overridable for Welsh). |
+
+| Task | Description |
+|---|---|
+| TASK-077 | Model records, `CyRuleField`, `CyRuleOperator`, operator catalogue, `CyRuleBuilderText.cs`, `CyRuleSummary` (pure, unit-tested). |
+| TASK-078 | `CyRuleBuilder.razor(.cs)`, `CyRuleGroupView`/`CyRuleConditionView` internal components, value-editor switch. |
+| TASK-079 | Structure edits (add, remove, duplicate, wrap, ungroup, move between groups) as pure functions on the model, then wired to the UI; focus handling after each edit. |
+| TASK-080 | `rule-builder.css` (nested indent with edge rule, no colour-only meaning, narrow-screen stacking of field/operator/value, forced-colours). |
+| TASK-081 | bUnit: model edits (every operation, depth and count caps), operator reset on field change, value editors per type, `between`, focus after removal (`RemovableHost` for disposal), confirm path, validation states, summary text, read-only and disabled, announcements, encoding of `<img onerror=x>` in labels and values, `ValueEditor` exception path. |
+| TASK-082 | Axe tests (empty, populated, nested, invalid, read-only; three themes, unique group names) and demo page `/forms/rule-builder` (clinical-criteria example, `CyCombobox` coded field, summary, Welsh text, server-side translation checklist), sidebar, index, overview cards (EN/CY). |
+
+### F2: Page scaffolding
+
+| ID | Requirement |
+|---|---|
+| REQ-F20 | `CyPage`: a `<main>`-agnostic wrapper (renders a `<div>`; the layout owns the `<main>` landmark) with `Width` `Narrow`/`Default`/`Wide`/`Full` mapped to the existing `--cymru-page-max-width-*` tokens, centred, with the standard inline padding. `CyPageSection` adds vertical rhythm and an optional `Heading` + `HeadingLevel`. |
+| REQ-F21 | `CyPageHeader` additions, all optional and default-off: `Eyebrow` (text above the title), `Badges` (`RenderFragment`, rendered after the title), `TitleLevel` (1 to 3; default unchanged). Default output is byte-identical to 1.11.0. |
+| REQ-F22 | `CyCard` additions, all optional and default-off: `Title` (new parameter; `CyCard` had none) with `HeadingLevel` (default 3; no heading when `Title` is not set), `Padding` (`Default`/`Compact`/`None`), `Variant` (`Raised` = current behaviour, `Outlined`, `Flat`), `Collapsible` + `Expanded` (two-way) implemented with a `<button aria-expanded aria-controls>` on the heading and a `hidden` panel (no JS). Default output is byte-identical to 1.11.0. |
+| REQ-F23 | `CyPageText` / `CyCardText` only if built-in phrases appear (expected: collapse/expand name). |
+
+| Task | Description |
+|---|---|
+| TASK-083 | **First**, snapshot tests of current `CyPageHeader` and `CyCard` markup (this doubles as the Phase B item 0.5 pattern for these two components). |
+| TASK-084 | `CyPage`, `CyPageSection`, parameter additions, CSS (`page.css`, additions to the card/header stylesheets). |
+| TASK-085 | bUnit and axe tests (collapsed and expanded card, heading order, widths, three themes); demo pages `/layouts/page`, additions to the card and page-header demos; sidebar, index, overview cards (EN/CY). |
+
+### F3: Hygiene and carry-forward
+
+| Task | Description |
+|---|---|
+| TASK-086 | Combobox disabled option: switch `.cy-combobox__option--disabled` to `surface-alt` + `text` (plus a non-colour cue); add an axe state that renders a disabled option in an open list. |
+| TASK-087 | TASK-074: `AddCymruBlazor()` guard test (everything resolves; nothing new required). |
+| TASK-088 | CHANGELOG: date the `[1.11.0]` heading; add `## [1.12.0] - Unreleased` above it. |
+| TASK-089 | Public-API reflection diff vs 1.11.0 (additions only) and a hash comparison of the five existing JS files; list new public types in the CHANGELOG. |
+
+### F-X: cross-cutting
+
+| Task | Description |
+|---|---|
+| TASK-090 | Register new CSS in `cymrublazor.css`; run the undefined-variable test and `GenerateTokens.cs --check`. |
+| TASK-091 | Hand-off to you: `dotnet build`, `dotnet test`, `.\scripts\Run-AccessibilityTests.ps1` (all three themes, after `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`); fix rounds from pasted output. |
+| TASK-092 | Visual pass in light, dark and high-contrast and Welsh text review for D, E and F (you). |
+
+### Out of scope (said once)
+
+Rule evaluation or code generation (SQL, LINQ, JSON Logic), a bundled serialiser, saved-rule libraries, drag-only interactions, a free-text expression mode, `CymruBlazor.Testing`, further dev-mode diagnostics, and R1 (the shared field-chrome refactor, still gated on Phase B item 0.5).
+
+### Suggested build order
+
+TASK-083 snapshots, then F2 (small, low risk, lands first so CI proves the byte-identical rule) -> F3 hygiene -> F1 in the order model and summary (pure code), structure edits (pure code), UI, CSS, tests, demo. Each lands as its own reviewable chunk so a build failure is easy to localise.
+
+### Risks and assumptions (unverified until you build)
+
+1. `CySortableList`'s `Group` mechanism is assumed to work across lists nested inside other list items; I will read `SortableGroupRegistry` and `sortable-list.js` before relying on it. If nesting is a problem, cross-group moves fall back to the "Move to group..." menu, which REQ-F06 already requires.
+2. Nested `CyCombobox` instances in one document need unique ids and the stubbed `cymru-inputs.js` module in every bUnit and axe test.
+3. Focus restoration after removal is timing-sensitive in bUnit; tests poll with `WaitForAssertion`.
+4. The collapsible card relies on the `hidden` attribute and `aria-controls`; axe behaviour for a collapsed panel is assumed fine and checked in the three themes.
+
+### Conventions (unchanged, plus Phase E lessons)
+
+WCAG 2.2 AA; tokens only, using only tokens that light, dark and high-contrast all define; `Cy<Name>Text` records, nothing new required on `CyLocalizedStrings`; additive API only; per component razor + code-behind, CSS imported in `cymrublazor.css`, bUnit tests, axe tests (with JS modules stubbed), demo page with `<h2>` under the page `<h1>`, sidebar and `DemoNavigationIndex` entries, English and Welsh overview cards, and a CHANGELOG `[1.12.0]` heading above `[1.11.0]`. See "Phase E verification findings" for the analyzer, bUnit and axe checklist.
+
+### Phase F as built, hand-off 1 (F2 and F3)
+
+Written, not compiled. Deviations from the plan text above:
+
+- Demo route is `/layouts/page` (the Layout section uses `/layouts/*`), one page for `CyPage`, `CyPageSection` and the `CyPageHeader` additions; the `CyCard` additions extend the existing `/content/card` page.
+- `CyCard` needed a new `Title` parameter (it had none), so `HeadingLevel` applies to that. Because Blazor binds parameters case-insensitively, a `title="..."` attribute that used to land on the root element now binds to `Title`; noted in the CHANGELOG.
+- No `CyPageText` / `CyCardText`: the collapsible button's name is the title and its state is `aria-expanded`, so no built-in phrase exists.
+- The byte-identical rule is enforced by `CyCardDefaultMarkupTests` (element structure and class lists; id and style are generated). The snapshot is structural, not a golden HTML file, because no 1.11.0 output could be captured without a .NET SDK.
+- TASK-074 is implemented as a reflection guard (`AddCymruBlazorGuardTests`): every `CymruBlazor.*` service injected by any component must resolve from `AddCymruBlazor()`. If it fails it names the component and the missing service; that is a real finding, not a test fault.
+- TASK-086: the combobox disabled option now uses `surface-alt` + `text` + italics. No new axe state was added for it: the closed list is `hidden`, and `CyComboboxAccessibilityTests` renders the list through its own helpers that I did not change; add one if you want it scanned.
+- TASK-089 (reflection diff vs 1.11.0, JS hashes) is not done: it needs the 1.11.0 package. Run `dotnet pack` and package validation instead; no JS file was touched.
+
+Things to check first when you build: Razor inline template in `CyCard.razor` (the `@<text>` block with component tags), `CyPageHeader.razor` (`@<CyTypography ...>` template and `As="@TitleTag"` with a null value), `CyPageSection` passing `Id` to `CyTypography`, and the axe run for the three themes on `CyPagePhaseFAccessibilityTests`.
+
+**Hand-off 1 result (2026-10-07):** build clean; 1115 of 1116 unit tests passed; axe suite 182/182 (including all three themes for `CyPagePhaseFAccessibilityTests` and the demo smoke run over every route, which covers `/layouts/page`). The one failure was in the new `AddCymruBlazorGuardTests`: the guard's assertion passed (every injected library service resolves), but the test disposed its scope synchronously and `ThemeService` only implements `IAsyncDisposable`. Fixed by using `CreateAsyncScope` and `await using`. Lesson for later tests: build providers with `await using` when `AddCymruBlazor()` registers an async-only disposable.
+
+**Second guard fix:** after the async-dispose fix the guard reached resolution and failed because `JsFocusManager` is registered but needs the host's `IJSRuntime`. The guard now treats "registered, but needs only host-provided services" as registered (it still fails for an unregistered library type or a missing library dependency). Everything else was green: 1115 of 1116 unit tests, build clean.

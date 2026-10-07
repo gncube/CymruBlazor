@@ -1,0 +1,33 @@
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
+
+@if (HasHeading)
+{
+    <section
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        aria-labelledby="@HeadingId"
+        @attributes="AdditionalAttributes">
+
+        <CyTypography Id="@HeadingId" Variant="TypographyVariant.H2" As="@HeadingTag" Class="cy-page-section__heading">
+            @Heading
+        </CyTypography>
+
+        @ChildContent
+
+    </section>
+}
+else
+{
+    <div
+        id="@Id"
+        class="@CssClass"
+        style="@CssStyle"
+        @attributes="AdditionalAttributes">
+
+        @ChildContent
+
+    </div>
+}

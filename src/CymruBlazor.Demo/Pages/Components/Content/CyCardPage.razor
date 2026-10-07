@@ -41,6 +41,20 @@
         }
     </div>
 
+    <span class="cb-panel-caption">Title, variants and collapsible (1.12.0)</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <CyCard Title="Clinic details" HeadingLevel="2" Variant="CyCardVariant.Outlined" Padding="CyCardPadding.Compact">
+            An outlined card with compact padding and a title.
+        </CyCard>
+        <CyCard Title="Flat panel" HeadingLevel="2" Variant="CyCardVariant.Flat">
+            A flat, filled panel with no shadow.
+        </CyCard>
+        <CyCard Title="Collapsible card" HeadingLevel="2" Collapsible="true" @bind-Expanded="_expanded">
+            The title is a button that opens and closes this body.
+        </CyCard>
+        <p>The collapsible card is @(_expanded ? "open" : "closed").</p>
+    </div>
+
     <div class="cb-playground-grid">
         <DemoPropertyControls>
             <DemoPropertyToggleGroup Label="Elevation" @bind-Value="_elevation" Options="_elevationOptions" TValue="ComponentElevation" />
@@ -91,6 +105,7 @@ else
     private Tab _activeTab = Tab.Examples;
     private ComponentElevation _elevation = ComponentElevation.Small;
     private bool _asLink;
+    private bool _expanded = true;
 
     private readonly IReadOnlyList<ComponentElevation> _elevationOptions =
     [
@@ -119,12 +134,21 @@ else
         new("Footer", "RenderFragment?", "null", "Optional content rendered below the body."),
         new("Href", "string?", "null", "When set, the whole card renders as a single <a>. Don't nest another link inside ChildContent when set."),
         new("Elevation", "ComponentElevation", "ComponentElevation.Small", "Controls the card's shadow depth: None removes it, Small/Medium/Large all render the same 'raised' shadow (see note below) - only None vs. non-None is visually distinct."),
-        new("ChildContent", "RenderFragment", "null", "The card's body content.")
+        new("ChildContent", "RenderFragment", "null", "The card's body content."),
+        new("Title", "string?", "null", "Optional heading shown at the top of the card. Required when Collapsible is set. (1.12.0)"),
+        new("HeadingLevel", "int", "3", "1 to 6, the level of Title. The visual size does not change. (1.12.0)"),
+        new("Padding", "CyCardPadding", "Default", "Default, Compact or None. (1.12.0)"),
+        new("Variant", "CyCardVariant", "Raised", "Raised (border and shadow), Outlined (border only) or Flat (filled, no border). (1.12.0)"),
+        new("Collapsible", "bool", "false", "Makes the title a button that shows and hides the body. Not allowed together with Href. (1.12.0)"),
+        new("Expanded", "bool", "true", "Whether a collapsible card is open. Two-way bindable. (1.12.0)"),
+        new("ExpandedChanged", "EventCallback<bool>", "-", "Raised when the user opens or closes a collapsible card. (1.12.0)")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
         new("Single link target", "When Href is set, the entire card is one <a> - avoid nesting a second interactive element inside it, which would create invalid nested controls."),
-        new("Neutral otherwise", "Without Href, CyCard is a plain, non-interactive container that doesn't add unexpected roles or tab stops.")
+        new("Neutral otherwise", "Without Href, CyCard is a plain, non-interactive container that doesn't add unexpected roles or tab stops."),
+        new("Collapsible", "The title is a real button inside the heading, with aria-expanded and aria-controls pointing at the body. The chevron is decorative and the state is never shown by colour alone."),
+        new("Heading level", "Choose HeadingLevel so the page outline stays in order; it does not change the size of the title.")
     ];
 }

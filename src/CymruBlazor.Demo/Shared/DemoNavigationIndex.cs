@@ -68,6 +68,8 @@ public static class DemoNavigationIndex
             "An overflow menu button for per-row actions, with roving tabindex."),
         new("Layout", "Toolbar", "/layouts/toolbar",
             "A grouped set of actions with a single tab stop and arrow-key navigation."),
+        new("Layout", "Page", "/layouts/page",
+            "A page width policy, spaced page sections, and page header eyebrow and badges."),
 
         // 5. Navigation
         new("Navigation", "Overview", "/navigation",

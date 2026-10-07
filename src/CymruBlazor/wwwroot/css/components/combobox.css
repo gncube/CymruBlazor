@@ -122,8 +122,11 @@
 }
 
 .cy-combobox__option--disabled {
-  background-color: var(--cymru-color-disabled-background);
-  color: var(--cymru-color-disabled-text);
+  /* surface-alt + text, not disabled-*: the disabled tokens stay light in dark and high-contrast themes.
+     The state is shown by italics and the cursor, not by colour (selected options use weight instead). */
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+  font-style: italic;
   cursor: not-allowed;
 }
 

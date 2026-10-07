@@ -8,7 +8,48 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.11.0] - Unreleased
+## [1.12.0] - Unreleased
+
+Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-PLAN.md`).
+This first part adds the page scaffolding; `CyRuleBuilder` follows in the same release.
+Everything here is additive: no existing member is removed or changed, no new
+`[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
+`CyLocalizedStrings`. No new JavaScript.
+
+### Added
+
+- **`CyPage` and `CyPageSection`** (Layout): `CyPage` centres page content and caps its
+  width with `Width` (`CyPageWidth.Narrow`, `Default`, `Wide`, `Full`), using the existing
+  `--cymru-page-max-width-*` tokens and the standard gutters (`RemovePadding` to drop
+  them). It renders a `div`; the layout keeps the single `main` landmark. `CyPageSection`
+  adds vertical spacing and an optional `Heading` (`HeadingLevel`, default 2); with a
+  heading it is a `section` labelled by it, without one a plain `div`.
+- **`CyPageHeader`**: `Eyebrow` (text above the title), `Badges` (status content beside
+  the title) and `TitleLevel` (1 to 6, default 1; the look does not change).
+- **`CyCard`**: `Title` with `HeadingLevel` (default 3), `Padding` (`CyCardPadding.Default`,
+  `Compact`, `None`), `Variant` (`CyCardVariant.Raised`, `Outlined`, `Flat`) and
+  `Collapsible` with a two-way `Expanded` / `ExpandedChanged`. A collapsible card's title is
+  a button (`aria-expanded`, `aria-controls`) over a `hidden` body; no script. It needs a
+  `Title` and cannot be combined with `Href`.
+- Demo page `/layouts/page`, a new example block and API rows on the `CyCard` page, with
+  sidebar, search-index and English and Welsh overview entries.
+
+### Changed
+
+- `CyCard` and `CyPageHeader` produce the same markup as 1.11.0 when none of the new
+  parameters is set. One edge case: a `title="..."` attribute passed to `CyCard` used to fall
+  through to the `div` as a tooltip; the parameter is now `Title` and renders a heading.
+  Use `Class`/`AdditionalAttributes` with another attribute if you relied on the tooltip.
+- The disabled option of `CyCombobox` / `CyMultiCombobox` now uses `surface-alt` with the
+  normal text colour (and italics) instead of the `disabled-*` tokens, which stay light in
+  the dark and high-contrast themes and failed contrast there.
+
+### Tests
+
+- New guard test that every library service injected by a component resolves from
+  `AddCymruBlazor()` (plan item TASK-074).
+
+## [1.11.0] - 2026-10-07
 
 Roadmap v1.11.0 ("Advanced inputs and data", Phase E of `docs/IMPLEMENTATION-PLAN.md`):
 a searchable combobox, a file upload and a data table. Everything here is
