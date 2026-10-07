@@ -33,7 +33,8 @@
 
 .cy-file-upload__zone:has(.cy-file-upload__input:disabled) {
   /* The prompt is text, not a disabled control, so it keeps AA contrast: the fill and cursor show it is off. */
-  background-color: var(--cymru-color-disabled-background);
+  /* surface-alt, not disabled-background: that token is light in every theme but the text here is white in dark. */
+  background-color: var(--cymru-color-surface-alt);
   color: var(--cymru-color-text);
   cursor: not-allowed;
 }
@@ -189,7 +190,7 @@
 .cy-file-upload__button:disabled,
 .cy-file-upload__submit:disabled {
   /* The prompt is text, not a disabled control, so it keeps AA contrast: the fill and cursor show it is off. */
-  background-color: var(--cymru-color-disabled-background);
+  background-color: var(--cymru-color-surface-alt);
   color: var(--cymru-color-text);
   cursor: not-allowed;
 }
