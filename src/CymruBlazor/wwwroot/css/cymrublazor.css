@@ -82,6 +82,9 @@
 @import "components/editing.css" layer(components);
 @import "components/flow.css" layer(components);
 @import "components/controls.css" layer(components);
+@import "components/combobox.css" layer(components);
+@import "components/file-upload.css" layer(components);
+@import "components/data-table.css" layer(components);
 
 /* ==========================================================================
    Utilities

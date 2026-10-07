@@ -1,0 +1,156 @@
+@page "/forms/combobox"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyCombobox" Subtitle="A text field with a searchable list, for choosing one item (or several) from a long list.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyCombobox" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        Use a combobox when a list is too long for a select or a group of radio buttons. For fewer than about
+        ten choices, a <code>CySelect</code> or <code>CyRadioGroup</code> is simpler and better. Typing filters the list;
+        Up and Down move through it; Enter chooses; Escape closes, then clears.
+    </p>
+
+    <h2 class="cb-section-title">Single choice</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 24rem;">
+            <CyCombobox TValue="string" Label="Health board" HintText="Start typing a name" Items="_boards" @bind-Value="_board" />
+            <p>Chosen: @(string.IsNullOrEmpty(_board) ? "nothing" : _board)</p>
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Several choices</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 24rem;">
+            <CyMultiCombobox TValue="string" Label="Clinics to include" Items="_boards" @bind-Value="_clinics" />
+            <p>Chosen: @(_clinics?.Any() == true ? string.Join(", ", _clinics) : "nothing")</p>
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">From an async source</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 24rem;">
+            <CyCombobox TValue="string" Label="Practice (searched on the server)" HintText="Type at least two letters"
+                        ItemsProvider="SearchAsync" MinSearchLength="2" @bind-Value="_practice" />
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Welsh phrases</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 24rem;">
+            <CyCombobox TValue="string" Label="Bwrdd iechyd" HintText="Dechreuwch deipio enw" Items="_boards" @bind-Value="_welsh" Text="_welshText" />
+        </div>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string _board = string.Empty;
+    private string _practice = string.Empty;
+    private string _welsh = string.Empty;
+    private IEnumerable<string>? _clinics;
+
+    private static readonly IReadOnlyList<CyOption<string>> _boards = new[]
+    {
+        "Aneurin Bevan University Health Board", "Betsi Cadwaladr University Health Board", "Cardiff and Vale University Health Board",
+        "Cwm Taf Morgannwg University Health Board", "Hywel Dda University Health Board", "Powys Teaching Health Board",
+        "Swansea Bay University Health Board", "Public Health Wales", "Velindre University NHS Trust"
+    }.Select(name => new CyOption<string>(name, name)).ToList();
+
+    private static readonly IReadOnlyList<string> _practices =
+    [
+        "Bro Taf Surgery", "Cathays Medical Centre", "Dyfed Road Practice", "Glan Clwyd Health Centre", "Llanelli Group Practice",
+        "Pontypridd Family Practice", "Rhyl Health Centre", "Tenby Surgery", "Wrexham Road Surgery"
+    ];
+
+    private readonly CyComboboxText _welshText = new()
+    {
+        NoResults = "Dim canlyniadau",
+        Loading = "Wrthi'n llwytho",
+        Clear = "Clirio"
+    };
+
+    private async Task<IReadOnlyList<CyOption<string>>> SearchAsync(CyComboboxRequest request, CancellationToken token)
+    {
+        await Task.Delay(300, token);
+        return _practices
+            .Where(name => name.Contains(request.Query, StringComparison.OrdinalIgnoreCase))
+            .Select(name => new CyOption<string>(name, name))
+            .ToList();
+    }
+
+    private string GeneratedCode => """
+        <CyCombobox TValue="string" Label="Health board"
+                    Items="_boards" @bind-Value="_board" />
+
+        <CyMultiCombobox TValue="string" Label="Clinics"
+                         Items="_boards" @bind-Value="_clinics" />
+
+        <CyCombobox TValue="string" Label="Practice"
+                    ItemsProvider="SearchAsync" MinSearchLength="2"
+                    @bind-Value="_practice" />
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Visible label. Required."),
+        new("Items", "IReadOnlyList<CyOption<TValue>>", "null", "The choices, filtered in memory. Use this or ItemsProvider, not both."),
+        new("ItemsProvider", "Func<CyComboboxRequest, CancellationToken, Task<IReadOnlyList<CyOption<TValue>>>>", "null", "Asked for matches as the user types, debounced; a stale answer is discarded."),
+        new("Filter", "Func<CyOption<TValue>, string, bool>", "contains, ignoring case", "Custom in-memory matching."),
+        new("DebounceMilliseconds", "int", "250", "Wait after typing before calling ItemsProvider."),
+        new("MinSearchLength", "int?", "null", "Letters needed before the list opens (provider: default 1)."),
+        new("MaxResults", "int", "50", "Options shown at once; the user is told when the list is capped."),
+        new("AllowClear", "bool", "true", "Single combobox: show a Clear button when something is chosen."),
+        new("CloseOnSelect", "bool", "false", "CyMultiCombobox: close the list after each choice."),
+        new("SelectedText / SelectedOptions", "string? / IEnumerable<CyOption<TValue>>", "null", "Text for a value that is not in the loaded list (needed with ItemsProvider)."),
+        new("MaxListHeight", "string?", "null", "A plain length such as 16rem."),
+        new("Text", "CyComboboxText?", "null", "Every phrase shown or announced, for Welsh.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Combobox pattern", "role=combobox with aria-autocomplete=list, aria-expanded, aria-controls and aria-activedescendant; focus stays in the input."),
+        new("Keyboard", "Down/Up move through the list, Enter chooses, Escape closes then clears, Tab leaves. A small script prevents the default for these keys only."),
+        new("Announcements", "The number of results, loading, no results and each choice are spoken through a polite status region."),
+        new("Selection is not colour-only", "The active option has an outline and the chosen option a tick."),
+        new("Chips", "Each chosen item of CyMultiCombobox is a list item with a Remove button named after it; focus returns to the input."),
+        new("Forced colours", "Active and selected options use system colours.")
+    ];
+}

@@ -1,0 +1,195 @@
+@layer components;
+
+/*
+ * CymruBlazor Data - CyDataTable
+ *
+ * Class names come from CyDataTable.razor / CyDataTable.razor.cs. The table itself is CyTable
+ * (table.css); this file only adds sorting, selection, paging and state styles. Semantic tokens
+ * only; text colour is declared with the background it sits on.
+ */
+
+.cy-data-table__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cymru-space-3);
+  margin-block-end: var(--cymru-space-3);
+}
+
+.cy-data-table__selection {
+  margin: 0 0 var(--cymru-space-2);
+  font-size: var(--cymru-font-size-sm);
+  font-weight: var(--cymru-font-weight-semibold);
+  color: var(--cymru-color-text);
+}
+
+/* ---- alignment */
+
+.cy-data-table .cy-data-table__cell--end {
+  text-align: end;
+}
+
+.cy-data-table .cy-data-table__cell--center {
+  text-align: center;
+}
+
+.cy-data-table .cy-data-table__cell--end .cy-data-table__sort {
+  margin-inline-start: auto;
+}
+
+/* ---- sortable header */
+
+.cy-data-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  min-block-size: 1.5rem;
+  margin: 0;
+  padding: var(--cymru-space-1) var(--cymru-space-2);
+  margin-inline-start: calc(-1 * var(--cymru-space-2));
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cy-data-table__sort:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table__sort:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 1px;
+}
+
+/* The sorted column is marked by its icon and by weight, not by colour. */
+.cy-data-table th[aria-sort] {
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table th[aria-sort] .cy-data-table__sort {
+  font-weight: var(--cymru-font-weight-bold);
+}
+
+/* ---- selection */
+
+.cy-data-table .cy-data-table__select-cell {
+  inline-size: 1%;
+  white-space: nowrap;
+}
+
+.cy-data-table__checkbox {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin: 0;
+  accent-color: var(--cymru-color-primary);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.cy-data-table__checkbox:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-data-table__checkbox:disabled {
+  cursor: not-allowed;
+}
+
+/* A selected row has a thick start edge as well as a tint. */
+.cy-data-table .cy-data-table__row--selected {
+  background-color: var(--cymru-color-primary-subtle);
+  color: var(--cymru-color-primary-on-surface);
+  box-shadow: inset var(--cymru-border-width-thick) 0 0 var(--cymru-color-primary);
+}
+
+.cy-data-table .cy-data-table__row--selected:hover {
+  background-color: var(--cymru-color-primary-subtle);
+  color: var(--cymru-color-primary-on-surface);
+}
+
+/* ---- states */
+
+.cy-data-table .cy-data-table__message {
+  padding: var(--cymru-space-6) var(--cymru-space-4);
+  text-align: center;
+  white-space: normal;
+}
+
+.cy-data-table__empty,
+.cy-data-table__error {
+  margin: 0 0 var(--cymru-space-2);
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table__error {
+  font-weight: var(--cymru-font-weight-semibold);
+}
+
+.cy-data-table__retry {
+  min-block-size: var(--cymru-touch-target-min);
+  padding: var(--cymru-space-1) var(--cymru-space-4);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-sm);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cy-data-table__retry:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table__retry:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-data-table--busy .cy-table__scroll {
+  opacity: 0.6;
+}
+
+/* ---- sticky header (MaxHeight) */
+
+.cy-data-table--sticky .cy-table__scroll {
+  max-block-size: var(--cy-data-table-max-height, none);
+  overflow-y: auto;
+}
+
+.cy-data-table--sticky thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--cymru-z-base);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+/* ---- footer */
+
+.cy-data-table__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-3);
+  margin-block-start: var(--cymru-space-3);
+}
+
+.cy-data-table__range {
+  margin: 0;
+  font-size: var(--cymru-font-size-sm);
+  color: var(--cymru-color-text-muted);
+}
+
+@media (forced-colors: active) {
+  .cy-data-table .cy-data-table__row--selected {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

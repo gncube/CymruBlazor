@@ -8,6 +8,62 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [1.11.0] - Unreleased
+
+Roadmap v1.11.0 ("Advanced inputs and data", Phase E of `docs/IMPLEMENTATION-PLAN.md`):
+a searchable combobox, a file upload and a data table. Everything here is
+additive: no existing member is removed or changed, no new `[Obsolete]`
+members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
+`CyLocalizedStrings`: every new phrase lives in a `Cy<Name>Text` record with
+English defaults. `CyRuleBuilder` is deferred to 1.12.0.
+
+### Added
+
+- **`CyCombobox<TValue>` and `CyMultiCombobox<TValue>`** (Forms): WAI-ARIA 1.2
+  list-autocomplete combobox for choosing one item or several from a long list.
+  Items are `CyOption<TValue>`, either in memory (`Items`, `Filter`) or from an
+  async `ItemsProvider` (debounced; a slower, older answer never replaces a newer
+  one). `MinSearchLength`, `MaxResults` (the user is told when the list is
+  capped), `AllowClear`, `SelectedText` / `SelectedOptions` for values not in the
+  loaded list, `MaxListHeight`. Results, loading, no results and each choice are
+  spoken through a polite status region. Chosen items of the multiple version are
+  a list of chips with "Remove {item}" buttons. `CyComboboxText`.
+- **`CyFileUpload`** (Forms): a labelled native file input as the drop area, with
+  `Accept`, `Multiple`, `MaxFileSize` (default 5 MiB), `MaxFiles`, `MaxTotalSize`,
+  rejection messages that name the file and the limit, a file list with progress,
+  Cancel, Retry and Remove (each named with the file), and an `Upload` callback
+  (`CyFileUploadContext` / `CyUploadResult`). `AutoUpload`, `MaxParallel`,
+  `OnFilesChanged`, `OnRejected`, `CyFileUploadText`.
+- **`CyDataTable<TItem>`** (Data): composed from the unchanged `CyTable`. Optional
+  sorting (`aria-sort` only on the sorted column, announced, stable), row selection
+  (checkbox or radio per row named with `RowLabel`, select-page header checkbox,
+  `KeySelector` so a selection survives paging) and paging (range line, page
+  announcements), over in-memory `Items` or an async `ItemsProvider` with loading,
+  stale-response discard and an error row with Retry. `CyDataColumn<TItem>`,
+  `CyDataTableRequest`, `CyDataTableResult<TItem>`, `CyDataTableText`.
+- Demo pages `/forms/combobox`, `/forms/file-upload` and `/data/data-table`, with
+  sidebar, search-index and English and Welsh overview entries.
+- One new on-demand script, `wwwroot/js/cymru-inputs.js`, loaded only by the
+  combobox: it prevents the browser default for Up, Down, Enter and Escape while
+  the list is in use. No npm package or third-party code; existing scripts are
+  unchanged. `CyFileUpload` and `CyDataTable` need no script.
+
+### Security
+
+- `CyFileUpload`'s size, count and type checks are advisory and exist to catch
+  honest mistakes early; a browser can report anything. The library ships no upload
+  endpoint: your `Upload` callback decides where a file goes, and the server must
+  check size, type and content again. `MaxFileSize` is also passed to
+  `OpenReadStream`, file names are always HTML-encoded, and exception text is
+  never shown to the user.
+
+### Not included
+
+- `CyDataTable`: virtualisation, inline editing, column resizing, reordering or
+  hiding, stacked rows on small screens, grouping, expandable rows, a filter UI,
+  export and ARIA grid keyboard navigation. Use `QuickGrid` or build on the
+  component for those.
+
 ## [1.10.0] - Unreleased
 
 Roadmap v1.10.0 ("Flow and review", Phase D of `docs/IMPLEMENTATION-PLAN.md`):

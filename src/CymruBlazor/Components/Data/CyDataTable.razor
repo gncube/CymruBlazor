@@ -1,0 +1,184 @@
+@typeparam TItem
+@inherits CyComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Feedback
+
+<div id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
+
+    @if (Toolbar is not null)
+    {
+        <div class="cy-data-table__toolbar">@Toolbar</div>
+    }
+
+    @if (SelectionMode != CyDataSelectionMode.None && SelectedCount > 0)
+    {
+        <p class="cy-data-table__selection">@Format(EffectiveText.SelectedCount, SelectedCount)</p>
+    }
+
+    <CyTable Caption="@Caption" CaptionVisuallyHidden="CaptionVisuallyHidden" Wrap="Wrap" aria-busy="@(Busy ? "true" : "false")">
+
+        <thead>
+            <tr>
+                @if (SelectionMode != CyDataSelectionMode.None)
+                {
+                    <th scope="col" class="cy-data-table__select-cell">
+                        @if (SelectionMode == CyDataSelectionMode.Multiple)
+                        {
+                            <input
+                                type="checkbox"
+                                class="cy-data-table__checkbox"
+                                checked="@AllPageSelected"
+                                disabled="@(_view.Count == 0)"
+                                aria-label="@(AllPageSelected ? EffectiveText.ClearPageRows : EffectiveText.SelectAllRows)"
+                                @onchange="e => TogglePageAsync(e.Value is true)" />
+                        }
+                        else
+                        {
+                            <span class="u-sr-only">@EffectiveText.SelectColumn</span>
+                        }
+                    </th>
+                }
+
+                @foreach (var column in Columns)
+                {
+                    var col = column;
+
+                    <th scope="col" class="@HeaderClass(col)" style="@WidthStyle(col)" aria-sort="@AriaSort(col)">
+                        @if (col.Sortable)
+                        {
+                            <button type="button" class="cy-data-table__sort" @onclick="() => SortAsync(col)">
+                                <span class="@(col.HeaderVisuallyHidden ? "u-sr-only" : null)">@col.Header</span>
+                                <CyIcon Name="@SortIcon(col)" Size="14" />
+                            </button>
+                        }
+                        else if (col.HeaderVisuallyHidden)
+                        {
+                            <span class="u-sr-only">@col.Header</span>
+                        }
+                        else
+                        {
+                            @col.Header
+                        }
+                    </th>
+                }
+
+                @if (RowActions is not null)
+                {
+                    <th scope="col"><span class="u-sr-only">@EffectiveText.ActionsHeader</span></th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (ShowSkeleton)
+            {
+                @for (var row = 0; row < SkeletonRows; row++)
+                {
+                    <tr class="cy-data-table__skeleton-row">
+                        <td colspan="@ColumnSpan"><CySkeleton Announce="false" /></td>
+                    </tr>
+                }
+            }
+            else if (_loadError)
+            {
+                <tr>
+                    <td colspan="@ColumnSpan" class="cy-data-table__message">
+                        <p class="cy-data-table__error" role="alert">@EffectiveText.LoadError</p>
+                        <button type="button" class="cy-data-table__retry" @onclick="RefreshAsync">@EffectiveText.Retry</button>
+                    </td>
+                </tr>
+            }
+            else if (_view.Count == 0)
+            {
+                <tr>
+                    <td colspan="@ColumnSpan" class="cy-data-table__message">
+                        @if (EmptyContent is not null)
+                        {
+                            @EmptyContent
+                        }
+                        else
+                        {
+                            <p class="cy-data-table__empty">@EffectiveText.NoResults</p>
+                        }
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in _view)
+                {
+                    var current = item;
+                    var selected = IsSelected(current);
+
+                    <tr class="@(selected ? "cy-data-table__row cy-data-table__row--selected" : "cy-data-table__row")">
+
+                        @if (SelectionMode != CyDataSelectionMode.None)
+                        {
+                            <td class="cy-data-table__select-cell">
+                                @if (SelectionMode == CyDataSelectionMode.Multiple)
+                                {
+                                    <input
+                                        type="checkbox"
+                                        class="cy-data-table__checkbox"
+                                        checked="@selected"
+                                        aria-label="@SelectRowLabel(current)"
+                                        @onchange="e => ToggleAsync(current, e.Value is true)" />
+                                }
+                                else
+                                {
+                                    <input
+                                        type="radio"
+                                        class="cy-data-table__checkbox"
+                                        name="@RadioName"
+                                        checked="@selected"
+                                        aria-label="@SelectRowLabel(current)"
+                                        @onchange="() => SelectSingleAsync(current)" />
+                                }
+                            </td>
+                        }
+
+                        @foreach (var column in Columns)
+                        {
+                            var col = column;
+
+                            @if (col.RowHeader)
+                            {
+                                <th scope="row" class="@CellClass(col)">@CellContent(col, current)</th>
+                            }
+                            else
+                            {
+                                <td class="@CellClass(col)" title="@CellTitle(col, current)">@CellContent(col, current)</td>
+                            }
+                        }
+
+                        @if (RowActions is not null)
+                        {
+                            <td class="cy-data-table__actions-cell">@RowActions(current)</td>
+                        }
+
+                    </tr>
+                }
+            }
+        </tbody>
+
+    </CyTable>
+
+    @if (PageSize > 0)
+    {
+        <div class="cy-data-table__footer">
+            @if (_total > 0)
+            {
+                <p class="cy-data-table__range" tabindex="-1" @ref="_range">@RangeText</p>
+            }
+
+            <CyPagination
+                AriaLabel="@PaginationLabel"
+                CurrentPage="_page"
+                TotalPages="TotalPages"
+                CurrentPageChanged="OnPageChangedAsync" />
+        </div>
+    }
+
+    <div class="u-sr-only" role="status" aria-live="polite" aria-atomic="true">@_status</div>
+
+</div>

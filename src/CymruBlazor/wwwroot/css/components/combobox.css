@@ -1,0 +1,188 @@
+@layer components;
+
+/*
+ * CymruBlazor Forms - CyCombobox, CyMultiCombobox
+ *
+ * Class names come from the matching .razor/.razor.cs files. Semantic tokens
+ * only; text colour is always declared with the background it sits on.
+ * The field label, hint and error reuse the .cy-field__* rules in forms.css.
+ */
+
+.cy-combobox__control {
+  position: relative;
+}
+
+.cy-combobox__input {
+  /* Room for the clear button and the chevron. */
+  padding-inline-end: calc(var(--cymru-touch-target-min) + var(--cymru-space-6));
+}
+
+.cy-combobox__chevron {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--cymru-space-3);
+  display: inline-flex;
+  align-items: center;
+  color: var(--cymru-color-text-muted);
+  pointer-events: none;
+}
+
+.cy-combobox__clear {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(var(--cymru-space-3) + 1.5rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.5rem;
+  min-block-size: 1.5rem;
+  margin-block: auto;
+  padding: var(--cymru-space-1);
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  background-color: transparent;
+  color: var(--cymru-color-text);
+  cursor: pointer;
+}
+
+.cy-combobox__clear:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-combobox__clear:focus-visible,
+.cy-combobox__chip-remove:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 1px;
+}
+
+/* ---- popup */
+
+.cy-combobox__popup {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 100%;
+  z-index: var(--cymru-z-dropdown);
+  margin-block-start: var(--cymru-space-1);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-sm);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+  box-shadow: var(--cymru-shadow-md);
+}
+
+.cy-combobox__popup[hidden],
+.cy-combobox__list[hidden] {
+  display: none;
+}
+
+.cy-combobox__message {
+  margin: 0;
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm);
+}
+
+.cy-combobox__list {
+  max-block-size: var(--cy-combobox-max-height, 16rem);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.cy-combobox__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-2);
+  min-block-size: var(--cymru-touch-target-min);
+  padding: var(--cymru-space-2) var(--cymru-space-4);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+  cursor: pointer;
+}
+
+.cy-combobox__option:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+/* Selection is a tick and weight as well as a colour; the active option is an outline, not just a fill. */
+.cy-combobox__option--selected {
+  font-weight: var(--cymru-font-weight-semibold);
+  background-color: var(--cymru-color-primary-subtle);
+  color: var(--cymru-color-primary-on-surface);
+}
+
+.cy-combobox__option--active {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: calc(-1 * var(--cymru-border-width-focus));
+}
+
+.cy-combobox__option--disabled {
+  background-color: var(--cymru-color-disabled-background);
+  color: var(--cymru-color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* ---- chips (multiple) */
+
+.cy-combobox__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cymru-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cy-combobox__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  min-block-size: 2rem;
+  padding-inline: var(--cymru-space-3) var(--cymru-space-1);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-pill);
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+  font-size: var(--cymru-font-size-sm);
+}
+
+.cy-combobox__chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.5rem;
+  min-block-size: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--cymru-radius-circle);
+  background-color: transparent;
+  color: var(--cymru-color-text);
+  cursor: pointer;
+}
+
+.cy-combobox__chip-remove:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-combobox--multiple .cy-combobox__chips {
+  margin-block-end: var(--cymru-space-2);
+}
+
+@media (forced-colors: active) {
+  .cy-combobox__option--selected,
+  .cy-combobox__option--active {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  .cy-combobox__popup {
+    border-color: CanvasText;
+  }
+}
