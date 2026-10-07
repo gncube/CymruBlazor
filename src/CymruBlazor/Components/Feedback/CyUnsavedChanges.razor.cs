@@ -170,7 +170,7 @@ public partial class CyUnsavedChanges : CyComponentBase, IDisposable
                         CancelText = Strings.Stay,
                         Destructive = true
                     },
-                    context.CancellationToken);
+                    CancellationToken.None);
             }
             catch (InvalidOperationException)
             {

@@ -1,0 +1,141 @@
+@page "/forms/file-upload"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyFileUpload" Subtitle="Choose files, see what is wrong with them, and upload them with progress, cancel and retry.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyFileUpload" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        The limits here are advisory: they stop honest mistakes early, but a browser can report anything.
+        <strong>Check size, type and content again on the server</strong> and store files outside the web root.
+        This library has no upload endpoint; your <code>Upload</code> callback decides where a file goes.
+    </p>
+
+    <h2 class="cb-section-title">One file, uploaded on selection</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 32rem;">
+            <CyFileUpload Label="Referral letter" HintText="A scan or a photo" Accept=".pdf,image/*" MaxFileSize="@(2 * 1024 * 1024)" Upload="SimulateUploadAsync" />
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Several files, started by a button</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 32rem;">
+            <CyFileUpload Label="Supporting documents" Multiple="true" MaxFiles="3" AutoUpload="false" Accept=".pdf,.docx" Upload="SimulateUploadAsync" />
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Welsh phrases</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%; max-width: 32rem;">
+            <CyFileUpload Label="Llythyr atgyfeirio" Text="_welshText" Upload="SimulateUploadAsync" />
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Server-side checklist</h2>
+    <ul style="color:var(--cymru-color-text);line-height:1.75;padding-inline-start:var(--cymru-space-6)">
+        <li>Enforce the size limit again; pass the same limit to <code>OpenReadStream</code> (the context does).</li>
+        <li>Check the content, not just the extension or the reported type.</li>
+        <li>Generate your own file names; never use the name supplied by the browser as a path.</li>
+        <li>Scan for malware, store outside the web root, and authorise every download.</li>
+    </ul>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly CyFileUploadText _welshText = new() { ChooseFile = "Dewis ffeil" };
+
+    // The demo reads the file and throws it away; a real service would send it somewhere safe.
+    private static async Task<CyUploadResult> SimulateUploadAsync(CyFileUploadContext context)
+    {
+        await using var stream = context.OpenReadStream();
+        var buffer = new byte[16 * 1024];
+        long read = 0;
+        int count;
+
+        while ((count = await stream.ReadAsync(buffer, context.CancellationToken)) > 0)
+        {
+            read += count;
+            context.Progress.Report(read);
+            await Task.Delay(120, context.CancellationToken);
+        }
+
+        return CyUploadResult.Success();
+    }
+
+    private string GeneratedCode => """
+        <CyFileUpload Label="Referral letter"
+                      Accept=".pdf,image/*"
+                      MaxFileSize="@(2 * 1024 * 1024)"
+                      Upload="UploadAsync" />
+
+        @code {
+            private async Task<CyUploadResult> UploadAsync(CyFileUploadContext context)
+            {
+                await using var stream = context.OpenReadStream();
+                // send the stream to your own, authorised endpoint
+                return CyUploadResult.Success();
+            }
+        }
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Visible label. Required."),
+        new("HintText / Required / Disabled / Error", "-", "-", "As for the other form fields."),
+        new("Accept", "string?", "null", "Comma-separated extensions and MIME types, such as .pdf,image/*. Advisory."),
+        new("Multiple / MaxFiles", "bool / int?", "false / null", "Allow several files, and how many."),
+        new("MaxFileSize", "long", "5 MiB", "Per file; also passed to OpenReadStream."),
+        new("MaxTotalSize", "long?", "null", "Combined size of the list."),
+        new("Upload", "Func<CyFileUploadContext, Task<CyUploadResult>>?", "null", "Your upload code. Without it the component only lists files."),
+        new("AutoUpload / MaxParallel", "bool / int", "true / 1", "Upload on selection, and how many at once."),
+        new("OnFilesChanged / OnRejected", "EventCallback", "-", "The list changed; files were turned away, with reasons."),
+        new("Text", "CyFileUploadText?", "null", "Every phrase and message, for Welsh.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native input", "The visible drop area is a real file input, so the browser's own picker, keyboard and screen-reader behaviour apply."),
+        new("Named by the file", "Remove, Cancel and Retry buttons say which file they act on."),
+        new("Errors in words", "Rejections and failures are listed as text in an alert region and linked with aria-describedby; they never rely on colour."),
+        new("Progress", "A real progress element per file; start and finish are announced, not every percentage."),
+        new("No leaked details", "Exception text is never shown; the callback supplies any message.")
+    ];
+}

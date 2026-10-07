@@ -120,6 +120,10 @@ public static class DemoNavigationIndex
             "An on/off control for a setting that takes effect immediately."),
         new("Forms", "Segmented Control", "/forms/segmented-control",
             "A joined set of mutually exclusive choices, such as a view switch."),
+        new("Forms", "Combobox", "/forms/combobox",
+            "A searchable list of suggestions for choosing one item (CyCombobox) or several (CyMultiCombobox), in memory or from an async source."),
+        new("Forms", "File Upload", "/forms/file-upload",
+            "Choose and upload files, with advisory limits, progress, retry and cancel; the upload itself is your callback."),
 
         // 7. Content
         new("Content", "Overview", "/content",
@@ -156,6 +160,8 @@ public static class DemoNavigationIndex
             "A styled semantic table, with a required caption and a keyboard-accessible scroll container."),
         new("Data", "Pagination", "/data/pagination",
             "Page navigation for a result set too large to show at once, with boundary/sibling ellipsis truncation."),
+        new("Data", "Data Table", "/data/data-table",
+            "A table with sorting, row selection and paging, from memory or an async provider, composed from CyTable."),
 
         // 9. Feedback
         new("Feedback", "Overview", "/feedback",

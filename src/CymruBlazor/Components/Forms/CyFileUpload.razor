@@ -1,0 +1,115 @@
+@inherits CyComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Feedback
+@using Microsoft.AspNetCore.Components.Forms
+
+<div id="@Id" class="@CssClass" style="@CssStyle">
+
+    <label for="@InputId" class="cy-field__label">
+        @Label
+        @if (Required)
+        {
+            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
+        }
+    </label>
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <p id="@HintId" class="cy-field__hint">@HintText</p>
+    }
+
+    <p id="@LimitsId" class="cy-field__hint">@LimitsText</p>
+
+    <div class="cy-file-upload__zone">
+
+        <InputFile @ref="_inputFile" @key="_inputKey" OnChange="OnSelectedAsync" @attributes="InputAttributes" />
+
+        <span class="cy-file-upload__prompt" aria-hidden="true">
+            <CyIcon Name="upload" Size="20" />
+            <span class="cy-file-upload__choose">@(Multiple ? EffectiveText.ChooseFiles : EffectiveText.ChooseFile)</span>
+            <span class="cy-file-upload__drop">@(Multiple ? EffectiveText.DropFiles : EffectiveText.DropFile)</span>
+        </span>
+
+    </div>
+
+    @if (_rejections.Count > 0)
+    {
+        <ul id="@RejectionsId" class="cy-file-upload__rejections" role="alert">
+            @foreach (var rejection in _rejections)
+            {
+                <li class="cy-field__error">@rejection.Message</li>
+            }
+        </ul>
+    }
+
+    @if (_items.Count > 0)
+    {
+        <ul class="cy-file-upload__list" aria-label="@FileListLabel">
+            @foreach (var item in _items)
+            {
+                var current = item;
+
+                <li id="@ItemId(current)" class="@ItemClass(current)">
+
+                    <div class="cy-file-upload__row">
+                        <span class="cy-file-upload__name">@current.Name</span>
+                        <span class="cy-file-upload__size">@SizeText(current.Size)</span>
+                        <span class="cy-file-upload__status">
+                            @if (current.Status == CyFileStatus.Uploaded)
+                            {
+                                <CyIcon Name="check" Size="14" />
+                            }
+                            @StatusText(current)
+                        </span>
+                    </div>
+
+                    @if (current.Status == CyFileStatus.Uploading)
+                    {
+                        <CyProgress Value="@current.Progress" Max="@current.Size" AriaLabel="@ProgressLabel(current)" />
+                    }
+
+                    @if (current.Status == CyFileStatus.Failed && !string.IsNullOrEmpty(current.Error))
+                    {
+                        <p class="cy-field__error cy-file-upload__item-error" role="alert">@current.Error</p>
+                    }
+
+                    <div class="cy-file-upload__actions">
+                        @if (current.Status == CyFileStatus.Uploading)
+                        {
+                            <button type="button" class="cy-file-upload__button" aria-label="@CancelLabel(current)" @onclick="() => CancelAsync(current)">
+                                <CyIcon Name="close" Size="16" /> <span aria-hidden="true">@EffectiveText.CancelButton</span>
+                            </button>
+                        }
+                        else
+                        {
+                            @if (current.Status == CyFileStatus.Failed && Upload is not null)
+                            {
+                                <button type="button" class="cy-file-upload__button" aria-label="@RetryLabel(current)" @onclick="() => RetryAsync(current)">
+                                    <span aria-hidden="true">@EffectiveText.RetryButton</span>
+                                </button>
+                            }
+
+                            <button type="button" class="cy-file-upload__button" aria-label="@RemoveLabel(current)" @onclick="() => RemoveAsync(current)" disabled="@Disabled">
+                                <CyIcon Name="close" Size="16" /> <span aria-hidden="true">@EffectiveText.RemoveButton</span>
+                            </button>
+                        }
+                    </div>
+
+                </li>
+            }
+        </ul>
+
+        @if (Upload is not null && !AutoUpload && _items.Any(i => i.Status == CyFileStatus.Ready))
+        {
+            <button type="button" class="cy-file-upload__submit" @onclick="StartAsync" disabled="@Disabled">@EffectiveText.UploadButton</button>
+        }
+    }
+
+    <div class="u-sr-only" role="status" aria-live="polite" aria-atomic="true">@_status</div>
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <p id="@ErrorId" class="cy-field__error" role="alert">@Error</p>
+    }
+
+</div>

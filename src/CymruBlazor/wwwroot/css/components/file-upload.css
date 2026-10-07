@@ -1,0 +1,218 @@
+@layer components;
+
+/*
+ * CymruBlazor Forms - CyFileUpload
+ *
+ * Class names come from CyFileUpload.razor. The drop zone is the file input itself,
+ * stretched invisibly over the visible prompt, so picking, dropping and keyboard
+ * activation are native. Semantic tokens only.
+ */
+
+.cy-file-upload__zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 5rem;
+  padding: var(--cymru-space-4);
+  border: var(--cymru-border-width-medium) dashed var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-sm);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+.cy-file-upload__zone:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-file-upload__zone:has(.cy-file-upload__input:focus-visible) {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-file-upload__zone:has(.cy-file-upload__input:disabled) {
+  /* The prompt is text, not a disabled control, so it keeps AA contrast: the fill and cursor show it is off. */
+  /* surface-alt, not disabled-background: that token is light in every theme but the text here is white in dark. */
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+  cursor: not-allowed;
+}
+
+.cy-field--invalid .cy-file-upload__zone,
+.cy-file-upload__input[aria-invalid="true"] + .cy-file-upload__prompt {
+  border-color: var(--cymru-color-danger);
+}
+
+/* Invisible, but covers the whole zone so a click or drop anywhere reaches it. */
+.cy-file-upload__input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cy-file-upload__input:disabled {
+  cursor: not-allowed;
+}
+
+.cy-file-upload__prompt {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cymru-space-2);
+  pointer-events: none;
+}
+
+.cy-file-upload__choose {
+  font-weight: var(--cymru-font-weight-semibold);
+  color: var(--cymru-color-primary-on-surface);
+  text-decoration: underline;
+}
+
+.cy-file-upload__zone:has(.cy-file-upload__input:disabled) .cy-file-upload__choose {
+  color: var(--cymru-color-text);
+}
+
+.cy-file-upload__drop {
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm);
+}
+
+.cy-file-upload__zone:has(.cy-file-upload__input:disabled) .cy-file-upload__drop {
+  color: var(--cymru-color-text);
+}
+
+/* ---- rejections */
+
+.cy-file-upload__rejections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-1);
+  margin: var(--cymru-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- file list */
+
+.cy-file-upload__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-2);
+  margin: var(--cymru-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cy-file-upload__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-2);
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-sm);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+}
+
+/* A failed file is marked by a thick edge and the word "Failed", not by colour alone. */
+.cy-file-upload__item--failed {
+  border-inline-start: var(--cymru-border-width-thick) solid var(--cymru-color-danger);
+}
+
+.cy-file-upload__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--cymru-space-1) var(--cymru-space-3);
+}
+
+.cy-file-upload__name {
+  font-weight: var(--cymru-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.cy-file-upload__size,
+.cy-file-upload__status {
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm);
+}
+
+.cy-file-upload__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  margin-inline-start: auto;
+}
+
+.cy-file-upload__item-error {
+  margin: 0;
+}
+
+.cy-file-upload__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cymru-space-2);
+}
+
+.cy-file-upload__button,
+.cy-file-upload__submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  min-block-size: var(--cymru-touch-target-min);
+  padding: var(--cymru-space-1) var(--cymru-space-3);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-sm);
+  background-color: var(--cymru-color-surface);
+  color: var(--cymru-color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cy-file-upload__button:hover:not(:disabled),
+.cy-file-upload__submit:hover:not(:disabled) {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-file-upload__button:focus-visible,
+.cy-file-upload__submit:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-file-upload__button:disabled,
+.cy-file-upload__submit:disabled {
+  /* The prompt is text, not a disabled control, so it keeps AA contrast: the fill and cursor show it is off. */
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+  cursor: not-allowed;
+}
+
+.cy-file-upload__submit {
+  margin-block-start: var(--cymru-space-3);
+  background-color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary-text);
+  border-color: var(--cymru-color-primary);
+}
+
+.cy-file-upload__submit:hover:not(:disabled) {
+  background-color: var(--cymru-color-primary-hover);
+  color: var(--cymru-color-primary-text);
+}
+
+@media (forced-colors: active) {
+  .cy-file-upload__zone {
+    border-color: CanvasText;
+  }
+
+  .cy-file-upload__item--failed {
+    border-inline-start-color: CanvasText;
+  }
+}

@@ -1,0 +1,165 @@
+@page "/data/data-table"
+@namespace CymruBlazor.Demo.Pages.Components.Data
+@using CymruBlazor.Components.Data
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyDataTable" Subtitle="A table with sorting, row selection and paging, from memory or from a server-side source.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Data" Href="/data" />
+            <CyBreadcrumbItem Text="CyDataTable" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        This is a table, not an ARIA grid: Tab visits each sort button, selection control and link in turn.
+        Virtualisation, inline editing, column resizing and export are not included.
+    </p>
+
+    <h2 class="cb-section-title">In memory: sort, select and page</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Appointments" Columns="_columns" Items="_appointments"
+                     PageSize="4" SelectionMode="CyDataSelectionMode.Multiple" RowLabel="a => a.Patient"
+                     KeySelector="a => a.Id" @bind-SelectedItems="_selected" />
+    </div>
+
+    <h2 class="cb-section-title">From an async provider</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Appointments from a server" Columns="_columns" ItemsProvider="LoadAsync" PageSize="3" />
+    </div>
+
+    <h2 class="cb-section-title">Welsh phrases</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Apwyntiadau" Columns="_columns" Items="_appointments" PageSize="3" Text="_welshText" />
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    public sealed record Appointment(int Id, string Patient, string Clinic, int Minutes);
+
+    private Tab _activeTab = Tab.Examples;
+
+    private IReadOnlyList<Appointment>? _selected;
+
+    private readonly IReadOnlyList<Appointment> _appointments =
+    [
+        new(1, "Carys Evans", "Cardiology", 20),
+        new(2, "Aled Jones", "Dermatology", 15),
+        new(3, "Bethan Morgan", "Cardiology", 30),
+        new(4, "Dafydd Hughes", "Audiology", 45),
+        new(5, "Elin Davies", "Dermatology", 10),
+        new(6, "Gareth Price", "Audiology", 25),
+        new(7, "Heledd Rees", "Cardiology", 15)
+    ];
+
+    private IReadOnlyList<CyDataColumn<Appointment>> _columns = default!;
+
+    private readonly CyDataTableText _welshText = new()
+    {
+        NoResults = "Dim canlyniadau",
+        SortedBy = "Wedi trefnu yn ôl {0}, {1}.",
+        Ascending = "esgynnol",
+        Descending = "disgynnol",
+        ShowingRange = "Yn dangos {0} i {1} o {2}"
+    };
+
+    protected override void OnInitialized() =>
+        _columns =
+        [
+            new CyDataColumn<Appointment> { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
+            new CyDataColumn<Appointment> { Header = "Clinic", Value = a => a.Clinic, Sortable = true },
+            new CyDataColumn<Appointment> { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
+        ];
+
+    private async Task<CyDataTableResult<Appointment>> LoadAsync(CyDataTableRequest request, CancellationToken token)
+    {
+        await Task.Delay(400, token);
+
+        IEnumerable<Appointment> rows = _appointments;
+        rows = (request.SortKey, request.SortDescending) switch
+        {
+            ("Patient", false) => rows.OrderBy(a => a.Patient),
+            ("Patient", true) => rows.OrderByDescending(a => a.Patient),
+            ("Clinic", false) => rows.OrderBy(a => a.Clinic),
+            ("Clinic", true) => rows.OrderByDescending(a => a.Clinic),
+            ("Minutes", false) => rows.OrderBy(a => a.Minutes),
+            ("Minutes", true) => rows.OrderByDescending(a => a.Minutes),
+            _ => rows
+        };
+
+        var all = rows.ToList();
+        var page = all.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
+        return new CyDataTableResult<Appointment>(page, all.Count);
+    }
+
+    private string GeneratedCode => """
+        <CyDataTable TItem="Appointment" Caption="Appointments"
+                     Columns="_columns" Items="_appointments"
+                     PageSize="4"
+                     SelectionMode="CyDataSelectionMode.Multiple"
+                     RowLabel="a => a.Patient" KeySelector="a => a.Id"
+                     @bind-SelectedItems="_selected" />
+
+        @code {
+            private IReadOnlyList<CyDataColumn<Appointment>> _columns =
+            [
+                new() { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
+                new() { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
+            ];
+        }
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Caption", "string", "-", "Required accessible name."),
+        new("Columns", "IReadOnlyList<CyDataColumn<TItem>>", "-", "Header, Value or Cell, Sortable, SortKey, Compare, Align, Width, RowHeader and more."),
+        new("Items / ItemsProvider", "IReadOnlyList<TItem> / Func<CyDataTableRequest, CancellationToken, Task<CyDataTableResult<TItem>>>", "null", "In-memory rows or a server page at a time; not both."),
+        new("SortKey / SortDescending", "string? / bool", "null / false", "Two-way bindable. AllowUnsorted adds a third step."),
+        new("SelectionMode", "CyDataSelectionMode", "None", "None, Single (radio) or Multiple (checkbox)."),
+        new("SelectedItems / KeySelector / RowLabel", "-", "-", "Two-way selection; a stable row key (required with a provider); the name of each row's control (required with selection)."),
+        new("PageSize / Page", "int", "0 / 1", "0 turns paging off. Page is two-way bindable."),
+        new("Loading / EmptyContent / Toolbar / RowActions", "-", "-", "Loading state, empty message, filters above, per-row actions."),
+        new("MaxHeight", "string?", "null", "A plain length; keeps the header row in view."),
+        new("RefreshAsync()", "Task", "-", "Reload the data keeping sort, page and selection."),
+        new("Text", "CyDataTableText?", "null", "Every phrase and announcement, for Welsh.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Real table", "A captioned table in the keyboard-reachable scroll region of CyTable, with scoped headers and optional row headers."),
+        new("aria-sort", "Only the sorted column has aria-sort; the direction also shows as an icon, and each change is announced."),
+        new("Selection", "Each row has a checkbox or radio named with the row's label; the header checkbox selects the current page; the count is visible text."),
+        new("Paging", "After a page change focus moves to the \"Showing 4 to 6 of 7\" line, and the new page is announced."),
+        new("Loading and errors", "aria-busy while loading; a failure shows an alert and a Retry button without exception text.")
+    ];
+}

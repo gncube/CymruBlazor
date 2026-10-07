@@ -15,8 +15,9 @@
 | A (1.7.0) | **Implemented**, A1–A9 | See below |
 | B (1.8.0) | **Implemented**, B1–B5 (see below). Demo pages and R1 not done. | CHANGELOG `[Unreleased]` |
 | C (1.9.0) | **Implemented and verified:** build, unit tests and axe suite (168/168) pass. C1–C7 components, CSS, bUnit tests, demo pages and CHANGELOG written. Remaining: visual pass in 3 themes and `dotnet pack` vs 1.8.0 (TASK-022, TASK-024), then merge and tag (TASK-026). | CHANGELOG `[1.9.0]` |
-| D (1.10.0) | **Written, not yet built or run** (see "Phase D" below). Scope confirmed: six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`. Awaiting your `dotnet build`, `dotnet test` and axe run. | `docs/IMPLEMENTATION-PLAN.md` |
-| E–F | Not started | |
+| D (1.10.0) | **Implemented and verified:** build, unit tests (948) and axe/Playwright suite (168/168) pass. Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`, demo pages, CSS, tests and CHANGELOG written. Remaining: visual pass in 3 themes, Welsh text review, `dotnet pack` vs 1.8.0, then merge and tag. | CHANGELOG `[1.10.0]` |
+| E (1.11.0) | **Built, unverified.** Combobox (single and multiple), file upload and data table written with tests, demo pages and CHANGELOG. Awaiting `dotnet build`, `dotnet test` and the axe run. Rule builder deferred to 1.12.0. | See "Phase E" below |
+| F | Not started | |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -230,3 +231,190 @@ Items to check first when you run it (areas I could not verify without a compile
 2. bUnit navigation-guard tests (`CyUnsavedChangesTests`) rely on `NavigationManager.NavigateTo` running location-changing handlers; if bUnit's behaviour differs, those four tests need adjusting, not the component.
 3. `CyConfirmTests` rely on the dialog's JS module mock returning a token (`showDialog` -> 7), as `CyDialogTests` does.
 4. Axe: avatar tone colours and `cy-stat-card__trend--good/bad` use the semantic text tokens; confirm contrast in the three themes.
+
+
+---
+
+## Phase E (1.11.0): "Advanced inputs and data"
+
+**Status:** **scope confirmed and built, not yet compiled or run** (the authoring sandbox has no .NET SDK). See "As built" at the end of this section for what changed from the plan below.
+**Baseline:** 1.10.0 (Phase D). Build, unit tests (948) and axe/Playwright suite (168/168) pass. Open for 1.10.0 and *not* Phase E work: the three-theme visual pass, Welsh text review, and `dotnet pack` vs 1.8.0.
+**Audit of the 1.10.0 zip:** a search for `Combobox`, `FileUpload`, `DataTable` and `RuleBuilder` (whole tree, excluding `.artifacts`) found only the mention in `docs/CymruBlazor-Improvement-Recommendations.md`. Phase E starts from a clean slate. Existing pieces it builds on:
+
+| Piece | Where | Used by |
+|---|---|---|
+| `CyFormFieldComponentBase<T>` (standalone-capable `InputBase<T>`, `LocalError`, validation classes) | `Components/Forms` | Combobox |
+| `CyOption<TValue>` / `ToCyOptions(...)` (one shared item shape, no second type parameter) | `Components/Forms/CyOption.cs` | Combobox |
+| `CyField` / `CyFieldContext.Attributes` (id, `aria-describedby`, `aria-invalid` splat) | `Components/Forms` | Combobox, FileUpload |
+| `CyTable` (caption, scroll region, `Wrap`, `.cy-table__cell--*`) | `Components/Data/CyTable.razor` | DataTable |
+| `CyPagination`, `CyEmptyState`, `CySkeleton`, `CyProgress`, `CyCheckbox`, `CyButton`, `CyIcon` (`sort`, `chevron-*`, `arrow-up/down`, `upload`, `file`, `close`, `check`, `search` exist) | various | all |
+| `ILiveRegionRegistry` / `CyLiveRegion` | `Accessibility` | optional |
+| `CySortableListText` pattern, `OverlayInterop` / `EditingInterop` / `SortableInterop` module pattern | `Components/Content`, `Accessibility/Focus` | text records, JS |
+| `CyCheckbox` has no indeterminate state; no `InputFile` is used anywhere in the library | grep | DataTable, FileUpload |
+
+**Numbering:** `REQ-E##`; tasks continue from `TASK-056` (Phase D ended at `TASK-055`).
+
+### Decisions to confirm before any code is written
+
+**1. JavaScript: one small on-demand module, for the combobox only.**
+
+| Component | Needs script? | Reason |
+|---|---|---|
+| `CyCombobox` / `CyMultiCombobox` | **Yes, proposed: `wwwroot/js/cymru-inputs.js` (~50 lines)** | Blazor can only `preventDefault` on *all* keys of an element or none. With the list open, ArrowUp/ArrowDown/Home/End must not scroll the page and Enter on the active option must not submit the surrounding `EditForm`; Escape must not also close an enclosing `CyDialog`/`CyDrawer`; the active option must be scrolled into view. The module reads `aria-expanded` / `aria-activedescendant` straight from the DOM, so there are no round trips and no state sync. Same shape as `attachMenu` in `cymru-editing.js`. |
+| `CyFileUpload` | **No** | A native `<input type="file">` (Blazor `InputFile`) already accepts drops when the visual drop zone is the input itself, stretched over it with CSS. Pick, drop, `accept`, `multiple` and keyboard activation are native. Paste, folder drops and drag-over highlighting beyond `:has(:focus-visible)` / `:hover` are out of scope. |
+| `CyDataTable<T>` | **No** | Sort buttons, checkboxes, paging and live announcements are all C# + native elements. **Column resizing is proposed out of scope** (it is the only table feature that needs pointer script). The header "select all" checkbox shows no indeterminate state (that needs a DOM property set from script); the selected count is shown and announced instead. |
+
+Rules if approved: new file `cymru-inputs.js` (so `cymru-overlay.js`, `cymru-editing.js` and `sortable-list.js` stay byte-identical and separately cached), loaded on first render via `ComboboxInterop.ModulePath`, never a `<script>` tag, no npm or third-party code. If the module cannot load (prerender, disconnected circuit) the component still works, minus the four behaviours above; the failure is swallowed the way `CyMenu` does.
+*Alternative if you prefer zero JS:* ship the combobox with those four gaps and document them. I do not recommend it: Enter submitting a form from an open list is a real defect.
+
+**2. `CyFileUpload` and security.** See REQ-E20 to REQ-E31. Headline points:
+- Everything the browser reports about a file (name, size, content type) is **untrusted input**. Client-side checks are a usability aid, not enforcement; the component says so in its XML docs, demo page and CHANGELOG, and the demo shows a server-side validation sketch.
+- The library ships **no endpoint, no storage and no `HttpClient`**. The consumer passes an `Upload` callback; the component never POSTs anywhere itself.
+- `MaxFileSize` has a safe default (5 MiB) and is the limit passed to `IBrowserFile.OpenReadStream`, so the *framework* throws if the real size exceeds it, not just our pre-check.
+- Names are always HTML-encoded text, never used as a path or in a `style`/`href`.
+
+**3. `CyDataTable<T>` builds on `CyTable`.** It *composes* `CyTable` (renders it and writes the `<thead>`/`<tbody>` for you); `CyTable` itself is not modified, so its output is byte-identical. Sort, selection and paging are all optional parameters, off by default. Stated scope cuts are listed below rather than half-built.
+
+**4. `CyCombobox` follows the WAI-ARIA 1.2 combobox pattern (list autocomplete, no inline completion).** Two public types, because the bound value differs (the same reason `CyCheckboxGroup` binds `IEnumerable<T>` while `CySelect` binds `T`): `CyCombobox<TValue>` (single) and `CyMultiCombobox<TValue>` (multiple), over one internal engine. Items are `CyOption<TValue>`, the Phase B decision, so no second type parameter.
+
+**5. `CyRuleBuilder` (Recommendations section 7, item 14, "optional, later"): not planned here. I will ask you separately before building it** (see the questions at the end). If you say yes it becomes E4 with its own REQ/TASK table.
+
+### Global requirements (apply to every component)
+
+| ID | Requirement |
+|---|---|
+| REQ-E00a | WCAG 2.2 AA: 24px minimum targets (44px where primary), visible focus, no colour-only meaning (selection, sort direction, error, progress), `prefers-reduced-motion` and forced-colours respected, 2.5.7 (no drag-only action: file picking is by button/keyboard), 3.3.1/3.3.3 for upload errors, 4.1.3 status messages. |
+| REQ-E00b | Tokens only: no hex, no undefined `--cymru-*` (existing undefined-variable test must pass); any new token declared on all theme scopes (`GenerateTokens.cs --check`). Plan: no new tokens. |
+| REQ-E00c | Localisable strings: **no new required members on `CyLocalizedStrings`**. One `Cy<Name>Text` record per component with English defaults and a `Text` parameter, as `CySortableListText`. Welsh defaults shown on the demo pages. |
+| REQ-E00d | Additive API only; no `[Obsolete]`; `docs/MIGRATION-2.0.md` untouched; package validation vs 1.10.0 passes. `CyTable`, `CyPagination`, `CyField`, `CyOption<T>` and every existing JS file unchanged. |
+| REQ-E00e | JS: only `cymru-inputs.js`, only if confirmed (decision 1); no npm package. |
+| REQ-E00f | Nothing new in DI is planned. If that changes, register in `AddCymruBlazor()` and add a registration test (extend `PhaseDRegistrationTests` pattern). |
+| REQ-E00g | User-supplied values written to `style` are validated with the plain-length regex (`CssLength`); all text content (item text, file names, error text) is encoded. |
+| REQ-E00h | Per component: razor + code-behind, CSS, bUnit tests, demo page, sidebar entry, `DemoNavigationIndex` entry, overview cards (English and Welsh), CHANGELOG `[1.11.0]` entry. |
+| REQ-E00i | Async callbacks supplied by the consumer (items provider, upload) may throw or be cancelled: the component catches, shows an accessible error and never takes down the circuit. Stale responses are discarded (last request wins). |
+
+### E1: `CyCombobox<TValue>` / `CyMultiCombobox<TValue>`
+
+| ID | Requirement |
+|---|---|
+| REQ-E01 | Single: derives from `CyFormFieldComponentBase<TValue>` (works standalone, in `EditForm`, and inside `CyField`; `Value`/`ValueChanged`/`ValueExpression`). Multiple: same engine, binds `IEnumerable<TValue>` (assigns a new collection on each change, as `CyCheckboxGroup`). |
+| REQ-E02 | Items: `Items` (`IReadOnlyList<CyOption<TValue>>`, filtered in memory) **or** `ItemsProvider` (`Func<CyComboboxRequest, CancellationToken, Task<IReadOnlyList<CyOption<TValue>>>>`, async search; request carries the typed text and a cancellation token). Setting both throws a clear `InvalidOperationException`. `Filter` optional (default: culture-aware, case-insensitive contains). |
+| REQ-E03 | Async: `DebounceMilliseconds` (default 250; C# `Task.Delay` + cancellation, no JS), `MinSearchLength` (default 0 for `Items`, 1 for `ItemsProvider`), stale responses discarded, provider exceptions caught and shown as "Could not load results" in the popup and status. `MaxResults` (default 50) caps rendered options; when exceeded the status says "Showing the first 50 of N results. Keep typing to narrow." (no virtualisation). |
+| REQ-E04 | ARIA 1.2 list-autocomplete: the `input` has `role="combobox"`, `aria-autocomplete="list"`, `aria-expanded`, `aria-controls` (listbox id), `aria-activedescendant` (only when an option is active). The popup is `role="listbox"` with `role="option"` children carrying `aria-selected`. DOM focus never leaves the input. Multiple: listbox has `aria-multiselectable="true"`. |
+| REQ-E05 | Keyboard: Down opens / moves (wraps off by default); Up; Alt+Down opens without moving; Enter selects the active option; Escape closes, and a second Escape on a closed list clears the typed text; Home/End move the caret in the input (they move the active option only when the user is in the list, per APG, so they are not intercepted); Tab leaves without selecting. Typing opens the list. |
+| REQ-E06 | Single, on blur: typed text that is not a selection reverts to the selected option's text (or empties if none). **No free-text values** (`AllowCustomValue` is out of scope: coded terms must come from the list). Optional clear button (`AllowClear`, default true) with an accessible name. |
+| REQ-E07 | Multiple: selected values render as a list of chips before the input, each with a remove button named "Remove {text}"; removing moves focus to the input (or the next chip's button); already-selected options stay in the list marked selected, not hidden; selecting keeps the list open (`CloseOnSelect` default false). Backspace-removes-last is **not** implemented (an unannounced destructive key). |
+| REQ-E08 | Live region (the component's own visually hidden `role="status"` `aria-live="polite"`, so it works without a `CyLiveRegion` on the page): "{n} results available", "1 result available", **"No results found"**, "Loading results", "Type {0} or more characters", the capped-results message, "{text} selected / removed". Updated after the debounce, not on every keystroke, and never twice with the same text in a row. |
+| REQ-E09 | Pointer: option `mousedown` is default-prevented (`@onmousedown:preventDefault` on options only, so the input keeps focus and the blur-closes-list logic never fires before the click). Opening below the input only; the popup is positioned with CSS (`position: absolute`, `MaxListHeight` validated as a `CssLength`). Known limitation, documented: a clipping ancestor (`overflow: hidden`) clips the list; there is no flip-above logic (it would need script). |
+| REQ-E10 | `Disabled`, `ReadOnly` (list never opens), `Placeholder`, `Label`/`Hint` as `CyTextBox`; `Id`, `Required` and described-by supplied by `CyField` are honoured via `AdditionalAttributes`. |
+| REQ-E11 | `CyComboboxText`: results available / one result / no results / loading / min length / capped / load error / selected / removed / remove chip / clear / "Selected: " list label. No new member on `CyLocalizedStrings`. |
+| REQ-E12 | JS (if confirmed): `attachCombobox(input)` / `detachCombobox(token)` in `cymru-inputs.js`; prevents default for ArrowUp/Down/Home/End-in-list, Enter with an active option, and stops Escape propagating while expanded; scrolls the active option into view. Detached on dispose, including via the `RemovableHost` path. |
+
+| Task | Description |
+|---|---|
+| TASK-056 | (if approved) `wwwroot/js/cymru-inputs.js`, `Accessibility/Focus/ComboboxInterop.cs`. |
+| TASK-057 | Internal engine (`CyComboboxEngine`: filtering, debounce, active index, status text), `CyCombobox.razor(.cs)`, `CyComboboxRequest`, `CyComboboxText.cs`. |
+| TASK-058 | `CyMultiCombobox.razor(.cs)`, chips, focus handling after removal. |
+| TASK-059 | `combobox.css` (token-only; chip, popup, forced-colours, active/selected not colour-only, reduced motion). |
+| TASK-060 | bUnit: ARIA attributes in every state; Down/Up/Enter/Escape/Tab paths (`TriggerEvent("onkeydown", ...)`); filter; debounce and stale-response discard (poll, do not wait for render); provider exception; capped results; "No results" status text; single revert-on-blur; multi add/remove and focus; `CyField` and `EditForm` integration; `Items`+`ItemsProvider` throws; disposal via `RemovableHost`; `JSInterop.Mode = Loose` with `SetupModule`. |
+| TASK-061 | Demo page `/forms/combobox` (static, async "coded terms" example with a fake provider, multiple, in `CyField`, Welsh text), sidebar, index, overview cards (EN/CY). |
+
+### E2: `CyFileUpload`
+
+| ID | Requirement |
+|---|---|
+| REQ-E20 | Wraps `InputFile`. The input is the drop zone (no script). A visible, 44px "Choose file(s)" affordance is the input's own label/button styling; keyboard and screen-reader activation are native. |
+| REQ-E21 | Parameters: `Accept` (extensions such as `.pdf` and/or MIME types such as `image/png`; format-validated, invalid value throws), `Multiple`, `MaxFileSize` (bytes, default 5 MiB, must be > 0), `MaxFiles` (default 1, or 10 when `Multiple`), `MaxTotalSize` (optional), `Disabled`, `Required` (via `CyField`), `Files` (read-only snapshot, `CyFileItem`), `OnFilesChanged`, `OnRejected`, `Text`. `AdditionalAttributes` are splatted onto the `<input>` so `CyField`'s id/`aria-describedby`/`aria-invalid` land on it. |
+| REQ-E22 | **Validation is advisory.** Checked in C# on selection: size (reported size > `MaxFileSize`), empty file (size 0), type (extension in `Accept`, and, when `Accept` lists MIME types, the browser-reported content type), count, total size, duplicates (same name and size). Each failure is a `CyFileRejection` (`Reason` enum + file name) and a visible, specific message ("report.docx is 12 MB. The limit is 5 MB."). `accept` is also written to the input for the browser picker, which is a hint only. |
+| REQ-E23 | **No enforcement claims.** XML docs, demo page and CHANGELOG state that name, size and content type come from the client and can be forged; the consumer's server must re-validate size, extension *and content* (magic bytes), scan for malware, generate its own storage name and never trust the original name. The demo page includes that checklist. |
+| REQ-E24 | **Upload via callback, no endpoint in the library.** `Upload`: `Func<CyFileUploadContext, Task<CyUploadResult>>`. The context exposes `File` (`IBrowserFile`), `OpenReadStream()` (always passes `MaxFileSize`, so the framework enforces the real limit and throws `IOException` past it, shown as a "too large" failure), `Progress` (`IProgress<long>` of bytes) and a `CancellationToken`. `CyUploadResult.Success()` / `.Failure(message)`; an exception is treated as failure with the generic text (the exception message is **not** shown to the user, to avoid leaking server detail; it can be logged by the consumer). With no `Upload`, the component only validates and lists files and the consumer reads `Files` on submit. |
+| REQ-E25 | Blazor Server note, documented: `OpenReadStream` streams over the SignalR connection and the hub's `MaximumReceiveSize` (default 32 KB message, with the stream chunked) and the consumer's own limits apply; large files should be uploaded from the browser to an API, which is exactly why the library does not do transport. |
+| REQ-E26 | Per-file list (`<ul>`): name (encoded), human size, status text ("Ready", "Uploading", "Uploaded", "Failed: ...", "Not accepted: ..."), a `CyProgress` (determinate when the size is known) labelled with the file name, **Remove** (name "Remove {file}") and, while uploading, **Cancel** (name "Cancel upload of {file}"), and on failure **Retry**. Uploads run sequentially by default; `MaxParallel` (default 1) bounds concurrency. Removing mid-upload cancels first. |
+| REQ-E27 | Announcements (own `role="status"` region, polite; failures `role="alert"` on the per-file error, once): "{n} files added", "{file} rejected: {reason}" (every rejection, concatenated into one message when several), "Uploading {file}", "{file} uploaded", "{file} failed", "{file} removed". **Percent progress is not announced** (it would flood the reader); the visual bar has `aria-valuenow` and is not live. |
+| REQ-E28 | Errors are linked: each file error is its own element, the input's `aria-describedby` (merged with the one from `CyField`) lists the summary id; moving focus after removal goes to the input. Error text is plain text, never colour only (icon + words). |
+| REQ-E29 | Dispose cancels in-flight uploads; no callback runs after disposal; `OnFilesChanged` is not called for rejected files. |
+| REQ-E30 | No `FileReader`, no `accept`-based "security", no MIME sniffing in the library, no thumbnail preview (an image preview would need `URL.createObjectURL`, i.e. JS, and is out of scope). |
+| REQ-E31 | `CyFileUploadText`: choose (single/multiple), drop hint, each status word, each rejection message (format strings: `{0}` file, `{1}` size, `{2}` limit), remove / cancel / retry names, announcements. |
+
+| Task | Description |
+|---|---|
+| TASK-062 | `CyFileUpload.razor(.cs)`, `CyFileItem`, `CyFileStatus`, `CyFileRejection`, `CyFileRejectionReason`, `CyFileUploadContext`, `CyUploadResult`, `CyFileUploadText.cs`, size formatter, `Accept` parser/validator. |
+| TASK-063 | `file-upload.css` (drop-zone via stretched input, focus ring on the visible affordance via `:has(input:focus-visible)`, list, progress, forced-colours). |
+| TASK-064 | bUnit with `InputFileContent`: every rejection reason, accept parsing (valid and invalid), sequential upload and concurrency bound, progress, success/failure/exception paths (generic message), cancel, retry, remove mid-upload, dispose cancels, announcements (poll), `CyField` described-by merge, encoding of a name such as `<img onerror=x>.pdf`, size formatting, `MaxFileSize` passed to `OpenReadStream`. |
+| TASK-065 | Demo page `/forms/file-upload` (validate-only, fake upload with progress and failure, `CyField`, Welsh text, server-side checklist), sidebar, index, overview cards (EN/CY). |
+
+### E3: `CyDataTable<TItem>`
+
+| ID | Requirement |
+|---|---|
+| REQ-E40 | Composes `CyTable` (`Caption` required, `CaptionVisuallyHidden`, `ScrollContainer`, `Wrap`, `Class` pass through). Real `<table>`, `<thead>`, `<tbody>`, `scope="col"` on headers, optional `scope="row"` on a designated row-header column (`RowHeader` on one column). Not an ARIA grid. |
+| REQ-E41 | Columns: `Columns` (`IReadOnlyList<CyDataColumn<TItem>>`, model list as in D1 `CyStepper`, avoiding child-registration re-render problems). `CyDataColumn<TItem>`: `Header` (required text), `Cell` (`RenderFragment<TItem>`) or `Value` (`Func<TItem, object?>`, rendered as encoded text), `Sortable`, `SortKey`/`Comparer`, `Align` (Start/End/Center; numbers should be End), `Wrap`/`Truncate` (reuse `cy-table__cell--*`), `Width` (validated `CssLength`), `RowHeader`, `HeaderVisuallyHidden`. |
+| REQ-E42 | Data: `Items` (in-memory, client sort and page) **or** `ItemsProvider` (`Func<CyDataTableRequest, CancellationToken, Task<CyDataTableResult<TItem>>>`; the request carries `Page`, `PageSize` and `SortKey`/`Descending`; the result carries `Items` and `TotalCount`). Both set throws. Stale responses are discarded. Provider exceptions are caught and shown as an error row (`role="alert"` once) with a Retry button. |
+| REQ-E43 | Sorting: sortable header is a `<button>` inside the `<th>` (name = header text; icon `aria-hidden`); the `<th>` carries `aria-sort="ascending"` or `"descending"` **only on the sorted column** (none elsewhere). Click/Enter/Space cycles ascending then descending (`AllowUnsorted` adds a third "none" step). `SortKey`/`SortDescending` two-way bindable; `OnSortChanged`. A change is announced: "Sorted by Name, ascending". Stable sort. Direction is shown by icon **and** `aria-sort`, never colour. |
+| REQ-E44 | Selection: `SelectionMode` (`None` default / `Single` / `Multiple`), `SelectedItems` two-way, `KeySelector` (default: reference equality; **required for selection to survive paging and server reloads**, validated when selection is on and the provider is used). `RowLabel` (`Func<TItem,string>`) names each row's control ("Select {label}"). Multiple: header "select all on this page" checkbox ("Select all 10 rows on this page" / "Clear selection on this page"); Single: radio inputs in one group. A visible and announced "{n} selected" status. `aria-selected` is **not** used (not valid on rows of a plain table); the selected row is styled and its checkbox is checked. No indeterminate state (see decision 1). |
+| REQ-E45 | Paging (additive): `PageSize` (0 = off), `Page` (two-way), `TotalCount` (provider mode returns it; `Items` mode derives it), `PageSizeOptions` (renders a `CySelect`-style "Rows per page" if set). Renders `CyPagination` below, plus "Showing {0} to {1} of {2}" status. A page change announces "Page 3 of 12" and leaves focus on the pagination control (not the table top) so keyboard users keep their place; it does not scroll. Sorting resets to page 1. |
+| REQ-E46 | States: `Loading` (rows replaced by `CySkeleton` rows, `aria-busy="true"` on the table, one "Loading" status), empty (`EmptyContent`, default a `CyEmptyState` with "No results"; the empty message is a table row spanning all columns so the table keeps its structure and is announced), error (REQ-E42). |
+| REQ-E47 | Keyboard model, stated explicitly: the table is **Tab-navigable**, not arrow-navigable. Tab order is: scroll region (already focusable in `CyTable`), sort buttons left to right, then per row the select control and any focusable content in the cells, then pagination. No roving tabindex, no grid navigation (that would need script, change the role and the screen-reader reading mode). Row actions are ordinary buttons/links in a cell (`RowActions` fragment renders a last column with a visually hidden "Actions" header). |
+| REQ-E48 | Sticky header: `MaxHeight` (validated `CssLength`) makes the scroll region vertical-scroll with `position: sticky` headers; documented that the region is keyboard-focusable (existing `CyTable` behaviour). |
+| REQ-E49 | Toolbar slot: optional `Toolbar` fragment above the table (consumer filters, bulk actions shown when something is selected); the component does not implement filtering. |
+| REQ-E50 | `CyDataTableText`: sort status, select/select all/clear, selected count, showing range, rows per page, page changed, no results, loading, load error, retry, actions header. |
+
+**Out of scope (said once, here, rather than half-built):** virtualisation (use `QuickGrid` for very large in-memory sets; paging covers the rest); inline cell editing; column resizing, reordering and show/hide; **responsive stacked rows and `Priority`-based column hiding** (both rely on `display: block` on table parts or removing cells, which strips table semantics in several browser/screen-reader pairings; `CyTable`'s keyboard-focusable scroll region remains the narrow-screen answer); row grouping, expandable and tree rows; built-in filtering UI; export; ARIA grid navigation; persisted user preferences. Each can be a later additive release.
+
+| Task | Description |
+|---|---|
+| TASK-066 | `CyDataTable.razor(.cs)`, `CyDataColumn<TItem>`, `CyDataTableRequest`, `CyDataTableResult<TItem>`, `CyDataSelectionMode`, `CyColumnAlign`, `CyDataTableText.cs`; sort/page helpers kept internal and unit-testable. |
+| TASK-067 | `data-table.css` (alignment, sort button, sticky header, selected row not colour-only, skeleton rows, forced-colours). |
+| TASK-068 | bUnit: markup structure and `scope`; `aria-sort` only on the sorted column; sort cycle and stability; announcements; selection modes, select-all, key-based selection across pages; paging maths, range text, reset on sort; provider paths (loading, stale response, exception, retry); empty row; `Items`+`ItemsProvider` throws; `MaxHeight` rejection of `calc(`, `;`, `url(`; encoding of `Value` text; `CyTable` output unchanged (snapshot of the existing `CyTable` tests still green). |
+| TASK-069 | Demo page `/data/data-table` (client sort/page, server-style provider with delay, selection with a bulk action, empty, loading, Welsh text), sidebar, index, overview cards (EN/CY). |
+
+### E4: `CyRuleBuilder` (optional)
+
+Not planned. **Will not be built or specified until you say so.** Rough size if you do: bigger than the other three combined (field/operator/value editors, nested groups, and a keyboard model for adding/removing/reordering conditions that would reuse `CySortableList` and `CyMenu`), so I would propose it as its own phase (1.12.0).
+
+### E-X: cross-cutting
+
+| Task | Description |
+|---|---|
+| TASK-070 | Register new CSS in the `cymrublazor.css` bundle order; confirm the CssBundler picks it up; run the undefined-variable test. |
+| TASK-071 | Public-API check: Phase E types are additions only; list them in the CHANGELOG. `CyTable`, `CyPagination`, `CyField`, `CyOption<T>` and the three existing JS files unchanged (compare hashes). |
+| TASK-072 | CHANGELOG: **new `## [1.11.0] - Unreleased` heading above `[1.10.0]`** (top heading today is `[1.10.0] - Unreleased`; do not append to it). Include the security note for `CyFileUpload` and the out-of-scope list for `CyDataTable`. |
+| TASK-073 | Heading-order check on every new demo page (`<h2>` under the page `<h1>`); routes picked up by `DemoSmokeTests` automatically; add `CyComboboxAccessibilityTests`, `CyFileUploadAccessibilityTests`, `CyDataTableAccessibilityTests` in the axe project (open list, error, selected, sorted states). |
+| TASK-074 | Registration test confirming `AddCymruBlazor()` still resolves everything and that no new service is *required* (a guard, since none is planned). |
+| TASK-075 | Hand-off to you: `dotnet build`, `dotnet test`, `.\scripts\Run-AccessibilityTests.ps1` (all three themes); fix rounds from pasted output. |
+| TASK-076 | Visual pass in light, dark and high-contrast for all three components; Welsh text review (you). |
+
+### Suggested build order
+
+(`cymru-inputs.js`, if approved) -> `CyCombobox` -> `CyMultiCombobox` -> `CyFileUpload` -> `CyDataTable<T>`. Each lands as its own reviewable chunk, and you build and paste output after each, so a compile error is easy to localise (no .NET SDK in my sandbox).
+
+### Risks and assumptions (unverified until you build)
+
+1. `CyFieldContext.Attributes` is a splat for a control; I assume `CyField` passes it via a `RenderFragment<CyFieldContext>`. I will read `CyField.razor` before writing the combobox or upload wiring, not rely on this note.
+2. bUnit's `InputFile` support (`InputFileContent`) is assumed adequate for the upload tests; if not, the validation logic lives in an internal class tested directly.
+3. Debounce and stale-response tests are timing-sensitive; they will poll with `WaitForAssertion` and use a `TaskCompletionSource`-controlled fake provider rather than real delays.
+4. Axe on the open combobox listbox and on a selected/sorted table must be checked in all three themes.
+5. `aria-activedescendant` support in the axe/Playwright version in the repo is assumed; the ARIA rules are standard.
+
+### Phase E as built (read this before the plan text above)
+
+Confirmed scope: one on-demand script `wwwroot/js/cymru-inputs.js` (combobox only); `CyCombobox<TValue>` and `CyMultiCombobox<TValue>`; `CyDataTable<TItem>` with both `Items` and `ItemsProvider`; `CyRuleBuilder` deferred to 1.12.0.
+
+Where the build differs from the wording of the plan:
+
+- The combobox does not wrap `CyField`; it renders its own label, hint and error like `CyTextBox`.
+- Result counts and selections are announced through the component's own `role="status"` region; load failures and file rejections use `role="alert"`.
+- `CyDataTable` has no `PageSizeOptions`. After a page change focus moves to the "Showing x to y of z" line, because `CyPagination` replaces the pressed button.
+- `CyFileUpload` renders its own label and error rather than using `CyField`.
+- The script only calls `preventDefault` (never `stopPropagation`), so Blazor's delegated events keep working.
+
+Written: components, CSS (`combobox.css`, `file-upload.css`, `data-table.css`), unit tests, demo pages, sidebar and search-index entries, English and Welsh overview cards, axe tests and the CHANGELOG `[1.11.0]` entry.
+
+For the maintainer to run and check:
+
+1. `dotnet build` (expect to fix a few compile errors; none of this has been compiled).
+2. `dotnet test`.
+3. `.\scripts\Run-AccessibilityTests.ps1` in all three themes, including the three new demo pages.
+4. A visual pass in light, dark and high contrast, and a Welsh text review.
+5. Confirm `CyTable`, `CyPagination`, `CyField`, `CyOption<T>` and the three existing JS files are unchanged.
+

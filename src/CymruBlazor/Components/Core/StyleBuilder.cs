@@ -147,7 +147,7 @@ public sealed class StyleBuilder
 
             builder
                 .Append(key)
-                .Append(':')
+                .Append(": ")
                 .Append(value)
                 .Append(';');
         }
