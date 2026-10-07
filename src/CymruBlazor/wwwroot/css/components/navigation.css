@@ -89,6 +89,28 @@
   margin-block-start: var(--cymru-space-1);
 }
 
+.cy-page-header__eyebrow {
+  margin: 0 0 var(--cymru-space-1);
+  color: var(--cymru-color-text-muted);
+  font-size: var(--cymru-font-size-sm);
+  font-weight: var(--cymru-font-weight-semibold);
+}
+
+/* Title and status badges share a line and wrap together on narrow screens. */
+.cy-page-header__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cymru-space-2) var(--cymru-space-4);
+}
+
+.cy-page-header__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cymru-space-2);
+}
+
 /* ==========================================================================
    CyHeader
    ========================================================================== */

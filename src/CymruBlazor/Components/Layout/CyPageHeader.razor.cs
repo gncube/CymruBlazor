@@ -30,5 +30,36 @@ public partial class CyPageHeader : CyLayoutComponentBase
     [Parameter]
     public RenderFragment? Actions { get; set; }
 
+    /// <summary>
+    /// Short text above the title (a section or record type such as "Referral"). Optional.
+    /// </summary>
+    [Parameter]
+    public string? Eyebrow { get; set; }
+
+    /// <summary>
+    /// Status content shown beside the title, typically one or more <c>CyBadge</c>. Status must also be
+    /// readable as text; colour alone is not enough.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Badges { get; set; }
+
+    /// <summary>
+    /// Heading level (1 to 6) of the title. Defaults to 1; use a lower level only when the page already has
+    /// its own <c>h1</c>. The visual size does not change with the level.
+    /// </summary>
+    [Parameter]
+    public int TitleLevel { get; set; } = 1;
+
+    private string? TitleTag => TitleLevel == 1 ? null : $"h{TitleLevel}";
+
+    protected override void ValidateParameters()
+    {
+        if (TitleLevel is < 1 or > 6)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CyPageHeader)}.{nameof(TitleLevel)} must be between 1 and 6. Received '{TitleLevel}'.");
+        }
+    }
+
     protected override string BaseCssClass => "cy-page-header";
 }

@@ -87,3 +87,92 @@
 .cy-card__footer {
   padding: 0 var(--cymru-space-6) var(--cymru-space-6);
 }
+
+/*
+ * CyCard additions (1.12.0). Every rule below is opt-in through a class that CyCard only emits for a
+ * non-default parameter, so a card with default parameters renders and looks exactly as before.
+ * Text colour is set in the same rule as the fill, and only tokens that every theme defines are used.
+ */
+
+.cy-card--outlined {
+  box-shadow: var(--cymru-shadow-none);
+}
+
+.cy-card--flat {
+  box-shadow: var(--cymru-shadow-none);
+  border-color: transparent;
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+}
+
+.cy-card--padding-compact .cy-card__header {
+  padding: var(--cymru-space-3) var(--cymru-space-4) 0;
+}
+
+.cy-card--padding-compact .cy-card__body {
+  padding: var(--cymru-space-4);
+}
+
+.cy-card--padding-compact .cy-card__footer {
+  padding: 0 var(--cymru-space-4) var(--cymru-space-4);
+}
+
+.cy-card--padding-none .cy-card__header,
+.cy-card--padding-none .cy-card__body,
+.cy-card--padding-none .cy-card__footer {
+  padding: 0;
+}
+
+.cy-card__title {
+  margin: 0;
+}
+
+.cy-card__body[hidden] {
+  display: none;
+}
+
+/* Collapsible: the title is a full-width disclosure button. */
+.cy-card--collapsible .cy-card__header {
+  padding-block-end: var(--cymru-space-4);
+}
+
+.cy-card--collapsible .cy-card__body {
+  padding-block-start: 0;
+}
+
+.cy-card__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cymru-space-4);
+  inline-size: 100%;
+  min-block-size: var(--cymru-touch-target-min);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.cy-card__toggle:hover .cy-card__toggle-text {
+  text-decoration: underline;
+}
+
+.cy-card__toggle:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-card__toggle-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+@media (forced-colors: active) {
+  .cy-card--flat {
+    border-color: CanvasText;
+  }
+}

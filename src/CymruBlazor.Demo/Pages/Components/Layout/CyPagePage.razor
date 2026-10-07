@@ -1,0 +1,121 @@
+@page "/layouts/page"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyPage and CyPageSection" Subtitle="A width policy for the page, spaced sections, and a richer page header.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyPage" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+
+        <CyPageHeader Title="Referral 42" TitleLevel="2" Eyebrow="Genomics" Subtitle="Created on 6 October 2026">
+            <Badges>
+                <CyBadge Variant="ComponentColour.Warning">Status: Draft</CyBadge>
+            </Badges>
+            <Actions>
+                <CyButton Variant="ComponentColour.Secondary">Edit</CyButton>
+            </Actions>
+        </CyPageHeader>
+
+        <CyPage Width="CyPageWidth.Narrow" RemovePadding="true">
+            <CyPageSection Heading="Patient" HeadingLevel="3">
+                <p>Sections are spaced apart, and a heading names the section for assistive technology.</p>
+            </CyPageSection>
+            <CyPageSection Heading="Requested tests" HeadingLevel="3">
+                <p>Without a heading a section is just a spaced block.</p>
+            </CyPageSection>
+        </CyPage>
+
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyPage.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <h2 class="cb-section-title">CyPage</h2>
+    <DemoApiTable Parameters="_pageDocs" />
+    <h2 class="cb-section-title">CyPageSection</h2>
+    <DemoApiTable Parameters="_sectionDocs" />
+    <h2 class="cb-section-title">CyPageHeader (new in 1.12.0)</h2>
+    <DemoApiTable Parameters="_headerDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private string GeneratedCode => """
+        <CyPageHeader Title="Referral 42" Eyebrow="Genomics" Subtitle="Created on 6 October 2026">
+            <Badges><CyBadge Variant="ComponentColour.Warning">Status: Draft</CyBadge></Badges>
+            <Actions><CyButton Variant="ComponentColour.Secondary">Edit</CyButton></Actions>
+        </CyPageHeader>
+
+        <CyPage Width="CyPageWidth.Narrow">
+            <CyPageSection Heading="Patient">...</CyPageSection>
+            <CyPageSection Heading="Requested tests">...</CyPageSection>
+        </CyPage>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _pageDocs =
+    [
+        new("Width", "CyPageWidth", "Default", "Narrow, Default, Wide or Full. Mapped to the --cymru-page-max-width-* tokens."),
+        new("RemovePadding", "bool", "false", "Removes the side gutters when something outside already pads the page."),
+        new("ChildContent", "RenderFragment?", "null", "The page content. CyPage renders a div; the layout owns the main landmark.")
+    ];
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _sectionDocs =
+    [
+        new("Heading", "string?", "null", "With a heading the section is a labelled section element; without one it is a plain div."),
+        new("HeadingLevel", "int", "2", "1 to 6. The visual size does not change with the level."),
+        new("ChildContent", "RenderFragment?", "null", "The section content.")
+    ];
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _headerDocs =
+    [
+        new("Eyebrow", "string?", "null", "Short text above the title, such as the record type."),
+        new("Badges", "RenderFragment?", "null", "Status content beside the title. Status must also be readable as text."),
+        new("TitleLevel", "int", "1", "1 to 6. Use a lower level only when the page already has its own h1.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("One main landmark", "CyPage renders a div, so a page can use several without repeating the main landmark."),
+        new("Named sections", "A section with a Heading is labelled by that heading. A section without one is a plain div, not an unnamed landmark."),
+        new("Sequential headings", "HeadingLevel and TitleLevel let you keep the outline in order without changing how large the heading looks."),
+        new("Status in words", "Badges beside the title must say the status in text; colour alone is not enough.")
+    ];
+}

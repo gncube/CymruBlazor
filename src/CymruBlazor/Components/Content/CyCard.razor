@@ -1,4 +1,51 @@
 @inherits CyLayoutComponentBase
+@using CymruBlazor.Enums
+
+@{
+    RenderFragment inner = @<text>
+        @if (HasHeaderRegion)
+        {
+            <div class="cy-card__header">
+                @if (HasTitle)
+                {
+                    <CyTypography Variant="TypographyVariant.H5" As="@HeadingTag" Class="cy-card__title">
+                        @if (Collapsible)
+                        {
+                            <button
+                                type="button"
+                                class="cy-card__toggle"
+                                aria-expanded="@(Expanded ? "true" : "false")"
+                                aria-controls="@BodyId"
+                                @onclick="ToggleAsync">
+                                <span class="cy-card__toggle-text">@Title</span>
+                                <span class="cy-card__toggle-icon" aria-hidden="true">
+                                    <CyIcon Name="@(Expanded ? "chevron-up" : "chevron-down")" Size="20" />
+                                </span>
+                            </button>
+                        }
+                        else
+                        {
+                            @Title
+                        }
+                    </CyTypography>
+                }
+
+                @Header
+            </div>
+        }
+
+        <div class="cy-card__body" id="@BodyId" hidden="@(Collapsible && !Expanded)">
+            @ChildContent
+        </div>
+
+        @if (Footer is not null)
+        {
+            <div class="cy-card__footer">
+                @Footer
+            </div>
+        }
+    </text>;
+}
 
 @if (Href is not null)
 {
@@ -9,23 +56,7 @@
         style="@CssStyle"
         @attributes="AdditionalAttributes">
 
-        @if (Header is not null)
-        {
-            <div class="cy-card__header">
-                @Header
-            </div>
-        }
-
-        <div class="cy-card__body">
-            @ChildContent
-        </div>
-
-        @if (Footer is not null)
-        {
-            <div class="cy-card__footer">
-                @Footer
-            </div>
-        }
+        @inner
 
     </a>
 }
@@ -37,23 +68,7 @@ else
         style="@CssStyle"
         @attributes="AdditionalAttributes">
 
-        @if (Header is not null)
-        {
-            <div class="cy-card__header">
-                @Header
-            </div>
-        }
-
-        <div class="cy-card__body">
-            @ChildContent
-        </div>
-
-        @if (Footer is not null)
-        {
-            <div class="cy-card__footer">
-                @Footer
-            </div>
-        }
+        @inner
 
     </div>
 }

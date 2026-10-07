@@ -1,6 +1,12 @@
 @inherits CyLayoutComponentBase
 @using CymruBlazor.Components.Content
 
+@{
+    RenderFragment titleFragment = @<CyTypography Variant="TypographyVariant.H1" As="@TitleTag">
+        @Title
+    </CyTypography>;
+}
+
 <header id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
 
     @if (Breadcrumb is not null)
@@ -19,9 +25,24 @@
 
         <div class="cy-page-header__heading">
 
-            <CyTypography Variant="TypographyVariant.H1">
-                @Title
-            </CyTypography>
+            @if (!string.IsNullOrWhiteSpace(Eyebrow))
+            {
+                <p class="cy-page-header__eyebrow">@Eyebrow</p>
+            }
+
+            @if (Badges is not null)
+            {
+                <div class="cy-page-header__title-row">
+                    @titleFragment
+                    <div class="cy-page-header__badges">
+                        @Badges
+                    </div>
+                </div>
+            }
+            else
+            {
+                @titleFragment
+            }
 
             @if (!string.IsNullOrWhiteSpace(Subtitle))
             {
