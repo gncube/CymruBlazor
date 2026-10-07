@@ -31,11 +31,20 @@ public sealed class CyDataTableTests : TestContextBase
 
     private IRenderedComponent<CyDataTable<Person>> RenderTable(
         Action<ComponentParameterCollectionBuilder<CyDataTable<Person>>>? configure = null,
-        bool withItems = true) =>
+        bool withItems = true,
+        bool withCaption = true,
+        bool withColumns = true) =>
         Render<CyDataTable<Person>>(p =>
         {
-            p.Add(c => c.Caption, "People");
-            p.Add(c => c.Columns, Cols());
+            if (withCaption)
+            {
+                p.Add(c => c.Caption, "People");
+            }
+
+            if (withColumns)
+            {
+                p.Add(c => c.Columns, Cols());
+            }
 
             if (withItems)
             {
@@ -117,20 +126,26 @@ public sealed class CyDataTableTests : TestContextBase
     [Fact]
     public void Should_Show_The_Empty_Message_Or_Custom_Content()
     {
-        var cut = RenderTable(p => p.Add(c => c.Items, new List<Person>()));
+        var cut = RenderTable(p => p.Add(c => c.Items, new List<Person>()), withItems: false);
         cut.Find(".cy-data-table__empty").TextContent.ShouldBe("No results");
         cut.Find("tbody td").GetAttribute("colspan").ShouldBe("2");
 
-        var custom = RenderTable(p => p
-            .Add(c => c.Items, new List<Person>())
-            .Add(c => c.EmptyContent, b => b.AddMarkupContent(0, "<p id=\"none\">Nobody</p>")));
+        var custom = RenderTable(
+            p => p
+                .Add(c => c.Items, new List<Person>())
+                .Add(c => c.EmptyContent, b => b.AddMarkupContent(0, "<p id=\"none\">Nobody</p>")),
+            withItems: false);
         custom.Find("#none").TextContent.ShouldBe("Nobody");
     }
 
     [Fact]
     public void Should_Show_Skeleton_Rows_And_Busy_While_Loading()
     {
-        var cut = RenderTable(p => p.Add(c => c.Items, new List<Person>()).Add(c => c.Loading, true));
+        var cut = RenderTable(
+            p => p
+                .Add(c => c.Items, new List<Person>())
+                .Add(c => c.Loading, true),
+            withItems: false);
 
         cut.FindAll(".cy-data-table__skeleton-row").Count.ShouldBe(5);
         cut.Find("table").GetAttribute("aria-busy").ShouldBe("true");
@@ -139,9 +154,11 @@ public sealed class CyDataTableTests : TestContextBase
     [Fact]
     public void Should_Use_Localised_Phrases()
     {
-        var cut = RenderTable(p => p
-            .Add(c => c.Items, new List<Person>())
-            .Add(c => c.Text, new CyDataTableText { NoResults = "Dim canlyniadau" }));
+        var cut = RenderTable(
+            p => p
+                .Add(c => c.Items, new List<Person>())
+                .Add(c => c.Text, new CyDataTableText { NoResults = "Dim canlyniadau" }),
+            withItems: false);
 
         cut.Find(".cy-data-table__empty").TextContent.ShouldBe("Dim canlyniadau");
     }
@@ -150,7 +167,10 @@ public sealed class CyDataTableTests : TestContextBase
     public void Should_Apply_MaxHeight_And_Reject_Anything_That_Is_Not_A_Plain_Length()
     {
         var cut = RenderTable(p => p.Add(c => c.MaxHeight, "24rem"));
-        cut.Find(".cy-data-table").GetAttribute("style")!.ShouldContain("--cy-data-table-max-height:24rem");
+        var style = cut.Find(".cy-data-table").GetAttribute("style")!;
+
+        style.Replace(" ", string.Empty)
+            .ShouldContain("--cy-data-table-max-height:24rem");
         cut.Find(".cy-data-table").ClassList.ShouldContain("cy-data-table--sticky");
 
         foreach (var bad in new[] { "calc(1px+2px)", "24rem;color:red", "url(x)" })
@@ -164,8 +184,12 @@ public sealed class CyDataTableTests : TestContextBase
     [Fact]
     public void Should_Reject_Invalid_Parameter_Combinations()
     {
-        Should.Throw<InvalidOperationException>(() => RenderTable(p => p.Add(c => c.Caption, " ")));
-        Should.Throw<InvalidOperationException>(() => RenderTable(p => p.Add(c => c.Columns, new List<CyDataColumn<Person>>())));
+        Should.Throw<InvalidOperationException>(() => RenderTable(
+            p => p.Add(c => c.Caption, " "),
+            withCaption: false));
+        Should.Throw<InvalidOperationException>(() => RenderTable(
+            p => p.Add(c => c.Columns, new List<CyDataColumn<Person>>()),
+            withColumns: false));
         Should.Throw<InvalidOperationException>(() => RenderTable(p => p.Add(c => c.ItemsProvider, (r, t) => Page(r))));
         Should.Throw<InvalidOperationException>(() => RenderTable(p => p.Add(c => c.PageSize, -1)));
         Should.Throw<InvalidOperationException>(() => RenderTable(p => p.Add(c => c.SelectionMode, CyDataSelectionMode.Multiple)));
