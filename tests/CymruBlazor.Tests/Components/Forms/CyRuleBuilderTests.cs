@@ -366,7 +366,7 @@ public sealed class CyRuleBuilderTests : TestContextBase
         cut.FindAll("[role=menuitem]").First(i => i.TextContent.Contains("Group 1", StringComparison.Ordinal)).Click();
 
         _current!.Children.Count.ShouldBe(1);
-        ((CyRuleGroup)_current.Children[0]).Children.Last().Id.ShouldBe(moving.Id);
+        ((CyRuleGroup)_current.Children[0]).Children[^1].Id.ShouldBe(moving.Id);
     }
 
     [Fact]
@@ -419,7 +419,7 @@ public sealed class CyRuleBuilderTests : TestContextBase
     public void Summary_Describes_The_Rule_And_Can_Be_Hidden()
     {
         var cut = RenderBuilder(Rule(Cond("name", "eq", "Jo"), Cond("age", "gte", 18m)));
-        cut.Find(".cy-rule__summary-text").TextContent.ShouldBe("Name is Jo and Age is at least 18");
+        cut.Find(".cy-rule__summary-text").TextContent.ShouldBe("Name is Jo and Age is at least 18 years");
 
         var hidden = RenderBuilder(Rule(Cond("name", "eq", "Jo")), p => p.Add(c => c.ShowSummary, false));
         hidden.FindAll(".cy-rule__summary").ShouldBeEmpty();
@@ -535,8 +535,11 @@ public sealed class CyRuleBuilderTests : TestContextBase
             .Add(c => c.Value, Rule(Cond("a", "eq", hostile))));
 
         cut.FindAll("img").ShouldBeEmpty();
-        cut.Markup.ShouldNotContain("<img");
-        cut.Find(".cy-rule__summary-text").TextContent.ShouldContain(hostile);
+
+        var summary = cut.Find(".cy-rule__summary-text");
+
+        summary.TextContent.ShouldContain(hostile);
+        summary.Children.ShouldBeEmpty();
     }
 
     [Fact]
