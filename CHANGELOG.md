@@ -11,7 +11,7 @@ Full detail for every release is also available as auto-generated
 ## [1.12.0] - Unreleased
 
 Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-PLAN.md`).
-This first part adds the page scaffolding; `CyRuleBuilder` follows in the same release.
+This release adds the page scaffolding and `CyRuleBuilder`.
 Everything here is additive: no existing member is removed or changed, no new
 `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
 `CyLocalizedStrings`. No new JavaScript.
@@ -31,7 +31,18 @@ Everything here is additive: no existing member is removed or changed, no new
   `Collapsible` with a two-way `Expanded` / `ExpandedChanged`. A collapsible card's title is
   a button (`aria-expanded`, `aria-controls`) over a `hidden` body; no script. It needs a
   `Title` and cannot be combined with `Href`.
-- **Rule model for `CyRuleBuilder`** (Forms; the editor component follows in this release): the
+- **`CyRuleBuilder`** (Forms): builds a nested rule ("all of" / "any of" groups, optionally negated) from a
+  list of `CyRuleField`s. Bind `Value` (a `CyRuleGroup`; every change is a new root object). Each group is a
+  `fieldset` with a legend, each condition a named group ("Condition 2 of 3"); value editors follow the field
+  type (`CyTextBox`, `CyNumberInput`, `CyDateInput`, `CySelect`, `CyCombobox` for coded terms; two inputs for
+  "between"; none for "is empty"). Every action is a button or menu item, so nothing needs dragging
+  (WCAG 2.5.7): Add condition / group, Move up / down, Duplicate, Wrap in group, Ungroup, Move to another
+  group, Remove (a group that holds conditions asks through `ICyConfirmService` when one is registered).
+  Focus moves sensibly after each action and one polite status message says what happened. `Limits`
+  (default 3 levels, 50 conditions), `ReadOnly`, `Disabled`, `ShowSummary` (plain-language sentence),
+  `ShowIssues` / `ValidateAsync()` / `OnValidationChanged` / `IsValid`, and `Text` (`CyRuleBuilderText`).
+  Checks are advisory. No new JavaScript, no endpoints; the rule is never evaluated or sent anywhere.
+- **Rule model for `CyRuleBuilder`** (Forms): the
   immutable model `CyRuleGroup` / `CyRuleCondition` (`CyRuleNode`, `CyRuleCombinator`), `CyRuleField`
   (`CyRuleFieldType`: Text, Number, Date, Boolean, Choice, Coded) with the operator catalogue
   `CyRuleOperators`, `CyRuleValidator` / `CyRuleIssue`, `CyRuleSummary` (the rule in plain language, with
@@ -39,8 +50,8 @@ Everything here is additive: no existing member is removed or changed, no new
   wrap, ungroup, move, reorder, with `CyRuleLimits` for depth and condition counts) and
   `CyRuleBuilderText`. The library edits and describes a rule; it does not evaluate it or generate SQL,
   LINQ or JSON.
-- Demo page `/layouts/page`, a new example block and API rows on the `CyCard` page, with
-  sidebar, search-index and English and Welsh overview entries.
+- Demo pages `/layouts/page` and `/forms/rule-builder`, a new example block and API rows on the `CyCard`
+  page, with sidebar, search-index and English and Welsh overview entries.
 
 ### Changed
 

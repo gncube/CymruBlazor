@@ -122,6 +122,30 @@ public sealed record CyRuleBuilderText
     /// <summary>Name of a row's actions menu button. {0} position.</summary>
     public string MoreActions { get; init; } = "More actions for condition {0}";
 
+    /// <summary>Name of the button that moves a condition up. {0} position.</summary>
+    public string MoveUp { get; init; } = "Move condition {0} up";
+
+    /// <summary>Name of the button that moves a condition down. {0} position.</summary>
+    public string MoveDown { get; init; } = "Move condition {0} down";
+
+    /// <summary>Name of the button that moves a group up. {0} position.</summary>
+    public string MoveGroupUp { get; init; } = "Move group {0} up";
+
+    /// <summary>Name of the button that moves a group down. {0} position.</summary>
+    public string MoveGroupDown { get; init; } = "Move group {0} down";
+
+    /// <summary>Name of a nested group's actions menu button. {0} position.</summary>
+    public string MoreGroupActions { get; init; } = "More actions for group {0}";
+
+    /// <summary>Accessible name of a nested group's controls. {0} position, {1} total.</summary>
+    public string GroupPosition { get; init; } = "Group {0} of {1}";
+
+    /// <summary>Name of the outermost group in the "Move to" menu.</summary>
+    public string TopLevel { get; init; } = "Top level";
+
+    /// <summary>Name of a nested group in the "Move to" menu. {0} its number.</summary>
+    public string GroupName { get; init; } = "Group {0}";
+
     /// <summary>Menu item: duplicate.</summary>
     public string Duplicate { get; init; } = "Duplicate";
 
@@ -131,8 +155,8 @@ public sealed record CyRuleBuilderText
     /// <summary>Menu item: remove the group but keep its conditions.</summary>
     public string Ungroup { get; init; } = "Ungroup";
 
-    /// <summary>Menu item: move to another group. {0} the target group's legend.</summary>
-    public string MoveTo { get; init; } = "Move to: {0}";
+    /// <summary>Menu item: move to another group. {0} the target group's name, {1} its legend.</summary>
+    public string MoveTo { get; init; } = "Move to {0}: {1}";
 
     /// <summary>Name of the list of conditions in a group. {0} the group's legend.</summary>
     public string ConditionsList { get; init; } = "Conditions: {0}";

@@ -584,6 +584,22 @@ Hand-off 1 closed green: 1116 of 1116 unit tests, axe 182 of 182. Hand-off 2 is 
 
 Deviations from the REQ text: `CyRuleCondition` also has `Value2` (for "between") and `ValueLabel` / `Value2Label` (display text of a coded value, so the summary can name it); `MaxDepth` counts the root group as 1 (default 3 = root plus two nested levels); edit methods return the same root instance when an edit is refused (limit, root, unknown id), which the UI uses to announce "not allowed"; `CyRuleLimits` carries `MaxDepth`, `MaxConditions` and `MinConditions`; Boolean fields use the operators `true` and `false` (no value editor) instead of a switch.
 
-**2b (next)** is the UI: `CyRuleBuilder` (razor + code-behind), group and condition views, value editors, `rule-builder.css`, bUnit and axe tests, demo page, sidebar, search index, English and Welsh overview entries.
+**2a result (2026-10-08):** build clean; 1201 of 1201 unit tests; axe 182/182.
+
+**2b** is the UI: `CyRuleBuilder` (razor + code-behind), group and condition views, value editors, `rule-builder.css`, bUnit and axe tests, demo page, sidebar, search index, English and Welsh overview entries.
 
 Things to check first when you build 2a: collection expressions as lambda return values in `CyRuleEdits` (`node => [change(node)]`, `_ => []`), `is var d and > 0` in `DepthCore`, and the `en-GB` date test in `CyRuleSummaryTests` (needs ICU culture data).
+
+### Phase F as built, hand-off 2b (F1 UI)
+
+**2b (this zip, not compiled)** is TASK-078, TASK-080, TASK-081 and TASK-082: `CyRuleBuilder.razor` and `.razor.cs` (all views are inline templates in the one component, not separate internal components), `wwwroot/css/components/rule-builder.css` (imported in `cymrublazor.css`), `CyRuleBuilderTests` (bUnit), `CyRuleBuilderAccessibilityTests` (axe, three themes), demo page `/forms/rule-builder`, sidebar entry, `DemoNavigationIndex` entry, English and Welsh overview cards, CHANGELOG.
+
+Deviations from the plan text:
+
+- **No drag-and-drop and no `CySortableList`.** Reordering uses Move up / Move down buttons, moving between groups uses a per-row menu ("Move to Group 2: ..."), which satisfies WCAG 2.5.7 and avoids nested sortable lists. Drag can be added later without changing the model.
+- **No `ValueEditor` fragment.** The value editor is chosen by field type; a per-field custom editor is deferred (it needs a change to `CyRuleField`).
+- `CyRuleBuilderText` gained `MoveUp`, `MoveDown`, `MoveGroupUp`, `MoveGroupDown`, `MoreGroupActions`, `GroupPosition`, `TopLevel` and `GroupName`, and `MoveTo` now takes `{0}` group name and `{1}` legend. All have English defaults; the record is unreleased.
+- Issue messages are shown when `ShowIssues` is true or after `ValidateAsync()`, not as the user types. `IsValid` and `OnValidationChanged` always track the current state.
+- The builder cascades a null `EditContext` to its inner editors so they never join a surrounding `EditForm`.
+
+Things to check first when you build 2b: Razor inline templates with nested `@if` / `@switch` and component tags in `CyRuleBuilder.razor`; lambdas without parameter types converted to `EventCallback<T>` on the inner editors; the `default(EditContext)!` cascading value; the bUnit menu tests (open the `CyMenu`, click an item).

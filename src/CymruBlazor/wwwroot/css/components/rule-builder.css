@@ -1,0 +1,210 @@
+@layer components;
+
+/*
+ * CymruBlazor Forms - CyRuleBuilder
+ *
+ * Class names come from CyRuleBuilder.razor. Semantic tokens only (they flip in the dark and
+ * high-contrast themes). Nesting is shown with an edge bar and indentation, never colour alone;
+ * disabled and read-only states never use opacity.
+ */
+
+.cy-rule {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-4);
+  color: var(--cymru-color-text);
+}
+
+.cy-rule__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-3);
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-inline-start: var(--cymru-border-width-thick) solid var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+}
+
+.cy-rule__group .cy-rule__group {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.cy-rule__legend {
+  padding-inline: var(--cymru-space-2);
+  font-weight: 600;
+  color: var(--cymru-color-text);
+}
+
+.cy-rule__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cymru-space-4);
+}
+
+.cy-rule__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cy-rule__item {
+  min-inline-size: 0;
+}
+
+.cy-rule__empty {
+  margin: 0;
+  padding: var(--cymru-space-3);
+  border: var(--cymru-border-width-thin) dashed var(--cymru-color-border-strong);
+  border-radius: var(--cymru-radius-card);
+  color: var(--cymru-color-text-muted);
+}
+
+.cy-rule__condition {
+  padding: var(--cymru-space-3);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface);
+}
+
+.cy-rule__group .cy-rule__group .cy-rule__condition {
+  background-color: var(--cymru-color-surface);
+}
+
+.cy-rule__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--cymru-space-3);
+}
+
+.cy-rule__controls {
+  display: flex;
+  flex: 1 1 24rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--cymru-space-3);
+  min-inline-size: 0;
+}
+
+.cy-rule__control {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+}
+
+.cy-rule__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-1);
+  flex-shrink: 0;
+}
+
+.cy-rule__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cymru-radius-control);
+  background: transparent;
+  color: var(--cymru-color-text-secondary);
+  cursor: pointer;
+}
+
+.cy-rule__action:hover:not(:disabled) {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-rule__action--remove:hover:not(:disabled) {
+  color: var(--cymru-color-danger);
+}
+
+.cy-rule__action:focus-visible {
+  outline: var(--cymru-focus-ring-width) solid var(--cymru-focus-ring-color);
+  outline-offset: var(--cymru-focus-ring-offset);
+}
+
+.cy-rule__action:disabled {
+  color: var(--cymru-color-text-muted);
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.cy-rule__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-2);
+}
+
+.cy-rule__add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cymru-space-2);
+}
+
+.cy-rule__hint {
+  margin: 0;
+  color: var(--cymru-color-text-secondary);
+}
+
+.cy-rule__issue {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: flex-start;
+  gap: var(--cymru-space-2);
+  margin: 0;
+  color: var(--cymru-color-danger);
+  font-weight: 600;
+}
+
+.cy-rule__readonly {
+  margin: 0;
+}
+
+.cy-rule__summary {
+  padding: var(--cymru-space-3) var(--cymru-space-4);
+  border: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  border-inline-start: var(--cymru-border-width-thick) solid var(--cymru-color-primary);
+  border-radius: var(--cymru-radius-card);
+  background-color: var(--cymru-color-surface-alt);
+  color: var(--cymru-color-text);
+}
+
+.cy-rule__summary-title {
+  margin: 0 0 var(--cymru-space-1);
+  font-weight: 600;
+}
+
+.cy-rule__summary-text {
+  margin: 0;
+}
+
+@media (forced-colors: active) {
+  .cy-rule__group,
+  .cy-rule__condition,
+  .cy-rule__summary {
+    border-color: CanvasText;
+  }
+
+  .cy-rule__action {
+    border: 1px solid ButtonText;
+  }
+
+  .cy-rule__action:disabled {
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  .cy-rule__action:focus-visible {
+    outline-color: Highlight;
+  }
+}

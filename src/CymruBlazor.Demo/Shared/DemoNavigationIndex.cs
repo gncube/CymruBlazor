@@ -124,6 +124,8 @@ public static class DemoNavigationIndex
             "A joined set of mutually exclusive choices, such as a view switch."),
         new("Forms", "Combobox", "/forms/combobox",
             "A searchable list of suggestions for choosing one item (CyCombobox) or several (CyMultiCombobox), in memory or from an async source."),
+        new("Forms", "Rule Builder", "/forms/rule-builder",
+            "Build a rule from conditions and nested all/any groups, with keyboard-only controls, limits and a plain-language summary."),
         new("Forms", "File Upload", "/forms/file-upload",
             "Choose and upload files, with advisory limits, progress, retry and cancel; the upload itself is your callback."),
 
