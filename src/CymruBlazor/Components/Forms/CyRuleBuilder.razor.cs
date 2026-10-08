@@ -137,7 +137,7 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
 
     private bool IssuesVisible => ShowIssues || _showIssues;
 
-    private string Summary => CyRuleSummary.Describe(_root, _fields, Strings);
+    private string Summary => CyRuleSummary.Describe(_root, _fields, Strings, CultureInfo.CurrentCulture);
 
     private string MinHintId => $"{Id}-min-hint";
 
