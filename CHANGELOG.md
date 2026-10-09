@@ -8,7 +8,7 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.12.0] - Unreleased
+## [1.12.0] - 2026-10-09
 
 Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-PLAN.md`).
 This release adds the page scaffolding and `CyRuleBuilder`.
