@@ -1,0 +1,351 @@
+@namespace CymruBlazor.Components.Forms
+@inherits CyInteractiveComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Enums
+
+@* The editors inside are not model fields: a null EditContext keeps them out of any surrounding EditForm. *@
+<CascadingValue TValue="EditContext" Value="@(default(EditContext)!)" IsFixed="true">
+
+    <div id="@Id"
+         class="@CssClass"
+         style="@CssStyle"
+         role="group"
+         aria-label="@Label"
+         @attributes="AdditionalAttributes">
+
+        @GroupView(_root, null, 1, 0, 1)
+
+        @if (EffectiveLimits.MinConditions > 0 && AtMinConditions && !ReadOnly)
+        {
+            <p id="@MinHintId" class="cy-rule__hint">@Format(Strings.MinConditionsReached, EffectiveLimits.MinConditions)</p>
+        }
+
+        @if (ShowSummary)
+        {
+            <div class="cy-rule__summary">
+                <p class="cy-rule__summary-title">@Strings.SummaryHeading</p>
+                <p class="cy-rule__summary-text">@Summary</p>
+            </div>
+        }
+
+        <div class="cy-visually-hidden" role="status" aria-live="polite" aria-atomic="true">@_announcement</div>
+
+    </div>
+
+</CascadingValue>
+
+@code {
+
+    private RenderFragment GroupView(CyRuleGroup group, CyRuleGroup? parent, int depth, int index, int count) => @<fieldset id="@Eid(group, "group")" class="@GroupClass(parent is null)">
+
+        <legend class="cy-rule__legend">@Legend(group)</legend>
+
+        @if (!ReadOnly)
+        {
+            <div class="cy-rule__bar">
+
+                <CySegmentedControl TValue="CyRuleCombinator"
+                                    Id="@Eid(group, "combinator")"
+                                    Label="@Strings.CombinatorLabel"
+                                    Items="_combinators"
+                                    Value="group.Combinator"
+                                    ValueChanged="@(v => OnCombinatorAsync(group.Id, v))"
+                                    Size="ComponentSize.Small"
+                                    Disabled="@Disabled" />
+
+                <CySwitch Id="@Eid(group, "not")"
+                          Label="@Strings.NotLabel"
+                          Value="group.Not"
+                          ValueChanged="@(v => OnNotAsync(group.Id, v))"
+                          ValueExpression="@(() => UnusedFlag)"
+                          Disabled="@Disabled" />
+
+                @if (parent is not null)
+                {
+                    @NodeActions(group, index, count, true)
+                }
+
+            </div>
+        }
+
+        @if (group.Children.Count == 0)
+        {
+            <p class="cy-rule__empty">@Strings.EmptyGroup</p>
+        }
+        else
+        {
+            <ul class="cy-rule__list" aria-label="@Format(Strings.ConditionsList, Legend(group))">
+                @for (var i = 0; i < group.Children.Count; i++)
+                {
+                    var child = group.Children[i];
+                    var childIndex = i;
+                    var total = group.Children.Count;
+
+                    <li @key="child.Id" class="cy-rule__item">
+                        @if (child is CyRuleGroup nested)
+                        {
+                            @GroupView(nested, group, depth + 1, childIndex, total)
+                        }
+                        else if (child is CyRuleCondition condition)
+                        {
+                            @ConditionView(condition, childIndex, total)
+                        }
+                    </li>
+                }
+            </ul>
+        }
+
+        @if (!ReadOnly)
+        {
+            var gid = group.Id;
+            var atMaxConditions = AtMaxConditions;
+            var atMaxDepth = AtMaxDepth(depth);
+            var conditionsHint = Eid(group, "hint-conditions");
+            var depthHint = Eid(group, "hint-depth");
+
+            <div class="cy-rule__footer">
+
+            <div class="cy-rule__add">
+
+                <CyButton Id="@Eid(group, "add")"
+                          Variant="ComponentColour.Secondary"
+                          Size="ComponentSize.Small"
+                          Icon="add"
+                          Disabled="@(Disabled || atMaxConditions)"
+                          AriaDescribedBy="@(atMaxConditions ? conditionsHint : null)"
+                          OnClick="@(() => AddConditionAsync(gid))">@Strings.AddCondition</CyButton>
+
+                <CyButton Id="@Eid(group, "add-group")"
+                          Variant="ComponentColour.Secondary"
+                          Size="ComponentSize.Small"
+                          Icon="add"
+                          Disabled="@(Disabled || atMaxConditions || atMaxDepth)"
+                          AriaDescribedBy="@(atMaxConditions ? conditionsHint : atMaxDepth ? depthHint : null)"
+                          OnClick="@(() => AddGroupAsync(gid))">@Strings.AddGroup</CyButton>
+
+            </div>
+
+            @if (atMaxConditions)
+            {
+                <p id="@conditionsHint" class="cy-rule__hint">@Format(Strings.MaxConditionsReached, EffectiveLimits.MaxConditions)</p>
+            }
+            else if (atMaxDepth)
+            {
+                <p id="@depthHint" class="cy-rule__hint">@Strings.MaxDepthReached</p>
+            }
+
+            </div>
+        }
+
+    </fieldset>;
+
+    private RenderFragment ConditionView(CyRuleCondition condition, int index, int count) => @<div id="@Eid(condition, "row")"
+         class="cy-rule__condition"
+         role="group"
+         aria-label="@Format(Strings.ConditionPosition, index + 1, count)"
+         aria-describedby="@IssueIdOf(condition)">
+
+        @if (ReadOnly)
+        {
+            <p class="cy-rule__readonly">@CyRuleSummary.DescribeCondition(condition, _fields, Strings)</p>
+        }
+        else
+        {
+            var cid = condition.Id;
+            var field = Lookup(condition.FieldKey);
+            var issueText = IssueTextOf(condition);
+
+            <div class="cy-rule__row">
+
+            <div class="cy-rule__controls">
+
+                <div class="cy-rule__control">
+                    <CySelect TValue="string"
+                              Id="@Eid(condition, "field")"
+                              Label="@Strings.FieldLabel"
+                              Placeholder="@Strings.ChoosePlaceholder"
+                              Items="_fieldOptions"
+                              Value="@condition.FieldKey"
+                              ValueChanged="@(v => OnFieldChangedAsync(cid, v))"
+                              ValueExpression="@(() => UnusedText)"
+                              Disabled="@Disabled" />
+                </div>
+
+                <div class="cy-rule__control">
+                    <CySelect TValue="string"
+                              Id="@Eid(condition, "operator")"
+                              Label="@Strings.OperatorLabel"
+                              Placeholder="@Strings.ChoosePlaceholder"
+                              Items="@OperatorOptions(field)"
+                              Value="@condition.OperatorKey"
+                              ValueChanged="@(v => OnOperatorChangedAsync(cid, v))"
+                              ValueExpression="@(() => UnusedText)"
+                              Disabled="@(Disabled || field is null)" />
+                </div>
+
+                @if (field is not null && condition.OperatorKey is not null)
+                {
+                    @ValueEditors(condition, field)
+                }
+
+            </div>
+
+            @NodeActions(condition, index, count, false)
+
+            @if (issueText is not null)
+            {
+                <p id="@Eid(condition, "issue")" class="cy-rule__issue">
+                    <CyIcon Name="error-circle" Size="18" />
+                    <span>@issueText</span>
+                </p>
+            }
+
+            </div>
+        }
+
+    </div>;
+
+    private RenderFragment ValueEditors(CyRuleCondition condition, CyRuleField field) => @<text>
+        @if (CyRuleOperators.Arity(condition.OperatorKey) >= 1)
+        {
+            @ValueEditor(condition, field, false)
+        }
+
+        @if (CyRuleOperators.Arity(condition.OperatorKey) >= 2)
+        {
+            @ValueEditor(condition, field, true)
+        }
+    </text>;
+
+    private RenderFragment ValueEditor(CyRuleCondition condition, CyRuleField field, bool second) => @<div class="cy-rule__control cy-rule__control--value">
+
+        @{
+            var cid = condition.Id;
+            var id = Eid(condition, second ? "value2" : "value");
+            var label = second ? Strings.ValueToLabel : Strings.ValueLabel;
+            var raw = second ? condition.Value2 : condition.Value;
+        }
+
+        @switch (field.Type)
+        {
+            case CyRuleFieldType.Number:
+                <CyNumberInput TValue="decimal?"
+                               Id="@id"
+                               Label="@label"
+                               Value="@NumberOf(raw)"
+                               ValueChanged="@(v => SetValueAsync(cid, second, v))"
+                               ValueExpression="@(() => UnusedNumber)"
+                               Min="@field.Min"
+                               Max="@field.Max"
+                               Step="@field.Step"
+                               Unit="@field.Unit"
+                               Disabled="@Disabled" />
+                break;
+
+            case CyRuleFieldType.Date:
+                <CyDateInput Id="@id"
+                             Label="@label"
+                             Value="@DateOf(raw)"
+                             ValueChanged="@(v => SetValueAsync(cid, second, v))"
+                             ValueExpression="@(() => UnusedDate)"
+                             Disabled="@Disabled" />
+                break;
+
+            case CyRuleFieldType.Choice:
+                <CySelect TValue="string"
+                          Id="@id"
+                          Label="@label"
+                          Placeholder="@Strings.ChoosePlaceholder"
+                          Items="@(field.Options ?? NoOptions)"
+                          Value="@TextOf(raw)"
+                          ValueChanged="@(v => SetChoiceAsync(cid, field, second, v))"
+                          ValueExpression="@(() => UnusedText)"
+                          Disabled="@Disabled" />
+                break;
+
+            case CyRuleFieldType.Coded:
+                <CyCombobox TValue="string"
+                            Id="@id"
+                            Label="@label"
+                            Items="@(field.ItemsProvider is null ? (field.Options ?? NoOptions) : null)"
+                            ItemsProvider="@ProviderFor(field)"
+                            Value="@TextOf(raw)"
+                            SelectedText="@LabelOf(condition, second)"
+                            ValueChanged="@(v => SetCodedAsync(cid, field, second, v))"
+                            ValueExpression="@(() => UnusedText)"
+                            Disabled="@Disabled" />
+                break;
+
+            default:
+                <CyTextBox Id="@id"
+                           Label="@label"
+                           Value="@TextOf(raw)"
+                           ValueChanged="@(v => SetValueAsync(cid, second, v))"
+                           ValueExpression="@(() => UnusedText)"
+                           Disabled="@Disabled" />
+                break;
+        }
+
+    </div>;
+
+    private RenderFragment NodeActions(CyRuleNode node, int index, int count, bool isGroup) => @<div class="cy-rule__actions">
+
+        @{
+            var nid = node.Id;
+            var number = index + 1;
+            var removeLabel = node is CyRuleGroup removing
+                ? Format(Strings.RemoveGroup, Legend(removing))
+                : Format(Strings.RemoveCondition, number);
+        }
+
+        <button type="button"
+                id="@Eid(node, "up")"
+                class="cy-rule__action"
+                aria-label="@Format(isGroup ? Strings.MoveGroupUp : Strings.MoveUp, number)"
+                disabled="@(Disabled || index == 0)"
+                @onclick="@(() => MoveByAsync(nid, -1))">
+            <CyIcon Name="arrow-up" Size="18" />
+        </button>
+
+        <button type="button"
+                id="@Eid(node, "down")"
+                class="cy-rule__action"
+                aria-label="@Format(isGroup ? Strings.MoveGroupDown : Strings.MoveDown, number)"
+                disabled="@(Disabled || index == count - 1)"
+                @onclick="@(() => MoveByAsync(nid, 1))">
+            <CyIcon Name="arrow-down" Size="18" />
+        </button>
+
+        <CyMenu Label="@Format(isGroup ? Strings.MoreGroupActions : Strings.MoreActions, number)" Disabled="@Disabled">
+
+            <CyMenuItem Text="@Strings.Duplicate" Icon="copy" Disabled="@(!CanDuplicate(node))" OnClick="@(() => DuplicateAsync(nid))" />
+            <CyMenuItem Text="@Strings.WrapInGroup" Icon="layers" Disabled="@(!CanWrap(node))" OnClick="@(() => WrapAsync(nid))" />
+
+            @if (isGroup)
+            {
+                <CyMenuItem Text="@Strings.Ungroup" OnClick="@(() => UngroupAsync(nid))" />
+            }
+
+            @foreach (var target in MoveTargets(node))
+            {
+                var tid = target.Id;
+                <CyMenuItem Text="@Format(Strings.MoveTo, TargetName(target), Legend(target))" OnClick="@(() => MoveToAsync(nid, tid))" />
+            }
+
+        </CyMenu>
+
+        <button type="button"
+                id="@Eid(node, "remove")"
+                class="cy-rule__action cy-rule__action--remove"
+                aria-label="@removeLabel"
+                aria-describedby="@(AtMinConditions ? MinHintId : null)"
+                disabled="@(Disabled || !CanRemove(node))"
+                @onclick="@(() => RemoveAsync(nid))">
+            <CyIcon Name="delete" Size="18" />
+        </button>
+
+    </div>;
+}

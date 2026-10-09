@@ -1,0 +1,209 @@
+@page "/forms/rule-builder"
+@namespace CymruBlazor.Demo.Pages.Components.Forms
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyRuleBuilder" Subtitle="Build a rule from conditions and nested groups - 'all of these', 'any of these' - with buttons and keyboard alone.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Forms" />
+            <CyBreadcrumbItem Text="CyRuleBuilder" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        Use it to let a service author a rule - an eligibility check, a filter, an alert - without writing code.
+        It edits a model (<code>CyRuleGroup</code>) and describes it in words; evaluating and storing the rule is up to
+        your application. Everything here works from the keyboard: there is no drag-and-drop.
+    </p>
+
+    <h2 class="cb-section-title">Editable rule</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%;">
+            <CyRuleBuilder @ref="_builder"
+                           Label="Eligibility rule"
+                           Fields="_fields"
+                           @bind-Value="_rule"
+                           ShowIssues="_showIssues" />
+            <p>
+                <CyButton Variant="ComponentColour.Primary" OnClick="CheckAsync">Check rule</CyButton>
+            </p>
+            <p role="status">@_checkResult</p>
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Read only</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%;">
+            <CyRuleBuilder Label="Saved rule" Fields="_fields" Value="_rule" ReadOnly="true" ShowSummary="false" />
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Welsh phrases</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%;">
+            <CyRuleBuilder Label="Rheol cymhwysedd" Fields="_fields" @bind-Value="_welshRule" Text="_welshText" />
+        </div>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private CyRuleBuilder? _builder;
+    private bool _showIssues;
+    private string _checkResult = string.Empty;
+
+    private static readonly IReadOnlyList<CyOption<string>> _diagnoses =
+    [
+        new("195967001", "Asthma"),
+        new("44054006", "Type 2 diabetes mellitus"),
+        new("38341003", "Hypertensive disorder"),
+        new("13645005", "Chronic obstructive lung disease")
+    ];
+
+    private readonly IReadOnlyList<CyRuleField> _fields =
+    [
+        new CyRuleField { Key = "name", Label = "Patient name" },
+        new CyRuleField { Key = "age", Label = "Age", Type = CyRuleFieldType.Number, Min = 0, Max = 120, Unit = "years" },
+        new CyRuleField { Key = "dob", Label = "Date of birth", Type = CyRuleFieldType.Date },
+        new CyRuleField
+        {
+            Key = "board",
+            Label = "Health board",
+            Type = CyRuleFieldType.Choice,
+            Options =
+            [
+                new CyOption<string>("abuhb", "Aneurin Bevan University Health Board"),
+                new CyOption<string>("cvuhb", "Cardiff and Vale University Health Board"),
+                new CyOption<string>("hduhb", "Hywel Dda University Health Board")
+            ]
+        },
+        new CyRuleField { Key = "dx", Label = "Diagnosis", Type = CyRuleFieldType.Coded, ItemsProvider = SearchDiagnosesAsync },
+        new CyRuleField { Key = "smoker", Label = "Current smoker", Type = CyRuleFieldType.Boolean }
+    ];
+
+    private CyRuleGroup _rule = new()
+    {
+        Children =
+        [
+            new CyRuleCondition { FieldKey = "age", OperatorKey = CyRuleOperators.Gte, Value = 18m },
+            new CyRuleGroup
+            {
+                Combinator = CyRuleCombinator.Or,
+                Children =
+                [
+                    new CyRuleCondition { FieldKey = "board", OperatorKey = CyRuleOperators.Eq, Value = "cvuhb", ValueLabel = "Cardiff and Vale University Health Board" },
+                    new CyRuleCondition { FieldKey = "smoker", OperatorKey = CyRuleOperators.IsTrue }
+                ]
+            }
+        ]
+    };
+
+    private CyRuleGroup _welshRule = new() { Children = [new CyRuleCondition()] };
+
+    private readonly CyRuleBuilderText _welshText = new()
+    {
+        GroupAll = "Pob un o'r canlynol",
+        GroupAny = "Unrhyw un o'r canlynol",
+        GroupNotAll = "Nid pob un o'r canlynol",
+        GroupNone = "Dim un o'r canlynol",
+        AddCondition = "Ychwanegu amod",
+        AddGroup = "Ychwanegu grŵp",
+        FieldLabel = "Maes",
+        OperatorLabel = "Gweithredydd",
+        ValueLabel = "Gwerth",
+        CombinatorLabel = "Cyfateb",
+        MatchAll = "Pob un",
+        MatchAny = "Unrhyw un",
+        NotLabel = "Gwrthdroi'r grŵp hwn",
+        ChoosePlaceholder = "Dewiswch...",
+        EmptyGroup = "Dim amodau yn y grŵp hwn.",
+        SummaryHeading = "Crynodeb",
+        SummaryEmpty = "Dim amodau eto."
+    };
+
+    private static async Task<IReadOnlyList<CyOption<string>>> SearchDiagnosesAsync(CyComboboxRequest request, CancellationToken token)
+    {
+        await Task.Delay(200, token);
+        return _diagnoses
+            .Where(d => d.Text.Contains(request.Query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private async Task CheckAsync()
+    {
+        if (_builder is null)
+        {
+            return;
+        }
+
+        _showIssues = true;
+        var valid = await _builder.ValidateAsync();
+        _checkResult = valid ? "The rule is complete." : "Some conditions are incomplete.";
+    }
+
+    private string GeneratedCode => """
+        <CyRuleBuilder Label="Eligibility rule"
+                       Fields="_fields"
+                       @bind-Value="_rule" />
+
+        // _rule:   a CyRuleGroup (new CyRuleGroup() to start empty)
+        // _fields: IReadOnlyList<CyRuleField>, for example
+        //          new CyRuleField { Key = "age", Label = "Age", Type = CyRuleFieldType.Number }
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("Label", "string", "-", "Accessible name of the whole builder. Required."),
+        new("Value / ValueChanged", "CyRuleGroup", "empty group", "The rule. Every change is a new root object."),
+        new("Fields", "IReadOnlyList<CyRuleField>", "none", "What a condition can test: text, number, date, yes/no, a choice, or a coded term searched from a long list."),
+        new("Limits", "CyRuleLimits", "3 levels, 50 conditions", "Nesting depth, most conditions, fewest conditions left after a removal."),
+        new("ReadOnly", "bool", "false", "Shows the rule as text, with no controls."),
+        new("Disabled", "bool", "false", "Disables every control."),
+        new("ShowSummary", "bool", "true", "A plain-language sentence under the builder (not a live region)."),
+        new("ShowIssues", "bool", "false", "Show the message of every incomplete condition. ValidateAsync() does the same and focuses the first one."),
+        new("OnValidationChanged", "EventCallback<IReadOnlyList<CyRuleIssue>>", "-", "Raised when the set of incomplete conditions changes."),
+        new("Text", "CyRuleBuilderText", "English", "Every phrase shown, spoken or used in the summary, for Welsh.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Structure", "Each group is a fieldset whose legend says what it means; each condition is a named group ('Condition 2 of 3') inside a named list."),
+        new("No dragging", "Reordering and moving between groups use buttons and a menu, so no pointer gesture is needed (WCAG 2.5.7)."),
+        new("Focus", "After adding, removing or moving, focus goes to a sensible control: the new condition, the next one, or the Add button."),
+        new("Announcements", "One polite status message says what happened after each action."),
+        new("Errors", "Incomplete conditions show an icon and text, and the condition is described by its message. Messages appear when asked for, not mid-edit."),
+        new("Limits", "A control that would break a limit is disabled and a hint says why."),
+        new("Not colour-only", "Nesting is shown by an edge bar and indentation; the summary spells the rule out in words.")
+    ];
+}

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using CymruBlazor.Components.Layout;
+using CymruBlazor.Enums;
 
 namespace StarterApp.Layout;
 
@@ -17,10 +18,10 @@ public partial class AppSidebar : ComponentBase
     private IJSRuntime JsRuntime { get; set; } = default!;
 
     [Parameter]
-    public bool Collapsed { get; set; }
+    public SidebarState State { get; set; } = SidebarState.Expanded;
 
     [Parameter]
-    public EventCallback<bool> CollapsedChanged { get; set; }
+    public EventCallback<SidebarState> StateChanged { get; set; }
 
     [Parameter]
     public bool MobileOpen { get; set; }
@@ -33,6 +34,12 @@ public partial class AppSidebar : ComponentBase
 
     [Parameter]
     public string ActiveHref { get; set; } = "/";
+
+    private async Task HandleSidebarStateChanged(SidebarState newState)
+    {
+        State = newState;
+        await StateChanged.InvokeAsync(newState);
+    }
 
     public async Task ToggleAsync()
     {

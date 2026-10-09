@@ -17,7 +17,7 @@
 | C (1.9.0) | **Implemented and verified:** build, unit tests and axe suite (168/168) pass. C1–C7 components, CSS, bUnit tests, demo pages and CHANGELOG written. Remaining: visual pass in 3 themes and `dotnet pack` vs 1.8.0 (TASK-022, TASK-024), then merge and tag (TASK-026). | CHANGELOG `[1.9.0]` |
 | D (1.10.0) | **Implemented and verified:** build, unit tests (948) and axe/Playwright suite (168/168) pass. Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`, demo pages, CSS, tests and CHANGELOG written. Remaining: visual pass in 3 themes, Welsh text review, `dotnet pack` vs 1.8.0, then merge and tag. | CHANGELOG `[1.10.0]` |
 | E (1.11.0) | **Shipped: 1.11.0 is on nuget.org (2026-10-07).** `CyCombobox`/`CyMultiCombobox`, `CyFileUpload` and `CyDataTable<T>` with CSS, bUnit and axe tests, demo pages, English and Welsh overview cards and CHANGELOG. Build, unit tests and the containerised axe suite (179 tests, three themes) were taken through to green by the maintainer. Open: three-theme visual pass and Welsh text review (not confirmed done). `CyRuleBuilder` deferred. | See "Phase E" below, including "Phase E verification findings" |
-| F (1.12.0) | **Scope confirmed (F1 + F2 + F3, rule builder defaults accepted).** In scope: `CyRuleBuilder` (deferred from E), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions) and hygiene carry-forwards. **F2 and F3 built and green** (hand-off 1, one test fix pending merge); F1 not started. Package validation baseline is already 1.11.0. | See "Phase F" at the end |
+| F (1.12.0) | **Shipped 2026-10-09 (F1 + F2 + F3).** `CyRuleBuilder` (model, edits, validator, summary, UI), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions) and hygiene carry-forwards. Build, unit tests and axe all green in CI. Open: three-theme visual pass, Welsh text review, `dotnet pack` package-validation check (TASK-089). | See "Phase F" at the end |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -575,3 +575,31 @@ Things to check first when you build: Razor inline template in `CyCard.razor` (t
 **Hand-off 1 result (2026-10-07):** build clean; 1115 of 1116 unit tests passed; axe suite 182/182 (including all three themes for `CyPagePhaseFAccessibilityTests` and the demo smoke run over every route, which covers `/layouts/page`). The one failure was in the new `AddCymruBlazorGuardTests`: the guard's assertion passed (every injected library service resolves), but the test disposed its scope synchronously and `ThemeService` only implements `IAsyncDisposable`. Fixed by using `CreateAsyncScope` and `await using`. Lesson for later tests: build providers with `await using` when `AddCymruBlazor()` registers an async-only disposable.
 
 **Second guard fix:** after the async-dispose fix the guard reached resolution and failed because `JsFocusManager` is registered but needs the host's `IJSRuntime`. The guard now treats "registered, but needs only host-provided services" as registered (it still fails for an unregistered library type or a missing library dependency). Everything else was green: 1115 of 1116 unit tests, build clean.
+
+### Phase F as built, hand-off 2a (F1 logic, no UI)
+
+Hand-off 1 closed green: 1116 of 1116 unit tests, axe 182 of 182. Hand-off 2 is split in two so a failure is easy to localise.
+
+**2a (this zip, not compiled)** is TASK-077 and TASK-079 plus their unit tests: `CyRuleModel.cs`, `CyRuleField.cs`, `CyRuleOperators.cs`, `CyRuleBuilderText.cs`, `CyRuleValues.cs` (internal), `CyRuleValidator.cs`, `CyRuleSummary.cs`, `CyRuleEdits.cs`; tests `CyRuleEditsTests`, `CyRuleOperatorsTests`, `CyRuleValidatorTests`, `CyRuleSummaryTests`. All in `Components/Forms` with namespace `CymruBlazor.Components.Forms`; none needs bUnit.
+
+Deviations from the REQ text: `CyRuleCondition` also has `Value2` (for "between") and `ValueLabel` / `Value2Label` (display text of a coded value, so the summary can name it); `MaxDepth` counts the root group as 1 (default 3 = root plus two nested levels); edit methods return the same root instance when an edit is refused (limit, root, unknown id), which the UI uses to announce "not allowed"; `CyRuleLimits` carries `MaxDepth`, `MaxConditions` and `MinConditions`; Boolean fields use the operators `true` and `false` (no value editor) instead of a switch.
+
+**2a result (2026-10-08):** build clean; 1201 of 1201 unit tests; axe 182/182.
+
+**2b** is the UI: `CyRuleBuilder` (razor + code-behind), group and condition views, value editors, `rule-builder.css`, bUnit and axe tests, demo page, sidebar, search index, English and Welsh overview entries.
+
+Things to check first when you build 2a: collection expressions as lambda return values in `CyRuleEdits` (`node => [change(node)]`, `_ => []`), `is var d and > 0` in `DepthCore`, and the `en-GB` date test in `CyRuleSummaryTests` (needs ICU culture data).
+
+### Phase F as built, hand-off 2b (F1 UI)
+
+**2b (this zip, not compiled)** is TASK-078, TASK-080, TASK-081 and TASK-082: `CyRuleBuilder.razor` and `.razor.cs` (all views are inline templates in the one component, not separate internal components), `wwwroot/css/components/rule-builder.css` (imported in `cymrublazor.css`), `CyRuleBuilderTests` (bUnit), `CyRuleBuilderAccessibilityTests` (axe, three themes), demo page `/forms/rule-builder`, sidebar entry, `DemoNavigationIndex` entry, English and Welsh overview cards, CHANGELOG.
+
+Deviations from the plan text:
+
+- **No drag-and-drop and no `CySortableList`.** Reordering uses Move up / Move down buttons, moving between groups uses a per-row menu ("Move to Group 2: ..."), which satisfies WCAG 2.5.7 and avoids nested sortable lists. Drag can be added later without changing the model.
+- **No `ValueEditor` fragment.** The value editor is chosen by field type; a per-field custom editor is deferred (it needs a change to `CyRuleField`).
+- `CyRuleBuilderText` gained `MoveUp`, `MoveDown`, `MoveGroupUp`, `MoveGroupDown`, `MoreGroupActions`, `GroupPosition`, `TopLevel` and `GroupName`, and `MoveTo` now takes `{0}` group name and `{1}` legend. All have English defaults; the record is unreleased.
+- Issue messages are shown when `ShowIssues` is true or after `ValidateAsync()`, not as the user types. `IsValid` and `OnValidationChanged` always track the current state.
+- The builder cascades a null `EditContext` to its inner editors so they never join a surrounding `EditForm`.
+
+Things to check first when you build 2b: Razor inline templates with nested `@if` / `@switch` and component tags in `CyRuleBuilder.razor`; lambdas without parameter types converted to `EventCallback<T>` on the inner editors; the `default(EditContext)!` cascading value; the bUnit menu tests (open the `CyMenu`, click an item).

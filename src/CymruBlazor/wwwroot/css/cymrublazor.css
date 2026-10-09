@@ -84,6 +84,7 @@
 @import "components/flow.css" layer(components);
 @import "components/controls.css" layer(components);
 @import "components/combobox.css" layer(components);
+@import "components/rule-builder.css" layer(components);
 @import "components/file-upload.css" layer(components);
 @import "components/data-table.css" layer(components);
 

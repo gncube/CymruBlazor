@@ -1,15 +1,17 @@
 <div class="app-sidebar-drawer @(MobileOpen ? "app-sidebar-drawer--open" : string.Empty)">
     <CySidebar @ref="_sidebar"
-               Collapsed="@(MobileOpen ? false : Collapsed)"
-               CollapsedChanged="@CollapsedChanged"
-               CollapseMode="SidebarCollapseMode.Compact"
+               State="State"
+               StateChanged="HandleSidebarStateChanged"
+               States="[SidebarState.Expanded, SidebarState.Compact]"
+               MobileOpen="@MobileOpen"
+               MobileOpenChanged="@((bool open) => MobileOpen = open)"
                Width="SidebarWidth.Small"
                Class="app-shell__sidebar">
 
         <Brand>
             <div class="app-sidebar__brand-row">
                 <CyBrandLogo Variant="BrandLogoVariant.Auto"
-                             SymbolOnly="@(MobileOpen ? false : Collapsed)"
+                             SymbolOnly="@(MobileOpen ? false : State != SidebarState.Expanded)"
                              AriaLabel="GIG Cymru NHS Wales, Digital Health and Care Wales home"
                              Size="ComponentSize.Medium"
                              Href="/" />

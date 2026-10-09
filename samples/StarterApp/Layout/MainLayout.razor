@@ -19,7 +19,7 @@
         }
 
         <AppSidebar @ref="_sidebar"
-                    @bind-Collapsed="_sidebarCollapsed"
+                    @bind-State="_sidebarState"
                     MobileOpen="@_mobileSidebarOpen"
                     MobileOpenChanged="@(open => _mobileSidebarOpen = open)"
                     ActiveHref="@_currentPath"
@@ -31,9 +31,9 @@
                 <Brand>
                     <button type="button"
                             class="app-shell__icon-button"
-                            aria-expanded="@(_mobileSidebarOpen || !_sidebarCollapsed)"
-                            aria-label="@((_mobileSidebarOpen || !_sidebarCollapsed) ? "Collapse navigation" : "Expand navigation")"
-                            title="@((_mobileSidebarOpen || !_sidebarCollapsed) ? "Collapse navigation" : "Expand navigation")"
+                            aria-expanded="@(_mobileSidebarOpen || _sidebarState == SidebarState.Expanded)"
+                            aria-label="@((_mobileSidebarOpen || _sidebarState == SidebarState.Expanded) ? "Collapse navigation" : "Expand navigation")"
+                            title="@((_mobileSidebarOpen || _sidebarState == SidebarState.Expanded) ? "Collapse navigation" : "Expand navigation")"
                             @onclick="ToggleSidebarAsync">
                         <CyIcon Name="menu" Size="20" />
                     </button>
@@ -74,7 +74,7 @@
 
 @code {
     private AppSidebar? _sidebar;
-    private bool _sidebarCollapsed;
+    private SidebarState _sidebarState = SidebarState.Expanded;
     private bool _mobileSidebarOpen;
     private string _currentPath = "/";
 
