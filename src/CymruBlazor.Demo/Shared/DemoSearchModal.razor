@@ -36,8 +36,8 @@
                             var entry = _results[index];
                             <li role="option" aria-selected="@(index == _selectedIndex ? "true" : "false")">
                                 <a class="cb-search-modal__result @(index == _selectedIndex ? "cb-search-modal__result--active" : "")"
-                                   href="@entry.Href"
-                                   @onclick="() => Navigate(entry.Href)"
+                                   href="@entry.RelativeHref"
+                                   @onclick="() => Navigate(entry.RelativeHref)"
                                    @onclick:preventDefault="true"
                                    @onmouseenter="() => _selectedIndex = index">
                                     <span class="cb-search-modal__result-category">@Strings.GetCategory(entry.Category)</span>

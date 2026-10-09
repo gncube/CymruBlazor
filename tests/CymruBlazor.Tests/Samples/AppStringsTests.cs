@@ -106,6 +106,16 @@ public sealed class AppStringsTests : TestContextBase
     }
 
     [Fact]
+    public void DemoNavigationIndex_Every_Page_RelativeHref_Has_No_Leading_Slash()
+    {
+        foreach (var page in CymruBlazor.Demo.SharedComponents.DemoNavigationIndex.Pages)
+        {
+            page.RelativeHref.ShouldNotStartWith("/");
+            page.RelativeHref.ShouldNotBeNullOrWhiteSpace();
+        }
+    }
+
+    [Fact]
     public void Catalogue_Covers_Every_Library_String_Exactly_Once()
     {
         // Each property is set to its own name, so the catalogue's selectors reveal which property they read.

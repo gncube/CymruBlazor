@@ -9,7 +9,13 @@ namespace CymruBlazor.Demo.SharedComponents;
 /// </summary>
 public static class DemoNavigationIndex
 {
-    public sealed record Entry(string Category, string Title, string Href, string Description = "", IReadOnlyList<string>? Aliases = null);
+    public sealed record Entry(string Category, string Title, string Href, string Description = "", IReadOnlyList<string>? Aliases = null)
+    {
+        /// <summary>
+        /// App-relative path without a leading slash, safe for base-href subfolder deployments.
+        /// </summary>
+        public string RelativeHref => Href.TrimStart('/');
+    }
 
     public static readonly IReadOnlyList<Entry> Pages =
     [
