@@ -528,6 +528,51 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
             : c with { Value = stored, ValueLabel = storedLabel });
     }
 
+    private CyRuleEditorContext CreateEditorContext(CyRuleCondition condition, CyRuleField field)
+    {
+        var cid = condition.Id;
+        var issueId = IssueIdOf(condition);
+
+        return new CyRuleEditorContext(
+            field,
+            condition.OperatorKey!,
+            CyRuleOperators.Arity(condition.OperatorKey),
+            condition.Value,
+            condition.Value2,
+            condition.ValueLabel,
+            condition.Value2Label,
+            Eid(condition, "value"),
+            Eid(condition, "value2"),
+            Strings.ValueLabel,
+            Strings.ValueToLabel,
+            issueId,
+            Disabled,
+            (value, label) => SetValueAsync(cid, false, value, label),
+            (value, label) => SetValueAsync(cid, true, value, label));
+    }
+
+    // Built in code, not markup: Razor only discovers public components as tags, and the boundary and host are
+    // internal. The key gives a fresh boundary when the field or operator changes, so a failed editor is retried.
+    private RenderFragment CustomEditorBody(CyRuleCondition condition, CyRuleField field) => builder =>
+    {
+        builder.OpenComponent<CyRuleEditorBoundary>(0);
+        builder.SetKey(EditorKey(condition, field));
+        builder.AddAttribute(1, nameof(CyRuleEditorBoundary.Fallback), EditorFailedMessage);
+        builder.AddAttribute(2, "ChildContent", (RenderFragment)(inner =>
+        {
+            inner.OpenComponent<CyRuleEditorHost>(0);
+            inner.AddAttribute(1, nameof(CyRuleEditorHost.Editor), field.ValueEditor!);
+            inner.AddAttribute(2, nameof(CyRuleEditorHost.EditorContext), CreateEditorContext(condition, field));
+            inner.CloseComponent();
+        }));
+        builder.CloseComponent();
+    };
+
+    // A new key (a different field or operator) gives the editor a fresh error boundary, so a failed editor
+    // is retried once the user changes what it is for.
+    private static string EditorKey(CyRuleCondition condition, CyRuleField field) =>
+        string.Concat(condition.Id, "|", field.Key, "|", condition.OperatorKey);
+
     private Task SetChoiceAsync(string id, CyRuleField field, bool second, string? key)
     {
         var label = key is null ? null : field.Options?.FirstOrDefault(o => string.Equals(o.Value, key, StringComparison.Ordinal))?.Text;

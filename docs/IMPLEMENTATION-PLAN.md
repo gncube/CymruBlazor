@@ -777,3 +777,21 @@ Written, not compiled. TASK-097 to TASK-099:
 - CHANGELOG `[1.13.0]` Added entry.
 
 Things to check first when you build: `OnParametersSet` on `InputBase<T>` (should not be sealed; if it is, move the call to `OnInitialized` and `SetParametersAsync`); that no existing test fixture renders a field with an empty label and asserts "no warnings logged"; `AddUnmatched` with a blank value in `A_Blank_AriaLabel_Does_Not_Count`.
+
+**Hand-off 2 result (2026-10-09):** build clean with no warnings; 1263 of 1263 unit tests; axe 188 of 188. TASK-097 to TASK-099 done.
+
+### Phase G as built, hand-off 3 (G-A1, `ValueEditor`)
+
+Written, not compiled. TASK-093 to TASK-096. Deviations from REQ-G01 to REQ-G05:
+
+- **Values are `object?`, not `string`.** The rule model stores typed values (`decimal`, `DateOnly`, `string`), so `CyRuleEditorContext.Value`/`Value2` are `object?` and `SetValueAsync(object? value, string? label = null)` / `SetValue2Async` go through the builder's existing `SetValueAsync`. A blank string clears the value (existing behaviour).
+- **One editor call per condition, not per value.** The editor draws both values when `Arity` is 2. It is not rendered for operators with arity 0 or when `ReadOnly`.
+- **Context members:** `Field`, `OperatorKey`, `Arity`, `Value`, `Value2`, `ValueLabel`, `Value2Label`, `ValueId`, `Value2Id`, `Label`, `Label2`, `IssueId`, `Invalid`, `Disabled`. The builder supplies the wrapper (`role="group"`, `aria-label="Value"`, `aria-describedby` = the condition's message when showing), so the editor only has to label its own controls.
+- **Failure handling:** `CyRuleEditorBoundary` (an `ErrorBoundaryBase`) around `CyRuleEditorHost`, which renders the consumer fragment from inside its own component so a throw in either the outer lambda or the render delegate is caught. Fixed message `CyRuleBuilderText.EditorFailed`; exception logged at Warning (event 2, `RuleValueEditorFailed`) through `ILoggerFactory` when one is registered; never shown. `@key` on field and operator gives a fresh boundary when either changes.
+- New public types: `CyRuleEditorContext`; new members: `CyRuleField.ValueEditor`, `CyRuleBuilderText.EditorFailed`. Internal: `CyRuleEditorBoundary`, `CyRuleEditorHost`. Additive.
+- Tests: `CyRuleBuilderValueEditorTests` (14 cases: replaces built-in, grouped and named, context contents, storing value and label, between, no editor for arity 0, built-in kept without an editor, invalid and complete states, outer and inner throw with no exception text, rest of builder keeps working, retry on operator change, Welsh fallback text, disabled, read-only); axe `Should_Have_No_Violations_With_Custom_Value_Editors_Including_A_Failed_One` in three themes.
+- Demo: "Custom value editor" section on `/forms/rule-builder` (triage level as radio buttons), API row and accessibility note.
+
+Things to check first when you build: Razor `@key` and `@<CyRadioGroup ...>` template inside a lambda in the demo `@code`; `ErrorBoundaryBase.CurrentException` and `OnErrorAsync` accessibility in your SDK (if `CurrentException` is not visible, track the exception in `OnErrorAsync` instead); that `Throwing(inOuterLambda: true)` really reaches the boundary (the host calls the outer lambda inside its own render, so it should); the retry test relies on the operator `<select>` id ending in `-operator`.
+
+**Hand-off 3 first build (2026-10-09):** failed with two errors, both mine. (1) `CyRuleField.cs` lacked `using Microsoft.AspNetCore.Components;` for `RenderFragment<>`. (2) Razor does not discover **internal** components as tags (RZ10012), so `CyRuleEditorBoundary` and `CyRuleEditorHost` could not be used in `CyRuleBuilder.razor`; they are now opened from code (`CustomEditorBody` in `CyRuleBuilder.razor.cs`, via `OpenComponent<T>` and `SetKey`), which works for internal types. Lesson for later phases: internal components must be created with `RenderTreeBuilder.OpenComponent`, not as Razor tags. The axe run did not start (the container build failed first).

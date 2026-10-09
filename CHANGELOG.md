@@ -20,6 +20,15 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   and never throws, so no existing page starts failing. New `docs/Diagnostics.md` lists every code (`CY0001`,
   `CY0003`, `CY0004`, `CY0005`).
 
+- **`CyRuleField.ValueEditor`** (Forms): a field can replace the built-in value editor of `CyRuleBuilder` with its own
+  `RenderFragment<CyRuleEditorContext>`. The context gives the operator, `Arity` (2 for "between"), the current
+  values, the ids and localised names to use, `Invalid`/`IssueId` and `Disabled`, and stores values with
+  `SetValueAsync` / `SetValue2Async` (optionally with the text the summary should show). The builder wraps it in a named
+  group ("Value") linked to the condition's message. If the editor throws while rendering, a fixed message
+  (`CyRuleBuilderText.EditorFailed`) is shown instead, the exception is logged and never displayed, the rest of the
+  builder keeps working, and the editor is retried when the field or operator changes. Fields without a
+  `ValueEditor` render exactly as before.
+
 ### Changed
 
 - Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`).

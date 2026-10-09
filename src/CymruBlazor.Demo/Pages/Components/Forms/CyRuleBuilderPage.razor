@@ -49,6 +49,18 @@
         </div>
     </div>
 
+    <h2 class="cb-section-title">Custom value editor</h2>
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        A field can bring its own editor with <code>CyRuleField.ValueEditor</code>. This one swaps the built-in
+        choice list for radio buttons. The builder still owns the field, the operator, validation and the summary;
+        the editor only draws the value and stores it with <code>context.SetValueAsync</code>.
+    </p>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%;">
+            <CyRuleBuilder Label="Referral rule" Fields="_customFields" @bind-Value="_customRule" />
+        </div>
+    </div>
+
     <h2 class="cb-section-title">Welsh phrases</h2>
     <div class="cb-workbench-preview" style="justify-content: flex-start;">
         <div style="width: 100%;">
@@ -89,6 +101,38 @@ else
         new("44054006", "Type 2 diabetes mellitus"),
         new("38341003", "Hypertensive disorder"),
         new("13645005", "Chronic obstructive lung disease")
+    ];
+
+    private static readonly IReadOnlyList<CyOption<string>> _triageLevels =
+    [
+        new("red", "Red - immediate"),
+        new("amber", "Amber - urgent"),
+        new("green", "Green - routine")
+    ];
+
+    private string? _unusedTriage { get; set; }
+
+    private CyRuleGroup _customRule = new() { Children = [new CyRuleCondition()] };
+
+    private RenderFragment<CyRuleEditorContext> TriageEditor => context => @<CyRadioGroup TValue="string"
+                                                                                          Label="Triage level"
+                                                                                          Items="_triageLevels"
+                                                                                          Value="@(context.Value as string)"
+                                                                                          ValueChanged="@(v => context.SetValueAsync(v, _triageLevels.FirstOrDefault(o => o.Value == v)?.Text))"
+                                                                                          ValueExpression="@(() => _unusedTriage)"
+                                                                                          Disabled="@context.Disabled" />;
+
+    private IReadOnlyList<CyRuleField> _customFields =>
+    [
+        new CyRuleField { Key = "name", Label = "Patient name" },
+        new CyRuleField
+        {
+            Key = "triage",
+            Label = "Triage level",
+            Type = CyRuleFieldType.Choice,
+            Operators = [CyRuleOperators.Eq, CyRuleOperators.Ne],
+            ValueEditor = TriageEditor
+        }
     ];
 
     private readonly IReadOnlyList<CyRuleField> _fields =
@@ -190,6 +234,7 @@ else
         new("Limits", "CyRuleLimits", "3 levels, 50 conditions", "Nesting depth, most conditions, fewest conditions left after a removal."),
         new("ReadOnly", "bool", "false", "Shows the rule as text, with no controls."),
         new("Disabled", "bool", "false", "Disables every control."),
+        new("CyRuleField.ValueEditor", "RenderFragment<CyRuleEditorContext>", "built-in editor", "Replaces the value editor for that field. It draws every value the operator needs (Arity 1 or 2) and stores them with SetValueAsync / SetValue2Async. If it throws, a fixed message is shown and the exception is logged."),
         new("ShowSummary", "bool", "true", "A plain-language sentence under the builder (not a live region)."),
         new("ShowIssues", "bool", "false", "Show the message of every incomplete condition. ValidateAsync() does the same and focuses the first one."),
         new("OnValidationChanged", "EventCallback<IReadOnlyList<CyRuleIssue>>", "-", "Raised when the set of incomplete conditions changes."),
@@ -203,6 +248,7 @@ else
         new("Focus", "After adding, removing or moving, focus goes to a sensible control: the new condition, the next one, or the Add button."),
         new("Announcements", "One polite status message says what happened after each action."),
         new("Errors", "Incomplete conditions show an icon and text, and the condition is described by its message. Messages appear when asked for, not mid-edit."),
+        new("Custom editors", "The builder wraps a custom editor in a named group ('Value') linked to the condition's message. Give each control of your own a label, use the supplied ids, and disable them when the context says Disabled."),
         new("Limits", "A control that would break a limit is disabled and a hint says why."),
         new("Not colour-only", "Nesting is shown by an edge bar and indentation; the summary spells the rule out in words.")
     ];

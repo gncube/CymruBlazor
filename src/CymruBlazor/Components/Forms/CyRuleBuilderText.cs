@@ -89,6 +89,9 @@ public sealed record CyRuleBuilderText
     /// <summary>Label of the second value of "between".</summary>
     public string ValueToLabel { get; init; } = "Upper value";
 
+    /// <summary>Shown in place of a custom value editor that threw while rendering.</summary>
+    public string EditorFailed { get; init; } = "This value editor could not be shown.";
+
     /// <summary>First entry of the field and operator pickers.</summary>
     public string ChoosePlaceholder { get; init; } = "Choose...";
 
