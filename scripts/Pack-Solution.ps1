@@ -2,11 +2,9 @@ param(
   [string]$RootPath = ".",
   [string]$OutZip,
   [string[]]$Targets = @(
-    ".artifacts",
     ".git",
     ".github",
     ".vscode",
-    "artifacts",
     "docker",
     "docs",
     "plan",
