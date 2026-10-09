@@ -14,7 +14,7 @@ Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-P
 This release adds the page scaffolding and `CyRuleBuilder`.
 Everything here is additive: no existing member is removed or changed, no new
 `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
-`CyLocalizedStrings`. No new JavaScript.
+`CyLocalizedStrings`. No new JavaScript..
 
 ### Added
 
