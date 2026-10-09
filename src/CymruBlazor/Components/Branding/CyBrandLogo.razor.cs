@@ -53,10 +53,10 @@ public partial class CyBrandLogo : CyLayoutComponentBase, IHasSize
 
     /// <summary>
     /// When set, the entire logo renders as an anchor element.
-    /// Defaults to <c>"/"</c>.
+    /// Defaults to <c>""</c> (application root relative to the document base href).
     /// </summary>
     [Parameter]
-    public string? Href { get; set; } = "/";
+    public string? Href { get; set; } = "";
 
     /// <summary>
     /// Accessible label applied to the logo.

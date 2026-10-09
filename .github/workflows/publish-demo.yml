@@ -85,9 +85,21 @@ jobs:
           --no-restore
 
       - name: Rewrite base href for GitHub Pages project site
+        shell: bash
         run: |
-          sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' \
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          echo "Rewriting base href for repository: ${REPO_NAME}"
+          sed -i "s|<base href=\"/\" />|<base href=\"/${REPO_NAME}/\" />|" \
             ./demo-publish/wwwroot/index.html
+
+          if [ -f ./demo-publish/wwwroot/service-worker.js ]; then
+            sed -i "s|const base = \"/\";|const base = \"/${REPO_NAME}/\";|" \
+              ./demo-publish/wwwroot/service-worker.js
+          fi
+
+          # Remove pre-compressed files so web servers do not serve stale un-rewritten assets
+          rm -f ./demo-publish/wwwroot/index.html.gz ./demo-publish/wwwroot/index.html.br
+          rm -f ./demo-publish/wwwroot/service-worker.js.gz ./demo-publish/wwwroot/service-worker.js.br
 
       - name: Add SPA fallback + disable Jekyll processing
         run: |

@@ -94,4 +94,34 @@ public sealed class CyBrandLogoTests : TestContextBase
         cut.FindAll("img").Count.ShouldBe(0);
         cut.Find(".cy-brand-logo__wordmark").TextContent.ShouldBe("CymruBlazor");
     }
+
+    [Fact]
+    public void WhenDefaultParametersSupplied_HrefDefaultsToEmptyStringAndRendersAnchor()
+    {
+        var cut = Render<CyBrandLogo>();
+
+        var anchor = cut.Find("a");
+        anchor.GetAttribute("href").ShouldBe("");
+    }
+
+    [Fact]
+    public void WhenHrefIsExplicitlyNull_RendersSpanWithRoleImg()
+    {
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Href, null));
+
+        cut.FindAll("a").Count.ShouldBe(0);
+        var span = cut.Find("span.cy-brand-logo");
+        span.GetAttribute("role").ShouldBe("img");
+    }
+
+    [Fact]
+    public void WhenCustomHrefSupplied_RendersAnchorWithCustomHref()
+    {
+        var cut = Render<CyBrandLogo>(parameters => parameters
+            .Add(p => p.Href, "https://example.com/portal"));
+
+        var anchor = cut.Find("a");
+        anchor.GetAttribute("href").ShouldBe("https://example.com/portal");
+    }
 }
