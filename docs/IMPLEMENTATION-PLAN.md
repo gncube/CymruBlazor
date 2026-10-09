@@ -13,11 +13,12 @@
 |---|---|---|
 | 0 (pre-flight) | **Mostly done.** 0.1 (tools/ restored), 0.2 (full suite green: 623/623 unit tests + Playwright/axe smoke test), 0.3 (1.7.0 published 2026-10-02; baseline bumped to 1.7.0) and spike 0.4 done. 0.5 and 0.6 remain. | NuGet; local runs |
 | A (1.7.0) | **Implemented**, A1–A9 | See below |
-| B (1.8.0) | **Implemented**, B1–B5 (see below). Demo pages and R1 not done. | CHANGELOG `[Unreleased]` |
-| C (1.9.0) | **Implemented and verified:** build, unit tests and axe suite (168/168) pass. C1–C7 components, CSS, bUnit tests, demo pages and CHANGELOG written. Remaining: visual pass in 3 themes and `dotnet pack` vs 1.8.0 (TASK-022, TASK-024), then merge and tag (TASK-026). | CHANGELOG `[1.9.0]` |
-| D (1.10.0) | **Implemented and verified:** build, unit tests (948) and axe/Playwright suite (168/168) pass. Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`, demo pages, CSS, tests and CHANGELOG written. Remaining: visual pass in 3 themes, Welsh text review, `dotnet pack` vs 1.8.0, then merge and tag. | CHANGELOG `[1.10.0]` |
+| B (1.8.0) | **Shipped (1.8.0, 2026-10-02).** B1–B5 and their demo pages exist. R1 (shared field-chrome refactor) not started; its gate (item 0.5 DOM snapshots) is TASK-107 in Phase G. | CHANGELOG `[1.8.0]` |
+| C (1.9.0) | **Shipped.** C1–C7 built and verified (build, unit tests, axe 168/168). Released 2026-10-04. Open: three-theme visual pass. | CHANGELOG `[1.9.0]` |
+| D (1.10.0) | **Shipped.** Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`; build, unit tests and axe green. Released 2026-10-06. Open: three-theme visual pass and Welsh text review. | CHANGELOG `[1.10.0]` |
 | E (1.11.0) | **Shipped: 1.11.0 is on nuget.org (2026-10-07).** `CyCombobox`/`CyMultiCombobox`, `CyFileUpload` and `CyDataTable<T>` with CSS, bUnit and axe tests, demo pages, English and Welsh overview cards and CHANGELOG. Build, unit tests and the containerised axe suite (179 tests, three themes) were taken through to green by the maintainer. Open: three-theme visual pass and Welsh text review (not confirmed done). `CyRuleBuilder` deferred. | See "Phase E" below, including "Phase E verification findings" |
 | F (1.12.0) | **Shipped 2026-10-09 (F1 + F2 + F3).** `CyRuleBuilder` (model, edits, validator, summary, UI), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions) and hygiene carry-forwards. Build, unit tests and axe all green in CI. Open: three-theme visual pass, Welsh text review, `dotnet pack` package-validation check (TASK-089). | See "Phase F" at the end |
+| G (1.13.0) | **Scope confirmed 2026-10-09; hand-off 1 (G-D hygiene) written, not compiled.** Confirmed: G-A1, G-B2, G-C, G-D, G-F, plus a **spike** for G-A2 and the `CymruBlazor.Testing` package (G-B3). Out: G-A3, 2.0.0 removals, G-B1. Baseline is now **1.12.3** (GitHub Pages baseURL fix). Carry-forwards still yours: three-theme visual pass and Welsh text review for D, E and F, and TASK-089 (`dotnet pack` against 1.12.3). | See "Phase G" at the end |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -442,7 +443,7 @@ Lessons recorded for later phases: dark and high-contrast themes do not define e
 
 ## Phase F (1.12.0): "Rules and page scaffolding"
 
-**Status:** **scope confirmed by the maintainer on 2026-10-07: F1 + F2 + F3, with the F1 defaults in decisions 2 to 4 accepted.** Build in progress: F2 and F3 passed build, unit and axe runs (hand-off 1, see "Hand-off 1 result"); `CyRuleBuilder` (F1) follows as hand-off 2. The sandbox has no .NET SDK, so all code will again be written blind and taken to green through the maintainer's build, test and axe runs.
+**Status:** **scope confirmed by the maintainer on 2026-10-07: F1 + F2 + F3, with the F1 defaults in decisions 2 to 4 accepted.** **Shipped as 1.12.0 on 2026-10-09** (hand-offs 1, 2a and 2b all green in CI). The sandbox had no .NET SDK, so the code was written blind and taken to green through the maintainer's build, test and axe runs.
 **Baseline:** 1.11.0 (Phase E, on nuget.org). `PackageValidationBaselineVersion` is already `1.11.0` in `CymruBlazor.csproj`; run `dotnet pack` once to confirm validation passes.
 **Numbering:** `REQ-F##`; tasks continue from `TASK-077`.
 
@@ -603,3 +604,161 @@ Deviations from the plan text:
 - The builder cascades a null `EditContext` to its inner editors so they never join a surrounding `EditForm`.
 
 Things to check first when you build 2b: Razor inline templates with nested `@if` / `@switch` and component tags in `CyRuleBuilder.razor`; lambdas without parameter types converted to `EventCallback<T>` on the inner editors; the `default(EditContext)!` cascading value; the bUnit menu tests (open the `CyMenu`, click an item).
+
+
+---
+
+## Phase G (next release after 1.12.0): scoping
+
+**Status:** **scope confirmed by the maintainer on 2026-10-09:** G-A1, G-B2, G-C, G-D and G-F, plus G-A2 as a spike first and G-B3 (`CymruBlazor.Testing`, to be scoped in detail before any code). Not in scope: G-A3, G-B1, `[Obsolete]` removals (2.0.0). Code is written without a .NET SDK and taken to green through your build, test and axe runs.
+**Baseline:** 1.12.3 (1.12.1 to 1.12.3 are patch releases, the last fixing the GitHub Pages baseURL; their entries are **not in the CHANGELOG**, see TASK-105). `PackageValidationBaselineVersion` was `1.11.0` and is bumped to `1.12.3` in hand-off 1.
+**Numbering:** `REQ-G##`; tasks continue from `TASK-093` (Phase F ended at `TASK-092`).
+**Carry-forwards (yours, not blocking):** three-theme visual pass and Welsh text review for D, E and F; TASK-089 (`dotnet pack` validation against 1.12.0).
+
+### Audit of the 1.12.0 zip
+
+| Area | Finding (verified in the tree) | Consequence for Phase G |
+|---|---|---|
+| Recommendations section 6 and section 7 | Every listed component now exists (`CyStepper`, `CyStatCard`, `CySwitch`, `CySegmentedControl`, `CyAvatar*`, `CyNotificationBell`, `CySortableList`, `CyWorkspace`, `CyDrawer`, `CyEmptyState`, `CyMenu`, `CyToolbar`, `CySummaryList`, `CyConfirmDialog`, `CySkeleton`, `CyUnsavedChanges`, `CyCheckboxGroup`, `CyRuleBuilder`). | **G-E (missing design-system components) is empty.** Nothing to build there. |
+| Rule builder | `CyRuleBuilder` has **no** per-field `ValueEditor` (`CyRuleField` has no such member) and **no** drag reorder (no `CySortableList` in `CyRuleBuilder.razor`); both were deferred in 2b. Move up/down buttons and the per-row `CyMenu` exist. | G-A is real work, additive to `CyRuleField` and `CyRuleBuilder`. |
+| Tokens (Recommendations 8.2) | `tokens.json` and `tokens.d.ts` **already ship** in `wwwroot/tokens` (generated by `scripts/GenerateTokens.cs`) and `docs/design-tokens.md` exists. What is missing is the **consumer-side** undefined-variable check: `UndefinedCssVariableTests` only scans this repo. | G-B shrinks: no token reference to write; only the consumer check remains. |
+| Diagnostics (Recommendations 9.3) | `ICyDiagnostics` / `CyDiagnosticsMode` / `CymruBlazorOptions` exist; codes `CY0001` (unknown icon), `CY0003` and `CY0004` (`CyButton` misuse) are in use. Not covered: missing `Label` on fields, heading-level skips, unknown tokens in `style`. | G-B diagnostics is extending an existing mechanism, not building one. Heading skips and token checks need the rendered DOM or a build step, so are not proposed as component diagnostics. |
+| Testing package (9.6) | No `CymruBlazor.Testing` project in `CymruBlazor.slnx`. | New package: new csproj, pack, MinVer and release-workflow changes. Highest cost in G-B. |
+| Documentation (9.2, 9.5, section 3) | No page recipes, no layout cookbook; `CyStack`, `CyCluster`, `CyContainer` have API pages only; no worked localisation example for consumer strings beside library strings. `samples/StarterApp` has a Dashboard and Settings feature but no editor, wizard or workspace recipe. | G-C is documentation and demo pages only; lowest risk. |
+| Snapshot tests (item 0.5) | Only `CyCardDefaultMarkupTests` exists. No DOM snapshots for `CyTextBox`, `CySelect`, `CyTextArea`, `CyCheckbox`, `CyRadioGroup`, `CyDateInput`. R1 (shared field-chrome refactor) is still gated on this. | Item 0.5 can be done in G-D without doing R1. |
+| `CyDataTable` | `PageSizeOptions` and `OnSortChanged` were dropped in Phase E (see "Phase E as built"); responsive stacked rows and `Priority` hiding are explicit non-goals. | Small optional follow-up (G-F). |
+| CHANGELOG | Headings `[1.10.0] - Unreleased` and `[1.9.0] - Unreleased` are stale (both are published); date formats differ (`02/10/2026`, `2026/10/02`); the `[1.12.0]` intro ends in `..`. | Hygiene (G-D). Needs your confirmation of the real dates of 1.9.0 and 1.10.0. |
+| Plan document | Status table rows for B, C and D are stale (they say demo pages "not done", "merge and tag" pending); the Phase B demo pages exist. | Hygiene (G-D). |
+| Disabled combobox option | Colours fixed in F3; `CyComboboxAccessibilityTests` renders a disabled *item* but through a closed list, so the disabled option is still not axe-scanned. | G-D. |
+| `[Obsolete]` members | `IHasIcon`, `IHasVariant`, `ComponentVariant`, `IconPosition`, the `KeyboardNavigation*` types and the legacy `CySidebar` members are marked for removal in 2.0.0 (`docs/MIGRATION-2.0.md`). | **Breaking: not in Phase G.** A major version is a separate decision (see below). |
+
+### Options
+
+| Option | Scope | Effort | Risk | Notes |
+|---|---|---|---|---|
+| **G-A1** | `CyRuleField.ValueEditor` (`RenderFragment<CyRuleEditorContext>`), exception-safe, never shows exception text | Small to medium | Low | Additive property on a sealed record. Needs a context type (`Value`, `Value2`, `Label`, `Disabled`, `Invalid`, `ValueChanged` callbacks) and a fallback error line. |
+| **G-A2** | Drag reorder in `CyRuleBuilder` via `CySortableList` (buttons and menu stay) | Medium to large | **Medium to high** | Deferred in 2b because nested sortable lists across groups are unproven; spike `SortableGroupRegistry` and `sortable-list.js` first. Falls back to "within a group only". |
+| **G-A3** | In-memory evaluator or JSON round-trip helpers | Medium | Policy | **Recommend no.** Phase F decision 3 kept evaluation and serialisation out of the library; owning a JSON shape creates a compatibility contract. Offer a documented sample in the demo instead. |
+| **G-B1** | Consumer-side undefined-variable check: an MSBuild target or `dotnet` script in the NuGet `build/` folder (opt-in property) that scans the consumer's CSS against `tokens.json` | Medium | Medium | Runs on consumer builds, so false positives hurt. Must be opt-in and warning-by-default. |
+| **G-B2** | Extra diagnostics `CY0005` (form field with no `Label` and no `aria-label`), `CY0006` (a component that requires `Label`, such as `CySortableList` or `CyStepper`, rendered empty, if not already thrown) | Small | Low | Uses the existing `ICyDiagnostics`; Strict throws, Lenient warns once. DEBUG-only wording is unnecessary because Lenient already exists. |
+| **G-B3** | `CymruBlazor.Testing` package (bUnit + axe helpers) | Large | **Medium to high** | New package: csproj, `Directory.Packages.props`, pack scripts, release workflow, package-validation baseline, docs. axe needs Playwright in the consumer's pipeline, so it is a heavy dependency. Recommend its own release. |
+| **G-C** | Docs: page recipes (list, editor, wizard, workspace) as demo pages under Getting Started plus a markdown copy in `docs/`; layout cookbook for `CyStack` / `CyCluster` / `CyContainer` / `CyPage`; localisation worked example (consumer `*Strings` beside `CyLocalizedStrings`) | Medium | Low | No library code. Recipes compile in the Demo project, so they are axe-scanned by `DemoSmokeTests` for free. |
+| **G-D** | Hygiene: bump `PackageValidationBaselineVersion` to 1.12.0; CHANGELOG headings and dates; stale plan status rows; item 0.5 DOM snapshots for the six existing form fields; axe state with an open list containing a disabled option | Small | Low | Needs you to confirm the 1.9.0 and 1.10.0 release dates. |
+| **G-F** | `CyDataTable` follow-ups: `PageSizeOptions` ("Rows per page") and an `OnSortChanged` callback | Small | Low | Both were dropped in E; both are additive. Optional. |
+| **G-E** | Missing design-system components | none | none | Audit found nothing missing. |
+| **2.0.0** | Remove the `[Obsolete]` members | Small code, large consumer impact | Breaking | Separate decision; needs a major version and a migration pass. Not proposed here. |
+
+**Recommended scope:** G-A1 + G-B2 + G-C + G-D (+ G-F if you want a short release). All additive, no new JavaScript, no new package. Hold G-A2 for a spike, G-B1 for a design discussion, and G-B3 for its own release.
+
+### Global requirements (apply to everything built in Phase G)
+
+| ID | Requirement |
+|---|---|
+| REQ-G00a | WCAG 2.2 AA, forced-colours, reduced motion, no colour-only meaning; tokens only, using only tokens that light, dark and high-contrast define; no `opacity` dimming. |
+| REQ-G00b | Additive API only versus 1.12.0; no `[Obsolete]`; `docs/MIGRATION-2.0.md` untouched; package validation passes. |
+| REQ-G00c | No new required member on `CyLocalizedStrings`; new phrases go on existing `Cy<Name>Text` records with English defaults (new members must have defaults). |
+| REQ-G00d | No new JavaScript and no npm or third-party code unless a confirmed item (G-A2) says otherwise. |
+| REQ-G00e | Consumer callbacks may throw: catch, show an accessible message, never show exception text, never take down the circuit. |
+| REQ-G00f | Per component or page: bUnit tests, axe tests (JS stubbed with `JSInterop.Mode = Loose` + `SetupModule`), demo `<h2>` under the page `<h1>`, sidebar and `DemoNavigationIndex` entries, English and Welsh overview cards, CHANGELOG `[1.13.0]` entry above `[1.12.0]`. |
+
+### G-A1: `CyRuleField.ValueEditor`
+
+| ID | Requirement |
+|---|---|
+| REQ-G01 | `CyRuleField.ValueEditor`: `RenderFragment<CyRuleEditorContext>?`, default `null` (existing behaviour unchanged). When set it replaces the built-in editor for that field's value(s) for every operator with arity above 0. |
+| REQ-G02 | `CyRuleEditorContext` (sealed record): `Field`, `Operator`, `Value`, `Value2`, `Arity`, `Disabled`, `ReadOnly`, `Invalid`, `ElementId` (for the label's `for`), `DescribedBy`, and `SetValue(string?)` / `SetValue2(string?)` callbacks that route through the builder's normal edit path (new root, announcements, validation). Values stay `string` like the existing model. |
+| REQ-G03 | The builder keeps the programmatic name of the editor region ("Value, condition 2 of 3") and the validation message wiring; a custom editor that renders nothing for a required value is reported as incomplete by the existing validator. |
+| REQ-G04 | A throwing editor is caught per condition and replaced by a fixed, localisable "This value editor could not be shown" line (`CyRuleBuilderText.EditorFailed`), logged through `ILogger` without surfacing the message; the rest of the builder keeps working. |
+| REQ-G05 | Encoding: the context exposes plain strings only; the library never renders them as markup. |
+
+| Task | Description |
+|---|---|
+| TASK-093 | `CyRuleEditorContext`, `CyRuleField.ValueEditor`, `CyRuleBuilderText.EditorFailed` (default English). |
+| TASK-094 | `CyRuleBuilder.razor(.cs)`: use the editor when present; per-condition error boundary; wire `SetValue*` through the existing edit path. |
+| TASK-095 | bUnit: custom editor renders and edits; operator arity 0 hides it; `between` offers `Value2`; throwing editor shows the fixed line only; validation of an empty custom value; no change for fields without an editor. |
+| TASK-096 | Demo: a "heart rate range" custom editor on `/forms/rule-builder`; axe state; CHANGELOG. |
+
+### G-B2: diagnostics
+
+| ID | Requirement |
+|---|---|
+| REQ-G10 | `CY0005`: a form field (`CyTextBox`, `CyTextArea`, `CySelect`, `CyNumberInput`, `CyDateInput`, `CyCombobox`, `CyMultiCombobox`, `CyFileUpload`, `CyCheckboxGroup`, `CyRadioGroup`) rendered with no `Label`, no `aria-label` / `aria-labelledby` in `AdditionalAttributes`, and not inside a `CyField`. Strict (default) behaviour is unchanged for existing code **unless the field previously rendered without error**: therefore `CY0005` **warns in both modes** and never throws, so no existing page starts failing. |
+| REQ-G11 | Warnings use `ICyDiagnostics.Warn` (logged once per process per message); message names the component and the fix. |
+| REQ-G12 | Documented in `docs/` and on the Getting Started page with the full code table (`CY0001` to `CY0005`). |
+
+| Task | Description |
+|---|---|
+| TASK-097 | Shared helper on `CyFormFieldComponentBase` (and the non-derived fields) that checks the label once per first render. |
+| TASK-098 | bUnit: warns once, silent with `Label`, with `aria-label`, inside `CyField`, and when diagnostics are not registered. |
+| TASK-099 | Diagnostics table in docs and Getting Started page; CHANGELOG. |
+
+### G-C: documentation
+
+| ID | Requirement |
+|---|---|
+| REQ-G20 | Page recipes as Demo pages under Getting Started: list page (`CyPageHeader` + `CyDataTable`), editor page (`CyPage` + `CyToolbar` + `CyUnsavedChanges` + `CyField`s), wizard (`CyStepper` + `CySummaryList`), tool workspace (`CyWorkspace`). Each is a working page, not a snippet, and is axe-scanned by `DemoSmokeTests`. |
+| REQ-G21 | Layout cookbook: toolbar, form row, card grid and page width policy mapped to `CyStack` / `CyCluster` / `CyContainer` / `CyGrid` / `CyPage`, with the markup beside the rendered result. |
+| REQ-G22 | Localisation worked example: a consumer `AppStrings` record resolved beside `CyLocalizedStrings` through `ILocalisationService`, with a Welsh variant and a language switch. |
+| REQ-G23 | Razor trap note (Recommendations 9.4): `@(...)` for interpolated text beside static characters (`v@q` parsed as an email address). |
+
+| Task | Description |
+|---|---|
+| TASK-100 | Four recipe pages, sidebar and index entries, English and Welsh overview cards. |
+| TASK-101 | Layout cookbook page. |
+| TASK-102 | Localisation example page and a copy of the recipes in `docs/` for readers who do not run the Demo. |
+| TASK-103 | CHANGELOG. |
+
+### G-D: hygiene
+
+| Task | Description |
+|---|---|
+| TASK-104 | `PackageValidationBaselineVersion` to `1.12.3` (the latest published release). |
+| TASK-105 | CHANGELOG: real dates for `[1.9.0]` and `[1.10.0]` (**you confirm**), entries for 1.12.1 to 1.12.3 (written from the GitHub commits; note `v1.12.1` has no tag), one date format throughout, remove the stray `..` in `[1.12.0]`. |
+| TASK-106 | Plan document: refresh the status rows for B, C and D; keep Phase history. |
+| TASK-107 | Item 0.5: structural DOM snapshot tests (as `CyCardDefaultMarkupTests`) for `CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup`, `CyDateInput`, valid and invalid. R1 itself stays out of scope. |
+| TASK-108 | Axe state that renders an open combobox list containing a disabled option, in three themes. |
+
+### G-F (optional): `CyDataTable` follow-ups
+
+| ID | Requirement |
+|---|---|
+| REQ-G30 | `PageSizeOptions` (`IReadOnlyList<int>`): renders a labelled "Rows per page" `CySelect`; changing it resets to page 1 and announces the new range. Default `null` keeps current markup. |
+| REQ-G31 | `OnSortChanged` (`EventCallback<(string? Key, bool Descending)>`-style record) raised in addition to the two-way parameters. |
+
+| Task | Description |
+|---|---|
+| TASK-109 | Implementation, bUnit, axe state, demo additions, `CyDataTableText.RowsPerPage`, CHANGELOG. |
+
+### Cross-cutting
+
+| Task | Description |
+|---|---|
+| TASK-110 | Register any new CSS in `cymrublazor.css`; run the undefined-variable test and `GenerateTokens.cs --check`. |
+| TASK-111 | CHANGELOG: new `## [1.13.0] - Unreleased` heading above `[1.12.0]`; list new public types. |
+| TASK-112 | Hand-off to you: `dotnet build`, `dotnet test`, `.\scripts\Run-AccessibilityTests.ps1`; fix rounds from pasted output. |
+| TASK-113 | Visual pass and Welsh review for the new pages and for D, E and F (you). |
+
+### Suggested build order
+
+G-D hygiene (TASK-104 to 108, small, no behaviour change) -> G-B2 diagnostics -> G-A1 `ValueEditor` (model, then UI) -> G-C documentation -> G-F if confirmed. Each lands as its own zip of new and modified files.
+
+### Risks and assumptions (unverified until you build)
+
+1. `CyRuleBuilder`'s inline templates are large; adding an error boundary around a user fragment may need a small internal component (`ErrorBoundary` cannot be used because it logs the exception text to the UI by default).
+2. `CY0005` must not fire for fields wrapped by `CyField`, which supplies the label; the check relies on `CyFieldContext` being cascaded, which I will confirm in `CyField.razor` before writing it.
+3. Recipe pages add several routes; `DemoSmokeTests` scans every route in three themes, so an axe failure on a recipe is likely and expected to need one fix round.
+4. Dates for 1.9.0 and 1.10.0 are not recorded anywhere I can see; I will not invent them.
+
+### Phase G as built, hand-off 1 (G-D hygiene)
+
+Written, not compiled, against the 1.12.3 zip. Contents (TASK-104 to TASK-108):
+
+- `PackageValidationBaselineVersion` is now `1.12.3` (TASK-104). If `dotnet pack` reports differences, they are real differences against the published package; read them rather than suppressing.
+- CHANGELOG (TASK-105, done): new `[1.13.0] - Unreleased` heading; 1.9.0 dated 2026-10-04 and 1.10.0 dated 2026-10-06 (from you); 1.7.0 and 1.8.0 dates in ISO form; entries added for 1.12.1, 1.12.2 and 1.12.3 from the GitHub history (1.12.2 is the commit that introduced the stray `..`, which is now removed). Note for later: 1.12.3 changed the default of `CyBrandLogo.Href` from `"/"` to `""` in a patch release; it is recorded under Changed and is worth remembering when judging what counts as additive.
+- Plan status rows for B, C and D refreshed (TASK-106).
+- `CyFormFieldDefaultMarkupTests` (TASK-107): 12 structural snapshots (default, and hint / required / error variants) for `CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup`, `CyDateInput`. Expected outlines were derived by reading the current Razor, not by capturing output, so a first-run failure means a typo in an expectation or a real surprise in the markup; read the actual outline in the failure message before changing either side.
+- `CyComboboxAccessibilityTests.Should_Have_No_Violations_With_The_List_Open_And_A_Disabled_Option` (TASK-108), light, dark and high-contrast: opens the list with ArrowDown and asserts the disabled option class is in the scanned markup.
+
+Things to check first when you build: `ShouldBe(new[] { ... })` calls against your Shouldly version; `RenderOpen()` relies on `Render<>` and `CreateEditContext` from the axe base class.
+
+Next hand-offs: **2** G-B2 (`CY0005`), **3** G-A1 (`ValueEditor`), **4** G-C (recipes, cookbook, localisation), **5** G-F (`CyDataTable`), then the G-A2 spike report and the G-B3 package design for your decision.

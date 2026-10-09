@@ -1,6 +1,7 @@
 using Bunit;
 using CymruBlazor.Components.Forms;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Shouldly;
 using Xunit;
 
@@ -39,6 +40,23 @@ public sealed class CyComboboxAccessibilityTests : FormFieldAxeTestBase
             .Add(c => c.Value, model.Choice)
             .Add(c => c.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Choice = v))
             .Add(c => c.ValueExpression, () => model.Choice)).Markup;
+    }
+
+    /// <summary>Renders the list <em>open</em> (ArrowDown) so a disabled option and an active option are in the scanned DOM.</summary>
+    private string RenderOpen()
+    {
+        var model = new TestFormModel();
+        var cut = Render<CyCombobox<string>>(p => p
+            .AddCascadingValue(CreateEditContext(model))
+            .Add(c => c.Label, "Health board")
+            .Add(c => c.Items, Boards)
+            .Add(c => c.Value, model.Choice)
+            .Add(c => c.ValueChanged, EventCallback.Factory.Create<string>(this, v => model.Choice = v))
+            .Add(c => c.ValueExpression, () => model.Choice));
+
+        cut.Find("input").TriggerEvent("onkeydown", new KeyboardEventArgs { Key = "ArrowDown" });
+
+        return cut.Markup;
     }
 
     private string RenderMulti(bool error = false)
@@ -83,6 +101,20 @@ public sealed class CyComboboxAccessibilityTests : FormFieldAxeTestBase
     public async Task Should_Have_No_Violations_Multiple_With_Chips()
     {
         var result = await ScanMarkupAsync(string.Join(Environment.NewLine, RenderMulti(), RenderMulti(error: true)));
+
+        result.Violations.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("light")]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_The_List_Open_And_A_Disabled_Option(string theme)
+    {
+        var markup = RenderOpen();
+        markup.ShouldContain("cy-combobox__option--disabled");
+
+        var result = await ScanMarkupAsync(markup, theme);
 
         result.Violations.ShouldBeEmpty();
     }

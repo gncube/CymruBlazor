@@ -8,13 +8,57 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [1.13.0] - Unreleased
+
+Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothing removed or changed.
+
+### Changed
+
+- Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`).
+- CHANGELOG hygiene: one date format throughout and a stray full stop removed.
+
+### Tests
+
+- Structural snapshot tests for `CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup` and
+  `CyDateInput` (plan item 0.5), so a later shared field-chrome refactor can prove it changes no markup.
+- Axe test that scans an **open** `CyCombobox` list with a disabled option in all three themes.
+
+## [1.12.3] - 2026-10-09
+
+Patch release: the demo site on GitHub Pages (a project site served from a sub-path).
+
+### Fixed
+
+- Demo links are now relative to the document base, so they work when the site is hosted under
+  `/<repository>/`; the publish workflow also rewrites the service worker base and removes stale
+  pre-compressed copies of the rewritten files.
+
+### Changed
+
+- `CyBrandLogo.Href` now defaults to `""` (the application root relative to the document base href)
+  instead of `"/"`, so the logo link also works under a sub-path. Pass `Href="/"` to restore the old
+  value; `Href="@null"` still renders a non-link logo.
+
+## [1.12.2] - 2026-10-09
+
+Release-notes-only patch: a CHANGELOG edit. No code change.
+
+## [1.12.1] - 2026-10-09
+
+Patch release: release plumbing and the sample app. No change to the library's public API.
+
+### Fixed
+
+- `scripts/Pack-Solution.ps1` no longer excludes `.artifacts` and `artifacts` from the source zip.
+- The StarterApp sidebar uses the `State` API instead of the obsolete `Collapsed` parameter.
+
 ## [1.12.0] - 2026-10-09
 
 Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-PLAN.md`).
 This release adds the page scaffolding and `CyRuleBuilder`.
 Everything here is additive: no existing member is removed or changed, no new
 `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
-`CyLocalizedStrings`. No new JavaScript..
+`CyLocalizedStrings`. No new JavaScript.
 
 ### Added
 
@@ -124,7 +168,7 @@ English defaults. `CyRuleBuilder` is deferred to 1.12.0.
   export and ARIA grid keyboard navigation. Use `QuickGrid` or build on the
   component for those.
 
-## [1.10.0] - Unreleased
+## [1.10.0] - 2026-10-06
 
 Roadmap v1.10.0 ("Flow and review", Phase D of `docs/IMPLEMENTATION-PLAN.md`):
 the components for multi-step journeys, review pages, dashboards and safe
@@ -200,7 +244,7 @@ package is introduced, and no existing JavaScript file is changed.
 
 - **`CyButton` Danger in the dark theme** failed colour contrast (white text on the pale red fill). The label now uses the dark surface colour in the dark theme (`CyButton.razor.css`).
 
-## [1.9.0] - Unreleased
+## [1.9.0] - 2026-10-04
 
 Roadmap v1.9.0 ("Editing experience", Phase C of
 `docs/IMPLEMENTATION-PLAN.md`): the primitives the Questionnaire Designer
@@ -274,7 +318,7 @@ fields is unchanged. No third-party script or npm package is introduced.
   not been looked at in a browser by a person) and `dotnet pack` against the
   1.8.0 baseline.
 
-## [1.8.0] - 02/10/2026
+## [1.8.0] - 2026-10-02
 
 Roadmap v1.8.0 ("Make forms adoptable", Phase B of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
@@ -336,7 +380,7 @@ byte-identical markup inside an `EditForm` (checked on 14 scenarios).
   scans for the new components. The library compiles with no new diagnostics
   and a 97-check render harness passes.
 
-## [1.7.0] - 2026/10/02
+## [1.7.0] - 2026-10-02
 
 Roadmap v1.7.0 ("Quick wins and de-risking", Phase A of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
