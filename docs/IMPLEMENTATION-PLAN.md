@@ -762,3 +762,18 @@ Written, not compiled, against the 1.12.3 zip. Contents (TASK-104 to TASK-108):
 Things to check first when you build: `ShouldBe(new[] { ... })` calls against your Shouldly version; `RenderOpen()` relies on `Render<>` and `CreateEditContext` from the axe base class.
 
 Next hand-offs: **2** G-B2 (`CY0005`), **3** G-A1 (`ValueEditor`), **4** G-C (recipes, cookbook, localisation), **5** G-F (`CyDataTable`), then the G-A2 spike report and the G-B3 package design for your decision.
+
+**Hand-off 1 result (2026-10-09):** build clean apart from four CA1861 warnings in `CyFormFieldDefaultMarkupTests` (fixed in hand-off 2: constant arrays moved to `static readonly` fields); 1254 of 1254 unit tests; axe 188 of 188, including the new open-list disabled-option scan in all three themes. All 12 snapshot expectations were right first time. TASK-104 to TASK-108 done; TASK-089 still yours.
+
+### Phase G as built, hand-off 2 (G-B2, `CY0005`)
+
+Written, not compiled. TASK-097 to TASK-099:
+
+- `Diagnostics/CyAccessibleNameCheck.cs` (internal): the rule and wording in one place. Warns when `Label` is blank and `AdditionalAttributes` has no non-blank `aria-label` or `aria-labelledby`. Component name is the type name without the generic arity.
+- `CyFormFieldComponentBase` now injects `IServiceProvider` and overrides `OnParametersSet` to run the check, so all eleven derived fields are covered with one change. Derived classes that override `OnParametersSet` already call `base` (`CyNumberInput`, `CyCombobox`); nothing else needed changing.
+- Deviation from REQ-G10: **`CyFileUpload` is not included** because it already throws for an empty `Label`. **`CyField` is not a special case**: it does not cascade to its content, so a library field inside a `CyField` still needs its own `Label` or `aria-label` (raw inputs, the intended use, are not library fields and are unaffected). Risk 2 in the plan is closed by reading, not assumed.
+- Tests: `AccessibleNameDiagnosticsTests` (8 facts/theories: warns once with code and component name, arity stripped, blank label, labelled, `aria-label`, blank `aria-label`, warns not throws in `Strict`, works with no diagnostics registered).
+- `docs/Diagnostics.md`: modes, full code table, why `CY0005` never throws. The Getting Started demo page link is deferred to G-C.
+- CHANGELOG `[1.13.0]` Added entry.
+
+Things to check first when you build: `OnParametersSet` on `InputBase<T>` (should not be sealed; if it is, move the call to `OnInitialized` and `SetParametersAsync`); that no existing test fixture renders a field with an empty label and asserts "no warnings logged"; `AddUnmatched` with a blank value in `A_Blank_AriaLabel_Does_Not_Count`.

@@ -17,6 +17,16 @@ namespace CymruBlazor.Tests.Components.Forms;
 /// </summary>
 public sealed class CyFormFieldDefaultMarkupTests : FormFieldTestContext
 {
+    private static readonly string?[] SelectOptionValues = ["", "a", "b"];
+
+    private static readonly string[] RadioChildren = ["legend.cy-field__label", "div.cy-radios"];
+
+    private static readonly string[] RadioChildrenWithHintAndError =
+        ["legend.cy-field__label", "p.cy-field__hint", "div.cy-radios", "p.cy-field__error"];
+
+    private static readonly string[] DateChildrenWithHintAndError =
+        ["legend.cy-field__label", "p.cy-field__hint", "div.cy-date-input", "p.cy-field__error"];
+
     private static string Outline(IElement element, bool withClasses = true)
     {
         var classes = withClasses ? string.Join('.', element.ClassList) : string.Empty;
@@ -130,7 +140,7 @@ public sealed class CyFormFieldDefaultMarkupTests : FormFieldTestContext
 
         Outline(cut.Find("div.cy-field"), withClasses: false)
             .ShouldBe("div[label.cy-field__label,select.cy-select[option,option,option]]");
-        cut.FindAll("option").Select(o => o.GetAttribute("value")).ShouldBe(new string?[] { "", "a", "b" });
+        cut.FindAll("option").Select(o => o.GetAttribute("value")).ShouldBe(SelectOptionValues);
     }
 
     [Fact]
@@ -204,7 +214,7 @@ public sealed class CyFormFieldDefaultMarkupTests : FormFieldTestContext
         var root = cut.Find("fieldset.cy-radio-group");
         root.ClassList.ShouldContain("cy-field");
         root.Children.Select(c => c.TagName.ToLowerInvariant() + "." + string.Join('.', c.ClassList))
-            .ShouldBe(new[] { "legend.cy-field__label", "div.cy-radios" });
+            .ShouldBe(RadioChildren);
         cut.FindAll(".cy-radios input[type=radio]").Count.ShouldBe(2);
     }
 
@@ -225,7 +235,7 @@ public sealed class CyFormFieldDefaultMarkupTests : FormFieldTestContext
 
         cut.Find("fieldset.cy-radio-group").Children
             .Select(c => c.TagName.ToLowerInvariant() + "." + string.Join('.', c.ClassList))
-            .ShouldBe(new[] { "legend.cy-field__label", "p.cy-field__hint", "div.cy-radios", "p.cy-field__error" });
+            .ShouldBe(RadioChildrenWithHintAndError);
     }
 
     // ------------------------------------------------------------------ CyDateInput
@@ -266,6 +276,6 @@ public sealed class CyFormFieldDefaultMarkupTests : FormFieldTestContext
 
         cut.Find("fieldset.cy-date-input-group").Children
             .Select(c => c.TagName.ToLowerInvariant() + "." + string.Join('.', c.ClassList))
-            .ShouldBe(new[] { "legend.cy-field__label", "p.cy-field__hint", "div.cy-date-input", "p.cy-field__error" });
+            .ShouldBe(DateChildrenWithHintAndError);
     }
 }
