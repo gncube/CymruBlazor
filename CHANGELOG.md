@@ -29,6 +29,12 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   builder keeps working, and the editor is retried when the field or operator changes. Fields without a
   `ValueEditor` render exactly as before.
 
+- **Recipes** (Demo and `docs/Recipes.md`): complete working pages under Getting Started: a list page, an editor page,
+  a wizard and a tool workspace, a layout cookbook (which of `CyCluster`, `CyStack`, `CyGrid`, `CyPage` and
+  `CyContainer` to use) and a localisation example with consumer-owned strings beside the library's, plus a note on
+  the Razor `v@q` trap. The overview page is in English and Welsh. Every page is covered by the existing demo smoke
+  test (axe, three themes).
+
 ### Changed
 
 - Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`).

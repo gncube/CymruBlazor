@@ -698,7 +698,7 @@ Things to check first when you build 2b: Razor inline templates with nested `@if
 |---|---|
 | REQ-G20 | Page recipes as Demo pages under Getting Started: list page (`CyPageHeader` + `CyDataTable`), editor page (`CyPage` + `CyToolbar` + `CyUnsavedChanges` + `CyField`s), wizard (`CyStepper` + `CySummaryList`), tool workspace (`CyWorkspace`). Each is a working page, not a snippet, and is axe-scanned by `DemoSmokeTests`. |
 | REQ-G21 | Layout cookbook: toolbar, form row, card grid and page width policy mapped to `CyStack` / `CyCluster` / `CyContainer` / `CyGrid` / `CyPage`, with the markup beside the rendered result. |
-| REQ-G22 | Localisation worked example: a consumer `AppStrings` record resolved beside `CyLocalizedStrings` through `ILocalisationService`, with a Welsh variant and a language switch. |
+| REQ-G22 | Localisation worked example: a consumer `AppStrings` record resolved beside `CyLocalizedStrings` through `ILocalisationService`, with a Welsh variant and a language switch. **Correction (hand-off 4):** there is no `ILocalisationService` in the library or the Demo; the real pattern is the Demo's scoped `AppStrings` service (`Library` strings plus app-owned records), so the example uses that and says so. |
 | REQ-G23 | Razor trap note (Recommendations 9.4): `@(...)` for interpolated text beside static characters (`v@q` parsed as an email address). |
 
 | Task | Description |
@@ -795,3 +795,16 @@ Written, not compiled. TASK-093 to TASK-096. Deviations from REQ-G01 to REQ-G05:
 Things to check first when you build: Razor `@key` and `@<CyRadioGroup ...>` template inside a lambda in the demo `@code`; `ErrorBoundaryBase.CurrentException` and `OnErrorAsync` accessibility in your SDK (if `CurrentException` is not visible, track the exception in `OnErrorAsync` instead); that `Throwing(inOuterLambda: true)` really reaches the boundary (the host calls the outer lambda inside its own render, so it should); the retry test relies on the operator `<select>` id ending in `-operator`.
 
 **Hand-off 3 first build (2026-10-09):** failed with two errors, both mine. (1) `CyRuleField.cs` lacked `using Microsoft.AspNetCore.Components;` for `RenderFragment<>`. (2) Razor does not discover **internal** components as tags (RZ10012), so `CyRuleEditorBoundary` and `CyRuleEditorHost` could not be used in `CyRuleBuilder.razor`; they are now opened from code (`CustomEditorBody` in `CyRuleBuilder.razor.cs`, via `OpenComponent<T>` and `SetKey`), which works for internal types. Lesson for later phases: internal components must be created with `RenderTreeBuilder.OpenComponent`, not as Razor tags. The axe run did not start (the container build failed first).
+
+**Hand-off 3 result (2026-10-09):** green after two small fixes (a null-unsafe `id` lookup in one test, and the demo's `_unusedTriage` field made a property to clear CS0649). Build clean, 1279 of 1279 unit tests, axe 191 of 191 including `Should_Have_No_Violations_With_Custom_Value_Editors_Including_A_Failed_One` in three themes. The `No test matches the given testcase filter` line is the unit-test run skipping the axe project and is expected.
+
+### Phase G as built, hand-off 4 (G-C documentation)
+
+Written, not compiled. New files only apart from the sidebar, nav index and CHANGELOG:
+
+- `Pages/GettingStarted/Recipes/`: `RecipesOverview` (`/recipes`, English and Welsh, with the Razor `v@q` trap note and a link to `docs/Diagnostics.md`), `RecipeListPage`, `RecipeEditorPage`, `RecipeWizardPage`, `RecipeWorkspacePage`, `RecipeLayoutCookbookPage`, `RecipeLocalisationPage` (TASK-100 to TASK-102). The six recipe pages are English only, like the component pages; each shows the working page, notes, and the copy-and-adapt code.
+- Sidebar entries and `DemoNavigationIndex` entries under Getting Started. `DemoSmokeTests` discovers the new `@page` routes by itself, so they are axe-scanned in three themes with no test change.
+- `docs/Recipes.md`: the same code for readers who do not run the Demo.
+- CHANGELOG entry under `[1.13.0]` Added (TASK-103).
+
+What to look at in the first run: a Razor compile error in one of the recipe pages is the likeliest failure (e.g. the workspace's `ValueChanged` lambda or `aria-pressed` on `CyButton`); the smoke test will report any axe finding with the route.

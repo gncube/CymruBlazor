@@ -1,0 +1,152 @@
+@page "/recipes"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@implements IDisposable
+@using CymruBlazor.Demo.SharedComponents
+
+@if (Strings.Language == AppLanguage.Welsh)
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Ryseitiau</h1>
+        <p class="cb-page-description">
+            Tudalennau cyflawn sy'n gweithio, nid darnau, sy'n dangos sut mae'r cydrannau'n cyfuno. Copïwch un a'i
+            addasu. Mae pob un yn cael ei sganio am broblemau hygyrchedd ym mhob thema.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Y ryseitiau</h2>
+        <table class="cb-api-table" aria-label="Ryseitiau tudalen">
+            <thead>
+                <tr>
+                    <th>Rysáit</th>
+                    <th>Disgrifiad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="recipes/list" class="cb-api-table__name">Tudalen rhestr</a></td>
+                    <td>Pennawd tudalen, gweithred a thabl trefnadwy, tudalennog.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/editor" class="cb-api-table__name">Tudalen golygu</a></td>
+                    <td>Ffurflen gyda bar offer a gwarchodaeth rhag colli newidiadau heb eu cadw.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/wizard" class="cb-api-table__name">Dewin</a></td>
+                    <td>Tasg aml-gam sy'n gorffen gyda chrynodeb gwirio atebion.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/workspace" class="cb-api-table__name">Man gwaith offeryn</a></td>
+                    <td>Palet, cynfas ac archwilydd ochr yn ochr.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/layout-cookbook" class="cb-api-table__name">Llyfr ryseitiau cynllun</a></td>
+                    <td>Pa brifelfen gynllun i'w defnyddio ar gyfer rhes weithredu, rhes ffurflen, grid cardiau a lled tudalen.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/localisation" class="cb-api-table__name">Enghraifft lleoleiddio</a></td>
+                    <td>Eich llinynnau eich hun wrth ymyl rhai'r llyfrgell, yn Gymraeg ac yn Saesneg.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Magl Razor: testun wrth ymyl @@</h2>
+        <p class="cb-section-description">
+            Mae Razor yn darllen <code>v@@q</code> fel cyfeiriad e-bost, felly nid yw'n rhoi gwerth <code>q</code> i mewn.
+            Defnyddiwch <code>@@(...)</code> pan fydd testun statig wrth ymyl y mynegiad.
+        </p>
+        <CyCodeBlock Code="@_razorTrapCode" Language="razor" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Diagnosteg</h2>
+        <p class="cb-section-description">
+            Mae'r llyfrgell yn rhybuddio am gamgymeriadau cyffredin, megis maes ffurflen heb label. Mae'r codau (<code>CY0001</code> i <code>CY0005</code>) a'r ddau fodd wedi'u rhestru yn
+            <a href="https://github.com/gncube/CymruBlazor/blob/main/docs/Diagnostics.md" target="_blank" rel="noopener noreferrer">docs/Diagnostics.md<span class="u-sr-only"> (yn agor mewn tab newydd)</span></a>.
+        </p>
+    </div>
+}
+else
+{
+    <div class="cb-page-header">
+        <h1 class="cb-page-title">Recipes</h1>
+        <p class="cb-page-description">
+            Complete, working pages rather than snippets, showing how the components fit together. Copy one and
+            adapt it. Each is scanned for accessibility problems in every theme.
+        </p>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">The recipes</h2>
+        <table class="cb-api-table" aria-label="Page recipes">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>What it shows</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="recipes/list" class="cb-api-table__name">List page</a></td>
+                    <td>Page header, action and a sortable, paged table.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/editor" class="cb-api-table__name">Editor page</a></td>
+                    <td>A form with a toolbar and a guard against losing unsaved changes.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/wizard" class="cb-api-table__name">Wizard</a></td>
+                    <td>A multi-step task ending in a check-your-answers summary.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/workspace" class="cb-api-table__name">Tool workspace</a></td>
+                    <td>Palette, canvas and inspector side by side.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/layout-cookbook" class="cb-api-table__name">Layout cookbook</a></td>
+                    <td>Which layout primitive for an action row, form row, card grid and page width.</td>
+                </tr>
+                <tr>
+                    <td><a href="recipes/localisation" class="cb-api-table__name">Localisation example</a></td>
+                    <td>Your own strings beside the library's, in English and Welsh.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Razor trap: text beside @@</h2>
+        <p class="cb-section-description">
+            Razor reads <code>v@@q</code> as an email address, so it does not insert the value of <code>q</code>.
+            Use <code>@@(...)</code> whenever static text sits right beside the expression.
+        </p>
+        <CyCodeBlock Code="@_razorTrapCode" Language="razor" />
+    </div>
+
+    <div class="cb-section">
+        <h2 class="cb-section-title">Diagnostics</h2>
+        <p class="cb-section-description">
+            The library warns about common mistakes, such as a form field with no label. The codes (<code>CY0001</code> to <code>CY0005</code>) and the two modes are listed in
+            <a href="https://github.com/gncube/CymruBlazor/blob/main/docs/Diagnostics.md" target="_blank" rel="noopener noreferrer">docs/Diagnostics.md<span class="u-sr-only"> (opens in new tab)</span></a>.
+        </p>
+    </div>
+}
+
+@code {
+    private const string _razorTrapCode = """
+        @* Wrong: v@q is treated as an email address and printed as-is *@
+        <p>Version v@version</p>
+
+        @* Right: explicit expression *@
+        <p>Version v@(version)</p>
+        <p>@(count)x @(unit)</p>
+        """;
+
+    protected override void OnInitialized() => Strings.Changed += HandleChanged;
+
+    private void HandleChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Strings.Changed -= HandleChanged;
+}

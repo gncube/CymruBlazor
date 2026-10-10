@@ -1,0 +1,125 @@
+@page "/recipes/editor"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="Editor page" Subtitle="A form page that warns before you leave with unsaved changes.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="Editor page" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<CyUnsavedChanges Dirty="IsDirty" SaveState="_state" SavedAt="_savedAt" />
+
+<CyPageHeader Title="Edit referral" TitleLevel="2" Eyebrow="Genomics" Subtitle="Changes are not saved until you choose Save." />
+
+<CyToolbar Label="Referral actions">
+    <CyButton Disabled="@(!CanSave)" OnClick="SaveAsync">Save</CyButton>
+    <CyButton Variant="ComponentColour.Secondary" Disabled="@(!IsDirty || _state == CySaveState.Saving)" OnClick="Discard">Discard changes</CyButton>
+</CyToolbar>
+
+<CyPage Width="CyPageWidth.Narrow" RemovePadding="true">
+    <CyPageSection Heading="Patient" HeadingLevel="3">
+        <CyStack Gap="ComponentSize.Medium">
+            <CyField Label="Full name" Required="true" Context="field"
+                     Error="@(string.IsNullOrWhiteSpace(_name) ? "Enter the patient's full name" : null)">
+                <input @attributes="field.Attributes" class="cy-input" type="text" @bind="_name" @bind:event="oninput" />
+            </CyField>
+            <CyField Label="Reason for referral" HintText="One sentence is enough" Context="field">
+                <input @attributes="field.Attributes" class="cy-input" type="text" @bind="_reason" @bind:event="oninput" />
+            </CyField>
+        </CyStack>
+    </CyPageSection>
+</CyPage>
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li><code>CyUnsavedChanges</code> guards navigation while <code>Dirty</code> is true and shows the Saving / Saved indicator. Try editing a field, then following a link.</li>
+        <li><code>CyField</code> gives the control its label, hint and error wiring; spread <code>field.Attributes</code> onto the input.</li>
+        <li><code>CyToolbar</code> is one tab stop with arrow-key movement, so a page with several actions stays quick to cross by keyboard.</li>
+        <li>Disable Save until there is something valid to save, and say why in the field error rather than only greying the button.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    private string _name = "Gwen Davies";
+    private string _reason = "Family history of long QT";
+    private string _savedName = "Gwen Davies";
+    private string _savedReason = "Family history of long QT";
+    private CySaveState _state;
+    private DateTimeOffset? _savedAt;
+
+    private bool IsDirty => _name != _savedName || _reason != _savedReason;
+
+    private bool CanSave => IsDirty && !string.IsNullOrWhiteSpace(_name) && _state != CySaveState.Saving;
+
+    private async Task SaveAsync()
+    {
+        _state = CySaveState.Saving;
+        StateHasChanged();
+
+        await Task.Delay(800);
+
+        _savedName = _name;
+        _savedReason = _reason;
+        _savedAt = DateTimeOffset.Now;
+        _state = CySaveState.Saved;
+    }
+
+    private void Discard()
+    {
+        _name = _savedName;
+        _reason = _savedReason;
+    }
+
+    private const string Code = """
+        <CyUnsavedChanges Dirty="IsDirty" SaveState="_state" SavedAt="_savedAt" />
+
+        <CyPageHeader Title="Edit referral" Eyebrow="Genomics" />
+
+        <CyToolbar Label="Referral actions">
+            <CyButton Disabled="@(!CanSave)" OnClick="SaveAsync">Save</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" Disabled="@(!IsDirty)" OnClick="Discard">Discard changes</CyButton>
+        </CyToolbar>
+
+        <CyPage Width="CyPageWidth.Narrow">
+            <CyPageSection Heading="Patient">
+                <CyStack>
+                    <CyField Label="Full name" Required="true" Context="field"
+                             Error="@(string.IsNullOrWhiteSpace(_name) ? "Enter the patient's full name" : null)">
+                        <input @attributes="field.Attributes" class="cy-input" type="text" @bind="_name" @bind:event="oninput" />
+                    </CyField>
+                </CyStack>
+            </CyPageSection>
+        </CyPage>
+
+        @code {
+            private string _name = "Gwen Davies", _savedName = "Gwen Davies";
+            private CySaveState _state;
+            private DateTimeOffset? _savedAt;
+
+            private bool IsDirty => _name != _savedName;
+            private bool CanSave => IsDirty && !string.IsNullOrWhiteSpace(_name) && _state != CySaveState.Saving;
+
+            private async Task SaveAsync()
+            {
+                _state = CySaveState.Saving;
+                await Task.Delay(800);              // your save call
+                _savedName = _name;
+                _savedAt = DateTimeOffset.Now;
+                _state = CySaveState.Saved;
+            }
+
+            private void Discard() => _name = _savedName;
+        }
+        """;
+}

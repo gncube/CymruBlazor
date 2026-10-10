@@ -1,0 +1,92 @@
+@page "/recipes/layout-cookbook"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="Layout cookbook" Subtitle="Which layout primitive to reach for, with the markup beside the result.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="Layout cookbook" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<h3 class="cb-section-title">Action row: CyCluster</h3>
+<div class="cb-example__preview">
+    <CyCluster JustifyContent="JustifyContent.SpaceBetween">
+        <strong>Referrals</strong>
+        <CyCluster Gap="ComponentSize.Small">
+            <CyButton Variant="ComponentColour.Secondary">Export</CyButton>
+            <CyButton>New referral</CyButton>
+        </CyCluster>
+    </CyCluster>
+</div>
+
+<h3 class="cb-section-title">Form row: CyGrid</h3>
+<div class="cb-example__preview">
+    <CyGrid Columns="GridColumns.Two">
+        <CyTextBox @bind-Value="_first" Label="First name" />
+        <CyTextBox @bind-Value="_last" Label="Last name" />
+    </CyGrid>
+</div>
+
+<h3 class="cb-section-title">Card grid: CyGrid</h3>
+<div class="cb-example__preview">
+    <CyGrid Columns="GridColumns.Auto">
+        <CyCard Title="Genomics" HeadingLevel="4">12 open referrals</CyCard>
+        <CyCard Title="Cardiology" HeadingLevel="4">4 open referrals</CyCard>
+        <CyCard Title="Dermatology" HeadingLevel="4">9 open referrals</CyCard>
+    </CyGrid>
+</div>
+
+<h3 class="cb-section-title">Page width: CyPage</h3>
+<div class="cb-example__preview">
+    <CyPage Width="CyPageWidth.Narrow" RemovePadding="true">
+        <CyPageSection Heading="Reading width" HeadingLevel="4">
+            <p style="margin:0;">Narrow suits forms and prose; Wide and Full suit tables and workspaces.</p>
+        </CyPageSection>
+    </CyPage>
+</div>
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li>Use <code>CyCluster</code> for things that sit on a line and may wrap (actions, tags); use <code>CyStack</code> for a column with consistent spacing.</li>
+        <li>Use <code>CyGrid</code> for anything that needs equal columns. <code>Columns="Auto"</code> fits as many as the width allows; a fixed count is for forms.</li>
+        <li>Use <code>CyPage</code> for the width of a whole page and <code>CyContainer</code> for a capped block inside a region you already have.</li>
+        <li>Prefer these primitives to inline <code>style</code>, so spacing keeps following the design tokens in every theme.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    private string? _first = "Gwen";
+    private string? _last = "Davies";
+
+    private const string Code = """
+        @* Action row: items on one line, wrapping when there is no room *@
+        <CyCluster JustifyContent="JustifyContent.SpaceBetween">
+            <strong>Referrals</strong>
+            <CyCluster Gap="ComponentSize.Small"> ...buttons... </CyCluster>
+        </CyCluster>
+
+        @* Form row: two equal columns *@
+        <CyGrid Columns="GridColumns.Two"> ...two fields... </CyGrid>
+
+        @* Card grid: as many columns as fit *@
+        <CyGrid Columns="GridColumns.Auto"> ...cards... </CyGrid>
+
+        @* Page width: one policy per page *@
+        <CyPage Width="CyPageWidth.Narrow"> ... </CyPage>
+
+        @* Vertical rhythm for a single column of content *@
+        <CyStack Gap="ComponentSize.Medium"> ... </CyStack>
+
+        @* CyContainer caps width inside a region you already have; CyPage is the page-level policy. *@
+        """;
+}

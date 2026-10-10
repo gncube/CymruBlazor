@@ -1,0 +1,101 @@
+@page "/recipes/workspace"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="Tool workspace" Subtitle="Palette, canvas and inspector side by side, for tool-style pages.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="Tool workspace" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<CyWorkspace Style="--cy-workspace-height: 20rem">
+    <CyWorkspacePane Title="Palette" Collapsible="true" Width="12rem" MinWidth="8rem">
+        <CyStack Gap="ComponentSize.Small">
+            <CyButton Variant="ComponentColour.Secondary" OnClick="@(() => Add("Short text"))">Short text</CyButton>
+            <CyButton Variant="ComponentColour.Secondary" OnClick="@(() => Add("Yes or no"))">Yes or no</CyButton>
+        </CyStack>
+    </CyWorkspacePane>
+    <CyWorkspacePane Title="Canvas" Fill="true">
+        @if (_questions.Count == 0)
+        {
+            <p style="margin:0;">Add a question from the palette.</p>
+        }
+        else
+        {
+            <ol style="margin:0; padding-inline-start:var(--cymru-space-5);">
+                @for (var i = 0; i < _questions.Count; i++)
+                {
+                    var index = i;
+                    <li>
+                        <CyButton Variant="ComponentColour.Tertiary" aria-pressed="@(index == _selected ? "true" : "false")"
+                                  OnClick="@(() => _selected = index)">@_questions[index]</CyButton>
+                    </li>
+                }
+            </ol>
+        }
+    </CyWorkspacePane>
+    <CyWorkspacePane Title="Inspector" Collapsible="true" Width="14rem" MinWidth="10rem">
+        @if (_selected is int current)
+        {
+            <CyTextBox Value="@_questions[current]" ValueChanged="@(v => _questions[current] = v ?? string.Empty)"
+                       ValueExpression="@(() => _questions[current])" Label="Question text" />
+        }
+        else
+        {
+            <p style="margin:0;">Select a question to edit it.</p>
+        }
+    </CyWorkspacePane>
+</CyWorkspace>
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li>Each pane is a labelled region named by its <code>Title</code>; <code>Collapsible</code> panes can be folded to a rail and keep their state.</li>
+        <li>Selection is a pressed button, so it is announced to a screen reader and visible without relying on colour.</li>
+        <li>Give the workspace a height with <code>--cy-workspace-height</code>; below that height each pane scrolls on its own.</li>
+        <li>Put page-level actions in a <code>CyToolbar</code> above the workspace, not inside a pane.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    private readonly List<string> _questions = ["Short text"];
+    private int? _selected = 0;
+
+    private void Add(string kind)
+    {
+        _questions.Add(kind);
+        _selected = _questions.Count - 1;
+    }
+
+    private const string Code = """
+        <CyWorkspace Style="--cy-workspace-height: 70vh">
+            <CyWorkspacePane Title="Palette" Collapsible="true" Width="12rem" MinWidth="8rem">...</CyWorkspacePane>
+            <CyWorkspacePane Title="Canvas" Fill="true">...</CyWorkspacePane>
+            <CyWorkspacePane Title="Inspector" Collapsible="true" Width="14rem" MinWidth="10rem">...</CyWorkspacePane>
+        </CyWorkspace>
+
+        @* Selecting is a button with aria-pressed, so the selection is announced, not only coloured. *@
+        <CyButton Variant="ComponentColour.Tertiary" aria-pressed="@(index == _selected ? "true" : "false")"
+                  OnClick="@(() => _selected = index)">@_questions[index]</CyButton>
+
+        @code {
+            private readonly List<string> _questions = [];
+            private int? _selected;
+
+            private void Add(string kind)
+            {
+                _questions.Add(kind);
+                _selected = _questions.Count - 1;
+            }
+        }
+        """;
+}
