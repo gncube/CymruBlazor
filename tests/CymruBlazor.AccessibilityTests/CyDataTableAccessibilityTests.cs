@@ -16,6 +16,8 @@ public sealed class CyDataTableAccessibilityTests : AxeTestBase
         new(3, "Bethan Morgan", 30)
     ];
 
+    private static readonly IReadOnlyList<int> PageSizes = [2, 5, 10];
+
     private int _tables;
 
     private static IReadOnlyList<CyDataColumn<Row>> Columns() =>
@@ -37,6 +39,7 @@ public sealed class CyDataTableAccessibilityTests : AxeTestBase
         Environment.NewLine,
         Markup(p => p.Add(c => c.Items, Rows)),
         Markup(p => p.Add(c => c.Items, Rows).Add(c => c.SortKey, "Patient").Add(c => c.SortDescending, true).Add(c => c.PageSize, 2)),
+        Markup(p => p.Add(c => c.Items, Rows).Add(c => c.PageSize, 2).Add(c => c.PageSizeOptions, PageSizes)),
         Markup(p => p
             .Add(c => c.Items, Rows)
             .Add(c => c.SelectionMode, CyDataSelectionMode.Multiple)

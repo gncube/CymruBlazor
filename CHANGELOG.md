@@ -29,6 +29,13 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   builder keeps working, and the editor is retried when the field or operator changes. Fields without a
   `ValueEditor` render exactly as before.
 
+- **`CyDataTable.PageSizeOptions`, `PageSizeChanged` and `OnSortChanged`** (Data): `PageSizeOptions` shows a labelled
+  "Rows per page" select (`CyDataTableText.RowsPerPage`) beside the pagination; choosing a size returns to page 1,
+  announces it (`CyDataTableText.RowsPerPageChanged`), asks an `ItemsProvider` for the new size and raises
+  `PageSizeChanged` (so `@bind-PageSize` works). The current `PageSize` is always offered. `OnSortChanged` raises a
+  `CyDataSortChange(Key, Descending)` once after each sort change, beside the existing two-way parameters. With
+  neither set the markup is unchanged.
+
 - **Recipes** (Demo and `docs/Recipes.md`): complete working pages under Getting Started: a list page, an editor page,
   a wizard and a tool workspace, a layout cookbook (which of `CyCluster`, `CyStack`, `CyGrid`, `CyPage` and
   `CyContainer` to use) and a localisation example with consumer-owned strings beside the library's, plus a note on

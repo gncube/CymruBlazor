@@ -808,3 +808,16 @@ Written, not compiled. New files only apart from the sidebar, nav index and CHAN
 - CHANGELOG entry under `[1.13.0]` Added (TASK-103).
 
 What to look at in the first run: a Razor compile error in one of the recipe pages is the likeliest failure (e.g. the workspace's `ValueChanged` lambda or `aria-pressed` on `CyButton`); the smoke test will report any axe finding with the route.
+
+**Hand-off 4 result (2026-10-10):** green first time. Build clean, 1279 of 1279 unit tests, axe 191 of 191 (the smoke test now covers the seven `/recipes` routes in three themes).
+
+### Phase G as built, hand-off 5 (G-F, `CyDataTable` follow-ups)
+
+Written, not compiled (TASK-109):
+
+- `PageSizeOptions` (`IReadOnlyList<int>?`) and `PageSizeChanged` (`EventCallback<int>`, so `@bind-PageSize` works). The table now keeps its own `_pageSize`, synced from the parameter exactly as `Page` and the sort are (an unchanged parameter never overwrites the user's choice). Every internal use of `PageSize` (skeleton rows, total pages, range text, in-memory paging, provider request and reload check) reads `_pageSize`. The select is a `CySelect<int>` labelled `CyDataTableText.RowsPerPage`; it lists the options plus the current size (distinct, ascending), so a `PageSize` outside the list never produces a select with nothing selected. Choosing a size returns to page 1, focuses the range line, announces `RowsPerPageChanged` ("{0} rows per page. Page 1 of {1}."), asks the provider for the new size and raises `PageSizeChanged` (and `PageChanged` only if the page actually moved). Options at or below zero throw. With no options the markup is unchanged; with `PageSize` 0 the options are ignored.
+- `OnSortChanged` (`EventCallback<CyDataSortChange>`, new record `CyDataSortChange(Key, Descending)`), raised once at the end of `SortAsync`, after `SortKeyChanged`, `SortDescendingChanged` and `PageChanged`; `Key` is null when sorting is cleared.
+- New `CyDataTableText.RowsPerPage` and `RowsPerPageChanged` (init properties with English defaults; additive). New CSS `.cy-data-table__page-size`.
+- Tests: `CyDataTablePageSizeTests` (13 cases), one new axe state (table with a page-size select, three themes), demo section "Rows per page and sort changes", Welsh phrases and API rows.
+- Watch on the first run: the `CySelect<int>` label/`for` wiring and `option[selected]` assertions in the new tests (bUnit renders the selected option from the bound value), and CA warnings on the new code.
+

@@ -2,6 +2,7 @@
 @inherits CyComponentBase
 @using CymruBlazor.Components.Content
 @using CymruBlazor.Components.Feedback
+@using CymruBlazor.Components.Forms
 
 <div id="@Id" class="@CssClass" style="@CssStyle" @attributes="AdditionalAttributes">
 
@@ -163,12 +164,24 @@
 
     </CyTable>
 
-    @if (PageSize > 0)
+    @if (_pageSize > 0)
     {
         <div class="cy-data-table__footer">
             @if (_total > 0)
             {
                 <p class="cy-data-table__range" tabindex="-1" @ref="_range">@RangeText</p>
+            }
+
+            @if (ShowPageSizes)
+            {
+                <div class="cy-data-table__page-size">
+                    <CySelect TValue="int"
+                              Label="@EffectiveText.RowsPerPage"
+                              Items="PageSizeChoices"
+                              Value="_pageSize"
+                              ValueChanged="OnPageSizeChangedAsync"
+                              ValueExpression="@(() => _pageSize)" />
+                </div>
             }
 
             <CyPagination

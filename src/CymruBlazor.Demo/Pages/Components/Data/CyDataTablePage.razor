@@ -38,6 +38,13 @@
         <CyDataTable TItem="Appointment" Caption="Appointments from a server" Columns="_columns" ItemsProvider="LoadAsync" PageSize="3" />
     </div>
 
+    <h2 class="cb-section-title">Rows per page and sort changes</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Appointments with a page size" Columns="_columns" Items="_appointments"
+                     @bind-PageSize="_pageSize" PageSizeOptions="_pageSizes" OnSortChanged="HandleSortChanged" />
+        <p style="margin:0;">Page size: <strong>@_pageSize</strong>. Last sort change: <strong>@_lastSort</strong>.</p>
+    </div>
+
     <h2 class="cb-section-title">Welsh phrases</h2>
     <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
         <CyDataTable TItem="Appointment" Caption="Apwyntiadau" Columns="_columns" Items="_appointments" PageSize="3" Text="_welshText" />
@@ -84,13 +91,22 @@ else
 
     private IReadOnlyList<CyDataColumn<Appointment>> _columns = default!;
 
+    private readonly IReadOnlyList<int> _pageSizes = [2, 4, 8];
+    private int _pageSize = 4;
+    private string _lastSort = "none";
+
+    private void HandleSortChanged(CyDataSortChange change) =>
+        _lastSort = change.Key is null ? "cleared" : $"{change.Key} {(change.Descending ? "descending" : "ascending")}";
+
     private readonly CyDataTableText _welshText = new()
     {
         NoResults = "Dim canlyniadau",
         SortedBy = "Wedi trefnu yn ôl {0}, {1}.",
         Ascending = "esgynnol",
         Descending = "disgynnol",
-        ShowingRange = "Yn dangos {0} i {1} o {2}"
+        ShowingRange = "Yn dangos {0} i {1} o {2}",
+        RowsPerPage = "Rhesi y dudalen",
+        RowsPerPageChanged = "{0} rhes y dudalen. Tudalen 1 o {1}."
     };
 
     protected override void OnInitialized() =>
@@ -147,7 +163,10 @@ else
         new("SortKey / SortDescending", "string? / bool", "null / false", "Two-way bindable. AllowUnsorted adds a third step."),
         new("SelectionMode", "CyDataSelectionMode", "None", "None, Single (radio) or Multiple (checkbox)."),
         new("SelectedItems / KeySelector / RowLabel", "-", "-", "Two-way selection; a stable row key (required with a provider); the name of each row's control (required with selection)."),
-        new("PageSize / Page", "int", "0 / 1", "0 turns paging off. Page is two-way bindable."),
+        new("PageSize / Page", "int", "0 / 1", "0 turns paging off. Both are two-way bindable (PageSize needs PageSizeOptions to change)."),
+        new("PageSizeOptions", "IReadOnlyList<int>?", "null", "Shows a labelled \"Rows per page\" select beside the pagination. Choosing a size returns to page 1 and announces it. The current PageSize is always offered. Null renders nothing extra."),
+        new("PageSizeChanged", "EventCallback<int>", "-", "Raised when the user picks another page size."),
+        new("OnSortChanged", "EventCallback<CyDataSortChange>", "-", "Raised once after each sort change with the new key (null when cleared) and direction, in addition to SortKeyChanged and SortDescendingChanged."),
         new("Loading / EmptyContent / Toolbar / RowActions", "-", "-", "Loading state, empty message, filters above, per-row actions."),
         new("MaxHeight", "string?", "null", "A plain length; keeps the header row in view."),
         new("RefreshAsync()", "Task", "-", "Reload the data keeping sort, page and selection."),

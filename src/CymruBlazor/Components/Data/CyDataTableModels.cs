@@ -37,6 +37,11 @@ public enum CyColumnAlign
 /// <param name="SortDescending">Whether the sort is descending.</param>
 public sealed record CyDataTableRequest(int Page, int PageSize, string? SortKey, bool SortDescending);
 
+/// <summary>The sort after a change, raised by <c>CyDataTable.OnSortChanged</c>.</summary>
+/// <param name="Key">The sorted column's key, or <see langword="null"/> when sorting was cleared.</param>
+/// <param name="Descending">Whether the sort is descending.</param>
+public sealed record CyDataSortChange(string? Key, bool Descending);
+
 /// <summary>What an <c>ItemsProvider</c> returns.</summary>
 /// <typeparam name="TItem">The row type.</typeparam>
 /// <param name="Items">The rows of the requested page, already sorted.</param>

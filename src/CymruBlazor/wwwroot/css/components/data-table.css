@@ -181,6 +181,12 @@
   margin-block-start: var(--cymru-space-3);
 }
 
+.cy-data-table__page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-2);
+}
+
 .cy-data-table__range {
   margin: 0;
   font-size: var(--cymru-font-size-sm);
