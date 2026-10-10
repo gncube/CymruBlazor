@@ -821,3 +821,10 @@ Written, not compiled (TASK-109):
 - Tests: `CyDataTablePageSizeTests` (13 cases), one new axe state (table with a page-size select, three themes), demo section "Rows per page and sort changes", Welsh phrases and API rows.
 - Watch on the first run: the `CySelect<int>` label/`for` wiring and `option[selected]` assertions in the new tests (bUnit renders the selected option from the bound value), and CA warnings on the new code.
 
+**Hand-off 5 result (2026-10-10):** green first time. Build clean, 1293 of 1293 unit tests, axe 191 of 191.
+
+### Phase G decision documents (hand-off 6)
+
+- `docs/Spike-G-A2-rule-builder-drag-reorder.md`: **feasible, medium effort, moderate risk.** The model already supports it (`Reorder`, `MoveTo`). It needs two additive changes to `sortable-list.js` (skip descendants of the dragged item; pass the source list id), an opt-in `AllowDragReorder`, an always-present list for empty groups, a non-focusable grip (the keyboard path stays the existing buttons and menu), and Playwright browser tests. **Your decision: build in 1.13.0 or defer.**
+- `docs/ADR/ADR-0003-testing-package-proposal.md` (Proposed): A two packages, B one package, C documentation only, D nothing. **Recommendation: C now, A when an outside consumer asks.** **Your decision.**
+
