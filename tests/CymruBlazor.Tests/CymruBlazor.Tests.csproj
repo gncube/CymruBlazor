@@ -18,6 +18,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CymruBlazor\CymruBlazor.csproj" />
+    <!-- The public test helpers are tested here, with the library's own tests. -->
+    <ProjectReference Include="..\..\src\CymruBlazor.Testing\CymruBlazor.Testing.csproj" />
     <!--
       Referenced so DashboardMainLayoutTests can bUnit-render the real
       samples/Dashboard MainLayout.razor - this is what actually catches

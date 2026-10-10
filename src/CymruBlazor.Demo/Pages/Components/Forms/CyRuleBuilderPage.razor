@@ -24,7 +24,7 @@
     <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
         Use it to let a service author a rule - an eligibility check, a filter, an alert - without writing code.
         It edits a model (<code>CyRuleGroup</code>) and describes it in words; evaluating and storing the rule is up to
-        your application. Everything here works from the keyboard: there is no drag-and-drop.
+        your application. Everything here works from the keyboard; dragging is an optional extra for pointer users.
     </p>
 
     <h2 class="cb-section-title">Editable rule</h2>
@@ -39,6 +39,19 @@
                 <CyButton Variant="ComponentColour.Primary" OnClick="CheckAsync">Check rule</CyButton>
             </p>
             <p role="status">@_checkResult</p>
+        </div>
+    </div>
+
+    <h2 class="cb-section-title">Drag to reorder</h2>
+    <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0;">
+        Set <code>AllowDragReorder</code> and each row gets a grip that mouse, touch and pen users can drag to reorder a
+        condition or group, or to move it into another group (including an empty one). The grip is not part of the
+        keyboard or screen-reader experience: the move buttons and the "Move to" menu do the same thing, so nothing
+        depends on dragging. A drop the limits forbid changes nothing and is announced.
+    </p>
+    <div class="cb-workbench-preview" style="justify-content: flex-start;">
+        <div style="width: 100%;">
+            <CyRuleBuilder Label="Draggable rule" Fields="_fields" @bind-Value="_dragRule" AllowDragReorder="true" />
         </div>
     </div>
 
@@ -173,6 +186,21 @@ else
         ]
     };
 
+    private CyRuleGroup _dragRule = new()
+    {
+        Children =
+        [
+            new CyRuleCondition { FieldKey = "age", OperatorKey = CyRuleOperators.Gte, Value = 18m },
+            new CyRuleCondition { FieldKey = "smoker", OperatorKey = CyRuleOperators.IsTrue },
+            new CyRuleGroup
+            {
+                Combinator = CyRuleCombinator.Or,
+                Children = [new CyRuleCondition { FieldKey = "name", OperatorKey = CyRuleOperators.Contains, Value = "Jo" }]
+            },
+            new CyRuleGroup()
+        ]
+    };
+
     private CyRuleGroup _welshRule = new() { Children = [new CyRuleCondition()] };
 
     private readonly CyRuleBuilderText _welshText = new()
@@ -193,7 +221,8 @@ else
         ChoosePlaceholder = "Dewiswch...",
         EmptyGroup = "Dim amodau yn y grŵp hwn.",
         SummaryHeading = "Crynodeb",
-        SummaryEmpty = "Dim amodau eto."
+        SummaryEmpty = "Dim amodau eto.",
+        CannotMoveHere = "Ni ellir ei symud yno."
     };
 
     private static async Task<IReadOnlyList<CyOption<string>>> SearchDiagnosesAsync(CyComboboxRequest request, CancellationToken token)
@@ -235,6 +264,7 @@ else
         new("ReadOnly", "bool", "false", "Shows the rule as text, with no controls."),
         new("Disabled", "bool", "false", "Disables every control."),
         new("CyRuleField.ValueEditor", "RenderFragment<CyRuleEditorContext>", "built-in editor", "Replaces the value editor for that field. It draws every value the operator needs (Arity 1 or 2) and stores them with SetValueAsync / SetValue2Async. If it throws, a fixed message is shown and the exception is logged."),
+        new("AllowDragReorder", "bool", "false", "Adds a grip to each row so pointer users can drag a condition or group to reorder it or move it into another group. The grip is hidden from the keyboard and assistive technology; the buttons and menu remain the accessible way. Drops the limits forbid are refused and announced (CyRuleBuilderText.CannotMoveHere)."),
         new("ShowSummary", "bool", "true", "A plain-language sentence under the builder (not a live region)."),
         new("ShowIssues", "bool", "false", "Show the message of every incomplete condition. ValidateAsync() does the same and focuses the first one."),
         new("OnValidationChanged", "EventCallback<IReadOnlyList<CyRuleIssue>>", "-", "Raised when the set of incomplete conditions changes."),
@@ -244,7 +274,7 @@ else
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
     [
         new("Structure", "Each group is a fieldset whose legend says what it means; each condition is a named group ('Condition 2 of 3') inside a named list."),
-        new("No dragging", "Reordering and moving between groups use buttons and a menu, so no pointer gesture is needed (WCAG 2.5.7)."),
+        new("Dragging is optional", "Reordering and moving between groups use buttons and a menu, so no pointer gesture is needed (WCAG 2.5.7). With AllowDragReorder the grip is an extra for pointer users: it is not focusable and is hidden from assistive technology, so it adds nothing to the keyboard path."),
         new("Focus", "After adding, removing or moving, focus goes to a sensible control: the new condition, the next one, or the Add button."),
         new("Announcements", "One polite status message says what happened after each action."),
         new("Errors", "Incomplete conditions show an icon and text, and the condition is described by its message. Messages appear when asked for, not mid-edit."),

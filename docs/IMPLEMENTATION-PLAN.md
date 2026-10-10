@@ -851,3 +851,27 @@ Still yours: three-theme visual pass and Welsh review for D, E, F and the new pa
 ### Phase G as built, hand-off 7 (TASK-117)
 
 Documentation only, nothing to compile: `docs/Testing.md` (bUnit base class, axe base class with the library CSS read from the NuGet package's `staticwebassets` folder, usage, notes) and a CHANGELOG entry. To check by hand: the packaged layout (`staticwebassets/css/cymrublazor.css`, `staticwebassets/CymruBlazor.bundle.scp.css`) in the `.nupkg` from TASK-089, since the axe base class depends on those paths.
+
+### Phase G as built, hand-off 8 (TASK-114 to 116, drag reorder)
+
+Written, not compiled:
+
+- `sortable-list.js` (TASK-114): a list inside the dragged item is never a drop target; a wrapper marked `data-cy-drop-zone` lets an empty list be hit through its message; the ghost of an item with nested lists is its header only; new `syncTree(container, dotNetRef, options)` / `disposeTree(container)` register every list in a builder and forget removed ones. **Deviation from the task text:** the source list id is sent as a fourth argument only when a list registers with `passSource: true`, not always. `CySortableList.OnPointerDrop(string, int, int)` is public API, and `[JSInvokable]` does not accept a missing argument, so always sending four would have broken it (or changed its public signature).
+- `CyRuleBuilder` (TASK-115): `AllowDragReorder` (default false), `IAsyncDisposable`, public `[JSInvokable] OnPointerDrop(target, oldIndex, newIndex, source)` mapping to `Reorder` / `MoveTo`, a `span` grip (`aria-hidden`, not focusable) on conditions and nested groups, `data-cy-*` hooks only when enabled, an empty group rendered as a drop zone (hidden empty list plus the message), `CyRuleBuilderText.CannotMoveHere`, CSS (existing tokens only, no new opacity; the shared `data-cy-drag-source` fade is overridden with a dashed outline), demo section, Welsh phrase, API and accessibility rows, CHANGELOG.
+- Tests (TASK-116): `CyRuleBuilderDragTests` (bUnit, 17 cases: markup, drops, refusals, depth limit, disabled, dispose), `CyRuleBuilderDragBrowserTests` (Playwright, 12 cases) and one axe theory (three themes) in `CyRuleBuilderAccessibilityTests`. The browser tests have no Blazor circuit, so a recorder stands in for .NET; the depth-limit refusal is therefore a bUnit test (`Dropping_Past_The_Depth_Limit...`), not a browser one.
+
+What to look at in the first run: Playwright pointer timing and the `li:has(> ...)` selectors in the browser tests; `BunitJSModuleInterop.Invocations.Count` in two unit tests; CA warnings on `CyRuleBuilder.razor.cs`; the demo smoke test over the new "Drag to reorder" section.
+
+**Hand-off 8 result (2026-10-10):** green first time apart from one unrelated test. Build clean. Unit tests 1309 of 1310: the 17 new `CyRuleBuilderDragTests` pass; the failure is `CyComboboxTests.Should_Announce_Loading_Then_Discard_A_Stale_Response` (a bUnit `WaitForAssertion` timeout on an async provider result, a file this hand-off did not touch; it passed in hand-off 5, so it looks load-dependent, to be re-run on its own). Axe run 206 of 206: all 12 `CyRuleBuilderDragBrowserTests`, the three-theme drag axe theory, and the demo smoke test (including the new "Drag to reorder" section) pass.
+
+### Phase G as built, hand-off 9 (TASK-118, `CymruBlazor.Testing`)
+
+Written, not compiled. New project `src/CymruBlazor.Testing` (net10.0, packable, bUnit only; MinVer, SourceLink and the NuGet metadata as `CymruBlazor`, `EnablePackageValidation` on with no baseline until first release) and its entry in `CymruBlazor.slnx`:
+
+- `CymruTestContext` (abstract `BunitContext`): `AddCymruBlazor()` (or `AddCymruBlazor(configure)` through the second constructor), `JSInterop.Mode = Loose`, and the five library script modules set up loose.
+- `CymruMarkupChecks`: `FindProblems(string)` and `FindMarkupProblems(this IRenderedComponent<T>)`, `ShouldHaveNoProblems(string)` and `ShouldHaveNoMarkupProblems(...)`, throwing `CymruMarkupAssertionException` (with `Problems`). Checks: duplicate ids; `aria-labelledby`, `aria-describedby` and `label for` targets exist; accessible name on `input`, `select`, `textarea`, `button` and role-based controls (hidden and `type` hidden/submit/reset/button/image ignored); heading levels do not skip (the first heading may be any level). Parsed with AngleSharp, which arrives through bUnit. The public surface is these three types and nothing else.
+- Tests in `CymruBlazor.Tests/Testing` (the test project now references the new one): `CymruMarkupChecksTests` (pure markup) and `CymruTestContextTests` (services registered, a script-loading component renders, options pass through, and `CyRuleBuilder` is checked with the new markup checks).
+- `docs/Testing.md`, `docs/Current-Solution-Structure.md`, CHANGELOG. README in the package.
+
+Not yet done for this package: the release workflow does not pack it (TASK-120), so it cannot be published yet. What to look at in the first run: the AngleSharp calls (`Closest`, `GetElementById`, `ParseDocument`) and CA warnings in `CymruMarkupChecks.cs`; the dogfood test on `CyRuleBuilder`, which would show a real problem or a false positive in the checks.
+

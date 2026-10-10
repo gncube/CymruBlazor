@@ -9,7 +9,8 @@
 @* The editors inside are not model fields: a null EditContext keeps them out of any surrounding EditForm. *@
 <CascadingValue TValue="EditContext" Value="@(default(EditContext)!)" IsFixed="true">
 
-    <div id="@Id"
+    <div @ref="_container"
+         id="@Id"
          class="@CssClass"
          style="@CssStyle"
          role="group"
@@ -65,26 +66,50 @@
 
                 @if (parent is not null)
                 {
+                    @if (DragEnabled)
+                    {
+                        @Grip
+                    }
+
                     @NodeActions(group, index, count, true)
                 }
 
             </div>
         }
 
-        @if (group.Children.Count == 0)
+        @if (group.Children.Count == 0 && DragEnabled)
+        {
+            @* An empty group is still a place to drop: the (hidden, empty) list is the target and the message is part of the zone. *@
+            <div class="cy-rule__drop-zone" data-cy-drop-zone>
+                <ul class="cy-rule__list cy-rule__list--empty"
+                    aria-hidden="true"
+                    data-cy-sortable
+                    data-cy-list-id="@group.Id"
+                    data-cy-group="@Id"></ul>
+                <p class="cy-rule__empty">@Strings.EmptyGroup</p>
+            </div>
+        }
+        else if (group.Children.Count == 0)
         {
             <p class="cy-rule__empty">@Strings.EmptyGroup</p>
         }
         else
         {
-            <ul class="cy-rule__list" aria-label="@Format(Strings.ConditionsList, Legend(group))">
+            <ul class="cy-rule__list"
+                aria-label="@Format(Strings.ConditionsList, Legend(group))"
+                data-cy-sortable="@(DragEnabled ? string.Empty : null)"
+                data-cy-list-id="@(DragEnabled ? group.Id : null)"
+                data-cy-group="@(DragEnabled ? Id : null)">
                 @for (var i = 0; i < group.Children.Count; i++)
                 {
                     var child = group.Children[i];
                     var childIndex = i;
                     var total = group.Children.Count;
 
-                    <li @key="child.Id" class="cy-rule__item">
+                    <li @key="child.Id"
+                        class="cy-rule__item"
+                        data-cy-item="@(DragEnabled ? string.Empty : null)"
+                        data-cy-index="@IndexAttribute(childIndex)">
                         @if (child is CyRuleGroup nested)
                         {
                             @GroupView(nested, group, depth + 1, childIndex, total)
@@ -106,7 +131,7 @@
             var conditionsHint = Eid(group, "hint-conditions");
             var depthHint = Eid(group, "hint-depth");
 
-            <div class="cy-rule__footer">
+            <div class="cy-rule__footer" data-cy-ghost-omit="@(DragEnabled ? string.Empty : null)">
 
             <div class="cy-rule__add">
 
@@ -142,6 +167,14 @@
 
     </fieldset>;
 
+    // Pointer-only: the keyboard and screen-reader path is the move buttons and the menu, so the grip is neither
+    // focusable nor announced (a focusable grip that did nothing for the keyboard would be worse than none).
+    private RenderFragment Grip => @<span class="@(Disabled ? "cy-rule__grip cy-rule__grip--disabled" : "cy-rule__grip")"
+          data-cy-drag-handle
+          aria-hidden="true">
+        <CyIcon Name="grip-vertical" Size="18" />
+    </span>;
+
     private RenderFragment ConditionView(CyRuleCondition condition, int index, int count) => @<div id="@Eid(condition, "row")"
          class="cy-rule__condition"
          role="group"
@@ -159,6 +192,11 @@
             var issueText = IssueTextOf(condition);
 
             <div class="cy-rule__row">
+
+            @if (DragEnabled)
+            {
+                @Grip
+            }
 
             <div class="cy-rule__controls">
 

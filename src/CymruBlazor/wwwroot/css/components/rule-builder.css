@@ -188,7 +188,69 @@
   margin: 0;
 }
 
+/*
+ * Dragging (AllowDragReorder). The hooks come from sortable-list.js (data-cy-drag-source, data-cy-drop,
+ * data-cy-drop-target). The grip is pointer-only: not focusable, hidden from assistive technology.
+ */
+.cy-rule__item[data-cy-item] {
+  position: relative;
+}
+
+.cy-rule__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex-shrink: 0;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  border-radius: var(--cymru-radius-control);
+  color: var(--cymru-color-text-secondary);
+  cursor: grab;
+  touch-action: none; /* the script owns the gesture; the page must not scroll under it */
+  user-select: none;
+}
+
+.cy-rule__grip:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-rule__grip--disabled {
+  color: var(--cymru-color-text-muted);
+  cursor: not-allowed;
+}
+
+/* The shared drag styles fade the item in the air; a dashed outline marks it here instead. */
+.cy-rule__item[data-cy-drag-source] {
+  opacity: 1;
+  outline: var(--cymru-border-width-medium) dashed var(--cymru-color-border-strong);
+  outline-offset: var(--cymru-space-1);
+}
+
+/* An empty group is a drop zone; its list is only the target the script finds, so it takes no space. */
+.cy-rule__list--empty {
+  display: none;
+}
+
+.cy-rule__drop-zone:has([data-cy-drop-target]) {
+  outline: var(--cymru-border-width-medium) dashed var(--cymru-color-primary);
+  outline-offset: var(--cymru-space-1);
+}
+
 @media (forced-colors: active) {
+  .cy-rule__grip {
+    color: ButtonText;
+  }
+
+  .cy-rule__grip--disabled {
+    color: GrayText;
+  }
+
+  .cy-rule__drop-zone:has([data-cy-drop-target]) {
+    outline-color: Highlight;
+  }
+
   .cy-rule__group,
   .cy-rule__condition,
   .cy-rule__summary {

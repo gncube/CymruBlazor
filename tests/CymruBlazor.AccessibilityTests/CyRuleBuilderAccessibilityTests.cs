@@ -19,6 +19,7 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-inputs.js");
         JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-editing.js");
+        JSInterop.SetupModule("./_content/CymruBlazor/js/sortable-list.js");
     }
 
     private static readonly IReadOnlyList<CyRuleField> Fields =
@@ -70,9 +71,11 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
         bool showIssues = false,
         bool disabled = false,
         bool readOnly = false,
-        CyRuleLimits? limits = null) =>
+        CyRuleLimits? limits = null,
+        bool drag = false) =>
         Render<CyRuleBuilder>(p => p
             .Add(c => c.Label, "Eligibility rule")
+            .Add(c => c.AllowDragReorder, drag)
             .Add(c => c.Fields, Fields)
             .Add(c => c.Value, rule)
             .Add(c => c.ShowIssues, showIssues)
@@ -99,6 +102,38 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
     public async Task Should_Have_No_Violations_For_All_Rule_Builder_Shapes(string theme)
     {
         var result = await ScanMarkupAsync(BuildMarkup(), theme);
+
+        result.Violations.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("light")]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_Drag_Grips_And_An_Empty_Drop_Zone(string theme)
+    {
+        var withEmptyGroup = new CyRuleGroup
+        {
+            Children =
+            [
+                new CyRuleCondition { FieldKey = "name", OperatorKey = CyRuleOperators.Contains, Value = "Jo" },
+                new CyRuleGroup(),
+                new CyRuleGroup { Children = [new CyRuleCondition { FieldKey = "smoker", OperatorKey = CyRuleOperators.IsTrue }] }
+            ]
+        };
+
+        var markup = string.Join(
+            Environment.NewLine,
+            "<h1>Draggable rule builder</h1>",
+            Builder(FullRule(), drag: true),
+            Builder(withEmptyGroup, drag: true),
+            Builder(FullRule(), disabled: true, drag: true),
+            Builder(FullRule(), readOnly: true, drag: true));
+
+        markup.ShouldContain("cy-rule__grip");
+        markup.ShouldContain("cy-rule__drop-zone");
+
+        var result = await ScanMarkupAsync(markup, theme);
 
         result.Violations.ShouldBeEmpty();
     }

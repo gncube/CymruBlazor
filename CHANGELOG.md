@@ -36,6 +36,22 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   `CyDataSortChange(Key, Descending)` once after each sort change, beside the existing two-way parameters. With
   neither set the markup is unchanged.
 
+- **`CymruBlazor.Testing`** (new package, bUnit only): `CymruTestContext`, a `BunitContext` with `AddCymruBlazor()`
+  called, loose JavaScript interop and the library's script modules set up (optionally with `CymruBlazorOptions`); and
+  `CymruMarkupChecks` (`FindMarkupProblems()`, `ShouldHaveNoMarkupProblems()`), structural accessibility checks on
+  rendered markup with no browser: unique ids, `aria-labelledby` / `aria-describedby` / `label for` targets that exist,
+  an accessible name on every form control and button, and heading levels that do not skip. Versioned in lock-step
+  with `CymruBlazor`.
+
+- **`CyRuleBuilder.AllowDragReorder`** (Forms, default false): each condition and group gets a grip that mouse, touch
+  and pen users can drag to reorder it or move it into another group, including an empty one (an empty group shows
+  its message as a drop zone). The grip is not focusable and is hidden from assistive technology: the move buttons
+  and the "Move to" menu stay the way to do the same thing without a pointer (WCAG 2.5.7). A drop that is not allowed
+  (a group inside itself, past `Limits.MaxDepth`) changes nothing and announces
+  `CyRuleBuilderText.CannotMoveHere`. It reuses `sortable-list.js` with two additive changes: a list that contains the
+  dragged item is never a drop target, and a list registered with `passSource` is also told which list the drag
+  started in (`CySortableList` is unaffected). With the default, the markup is unchanged and no script is loaded.
+
 - **Testing guide** (`docs/Testing.md`): a copyable bUnit base class (`AddCymruBlazor()` plus loose JS interop) and a
   copyable Playwright and axe base class that loads the library's CSS from the NuGet package and scans in each theme,
   with notes on what each kind of test catches. Documentation only; no package or API added.
@@ -55,6 +71,10 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
 
 - Structural snapshot tests for `CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup` and
   `CyDateInput` (plan item 0.5), so a later shared field-chrome refactor can prove it changes no markup.
+- Unit tests for the drag markup and the drop handling (`CyRuleBuilderDragTests`); Playwright tests that drive the
+  real script with a real mouse over the builder's real markup (`CyRuleBuilderDragBrowserTests`: reorder, move into
+  another group, drop into an empty group, a group refused inside itself, cancel, no double report); axe in three
+  themes with grips and an empty drop zone.
 - Axe test that scans an **open** `CyCombobox` list with a disabled option in all three themes.
 
 ## [1.12.3] - 2026-10-09

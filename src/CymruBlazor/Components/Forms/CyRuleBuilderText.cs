@@ -230,6 +230,9 @@ public sealed record CyRuleBuilderText
     /// <summary>Announced when an action could not be done because of a limit.</summary>
     public string ActionNotAllowed { get; init; } = "That change is not allowed.";
 
+    /// <summary>Announced when a drag ended somewhere the item cannot go (inside itself, or past the depth limit).</summary>
+    public string CannotMoveHere { get; init; } = "It cannot be moved there.";
+
     // ---- confirm dialog
 
     /// <summary>Title of the confirmation to remove a group that has conditions.</summary>

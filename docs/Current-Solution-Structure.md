@@ -93,6 +93,8 @@ CymruBlazor/
 │  │  ├─ _Imports.razor
 │  │  └─ CymruBlazor.csproj
 │  │
+│  ├─ CymruBlazor.Testing/             (the published bUnit helpers: CymruTestContext and CymruMarkupChecks; version lock-step with CymruBlazor)
+│  │
 │  └─ CymruBlazor.Demo/                (the published component catalogue; deployed by publish-demo.yml)
 │     ├─ Layout/
 │     ├─ Localisation/

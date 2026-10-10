@@ -10,6 +10,28 @@ Two kinds of test catch different problems, and CymruBlazor uses both on itself:
 This page gives you one base class for each to copy into your own test projects. They are plain code in your
 repository, so there is no extra package to depend on.
 
+From 1.13.0 the bUnit half is also a package, `CymruBlazor.Testing`, if you would rather not copy it:
+
+```csharp
+using CymruBlazor.Testing;
+
+public sealed class ReferralFormTests : CymruTestContext   // AddCymruBlazor(), loose JS interop, library modules set up
+{
+    [Fact]
+    public void The_form_markup_is_well_formed()
+    {
+        var cut = Render<ReferralForm>();
+
+        cut.ShouldHaveNoMarkupProblems();   // unique ids, aria-labelledby / aria-describedby / label-for targets exist,
+                                            // every control and button has a name, heading levels do not skip
+    }
+}
+```
+
+The markup checks are structural only (no CSS, so no contrast or focus) and look only at the markup you give them,
+so a reference to an element outside it, such as a live region in your layout, is reported. Use them alongside the
+axe scan below, not instead of it.
+
 ## bUnit base class
 
 Add `bunit`, `xunit` and `Microsoft.NET.Test.Sdk` to a test project that references your app (and so `CymruBlazor`).
