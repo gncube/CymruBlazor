@@ -828,3 +828,23 @@ Written, not compiled (TASK-109):
 - `docs/Spike-G-A2-rule-builder-drag-reorder.md`: **feasible, medium effort, moderate risk.** The model already supports it (`Reorder`, `MoveTo`). It needs two additive changes to `sortable-list.js` (skip descendants of the dragged item; pass the source list id), an opt-in `AllowDragReorder`, an always-present list for empty groups, a non-focusable grip (the keyboard path stays the existing buttons and menu), and Playwright browser tests. **Your decision: build in 1.13.0 or defer.**
 - `docs/ADR/ADR-0003-testing-package-proposal.md` (Proposed): A two packages, B one package, C documentation only, D nothing. **Recommendation: C now, A when an outside consumer asks.** **Your decision.**
 
+### Phase G decisions (2026-10-10) and remaining scope
+
+| Decision | Outcome |
+|---|---|
+| G-A2 drag reorder | **Build in 1.13.0**, opt-in `AllowDragReorder`, per `docs/Spike-G-A2-rule-builder-drag-reorder.md`. |
+| G-B3 testing package | **Both**: documentation first (`docs/Testing.md` recipe and copyable base class), then two packages (`CymruBlazor.Testing`, `CymruBlazor.Testing.Axe`) per ADR-0003 option A. ADR-0003 moves to Accepted when the packages land. |
+
+| Task | Description |
+|---|---|
+| TASK-114 | `sortable-list.js`: skip lists inside the dragged item; pass the source list id as a fourth `OnPointerDrop` argument (additive; `CySortableList` ignores it). |
+| TASK-115 | `CyRuleBuilder` `AllowDragReorder` (default false): non-focusable grip, `data-cy-*` attributes, always-present list for empty groups, `[JSInvokable] OnPointerDrop` calling `Reorder` / `MoveTo`, `CyRuleBuilderText.CannotMoveHere`, CSS (tokens only, three themes), demo and CHANGELOG. |
+| TASK-116 | Playwright tests: reorder within a group, move into another group, drop into an empty group, refuse a drop on a descendant, refuse past `MaxDepth`; axe with grips in three themes. |
+| TASK-117 | `docs/Testing.md` and a copyable base class (bUnit context and axe base) in the docs; CHANGELOG. |
+| TASK-118 | `CymruBlazor.Testing` (bUnit helpers and markup assertions): csproj, slnx, central package versions, tests, README. |
+| TASK-119 | `CymruBlazor.Testing.Axe` (Playwright and axe base with CSS resolved from static web assets): csproj, tests, README. |
+| TASK-120 | CI and release workflows pack and verify all three packages; MinVer lock-step; ADR-0003 to Accepted. |
+
+Order: TASK-117 (docs, no risk), then TASK-114 to 116 (one hand-off, one fix round expected), then TASK-118 to 120.
+Still yours: three-theme visual pass and Welsh review for D, E, F and the new pages; TASK-089 `dotnet pack` against 1.12.3.
+
