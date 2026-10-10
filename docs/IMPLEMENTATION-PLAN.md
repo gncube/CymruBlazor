@@ -848,3 +848,6 @@ Written, not compiled (TASK-109):
 Order: TASK-117 (docs, no risk), then TASK-114 to 116 (one hand-off, one fix round expected), then TASK-118 to 120.
 Still yours: three-theme visual pass and Welsh review for D, E, F and the new pages; TASK-089 `dotnet pack` against 1.12.3.
 
+### Phase G as built, hand-off 7 (TASK-117)
+
+Documentation only, nothing to compile: `docs/Testing.md` (bUnit base class, axe base class with the library CSS read from the NuGet package's `staticwebassets` folder, usage, notes) and a CHANGELOG entry. To check by hand: the packaged layout (`staticwebassets/css/cymrublazor.css`, `staticwebassets/CymruBlazor.bundle.scp.css`) in the `.nupkg` from TASK-089, since the axe base class depends on those paths.

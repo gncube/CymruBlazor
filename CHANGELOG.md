@@ -36,6 +36,10 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   `CyDataSortChange(Key, Descending)` once after each sort change, beside the existing two-way parameters. With
   neither set the markup is unchanged.
 
+- **Testing guide** (`docs/Testing.md`): a copyable bUnit base class (`AddCymruBlazor()` plus loose JS interop) and a
+  copyable Playwright and axe base class that loads the library's CSS from the NuGet package and scans in each theme,
+  with notes on what each kind of test catches. Documentation only; no package or API added.
+
 - **Recipes** (Demo and `docs/Recipes.md`): complete working pages under Getting Started: a list page, an editor page,
   a wizard and a tool workspace, a layout cookbook (which of `CyCluster`, `CyStack`, `CyGrid`, `CyPage` and
   `CyContainer` to use) and a localisation example with consumer-owned strings beside the library's, plus a note on
