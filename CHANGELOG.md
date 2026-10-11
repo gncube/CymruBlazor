@@ -43,6 +43,13 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   an accessible name on every form control and button, and heading levels that do not skip. Versioned in lock-step
   with `CymruBlazor`.
 
+- **`CymruBlazor.Testing.Axe`** (new package): `CymruAxeTestBase`, a `CymruTestContext` that renders a component with
+  bUnit, loads the markup with the library's own CSS (read from the CymruBlazor package's static web assets) into
+  Chromium through Playwright, and scans it with axe-core in the light, dark and high-contrast themes.
+  `ScanComponentAsync<T>()`, `ScanMarkupAsync()`, `GetPageAsync()` and the `AppCss` and `CssDirectory` hooks;
+  `ShouldHaveNoViolations()` throws `CymruAxeViolationException` naming each rule, its guidance link and the elements
+  affected. Depends on `CymruBlazor.Testing`; versioned in lock-step with `CymruBlazor`.
+
 - **`CyRuleBuilder.AllowDragReorder`** (Forms, default false): each condition and group gets a grip that mouse, touch
   and pen users can drag to reorder it or move it into another group, including an empty one (an empty group shows
   its message as a drop zone). The grip is not focusable and is hidden from assistive technology: the move buttons

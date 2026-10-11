@@ -7,10 +7,9 @@ Two kinds of test catch different problems, and CymruBlazor uses both on itself:
 | Component test | [bUnit](https://bunit.dev) | Wrong markup, missing labels, wrong ARIA wiring, behaviour on click and input | Anything that depends on CSS: contrast, focus rings, hidden text |
 | Browser accessibility scan | Playwright and [axe-core](https://github.com/dequelabs/axe-core) | Colour contrast, focus visibility, anything the CSS cascade decides, in each theme | Behaviour (use bUnit for that) |
 
-This page gives you one base class for each to copy into your own test projects. They are plain code in your
-repository, so there is no extra package to depend on.
-
-From 1.13.0 the bUnit half is also a package, `CymruBlazor.Testing`, if you would rather not copy it:
+From 1.13.0 each half is a package, so you do not have to copy any code: `CymruBlazor.Testing` for bUnit and
+`CymruBlazor.Testing.Axe` for the browser scan (see [Browser scan package](#browser-scan-package)). The base classes
+are also given in full below, to copy if you would rather not add a package. The bUnit package first:
 
 ```csharp
 using CymruBlazor.Testing;
@@ -32,7 +31,7 @@ The markup checks are structural only (no CSS, so no contrast or focus) and look
 so a reference to an element outside it, such as a live region in your layout, is reported. Use them alongside the
 axe scan below, not instead of it.
 
-## bUnit base class
+## bUnit base class (to copy)
 
 Add `bunit`, `xunit` and `Microsoft.NET.Test.Sdk` to a test project that references your app (and so `CymruBlazor`).
 
@@ -88,7 +87,40 @@ Notes:
 - bUnit tests assert on markup. Do not assert on the exact CSS classes the library uses; they are not part of its
   public contract. Assert on roles, names, `aria-*` attributes and text.
 
-## axe base class
+## Browser scan package
+
+`CymruBlazor.Testing.Axe` is the axe base class below as a package. Add it to a **separate** test project (Playwright
+is large and needs a browser) and install the browser once per machine, as described under the copyable class:
+
+```csharp
+using CymruBlazor.Testing.Axe;
+
+public sealed class ReferralFormAccessibilityTests : CymruAxeTestBase   // a CymruTestContext that can scan
+{
+    [Theory]
+    [InlineData("light")]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Referral_form_has_no_violations(string theme)
+    {
+        var result = await ScanComponentAsync<ReferralForm>(theme: theme);
+
+        result.ShouldHaveNoViolations();   // names each rule, how to fix it and the elements affected
+    }
+}
+```
+
+- `ScanComponentAsync<T>()` and `ScanMarkupAsync()` scan; `GetPageAsync()` returns the Playwright page for tests that
+  drive focus or the keyboard. The browser starts on the first scan.
+- Override `AppCss` to return your own stylesheet's text so your overrides are scanned too.
+- The library's CSS is read from the CymruBlazor package's static web assets, found beside the restored
+  `CymruBlazor.dll` or in a web project's asset manifest. If neither works (a project reference in a plain test
+  project, say), override `CssDirectory` or set `CYMRUBLAZOR_CSS_DIR` to a `staticwebassets` folder holding
+  `css/cymrublazor.css`, plus `CymruBlazor.bundle.scp.css` for the per-component styles.
+- The package brings `Deque.AxeCore.Playwright` and `Microsoft.Playwright`; if you reference Playwright yourself, use
+  the same version.
+
+## axe base class (to copy)
 
 This renders a component with bUnit, puts the markup and the library's real CSS in Chromium, and runs axe-core.
 Add `Deque.AxeCore.Playwright` and `Microsoft.Playwright` (plus the bUnit packages above) to a **separate** test
