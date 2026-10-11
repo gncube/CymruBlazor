@@ -273,7 +273,7 @@ public static class CymruMarkupChecks
     private static string Describe(IElement element)
     {
         var id = string.IsNullOrEmpty(element.Id) ? string.Empty : $"#{element.Id}";
-        var cssClass = element.ClassList.FirstOrDefault();
+        var cssClass = element.ClassList.Length > 0 ? element.ClassList[0] : null;
         var suffix = cssClass is null ? string.Empty : $".{cssClass}";
 
         return $"<{element.LocalName}{id}{suffix}>";

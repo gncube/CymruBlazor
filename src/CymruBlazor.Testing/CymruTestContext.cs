@@ -1,6 +1,8 @@
 using Bunit;
 using CymruBlazor.Diagnostics;
 using CymruBlazor.Extensions;
+using CymruBlazor.Services;
+using CymruBlazor.Themes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CymruBlazor.Testing;
@@ -17,6 +19,11 @@ namespace CymruBlazor.Testing;
 /// JavaScript interop is set to <see cref="JSRuntimeMode.Loose"/>, and each of the library's script modules is set
 /// up (also loose), so components that load a script on first render, such as the combobox, the row menus and the
 /// sortable list, render without a browser. Set up your own calls and modules on <c>JSInterop</c> as usual.
+/// </para>
+/// <para>
+/// <c>IThemeService</c> is a ready-made instance without JavaScript (the theme still changes in memory, it just is not
+/// remembered). The real one can only be disposed asynchronously, and a test context is disposed synchronously, so a
+/// container-owned one would fail every test that renders <c>CyThemeProvider</c> at teardown.
 /// </para>
 /// </remarks>
 public abstract class CymruTestContext : BunitContext
@@ -49,6 +56,8 @@ public abstract class CymruTestContext : BunitContext
         {
             Services.AddCymruBlazor(configure);
         }
+
+        Services.AddSingleton<IThemeService>(new ThemeService());
 
         JSInterop.Mode = JSRuntimeMode.Loose;
 

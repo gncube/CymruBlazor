@@ -1,5 +1,7 @@
+using Bunit;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Forms;
+using CymruBlazor.Components.Theming;
 using CymruBlazor.Diagnostics;
 using CymruBlazor.Localisation;
 using CymruBlazor.Testing;
@@ -33,6 +35,17 @@ public sealed class CymruTestContextTests : CymruTestContext
             .Add(c => c.AllowDragReorder, true));
 
         cut.Markup.ShouldContain("cy-rule__grip");
+    }
+
+    [Fact]
+    public void A_Component_That_Uses_The_Theme_Service_Renders_And_The_Context_Disposes_Cleanly()
+    {
+        // Teardown is the test: the real ThemeService only disposes asynchronously, which a synchronous
+        // container dispose rejects.
+        var cut = Render<CyThemeProvider>(p => p.AddChildContent("<p>Hello</p>"));
+
+        cut.Markup.ShouldContain("Hello");
+        cut.Find("[data-theme]").GetAttribute("data-theme").ShouldBe("light");
     }
 
     [Fact]
