@@ -17,7 +17,7 @@ public sealed class CymruAxeTestBaseTests : CymruAxeTestBase
 
     protected override string? CssDirectory => AssetsDirectory;
 
-    protected override string? AppCss => ".app-invisible{color:#ffffff;background:#ffffff}";
+    protected override string? AppCss => ".app-faint{color:#cccccc;background:#ffffff}";
 
     [Fact]
     public async Task Should_Report_A_Contrast_Violation_From_The_Css()
@@ -43,7 +43,7 @@ public sealed class CymruAxeTestBaseTests : CymruAxeTestBase
     public async Task Should_Scan_The_App_Css_After_The_Library_Css()
     {
         // Act
-        var result = await ScanMarkupAsync("<p class=\"app-invisible\">Invisible</p>");
+        var result = await ScanMarkupAsync("<p class=\"app-faint\">Faint</p>");
 
         // Assert
         result.Violations.Select(v => v.Id).ShouldContain("color-contrast");
