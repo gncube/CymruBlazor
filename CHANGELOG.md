@@ -43,6 +43,12 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
   an accessible name on every form control and button, and heading levels that do not skip. Versioned in lock-step
   with `CymruBlazor`.
 
+- **Release of three packages**: CI and the release workflow now pack `CymruBlazor`, `CymruBlazor.Testing` and
+  `CymruBlazor.Testing.Axe` and run `scripts/verify-packages.sh`, which checks that all three exist (with symbols) at
+  the tag's version, that each testing package depends on exactly that version of the one below it, and that the files
+  they rely on are inside them. `New-LocalPackageFeed.ps1` ignores the testing packages when it picks the
+  `CymruBlazor` version. ADR-0003 is Accepted. No library API changes.
+
 - **`CymruBlazor.Testing.Axe`** (new package): `CymruAxeTestBase`, a `CymruTestContext` that renders a component with
   bUnit, loads the markup with the library's own CSS (read from the CymruBlazor package's static web assets) into
   Chromium through Playwright, and scans it with axe-core in the light, dark and high-contrast themes.

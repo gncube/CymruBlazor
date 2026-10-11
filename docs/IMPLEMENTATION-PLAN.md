@@ -893,3 +893,17 @@ Written, not compiled. New project `src/CymruBlazor.Testing.Axe` (net10.0, packa
 Not done: the workflows do not pack it yet (TASK-120). Not verified: the packaged `staticwebassets` location relative to `CymruBlazor.dll` (needs the TASK-089 `dotnet pack`; `CYMRUBLAZOR_CSS_DIR` is the escape hatch until then). What to look at in the first run: `Lock` / collection-expression compile on `AxeResult.Violations` and `AxeResultItem.Nodes`, CA warnings in the package, and `Should.Throw` overloads in the new tests.
 
 **Hand-off 10 result (2026-10-11):** build error CS0246 (`using Bunit;` missing in `CymruAxeTestBase.cs`), fixed in 10b. After that: unit tests 1352 of 1352; accessibility run 218 of 219. The one failure was a test mistake, not the package: `Should_Scan_The_App_Css_After_The_Library_Css` used white text on a white background, which axe does not report as a contrast violation (identical colours are treated as deliberately hidden text). It now uses light grey on white, as the library-CSS test does. All 12 other new tests passed, including the CSS locator tests and the scan of a `CyBadge`.
+
+**Hand-off 10 result, round 2 (2026-10-11):** green. Build clean, unit tests 1352 of 1352, accessibility run 219 of 219 (the 13 new tests included).
+
+### Phase G as built, hand-off 11 (TASK-120, release of three packages)
+
+Written, not run (workflows cannot run here; `verify-packages.sh` was run against fake packages, passing and failing cases):
+
+- `scripts/verify-packages.sh <folder> [expected-version]`: exactly three `.nupkg` and three `.snupkg`; `CymruBlazor.<version>` found by id-then-digit so the testing ids do not match; each package has `lib/net10.0/<id>.dll`; `CymruBlazor` has `staticwebassets/css/cymrublazor.css` (error) and `staticwebassets/CymruBlazor.bundle.scp.css` (warning); both testing packages have `README.md` and depend on exactly that version of the one below (read from the nuspec). With an expected version (the tag without `v`) the version must match.
+- `ci.yml`: after the solution Build, packs the two testing projects into `./artifacts` and runs the script. The artifact name `nuget-package` is unchanged because `publish-demo.yml` downloads it by that name.
+- `release.yml`: packs all three; one "Verify packages" step replaces the two old verification steps (count and tag match); XML and PDB are collected for each package. The existing push globs already push all `.nupkg` and `.snupkg` files and the GitHub Release attaches them.
+- `New-LocalPackageFeed.ps1`: the picked `CymruBlazor` package must have a digit straight after the id, so a testing package in `./artifacts` cannot be mistaken for it.
+- ADR-0003 Accepted with a Decision section (how the open questions were settled); `CONTRIBUTING.md` (three packages, the script, baselines for the new two after their first release); CHANGELOG.
+
+What to look at: the first CI run (the new pack steps and the script on a real runner), and above all the `staticwebassets/css/cymrublazor.css` check, which is also the TASK-089 question (where the package keeps its static web assets): if it fails, the message says so and `CymruLibraryCss` (the package-folder probe) needs the real path. After the first release: add `PackageValidationBaselineVersion` to the two testing projects.

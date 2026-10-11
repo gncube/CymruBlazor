@@ -55,6 +55,13 @@ for how the three `NuGet.*Config` files relate to this.
 
 ## Releasing and package validation
 
+Three packages are released together from one Git tag, at one version (MinVer): `CymruBlazor`, `CymruBlazor.Testing`
+(bUnit helpers) and `CymruBlazor.Testing.Axe` (Playwright and axe). CI and the release workflow pack all three and run
+`scripts/verify-packages.sh`, which fails if one is missing, at a different version from the tag, does not depend on
+the version below it, or lacks a file it relies on. Run it locally with
+`dotnet pack` on each project into one folder, then `bash scripts/verify-packages.sh <folder>` (it needs `bash` and
+`unzip`, so on Windows use WSL).
+
 `CymruBlazor.csproj` sets `EnablePackageValidation` with a
 `PackageValidationBaselineVersion`. `dotnet pack` compares the new package
 with that published baseline and fails with a `CP****` error on an accidental
@@ -64,6 +71,9 @@ breaking API change, so 1.x patch and minor releases stay semver-compatible.
   bump `PackageValidationBaselineVersion` to `X.Y.Z` in the next PR.
 - CI restores the baseline package from nuget.org (`NuGet.CI.Config`), so
   validation needs no workflow changes.
+- `CymruBlazor.Testing` and `CymruBlazor.Testing.Axe` set `EnablePackageValidation` too, but have no baseline until
+  their first release. After publishing, add `PackageValidationBaselineVersion` (the published version) to each of the
+  two projects, in the same PR that bumps the `CymruBlazor.csproj` baseline.
 - Working offline? Pass `-p:EnablePackageValidation=false` to `dotnet pack`.
   CI never does.
 - An intentional break (only for a new major version, e.g. 2.0.0) is recorded

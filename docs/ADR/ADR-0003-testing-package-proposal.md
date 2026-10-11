@@ -1,12 +1,14 @@
 ---
-status: Proposed
+status: Accepted
 ---
 
-# ADR-0003: A `CymruBlazor.Testing` package (proposal)
+# ADR-0003: Testing packages (`CymruBlazor.Testing` and `CymruBlazor.Testing.Axe`)
 
 ## Status
 
-Proposed (Phase G, G-B3). Needs a decision before any code is written.
+Accepted (Phase G, G-B3). Option A was chosen by the maintainer and built in Phase G (TASK-118 to TASK-120). The
+original proposal and its recommendation are kept below as the record of the decision; the **Decision** section at the
+end says what shipped and how the open questions were settled.
 
 ## Context
 
@@ -50,3 +52,34 @@ Open design questions for A: how a consumer's own app CSS is included in a scan;
 ## Work if A is chosen (for the plan)
 
 New projects and `slnx` entries; `Directory.Packages.props` entries; CI and release workflows pack all three packages and verify contents; no `PackageValidationBaselineVersion` for the new packages until their first release; README and docs page; tests for the helpers themselves; CHANGELOG. Roughly three hand-offs.
+
+## Decision
+
+Option A, two packages, released with `CymruBlazor` at one version:
+
+- **`CymruBlazor.Testing`** (bUnit only; depends on `CymruBlazor` and `bunit`): `CymruTestContext` and
+  `CymruMarkupChecks` (with `CymruMarkupAssertionException`).
+- **`CymruBlazor.Testing.Axe`** (depends on `CymruBlazor.Testing`, `Deque.AxeCore.Playwright` and `Microsoft.Playwright`):
+  `CymruAxeTestBase`, `CymruAxeAssertions` and `CymruAxeViolationException`.
+
+The open questions:
+
+- **Consumer app CSS** is added by overriding `CymruAxeTestBase.AppCss`, which returns the text of the stylesheet; it is
+  loaded after the library CSS so overrides are scanned.
+- **CSS resolution** reads the `CymruBlazor` package's static web assets: first an explicit `CssDirectory` override or the
+  `CYMRUBLAZOR_CSS_DIR` variable, then the `staticwebassets` folder beside the restored `CymruBlazor.dll`, then the content
+  roots in a web project's `*.staticwebassets.runtime.json`. The CSS is inlined, which is why the packaged (bundled)
+  stylesheet works and the repository's `@import` development entry does not.
+- **Playwright version** is not pinned by the package beyond what `Deque.AxeCore.Playwright` and the central version
+  require. A consumer that references `Microsoft.Playwright` directly should use the same version, and installs the
+  browser with the `playwright.ps1` script its own build generates. The repository's accessibility workflow keeps
+  reading the version from one place.
+- **No base class takes a test-framework dependency** (neither package references xunit), so they work with xunit,
+  NUnit and MSTest. `CymruAxeTestBase` starts its browser on first use and releases it through `IAsyncDisposable`.
+
+Release: CI and the release workflow pack all three packages and run `scripts/verify-packages.sh`, which checks that
+each exists as a `.nupkg` and `.snupkg` at one version (the tag's, in a release), that each testing package depends on
+exactly that version of the package below it, and that the files they rely on are inside them (notably
+`staticwebassets/css/cymrublazor.css` in `CymruBlazor`). The two new packages have no
+`PackageValidationBaselineVersion` until their first release; after publishing, add one to each project as
+`CONTRIBUTING.md` describes. Each public type is a SemVer commitment from that first release.
