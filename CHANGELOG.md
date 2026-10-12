@@ -8,7 +8,7 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [1.13.0] - Unreleased
+## [1.13.0] - 2026-10-12
 
 Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothing removed or changed.
 
@@ -77,7 +77,7 @@ Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothi
 
 ### Changed
 
-- Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`).
+- Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`). From the next release it compares against 1.13.0, and `CymruBlazor.Testing` and `CymruBlazor.Testing.Axe` are validated too.
 - CHANGELOG hygiene: one date format throughout and a stray full stop removed.
 
 ### Tests
