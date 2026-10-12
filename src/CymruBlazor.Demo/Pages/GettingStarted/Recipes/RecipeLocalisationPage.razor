@@ -1,0 +1,83 @@
+@page "/recipes/localisation"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@implements IDisposable
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="Localisation example" Subtitle="Your own strings next to the library's, in English and Welsh.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="Localisation example" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<p style="margin:0;">Use the language toggle in the header to switch. The text below is your application's own strings; the table caption and buttons come from the library strings.</p>
+
+<CyStack Gap="ComponentSize.Small">
+    <h3 style="margin:0;" lang="@Strings.LangTag">@Clinic.Heading</h3>
+    <p style="margin:0;" lang="@Strings.LangTag">@Clinic.Intro</p>
+    <p style="margin:0;" lang="@Strings.LangTag">@string.Format(Clinic.Count, 3)</p>
+</CyStack>
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li>The library takes every string as a parameter, so there is nothing to register with the library itself: your app owns one scoped service and hands strings to components.</li>
+        <li>Keep your own text in a separate record next to the library strings. Neither needs to know about the other, and adding a string to yours never touches the library's.</li>
+        <li>Mark text in another language with <code>lang</code>, so a screen reader switches voice. <code>AppStrings.LangTag</code> gives <code>en</code> or <code>cy</code>.</li>
+        <li>See <a href="foundations/localisation">Localisation</a> for the library strings and the full catalogue.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    public sealed record ClinicStrings(string Heading, string Intro, string Count)
+    {
+        public static ClinicStrings English { get; } = new(
+            "Clinic referrals", "Check each referral before you book.", "{0} referrals waiting");
+
+        public static ClinicStrings Welsh { get; } = new(
+            "Atgyfeiriadau clinig", "Gwiriwch bob atgyfeiriad cyn archebu.", "{0} atgyfeiriad yn aros");
+    }
+
+    private ClinicStrings Clinic => Strings.Language == AppLanguage.Welsh ? ClinicStrings.Welsh : ClinicStrings.English;
+
+    protected override void OnInitialized() => Strings.Changed += HandleChanged;
+
+    private void HandleChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Strings.Changed -= HandleChanged;
+
+    private const string Code = """
+        // 1. Your strings: a plain record, one instance per language.
+        public sealed record ClinicStrings(string Heading, string Intro, string Count)
+        {
+            public static ClinicStrings English { get; } = new("Clinic referrals", "Check each referral before you book.", "{0} referrals waiting");
+            public static ClinicStrings Welsh   { get; } = new("Atgyfeiriadau clinig", "Gwiriwch bob atgyfeiriad cyn archebu.", "{0} atgyfeiriad yn aros");
+        }
+
+        // 2. Resolve it beside the library strings, from the same service and language.
+        public sealed class AppStrings
+        {
+            public AppLanguage Language { get; private set; }
+            public event Action? Changed;
+
+            public LibraryStrings Library => Language == AppLanguage.Welsh ? WelshLibrary : EnglishLibrary;
+            public ClinicStrings Clinic   => Language == AppLanguage.Welsh ? ClinicStrings.Welsh : ClinicStrings.English;
+            public string LangTag => Language == AppLanguage.Welsh ? "cy" : "en";
+
+            public void SetLanguage(AppLanguage language) { Language = language; Changed?.Invoke(); }
+        }
+
+        // 3. Use both in a page, and mark Welsh text with lang so assistive technology pronounces it correctly.
+        @inject AppStrings T
+        <CyBreadcrumb AriaLabel="@T.Library.BreadcrumbLabel"> ... </CyBreadcrumb>
+        <h1 lang="@T.LangTag">@T.Clinic.Heading</h1>
+        """;
+}

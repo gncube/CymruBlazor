@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Target -->
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+
+    <!-- Packaging -->
+    <IsPackable>true</IsPackable>
+
+    <!-- NuGet metadata -->
+    <PackageId>CymruBlazor.Testing</PackageId>
+    <Title>CymruBlazor.Testing</Title>
+    <Description>
+      bUnit helpers for testing apps built with CymruBlazor: a test context with the library registered, and
+      markup checks for ids, ARIA references, accessible names and heading levels. No browser needed.
+    </Description>
+
+    <Authors>CymruBlazor Contributors</Authors>
+    <Company>Digital Health and Care Wales Community</Company>
+    <Copyright>Copyright © 2025 CymruBlazor Contributors</Copyright>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <PackageProjectUrl>https://github.com/gncube/CymruBlazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/gncube/CymruBlazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <PackageTags>
+      blazor;
+      nhs;
+      nhswales;
+      bunit;
+      testing;
+      accessibility
+    </PackageTags>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!--
+      MinVer supplies the version from the same Git tag as CymruBlazor, so the packages are released in
+      lock-step: CymruBlazor.Testing X.Y.Z depends on CymruBlazor X.Y.Z.
+    -->
+
+    <!-- SourceLink and symbols -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!--
+      Package validation checks the package structure from the first release. There is no
+      PackageValidationBaselineVersion until a version has been published (see CONTRIBUTING.md).
+    -->
+    <EnablePackageValidation>true</EnablePackageValidation>
+
+    <!-- XML documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- CI quality gates -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bunit" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CymruBlazor\CymruBlazor.csproj" />
+  </ItemGroup>
+
+</Project>

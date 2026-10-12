@@ -62,6 +62,17 @@ jobs:
       - name: Build
         run: dotnet build CymruBlazor.slnx -c Release --no-restore
 
+      - name: Pack the testing packages
+        # CymruBlazor.Testing and CymruBlazor.Testing.Axe are released in lock-step with CymruBlazor. They are
+        # packed here, after the solution Build, because they need their Release output (CymruBlazor itself was
+        # packed earlier so the samples can restore it from ./artifacts).
+        run: |
+          dotnet pack src/CymruBlazor.Testing/CymruBlazor.Testing.csproj -c Release --no-build -o ./artifacts
+          dotnet pack src/CymruBlazor.Testing.Axe/CymruBlazor.Testing.Axe.csproj -c Release --no-build -o ./artifacts
+
+      - name: Verify packages
+        run: bash scripts/verify-packages.sh ./artifacts
+
       - name: Install Playwright browsers
         # AxeTestBase (CymruBlazor.AccessibilityTests) launches a real
         # Chromium instance to run axe-core scans. The playwright.ps1

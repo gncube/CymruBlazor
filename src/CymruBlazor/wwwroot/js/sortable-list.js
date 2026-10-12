@@ -19,6 +19,12 @@
 // On drop the module calls   dotNetRef.invokeMethodAsync("OnPointerDrop",
 //   targetListId, oldIndex, newIndex)   on the list the drag started in.
 // `newIndex` is the item's final index in the target list.
+//
+// Nested lists (CyRuleBuilder): one .NET object can own many lists. `syncTree` registers every
+// [data-cy-sortable] list under a container (and forgets the ones that left the DOM); a list
+// registered with `passSource: true` sends the id of the list the drag started in as a fourth
+// argument. A list that contains the dragged item is never a drop target. An empty list can be
+// reached through a wrapper marked [data-cy-drop-zone], so its message can be part of the target.
 
 const DRAG_THRESHOLD = 4;     // px before a press becomes a drag
 const EDGE = 48;              // px from the viewport edge that starts auto-scroll
@@ -28,6 +34,7 @@ const INTERACTIVE = "button, a[href], input, select, textarea, label, [contented
 let nextToken = 1;
 const lists = new Map();      // token -> state
 const roots = new Map();      // root element -> state
+const trees = new Map();      // container element -> { dotNetRef, tokens: Map(root -> token) }
 
 function reduceMotion() {
   return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -75,6 +82,43 @@ export function dispose(token) {
   state.root.removeEventListener("keyup", state.onKeyUp);
   lists.delete(token);
   roots.delete(state.root);
+}
+
+/**
+ * Registers every sortable list inside `container` that is not registered yet, updates the options of
+ * the ones that are, and disposes the ones that have left the DOM. Safe to call after every render.
+ */
+export function syncTree(container, dotNetRef, options) {
+  let tree = trees.get(container);
+  if (!tree) {
+    tree = { dotNetRef, tokens: new Map() };
+    trees.set(container, tree);
+  }
+  tree.dotNetRef = dotNetRef;
+
+  for (const [root, token] of Array.from(tree.tokens)) {
+    if (!root.isConnected) {
+      dispose(token);
+      tree.tokens.delete(root);
+    }
+  }
+
+  container.querySelectorAll("[data-cy-sortable]").forEach((root) => {
+    const known = tree.tokens.get(root);
+    if (known) {
+      update(known, options);
+    } else if (!roots.has(root)) {
+      tree.tokens.set(root, register(root, dotNetRef, options));
+    }
+  });
+}
+
+/** Disposes every list registered through `syncTree` for `container`. */
+export function disposeTree(container) {
+  const tree = trees.get(container);
+  if (!tree) return;
+  for (const token of tree.tokens.values()) dispose(token);
+  trees.delete(container);
 }
 
 /** Focuses `selector` inside the item at `index` (default: its drag handle). Returns whether focus moved. */
@@ -192,10 +236,17 @@ function beginDrag(state) {
   ghost.setAttribute("aria-hidden", "true");
   ghost.setAttribute("inert", "");
   ghost.removeAttribute("data-cy-item");
+  ghost.removeAttribute("data-cy-drag-source");
   ghost.setAttribute("data-cy-ghost", "true");
+
+  // An item that holds nested lists (a rule group) floats as its header only, not the whole subtree.
+  const omitted = ghost.querySelectorAll("[data-cy-sortable], [data-cy-drop-zone], [data-cy-ghost-omit]");
+  omitted.forEach((el) => el.remove());
+  const height = omitted.length > 0 ? "auto" : `${rect.height}px`;
+
   ghost.style.cssText =
     `position:fixed;z-index:2147483000;pointer-events:none;margin:0;` +
-    `inline-size:${rect.width}px;block-size:${rect.height}px;inset-block-start:0;inset-inline-start:0;order:0;`;
+    `inline-size:${rect.width}px;block-size:${height};inset-block-start:0;inset-inline-start:0;order:0;`;
   document.body.appendChild(ghost);
   drag.ghost = ghost;
 }
@@ -218,14 +269,23 @@ function listUnderPointer(state, x, y) {
   const group = state.options.group;
   const elements = document.elementsFromPoint(x, y);
   for (const el of elements) {
-    const root = el.closest && el.closest("[data-cy-sortable]");
+    const root = sortableAt(el);
     if (!root) continue;
+    // Never offer the item's own sub-lists: a group cannot be dropped inside itself.
+    if (state.drag && state.drag.item.contains(root)) continue;
     const other = roots.get(root);
     if (!other || other.options.disabled) continue;
     if (root === state.root) return root;
     if (group && other.options.group === group) return root;
   }
   return null;
+}
+
+/** The sortable list an element belongs to, directly or through a [data-cy-drop-zone] wrapper. */
+function sortableAt(el) {
+  const hit = el.closest && el.closest("[data-cy-sortable], [data-cy-drop-zone]");
+  if (!hit) return null;
+  return hit.hasAttribute("data-cy-sortable") ? hit : hit.querySelector("[data-cy-sortable]");
 }
 
 /** Index in `root` (ignoring the dragged item) where the pointer's y falls. */
@@ -300,5 +360,8 @@ function endDrag(state, commit) {
   const sameList = target.root === state.root;
   if (sameList && target.index === drag.oldIndex) return;   // dropped where it started
 
-  state.dotNetRef.invokeMethodAsync("OnPointerDrop", targetId, drag.oldIndex, target.index).catch(() => {});
+  const args = [targetId, drag.oldIndex, target.index];
+  if (state.options.passSource) args.push(drag.sourceRoot.getAttribute("data-cy-list-id"));
+
+  state.dotNetRef.invokeMethodAsync("OnPointerDrop", ...args).catch(() => {});
 }

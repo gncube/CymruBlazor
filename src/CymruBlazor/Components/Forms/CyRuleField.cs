@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components;
+
 namespace CymruBlazor.Components.Forms;
 
 /// <summary>The kind of value a <see cref="CyRuleField"/> holds. It decides the operators and the value editor.</summary>
@@ -57,4 +59,12 @@ public sealed record CyRuleField
 
     /// <summary>Unit shown after a <see cref="CyRuleFieldType.Number"/> value ("years", "mmol/L").</summary>
     public string? Unit { get; init; }
+
+    /// <summary>
+    /// Replaces the built-in value editor for this field, for every operator that takes a value. The fragment is
+    /// given a <see cref="CyRuleEditorContext"/> and draws all the values the operator needs ("between" has two).
+    /// <see langword="null"/> (the default) keeps the built-in editor for <see cref="Type"/>. If the editor throws, the
+    /// builder shows a fixed message instead and logs the exception.
+    /// </summary>
+    public RenderFragment<CyRuleEditorContext>? ValueEditor { get; init; }
 }

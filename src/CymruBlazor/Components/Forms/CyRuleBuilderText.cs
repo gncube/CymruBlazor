@@ -89,6 +89,9 @@ public sealed record CyRuleBuilderText
     /// <summary>Label of the second value of "between".</summary>
     public string ValueToLabel { get; init; } = "Upper value";
 
+    /// <summary>Shown in place of a custom value editor that threw while rendering.</summary>
+    public string EditorFailed { get; init; } = "This value editor could not be shown.";
+
     /// <summary>First entry of the field and operator pickers.</summary>
     public string ChoosePlaceholder { get; init; } = "Choose...";
 
@@ -226,6 +229,9 @@ public sealed record CyRuleBuilderText
 
     /// <summary>Announced when an action could not be done because of a limit.</summary>
     public string ActionNotAllowed { get; init; } = "That change is not allowed.";
+
+    /// <summary>Announced when a drag ended somewhere the item cannot go (inside itself, or past the depth limit).</summary>
+    public string CannotMoveHere { get; init; } = "It cannot be moved there.";
 
     // ---- confirm dialog
 

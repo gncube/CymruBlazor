@@ -20,8 +20,8 @@ namespace CymruBlazor.Components.Forms;
 /// </para>
 /// <para>
 /// <b>Accessibility.</b> Each group is a <c>fieldset</c> whose legend says what it means ("All of the following"); each
-/// condition is a named group ("Condition 2 of 3"). Every action is a real button - there is no drag-and-drop, so
-/// nothing needs a pointer (WCAG 2.5.7). After adding, removing or moving, focus goes somewhere sensible and one polite
+/// condition is a named group ("Condition 2 of 3"). Every action is a real button, so nothing needs a pointer
+/// (WCAG 2.5.7); dragging (<see cref="AllowDragReorder"/>) is an optional extra for pointer users. After adding, removing or moving, focus goes somewhere sensible and one polite
 /// status message says what happened. Removing a group that holds conditions asks first when an
 /// <see cref="ICyConfirmService"/> is available.
 /// </para>
@@ -35,8 +35,15 @@ namespace CymruBlazor.Components.Forms;
 /// <b>Limits.</b> <see cref="Limits"/> caps nesting (default 3 levels) and the number of conditions (default 50); the
 /// controls that would break a limit are disabled and a hint says why. No script is needed.
 /// </para>
+/// <para>
+/// <b>Dragging.</b> With <see cref="AllowDragReorder"/> each row gets a grip that mouse, touch and pen users can drag to
+/// reorder a condition or group, or to move it into another group, using the same small script as
+/// <see cref="CymruBlazor.Components.Content.CySortableList{TItem}"/>. Dropping where a limit forbids it changes nothing and says so. The grip is
+/// invisible to the keyboard and to screen readers on purpose: the move buttons and the "Move to" menu stay the
+/// way to do the same thing without a pointer.
+/// </para>
 /// </remarks>
-public partial class CyRuleBuilder : CyInteractiveComponentBase
+public partial class CyRuleBuilder : CyInteractiveComponentBase, IAsyncDisposable
 {
     private static readonly CyRuleBuilderText DefaultText = new();
     private static readonly CyRuleLimits DefaultLimits = new();
@@ -60,6 +67,10 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
     private string _announcement = string.Empty;
     private bool _announceToggle;
     private string? _pendingFocus;
+    private ElementReference _container;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<CyRuleBuilder>? _selfReference;
+    private bool _dragRegistered;
 
     // Targets for the inner editors' required ValueExpression. They are never read: the builder sits outside any
     // EditContext (see the cascading value in the markup) and takes values through the change callbacks.
@@ -79,6 +90,9 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
 
     [Inject]
     private IServiceProvider Services { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>The accessible name of the whole builder, for example "Eligibility rule". Required.</summary>
     [Parameter, EditorRequired]
@@ -112,6 +126,13 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
     [Parameter]
     public bool ShowIssues { get; set; }
 
+    /// <summary>
+    /// Lets pointer users drag a condition or group by its grip to reorder it or move it into another group (default
+    /// false). The buttons and menu remain for everyone else; this adds a pointer shortcut, never replaces them.
+    /// </summary>
+    [Parameter]
+    public bool AllowDragReorder { get; set; }
+
     /// <summary>Raised when the set of incomplete conditions changes, with the current issues (empty when the rule is complete).</summary>
     [Parameter]
     public EventCallback<IReadOnlyList<CyRuleIssue>> OnValidationChanged { get; set; }
@@ -134,6 +155,11 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
     private CyRuleLimits EffectiveLimits => Limits ?? DefaultLimits;
 
     private bool Editable => !ReadOnly && !Disabled;
+
+    private bool DragEnabled => AllowDragReorder && !ReadOnly;
+
+    private string? IndexAttribute(int index) =>
+        DragEnabled ? index.ToString(CultureInfo.InvariantCulture) : null;
 
     private bool IssuesVisible => ShowIssues || _showIssues;
 
@@ -393,7 +419,8 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
     private async Task TryEditAsync(
         Func<CyRuleGroup, CyRuleGroup> edit,
         Func<CyRuleGroup, CyRuleGroup, string> announce,
-        Func<CyRuleGroup, CyRuleGroup, string?> focus)
+        Func<CyRuleGroup, CyRuleGroup, string?> focus,
+        string? refusal = null)
     {
         if (!Editable)
         {
@@ -405,7 +432,7 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
 
         if (ReferenceEquals(next, before))
         {
-            Announce(Strings.ActionNotAllowed);
+            Announce(refusal ?? Strings.ActionNotAllowed);
             return;
         }
 
@@ -527,6 +554,51 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
             ? c with { Value2 = stored, Value2Label = storedLabel }
             : c with { Value = stored, ValueLabel = storedLabel });
     }
+
+    private CyRuleEditorContext CreateEditorContext(CyRuleCondition condition, CyRuleField field)
+    {
+        var cid = condition.Id;
+        var issueId = IssueIdOf(condition);
+
+        return new CyRuleEditorContext(
+            field,
+            condition.OperatorKey!,
+            CyRuleOperators.Arity(condition.OperatorKey),
+            condition.Value,
+            condition.Value2,
+            condition.ValueLabel,
+            condition.Value2Label,
+            Eid(condition, "value"),
+            Eid(condition, "value2"),
+            Strings.ValueLabel,
+            Strings.ValueToLabel,
+            issueId,
+            Disabled,
+            (value, label) => SetValueAsync(cid, false, value, label),
+            (value, label) => SetValueAsync(cid, true, value, label));
+    }
+
+    // Built in code, not markup: Razor only discovers public components as tags, and the boundary and host are
+    // internal. The key gives a fresh boundary when the field or operator changes, so a failed editor is retried.
+    private RenderFragment CustomEditorBody(CyRuleCondition condition, CyRuleField field) => builder =>
+    {
+        builder.OpenComponent<CyRuleEditorBoundary>(0);
+        builder.SetKey(EditorKey(condition, field));
+        builder.AddAttribute(1, nameof(CyRuleEditorBoundary.Fallback), EditorFailedMessage);
+        builder.AddAttribute(2, "ChildContent", (RenderFragment)(inner =>
+        {
+            inner.OpenComponent<CyRuleEditorHost>(0);
+            inner.AddAttribute(1, nameof(CyRuleEditorHost.Editor), field.ValueEditor!);
+            inner.AddAttribute(2, nameof(CyRuleEditorHost.EditorContext), CreateEditorContext(condition, field));
+            inner.CloseComponent();
+        }));
+        builder.CloseComponent();
+    };
+
+    // A new key (a different field or operator) gives the editor a fresh error boundary, so a failed editor
+    // is retried once the user changes what it is for.
+    private static string EditorKey(CyRuleCondition condition, CyRuleField field) =>
+        string.Concat(condition.Id, "|", field.Key, "|", condition.OperatorKey);
 
     private Task SetChoiceAsync(string id, CyRuleField field, bool second, string? key)
     {
@@ -735,11 +807,120 @@ public partial class CyRuleBuilder : CyInteractiveComponentBase
             });
     }
 
+    // ------------------------------------------------------------------ dragging
+
+    /// <summary>
+    /// Called by the script when a pointer drag finishes. Not for application code. The ids are the groups the drag
+    /// started in and ended in; a drop that a limit forbids changes nothing and announces
+    /// <see cref="CyRuleBuilderText.CannotMoveHere"/>.
+    /// </summary>
+    /// <param name="targetListId">The id of the group the item was dropped into.</param>
+    /// <param name="oldIndex">The item's index in the group it came from.</param>
+    /// <param name="newIndex">The item's index in the target group once it has left its old place.</param>
+    /// <param name="sourceListId">The id of the group the drag started in.</param>
+    [JSInvokable]
+    public async Task OnPointerDrop(string targetListId, int oldIndex, int newIndex, string sourceListId)
+    {
+        await InvokeAsync(async () =>
+        {
+            await DropAsync(targetListId, oldIndex, newIndex, sourceListId);
+            StateHasChanged();
+        });
+    }
+
+    private Task DropAsync(string targetId, int oldIndex, int newIndex, string sourceId)
+    {
+        if (!Editable ||
+            CyRuleEdits.Find(_root, sourceId) is not CyRuleGroup source ||
+            CyRuleEdits.Find(_root, targetId) is not CyRuleGroup target ||
+            oldIndex < 0 || oldIndex >= source.Children.Count)
+        {
+            return Task.CompletedTask;
+        }
+
+        var nodeId = source.Children[oldIndex].Id;
+        var sameGroup = string.Equals(source.Id, target.Id, StringComparison.Ordinal);
+
+        return TryEditAsync(
+            root => sameGroup
+                ? CyRuleEdits.Reorder(root, sourceId, oldIndex, newIndex)
+                : CyRuleEdits.MoveTo(root, nodeId, targetId, newIndex, EffectiveLimits),
+            (_, next) => Format(Strings.Moved, CyRuleEdits.Find(next, targetId) is CyRuleGroup moved ? TargetName(moved) : string.Empty),
+            (_, _) => null,
+            Strings.CannotMoveHere);
+    }
+
+    private async Task SyncDragAsync()
+    {
+        if (!DragEnabled)
+        {
+            if (_dragRegistered)
+            {
+                _dragRegistered = false;
+                await TryScriptAsync(module => module.InvokeVoidAsync("disposeTree", _container).AsTask());
+            }
+
+            return;
+        }
+
+        await TryScriptAsync(async module =>
+        {
+            _selfReference ??= DotNetObjectReference.Create(this);
+            await module.InvokeVoidAsync("syncTree", _container, _selfReference, new DragOptions(Id, true, Disabled, true));
+            _dragRegistered = true;
+        });
+    }
+
+    private async Task TryScriptAsync(Func<IJSObjectReference, Task> action)
+    {
+        try
+        {
+            _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", SortableInterop.ModulePath);
+            await action(_module);
+        }
+        catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
+        {
+            // Browser or circuit is gone, or the script is unavailable: buttons and the menu still work.
+        }
+    }
+
+    private sealed record DragOptions(string Group, bool HandleOnly, bool Disabled, bool PassSource);
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+
+        try
+        {
+            if (_module is not null)
+            {
+                if (_dragRegistered)
+                {
+                    await _module.InvokeVoidAsync("disposeTree", _container);
+                    _dragRegistered = false;
+                }
+
+                await _module.DisposeAsync();
+                _module = null;
+            }
+        }
+        catch (Exception ex) when (OverlayInterop.IsTeardown(ex) || ex is JSException)
+        {
+            // Browser or circuit is already gone.
+        }
+
+        _selfReference?.Dispose();
+        _selfReference = null;
+    }
+
     // ------------------------------------------------------------------ focus
 
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await SyncDragAsync();
+
         var target = _pendingFocus;
 
         if (target is null)

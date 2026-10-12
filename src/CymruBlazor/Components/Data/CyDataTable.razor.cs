@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using CymruBlazor.Components.Core;
+using CymruBlazor.Components.Forms;
 
 namespace CymruBlazor.Components.Data;
 
@@ -60,12 +61,14 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     private string? _sortKey;
     private bool _sortDescending;
     private int _page = 1;
+    private int _pageSize;
 
     // The parameter values last seen, so an unchanged parameter never overwrites state the user changed.
     private bool _paramsSeen;
     private string? _seenSortKey;
     private bool _seenSortDescending;
     private int _seenPage = 1;
+    private int _seenPageSize;
     private IReadOnlyList<TItem>? _seenSelected;
 
     // What the provider was last asked for.
@@ -147,6 +150,22 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     [Parameter]
     public int PageSize { get; set; }
 
+    /// <summary>
+    /// The page sizes offered in a labelled "Rows per page" select beside the pagination. <see langword="null"/> (the default)
+    /// renders no select and leaves the markup unchanged. Needs <see cref="PageSize"/> to be above zero; the current
+    /// <see cref="PageSize"/> is always offered, even when it is not in the list. Every value must be above zero.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<int>? PageSizeOptions { get; set; }
+
+    /// <summary>Raised when the user picks another page size from <see cref="PageSizeOptions"/>. Makes <c>@bind-PageSize</c> work.</summary>
+    [Parameter]
+    public EventCallback<int> PageSizeChanged { get; set; }
+
+    /// <summary>Raised after the sort changes, once, with the new key and direction (in addition to the two-way sort parameters).</summary>
+    [Parameter]
+    public EventCallback<CyDataSortChange> OnSortChanged { get; set; }
+
     /// <summary>The current page, starting at 1. Two-way bindable.</summary>
     [Parameter]
     public int Page { get; set; } = 1;
@@ -191,13 +210,22 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
     private bool ShowSkeleton => Busy && _view.Count == 0;
 
-    private int SkeletonRows => PageSize > 0 ? Math.Min(PageSize, 5) : 5;
+    private int SkeletonRows => _pageSize > 0 ? Math.Min(_pageSize, 5) : 5;
 
     private int SelectedCount => _selected.Count;
 
     private string RadioName => $"{Id}-select";
 
-    private int TotalPages => PageSize > 0 ? Math.Max(1, (int)Math.Ceiling(_total / (double)PageSize)) : 1;
+    private int TotalPages => _pageSize > 0 ? Math.Max(1, (int)Math.Ceiling(_total / (double)_pageSize)) : 1;
+
+    private bool ShowPageSizes => _pageSize > 0 && PageSizeOptions is { Count: > 0 };
+
+    private IEnumerable<CyOption<int>> PageSizeChoices =>
+        (PageSizeOptions ?? Array.Empty<int>())
+            .Append(_pageSize)
+            .Distinct()
+            .Order()
+            .Select(size => new CyOption<int>(size, size.ToString(CultureInfo.CurrentCulture)));
 
     private int ColumnSpan =>
         Columns.Count + (SelectionMode != CyDataSelectionMode.None ? 1 : 0) + (RowActions is not null ? 1 : 0);
@@ -210,8 +238,8 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     {
         get
         {
-            var first = ((_page - 1) * PageSize) + 1;
-            var last = Math.Min(_total, _page * PageSize);
+            var first = ((_page - 1) * _pageSize) + 1;
+            var last = Math.Min(_total, _page * _pageSize);
             return Format(EffectiveText.ShowingRange, first, last, _total);
         }
     }
@@ -259,6 +287,11 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             throw new InvalidOperationException($"{nameof(CyDataTable<TItem>)}.{nameof(PageSize)} must not be negative.");
         }
 
+        if (PageSizeOptions is not null && PageSizeOptions.Any(size => size <= 0))
+        {
+            throw new InvalidOperationException($"{nameof(CyDataTable<TItem>)}.{nameof(PageSizeOptions)} must contain only values above zero.");
+        }
+
         CssLength.Require(MaxHeight, nameof(CyDataTable<TItem>), nameof(MaxHeight));
 
         if (SelectionMode != CyDataSelectionMode.None && RowLabel is null)
@@ -303,7 +336,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             || _loadedSortKey != _sortKey
             || _loadedSortDescending != _sortDescending
             || _loadedPage != _page
-            || _loadedPageSize != PageSize;
+            || _loadedPageSize != _pageSize;
 
         if (changed)
         {
@@ -319,6 +352,12 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             _sortDescending = SortDescending;
             _seenSortKey = SortKey;
             _seenSortDescending = SortDescending;
+        }
+
+        if (!_paramsSeen || PageSize != _seenPageSize)
+        {
+            _pageSize = PageSize;
+            _seenPageSize = PageSize;
         }
 
         if (!_paramsSeen || Page != _seenPage)
@@ -362,10 +401,10 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         var list = rows as IReadOnlyList<TItem> ?? rows.ToList();
         _total = list.Count;
 
-        if (PageSize > 0)
+        if (_pageSize > 0)
         {
             _page = Math.Clamp(_page, 1, TotalPages);
-            list = list.Skip((_page - 1) * PageSize).Take(PageSize).ToList();
+            list = list.Skip((_page - 1) * _pageSize).Take(_pageSize).ToList();
         }
 
         _view = list;
@@ -383,7 +422,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         _loadedSortKey = _sortKey;
         _loadedSortDescending = _sortDescending;
         _loadedPage = _page;
-        _loadedPageSize = PageSize;
+        _loadedPageSize = _pageSize;
 
         _loading = true;
         _loadError = false;
@@ -391,7 +430,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
         try
         {
-            var result = await ItemsProvider!(new CyDataTableRequest(_page, PageSize, _sortKey, _sortDescending), token);
+            var result = await ItemsProvider!(new CyDataTableRequest(_page, _pageSize, _sortKey, _sortDescending), token);
 
             if (version != _loadVersion || token.IsCancellationRequested)
             {
@@ -521,6 +560,38 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         if (SortDescendingChanged.HasDelegate)
         {
             await SortDescendingChanged.InvokeAsync(_sortDescending);
+        }
+
+        if (pageChanged && PageChanged.HasDelegate)
+        {
+            await PageChanged.InvokeAsync(_page);
+        }
+
+        if (OnSortChanged.HasDelegate)
+        {
+            await OnSortChanged.InvokeAsync(new CyDataSortChange(_sortKey, _sortDescending));
+        }
+    }
+
+    private async Task OnPageSizeChangedAsync(int size)
+    {
+        if (size <= 0 || size == _pageSize)
+        {
+            return;
+        }
+
+        var pageChanged = _page != 1;
+        _pageSize = size;
+        _page = 1;
+        _focusRange = true;
+
+        await Reapply();
+
+        _status = Format(EffectiveText.RowsPerPageChanged, _pageSize, TotalPages);
+
+        if (PageSizeChanged.HasDelegate)
+        {
+            await PageSizeChanged.InvokeAsync(_pageSize);
         }
 
         if (pageChanged && PageChanged.HasDelegate)

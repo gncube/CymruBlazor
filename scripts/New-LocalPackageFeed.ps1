@@ -58,9 +58,11 @@ try {
   }
 
   # NuGet's packing convention is always "{PackageId}.{Version}.nupkg" -
-  # exclude the .snupkg symbol package, which shares the same prefix.
+  # exclude the .snupkg symbol package, which shares the same prefix, and the
+  # CymruBlazor.Testing and CymruBlazor.Testing.Axe packages, which can sit in
+  # the same folder: the id must be followed directly by the version.
   $nupkg = Get-ChildItem -Path $artifactsPath -Filter "CymruBlazor.*.nupkg" -File |
-    Where-Object { $_.Name -notlike "*.snupkg" } |
+    Where-Object { $_.Name -notlike "*.snupkg" -and $_.Name -match '^CymruBlazor\.\d' } |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 

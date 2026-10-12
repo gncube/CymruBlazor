@@ -1,4 +1,5 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
 using CymruBlazor.Components.Forms;
 using Shouldly;
 using Xunit;
@@ -18,6 +19,7 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-inputs.js");
         JSInterop.SetupModule("./_content/CymruBlazor/js/cymru-editing.js");
+        JSInterop.SetupModule("./_content/CymruBlazor/js/sortable-list.js");
     }
 
     private static readonly IReadOnlyList<CyRuleField> Fields =
@@ -69,9 +71,11 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
         bool showIssues = false,
         bool disabled = false,
         bool readOnly = false,
-        CyRuleLimits? limits = null) =>
+        CyRuleLimits? limits = null,
+        bool drag = false) =>
         Render<CyRuleBuilder>(p => p
             .Add(c => c.Label, "Eligibility rule")
+            .Add(c => c.AllowDragReorder, drag)
             .Add(c => c.Fields, Fields)
             .Add(c => c.Value, rule)
             .Add(c => c.ShowIssues, showIssues)
@@ -98,6 +102,82 @@ public sealed class CyRuleBuilderAccessibilityTests : AxeTestBase
     public async Task Should_Have_No_Violations_For_All_Rule_Builder_Shapes(string theme)
     {
         var result = await ScanMarkupAsync(BuildMarkup(), theme);
+
+        result.Violations.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("light")]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_Drag_Grips_And_An_Empty_Drop_Zone(string theme)
+    {
+        var withEmptyGroup = new CyRuleGroup
+        {
+            Children =
+            [
+                new CyRuleCondition { FieldKey = "name", OperatorKey = CyRuleOperators.Contains, Value = "Jo" },
+                new CyRuleGroup(),
+                new CyRuleGroup { Children = [new CyRuleCondition { FieldKey = "smoker", OperatorKey = CyRuleOperators.IsTrue }] }
+            ]
+        };
+
+        var markup = string.Join(
+            Environment.NewLine,
+            "<h1>Draggable rule builder</h1>",
+            Builder(FullRule(), drag: true),
+            Builder(withEmptyGroup, drag: true),
+            Builder(FullRule(), disabled: true, drag: true),
+            Builder(FullRule(), readOnly: true, drag: true));
+
+        markup.ShouldContain("cy-rule__grip");
+        markup.ShouldContain("cy-rule__drop-zone");
+
+        var result = await ScanMarkupAsync(markup, theme);
+
+        result.Violations.ShouldBeEmpty();
+    }
+
+    private static RenderFragment<CyRuleEditorContext> LabelledEditor => context => builder =>
+    {
+        builder.OpenElement(0, "input");
+        builder.AddAttribute(1, "type", "text");
+        builder.AddAttribute(2, "id", context.ValueId);
+        builder.AddAttribute(3, "aria-label", context.Label);
+        builder.AddAttribute(4, "aria-invalid", context.Invalid ? "true" : "false");
+        builder.AddAttribute(5, "disabled", context.Disabled);
+        builder.CloseElement();
+    };
+
+    private static RenderFragment<CyRuleEditorContext> ThrowingEditor => context => builder => throw new InvalidOperationException("boom");
+
+    private string CustomEditorBuilder(string label, RenderFragment<CyRuleEditorContext> editor, bool showIssues = false) =>
+        Render<CyRuleBuilder>(p => p
+            .Add(c => c.Label, label)
+            .Add(c => c.Fields, new[] { new CyRuleField { Key = "x", Label = "Custom field", ValueEditor = editor } })
+            .Add(c => c.Value, new CyRuleGroup
+            {
+                Children = [new CyRuleCondition { FieldKey = "x", OperatorKey = CyRuleOperators.Eq }]
+            })
+            .Add(c => c.ShowIssues, showIssues)).Markup;
+
+    [Theory]
+    [InlineData("light")]
+    [InlineData("dark")]
+    [InlineData("high-contrast")]
+    public async Task Should_Have_No_Violations_With_Custom_Value_Editors_Including_A_Failed_One(string theme)
+    {
+        var markup = string.Join(
+            Environment.NewLine,
+            "<h1>Custom value editors</h1>",
+            CustomEditorBuilder("Custom editor rule", LabelledEditor),
+            CustomEditorBuilder("Invalid custom editor rule", LabelledEditor, showIssues: true),
+            CustomEditorBuilder("Failed editor rule", ThrowingEditor));
+
+        markup.ShouldContain("cy-rule__control--custom");
+        markup.ShouldContain("This value editor could not be shown.");
+
+        var result = await ScanMarkupAsync(markup, theme);
 
         result.Violations.ShouldBeEmpty();
     }

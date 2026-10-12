@@ -1,0 +1,81 @@
+@page "/recipes/list"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="List page" Subtitle="A page header with an action, and a sortable, paged table beneath it.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="List page" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<CyPageHeader Title="Appointments" TitleLevel="2" Eyebrow="Cardiff clinic" Subtitle="Today's appointments, sortable and paged.">
+    <Actions>
+        <CyButton>New appointment</CyButton>
+    </Actions>
+</CyPageHeader>
+
+<CyPage RemovePadding="true">
+    <CyDataTable TItem="Appointment" Caption="Today's appointments" CaptionVisuallyHidden="true"
+                 Columns="_columns" Items="_rows" PageSize="4" KeySelector="a => a.Id" />
+</CyPage>
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li><code>CyPageHeader</code> carries the title, an eyebrow and the page action. Use <code>TitleLevel</code> only when the page already has its own h1.</li>
+        <li><code>CyDataTable</code> needs a <code>Caption</code>; hide it visually when the page header already names the table.</li>
+        <li>Give rows a <code>KeySelector</code> so sorting and paging keep row identity stable.</li>
+        <li>For server data swap <code>Items</code> for <code>ItemsProvider</code>; the rest of the page does not change.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    public sealed record Appointment(int Id, string Patient, string Clinic, int Minutes);
+
+    private readonly IReadOnlyList<Appointment> _rows =
+    [
+        new(1, "Gwen Davies", "Genomics", 30),
+        new(2, "Rhys Evans", "Cardiology", 20),
+        new(3, "Cerys Jones", "Genomics", 45),
+        new(4, "Owain Hughes", "Dermatology", 15),
+        new(5, "Megan Price", "Cardiology", 25),
+        new(6, "Ifan Morgan", "Genomics", 30)
+    ];
+
+    private readonly IReadOnlyList<CyDataColumn<Appointment>> _columns =
+    [
+        new CyDataColumn<Appointment> { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
+        new CyDataColumn<Appointment> { Header = "Clinic", Value = a => a.Clinic, Sortable = true },
+        new CyDataColumn<Appointment> { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
+    ];
+
+    private const string Code = """
+        <CyPageHeader Title="Appointments" Eyebrow="Cardiff clinic" Subtitle="Today's appointments, sortable and paged.">
+            <Actions>
+                <CyButton>New appointment</CyButton>
+            </Actions>
+        </CyPageHeader>
+
+        <CyPage>
+            <CyDataTable TItem="Appointment" Caption="Today's appointments" CaptionVisuallyHidden="true"
+                         Columns="_columns" Items="_rows" PageSize="10" KeySelector="a => a.Id" />
+        </CyPage>
+
+        @code {
+            private IReadOnlyList<CyDataColumn<Appointment>> _columns = [
+                new() { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
+                new() { Header = "Clinic", Value = a => a.Clinic, Sortable = true },
+                new() { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
+            ];
+        }
+        """;
+}

@@ -8,13 +8,124 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [1.13.0] - Unreleased
+
+Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothing removed or changed.
+
+### Added
+
+- **Diagnostic `CY0005`**: every form field (`CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup`,
+  `CyCheckboxGroup`, `CyDateInput`, `CyNumberInput`, `CyCombobox`, `CyMultiCombobox`, `CySwitch`) now logs a warning
+  once when it is rendered with no `Label` and no `aria-label` / `aria-labelledby`. It warns in both diagnostics modes
+  and never throws, so no existing page starts failing. New `docs/Diagnostics.md` lists every code (`CY0001`,
+  `CY0003`, `CY0004`, `CY0005`).
+
+- **`CyRuleField.ValueEditor`** (Forms): a field can replace the built-in value editor of `CyRuleBuilder` with its own
+  `RenderFragment<CyRuleEditorContext>`. The context gives the operator, `Arity` (2 for "between"), the current
+  values, the ids and localised names to use, `Invalid`/`IssueId` and `Disabled`, and stores values with
+  `SetValueAsync` / `SetValue2Async` (optionally with the text the summary should show). The builder wraps it in a named
+  group ("Value") linked to the condition's message. If the editor throws while rendering, a fixed message
+  (`CyRuleBuilderText.EditorFailed`) is shown instead, the exception is logged and never displayed, the rest of the
+  builder keeps working, and the editor is retried when the field or operator changes. Fields without a
+  `ValueEditor` render exactly as before.
+
+- **`CyDataTable.PageSizeOptions`, `PageSizeChanged` and `OnSortChanged`** (Data): `PageSizeOptions` shows a labelled
+  "Rows per page" select (`CyDataTableText.RowsPerPage`) beside the pagination; choosing a size returns to page 1,
+  announces it (`CyDataTableText.RowsPerPageChanged`), asks an `ItemsProvider` for the new size and raises
+  `PageSizeChanged` (so `@bind-PageSize` works). The current `PageSize` is always offered. `OnSortChanged` raises a
+  `CyDataSortChange(Key, Descending)` once after each sort change, beside the existing two-way parameters. With
+  neither set the markup is unchanged.
+
+- **`CymruBlazor.Testing`** (new package, bUnit only): `CymruTestContext`, a `BunitContext` with `AddCymruBlazor()`
+  called, loose JavaScript interop and the library's script modules set up (optionally with `CymruBlazorOptions`); and
+  `CymruMarkupChecks` (`FindMarkupProblems()`, `ShouldHaveNoMarkupProblems()`), structural accessibility checks on
+  rendered markup with no browser: unique ids, `aria-labelledby` / `aria-describedby` / `label for` targets that exist,
+  an accessible name on every form control and button, and heading levels that do not skip. Versioned in lock-step
+  with `CymruBlazor`.
+
+- **Release of three packages**: CI and the release workflow now pack `CymruBlazor`, `CymruBlazor.Testing` and
+  `CymruBlazor.Testing.Axe` and run `scripts/verify-packages.sh`, which checks that all three exist (with symbols) at
+  the tag's version, that each testing package depends on exactly that version of the one below it, and that the files
+  they rely on are inside them. `New-LocalPackageFeed.ps1` ignores the testing packages when it picks the
+  `CymruBlazor` version. ADR-0003 is Accepted. No library API changes.
+
+- **`CymruBlazor.Testing.Axe`** (new package): `CymruAxeTestBase`, a `CymruTestContext` that renders a component with
+  bUnit, loads the markup with the library's own CSS (read from the CymruBlazor package's static web assets) into
+  Chromium through Playwright, and scans it with axe-core in the light, dark and high-contrast themes.
+  `ScanComponentAsync<T>()`, `ScanMarkupAsync()`, `GetPageAsync()` and the `AppCss` and `CssDirectory` hooks;
+  `ShouldHaveNoViolations()` throws `CymruAxeViolationException` naming each rule, its guidance link and the elements
+  affected. Depends on `CymruBlazor.Testing`; versioned in lock-step with `CymruBlazor`.
+
+- **`CyRuleBuilder.AllowDragReorder`** (Forms, default false): each condition and group gets a grip that mouse, touch
+  and pen users can drag to reorder it or move it into another group, including an empty one (an empty group shows
+  its message as a drop zone). The grip is not focusable and is hidden from assistive technology: the move buttons
+  and the "Move to" menu stay the way to do the same thing without a pointer (WCAG 2.5.7). A drop that is not allowed
+  (a group inside itself, past `Limits.MaxDepth`) changes nothing and announces
+  `CyRuleBuilderText.CannotMoveHere`. It reuses `sortable-list.js` with two additive changes: a list that contains the
+  dragged item is never a drop target, and a list registered with `passSource` is also told which list the drag
+  started in (`CySortableList` is unaffected). With the default, the markup is unchanged and no script is loaded.
+
+- **Testing guide** (`docs/Testing.md`): a copyable bUnit base class (`AddCymruBlazor()` plus loose JS interop) and a
+  copyable Playwright and axe base class that loads the library's CSS from the NuGet package and scans in each theme,
+  with notes on what each kind of test catches. Documentation only; no package or API added.
+
+- **Recipes** (Demo and `docs/Recipes.md`): complete working pages under Getting Started: a list page, an editor page,
+  a wizard and a tool workspace, a layout cookbook (which of `CyCluster`, `CyStack`, `CyGrid`, `CyPage` and
+  `CyContainer` to use) and a localisation example with consumer-owned strings beside the library's, plus a note on
+  the Razor `v@q` trap. The overview page is in English and Welsh. Every page is covered by the existing demo smoke
+  test (axe, three themes).
+
+### Changed
+
+- Package validation now compares against 1.12.3 (`PackageValidationBaselineVersion`).
+- CHANGELOG hygiene: one date format throughout and a stray full stop removed.
+
+### Tests
+
+- Structural snapshot tests for `CyTextBox`, `CyTextArea`, `CySelect`, `CyCheckbox`, `CyRadioGroup` and
+  `CyDateInput` (plan item 0.5), so a later shared field-chrome refactor can prove it changes no markup.
+- Unit tests for the drag markup and the drop handling (`CyRuleBuilderDragTests`); Playwright tests that drive the
+  real script with a real mouse over the builder's real markup (`CyRuleBuilderDragBrowserTests`: reorder, move into
+  another group, drop into an empty group, a group refused inside itself, cancel, no double report); axe in three
+  themes with grips and an empty drop zone.
+- Axe test that scans an **open** `CyCombobox` list with a disabled option in all three themes.
+
+## [1.12.3] - 2026-10-09
+
+Patch release: the demo site on GitHub Pages (a project site served from a sub-path).
+
+### Fixed
+
+- Demo links are now relative to the document base, so they work when the site is hosted under
+  `/<repository>/`; the publish workflow also rewrites the service worker base and removes stale
+  pre-compressed copies of the rewritten files.
+
+### Changed
+
+- `CyBrandLogo.Href` now defaults to `""` (the application root relative to the document base href)
+  instead of `"/"`, so the logo link also works under a sub-path. Pass `Href="/"` to restore the old
+  value; `Href="@null"` still renders a non-link logo.
+
+## [1.12.2] - 2026-10-09
+
+Release-notes-only patch: a CHANGELOG edit. No code change.
+
+## [1.12.1] - 2026-10-09
+
+Patch release: release plumbing and the sample app. No change to the library's public API.
+
+### Fixed
+
+- `scripts/Pack-Solution.ps1` no longer excludes `.artifacts` and `artifacts` from the source zip.
+- The StarterApp sidebar uses the `State` API instead of the obsolete `Collapsed` parameter.
+
 ## [1.12.0] - 2026-10-09
 
 Roadmap v1.12.0 ("Rules and page scaffolding", Phase F of `docs/IMPLEMENTATION-PLAN.md`).
 This release adds the page scaffolding and `CyRuleBuilder`.
 Everything here is additive: no existing member is removed or changed, no new
 `[Obsolete]` members, so `docs/MIGRATION-2.0.md` is untouched. No new required member on
-`CyLocalizedStrings`. No new JavaScript..
+`CyLocalizedStrings`. No new JavaScript.
 
 ### Added
 
@@ -124,7 +235,7 @@ English defaults. `CyRuleBuilder` is deferred to 1.12.0.
   export and ARIA grid keyboard navigation. Use `QuickGrid` or build on the
   component for those.
 
-## [1.10.0] - Unreleased
+## [1.10.0] - 2026-10-06
 
 Roadmap v1.10.0 ("Flow and review", Phase D of `docs/IMPLEMENTATION-PLAN.md`):
 the components for multi-step journeys, review pages, dashboards and safe
@@ -200,7 +311,7 @@ package is introduced, and no existing JavaScript file is changed.
 
 - **`CyButton` Danger in the dark theme** failed colour contrast (white text on the pale red fill). The label now uses the dark surface colour in the dark theme (`CyButton.razor.css`).
 
-## [1.9.0] - Unreleased
+## [1.9.0] - 2026-10-04
 
 Roadmap v1.9.0 ("Editing experience", Phase C of
 `docs/IMPLEMENTATION-PLAN.md`): the primitives the Questionnaire Designer
@@ -274,7 +385,7 @@ fields is unchanged. No third-party script or npm package is introduced.
   not been looked at in a browser by a person) and `dotnet pack` against the
   1.8.0 baseline.
 
-## [1.8.0] - 02/10/2026
+## [1.8.0] - 2026-10-02
 
 Roadmap v1.8.0 ("Make forms adoptable", Phase B of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing
@@ -336,7 +447,7 @@ byte-identical markup inside an `EditForm` (checked on 14 scenarios).
   scans for the new components. The library compiles with no new diagnostics
   and a 97-check render harness passes.
 
-## [1.7.0] - 2026/10/02
+## [1.7.0] - 2026-10-02
 
 Roadmap v1.7.0 ("Quick wins and de-risking", Phase A of
 `docs/IMPLEMENTATION-PLAN.md`). Everything here is additive: no existing

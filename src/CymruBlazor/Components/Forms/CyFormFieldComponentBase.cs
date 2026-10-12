@@ -1,4 +1,5 @@
 using CymruBlazor.Contracts;
+using CymruBlazor.Diagnostics;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using CymruBlazor.Components.Core;
@@ -36,6 +37,16 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
 {
     [Inject]
     private IComponentIdGenerator ComponentIdGenerator { get; set; } = default!;
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the library diagnostics service, or the strict non-logging default when none is registered
+    /// (the same fallback as <c>CyComponentBase</c>).
+    /// </summary>
+    private ICyDiagnostics FieldDiagnostics =>
+        (ICyDiagnostics?)ServiceProvider?.GetService(typeof(ICyDiagnostics)) ?? CyDiagnostics.Default;
 
     /// <summary>
     /// The field's visible label. Required - every CymruBlazor form field
@@ -174,6 +185,17 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
 
             return ids.Count == 0 ? null : string.Join(' ', ids);
         }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Reports <c>CY0005</c> (a warning in both diagnostics modes) when the field has no <see cref="Label"/> and no
+    /// <c>aria-label</c> / <c>aria-labelledby</c>. Derived components that override this must call the base method.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        CyAccessibleNameCheck.Check(FieldDiagnostics, GetType(), Label, AdditionalAttributes);
     }
 
     /// <summary>

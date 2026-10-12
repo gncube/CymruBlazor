@@ -40,6 +40,12 @@ public sealed record CyDataTableText
     /// <summary>Announcement after changing page. {0} page, {1} number of pages.</summary>
     public string PageChanged { get; init; } = "Page {0} of {1}.";
 
+    /// <summary>Label of the page-size select shown when <c>PageSizeOptions</c> is set.</summary>
+    public string RowsPerPage { get; init; } = "Rows per page";
+
+    /// <summary>Announcement after changing the page size. {0} rows per page, {1} number of pages.</summary>
+    public string RowsPerPageChanged { get; init; } = "{0} rows per page. Page 1 of {1}.";
+
     /// <summary>Accessible name of the pagination. {0} the table's caption.</summary>
     public string PaginationLabel { get; init; } = "Pagination for {0}";
 

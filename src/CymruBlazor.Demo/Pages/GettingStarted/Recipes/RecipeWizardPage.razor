@@ -1,0 +1,119 @@
+@page "/recipes/wizard"
+@namespace CymruBlazor.Demo.Pages.GettingStarted.Recipes
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="Wizard" Subtitle="A short multi-step task that ends with a check-your-answers page.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Getting Started" Href="/getting-started" />
+            <CyBreadcrumbItem Text="Recipes" Href="/recipes" />
+            <CyBreadcrumbItem Text="Wizard" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<h2 class="cb-section-title">The recipe</h2>
+<span class="cb-panel-caption">Preview</span>
+<div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+<CyStepper Label="Request a test" Steps="_steps" @bind-Current="_current" Clickable="true" />
+
+@if (_submitted)
+{
+    <p role="status" style="margin:0;">Request sent for @_name.</p>
+}
+else
+{
+    if (_current == 0)
+    {
+        <CyTextBox @bind-Value="_name" Label="Patient name" HintText="As it appears on their NHS record" />
+    }
+    else if (_current == 1)
+    {
+        <CyTextBox @bind-Value="_test" Label="Test requested" HintText="For example, BRCA1 panel" />
+    }
+    else
+    {
+        <CySummaryList>
+            <CySummaryRow Key="Patient" Value="@Show(_name)" OnChange="@(() => _current = 0)" />
+            <CySummaryRow Key="Test" Value="@Show(_test)" OnChange="@(() => _current = 1)" />
+        </CySummaryList>
+    }
+
+    <div style="display:flex; gap:var(--cymru-space-3);">
+        <CyButton Variant="ComponentColour.Secondary" Disabled="@(_current == 0)" OnClick="Back">Back</CyButton>
+        @if (_current < _steps.Count - 1)
+        {
+            <CyButton OnClick="Next">Next</CyButton>
+        }
+        else
+        {
+            <CyButton OnClick="Submit">Send request</CyButton>
+        }
+    </div>
+}
+</div>
+
+<h2 class="cb-section-title">What it shows</h2>
+<ul class="cb-section-description">
+        <li><code>CyStepper</code> shows where the person is; <code>Clickable</code> lets them go back to a step they have already passed, but not skip ahead.</li>
+        <li>The last step is a <code>CySummaryList</code> whose Change actions return to the step that owns the answer.</li>
+        <li>Keep Back and Next in the same place on every step so keyboard users do not have to look for them.</li>
+        <li>Validate on Next, not on every keystroke, and name the step that has an error with <code>CyStepItem.Status</code>.</li>
+</ul>
+
+<h2 class="cb-section-title">Code</h2>
+<CyCodeBlock Code="@Code" Language="razor" />
+
+@code {
+    private int _current;
+    private bool _submitted;
+    private string? _name = "Gwen Davies";
+    private string? _test;
+
+    private readonly IReadOnlyList<CyStepItem> _steps =
+    [
+        new CyStepItem("Patient") { Description = "Who is it for?" },
+        new CyStepItem("Test") { Description = "What is needed?" },
+        new CyStepItem("Check your answers")
+    ];
+
+    private static string Show(string? value) => string.IsNullOrWhiteSpace(value) ? "Not provided" : value;
+
+    private void Back() => _current = Math.Max(0, _current - 1);
+
+    private void Next() => _current = Math.Min(_steps.Count - 1, _current + 1);
+
+    private void Submit() => _submitted = true;
+
+    private const string Code = """
+        <CyStepper Label="Request a test" Steps="_steps" @bind-Current="_current" Clickable="true" />
+
+        @if (_current == 0) { <CyTextBox @bind-Value="_name" Label="Patient name" /> }
+        else if (_current == 1) { <CyTextBox @bind-Value="_test" Label="Test requested" /> }
+        else
+        {
+            <CySummaryList>
+                <CySummaryRow Key="Patient" Value="@_name" OnChange="@(() => _current = 0)" />
+                <CySummaryRow Key="Test" Value="@_test" OnChange="@(() => _current = 1)" />
+            </CySummaryList>
+        }
+
+        <CyButton Variant="ComponentColour.Secondary" Disabled="@(_current == 0)" OnClick="Back">Back</CyButton>
+        <CyButton OnClick="Next">Next</CyButton>
+
+        @code {
+            private int _current;
+            private string? _name, _test;
+
+            private readonly IReadOnlyList<CyStepItem> _steps =
+            [
+                new CyStepItem("Patient"),
+                new CyStepItem("Test"),
+                new CyStepItem("Check your answers")
+            ];
+
+            private void Back() => _current = Math.Max(0, _current - 1);
+            private void Next() => _current = Math.Min(_steps.Count - 1, _current + 1);
+        }
+        """;
+}
