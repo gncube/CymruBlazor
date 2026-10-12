@@ -917,3 +917,7 @@ Post-release changes: `PackageValidationBaselineVersion` is 1.13.0 in all three 
 If the first CI run after this reports `NU1101` for the baseline, nuget.org has not finished indexing 1.13.0: wait a few minutes and re-run.
 
 Still open, none blocking: three-theme visual pass and Welsh review for D, E, F and the new pages; `CyComboboxTests.Should_Announce_Loading_Then_Discard_A_Stale_Response` (one failure in one run, likely load-dependent); optional consolidation of `TestContextBase` and `AxeTestBase` onto the new packages (post-1.13.0 hand-off, see conversation).
+
+### Decision: the repository's test bases stay separate from the packages (2026-10-12)
+
+Considered making `TestContextBase` derive from `CymruTestContext` and `AxeTestBase` reuse `CymruAxeTestBase`, to remove the duplication. Not done, deliberately: `CymruTestContext` calls `AddCymruBlazor()` and sets loose JavaScript interop, while the library's own 76 test classes (about 1,300 tests) rely on registering only what they need and on strict interop, so a merge would silently weaken them and could not be checked here without running them. `AxeTestBase` links the repository CSS by file path (resolving the development stylesheet's `@import`), finds the scoped bundle in the build output and carries the hosted-page helpers; `CymruAxeTestBase` inlines the packaged CSS. What is shared is small (the HTML shell and the `page-has-heading-one` rule). A comment in each base and a sentence in `docs/Testing.md` now say so. Revisit only if the two start to drift in a way that causes a bug.

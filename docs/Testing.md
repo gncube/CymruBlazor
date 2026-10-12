@@ -294,7 +294,9 @@ Notes:
 
 The library's own tests use the same two ideas, with a few extras you can copy as needed:
 
-- `tests/CymruBlazor.Tests/TestContextBase.cs` is the bUnit base above, for the library's repository.
+- `tests/CymruBlazor.Tests/TestContextBase.cs` is the bUnit base above, for the library's repository. It is kept separate
+  from `CymruTestContext` on purpose: it registers only what a test asks for and keeps JavaScript interop strict, so a
+  stray call fails the test; the package context is loose so your pages render with no setup.
 - `tests/CymruBlazor.AccessibilityTests/AxeTestBase.cs` is the axe base above, plus `LoadHostedAsync`, which
   serves the library's real JavaScript modules from a fake origin so tests can drive focus containment, dialogs and
   drag and drop in a real browser, and `MeasureAsync` for real layout checks.

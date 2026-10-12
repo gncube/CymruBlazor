@@ -28,6 +28,12 @@ namespace CymruBlazor.AccessibilityTests;
 ///   pwsh bin/Debug/net10.0/playwright.ps1 install chromium
 /// (from this test project's output directory, after building it at least
 /// once so the script exists).
+///
+/// This deliberately does not reuse <c>CymruBlazor.Testing.Axe.CymruAxeTestBase</c>, the published equivalent for
+/// consumers. That class inlines the library CSS from the NuGet package and loads JavaScript interop loosely; this one
+/// links the repository's own CSS by file path (so a development stylesheet's <c>@import</c> lines resolve), searches
+/// the build output for the scoped bundle, and adds the hosted-page helpers (<c>LoadHostedAsync</c>, <c>MeasureAsync</c>)
+/// that drive the real JavaScript. The package class is tested separately in the <c>Testing</c> folder.
 /// </summary>
 public abstract class AxeTestBase : BunitContext, IAsyncLifetime
 {
