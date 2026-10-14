@@ -31,5 +31,14 @@ window.cymruDemoSearch = {
         if (el) {
             el.focus();
         }
+    },
+
+    scrollToElement: function (elementId) {
+        if (!elementId) return;
+        const id = elementId.startsWith('#') ? elementId.slice(1) : elementId;
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 };

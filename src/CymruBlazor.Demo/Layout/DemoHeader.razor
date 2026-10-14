@@ -3,6 +3,7 @@
 @using CymruBlazor.Components.Branding
 @using CymruBlazor.Enums
 @using CymruBlazor.Themes
+@using CymruBlazor.Demo.Services
 @inject IThemeService ThemeService
 @inject CymruBlazor.Demo.Localisation.AppStrings Strings
 
@@ -19,7 +20,10 @@
 
         <div class="cb-shell-header__brand-group">
             <CyBrandLogo Size="ComponentSize.Small" Href="" />
-            <span class="cb-version-badge">v1.0</span>
+            @if (!string.IsNullOrWhiteSpace(DisplayVersion))
+            {
+                <span class="cb-version-badge">@DisplayVersion</span>
+            }
         </div>
     </Brand>
 
@@ -67,6 +71,12 @@
     /// <summary>Raised when the search button is activated.</summary>
     [Parameter]
     public EventCallback OnOpenSearch { get; set; }
+
+    /// <summary>Optional explicit version string. If omitted, the resolved package version is displayed.</summary>
+    [Parameter]
+    public string? Version { get; set; }
+
+    private string? DisplayVersion => Version is not null ? CymruVersionProvider.FormatVersion(Version) : CymruVersionProvider.Version;
 
     protected override void OnInitialized()
     {

@@ -1389,3 +1389,21 @@ body:has(.cy-theme-provider[data-theme="high-contrast"]) .cb-home__hero .cb-demo
   font-size: 0.78rem;
   color: var(--cb-text-muted);
 }
+
+/* Visibility utility for DOM retention in accessible tabs */
+.u-hidden {
+  display: none !important;
+}
+
+/* Anchor navigation targets: account for sticky header height */
+#examples,
+#api,
+#accessibility,
+[id="examples"],
+[id="api"],
+[id="accessibility"],
+.cb-tabs,
+.cb-section-title,
+.cb-home__section-title {
+  scroll-margin-top: calc(var(--docs-header-height) + 1.5rem);
+}

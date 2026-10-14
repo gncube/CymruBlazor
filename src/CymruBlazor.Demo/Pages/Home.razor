@@ -19,7 +19,7 @@
             <h1 class="cb-home__title">CymruBlazor</h1>
             <p class="cb-home__subtitle">@(Strings.Language == AppLanguage.Welsh ? "Cydrannau Blazor hygyrch, cyfansoddadwy ar gyfer gwasanaethau digidol GIG Cymru." : "Accessible, composable Blazor components for Welsh NHS digital services.")</p>
 
-            <div class="cb-home__actions">
+            <div class="cb-home__actions" id="api">
                 <CyButton Href="layouts/stack" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--primary">@(Strings.Language == AppLanguage.Welsh ? "Archwilio'r cydrannau →" : "Explore components →")</CyButton>
                 <CyButton Href="getting-started" Variant="ComponentColour.Tertiary" Class="cb-demo-btn cb-demo-btn--secondary">@(Strings.Language == AppLanguage.Welsh ? "Dechrau arni" : "Get started")</CyButton>
             </div>
@@ -34,7 +34,7 @@
         </div>
     </section>
 
-    <section class="cb-home__features">
+    <section class="cb-home__features" id="accessibility">
         @foreach (var feature in Features)
         {
             <div class="cb-home__feature">
@@ -47,7 +47,7 @@
         }
     </section>
 
-    <section class="cb-home__quick-start">
+    <section class="cb-home__quick-start" id="examples">
         <h2 class="cb-home__section-title">@(Strings.Language == AppLanguage.Welsh ? "Dechrau cyflym" : "Quick start")</h2>
         <DemoQuickStart Steps="QuickStartSteps" />
     </section>
