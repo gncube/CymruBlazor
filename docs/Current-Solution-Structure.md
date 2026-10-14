@@ -47,7 +47,7 @@ CymruBlazor/
 │  │  └─ ADR-0002-localisation-strings-service.md
 │  ├─ Current-Solution-Structure.md    (this file)
 │  ├─ CymruBlazor-Scaffold-Guide.md    (consumer-facing "how to install and use the package" guide)
-│  └─ MIGRATION-2.0.md                 (every current [Obsolete] member and its replacement, ahead of the 2.0.0 removal)
+│  └─ MIGRATION-2.0.md                 (1.x to 2.0.0 migration guide)
 ├─ scripts/
 │  ├─ Pack-Solution.ps1                (zips the repo for distribution/review; cleans bin/obj first)
 │  ├─ Run-AccessibilityTests.ps1       (host entry point: builds the Docker image, runs the container script inside it)
@@ -60,7 +60,7 @@ CymruBlazor/
 ├─ src/
 │  ├─ CymruBlazor/                     (the published package)
 │  │  ├─ Accessibility/
-│  │  │  ├─ Focus/                     (focus-trap/keyboard-navigation primitives; some members obsolete - see docs/MIGRATION-2.0.md)
+│  │  │  ├─ Focus/                     (focus management primitives: IFocusManager, JsFocusManager, FocusTrap)
 │  │  │  ├─ Notifications/
 │  │  │  ├─ ILiveRegionRegistry.cs
 │  │  │  ├─ LiveRegionAnnouncementHandler.cs
@@ -78,7 +78,7 @@ CymruBlazor/
 │  │  │  ├─ Localisation/              (CyLocalizationProvider)
 │  │  │  ├─ Theming/                   (1 component)
 │  │  │  └─ _Imports.razor
-│  │  ├─ Contracts/                    (IHasColour, IHasDisabledState, IHasIcon*, IHasSize, IHasValidationState, IHasVariant*)
+│  │  ├─ Contracts/                    (IHasColour, IHasDisabledState, IHasSize, IHasValidationState)
 │  │  ├─ Enums/                        (~20 enums, e.g. ComponentSize, SidebarState, SidebarCollapseMode)
 │  │  ├─ Extensions/
 │  │  │  └─ ServiceCollectionExtensions.cs   (AddCymruBlazor())

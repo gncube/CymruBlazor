@@ -2,6 +2,7 @@ using Xunit;
 using Shouldly;
 using Bunit;
 using CymruBlazor.Components.Layout;
+using CymruBlazor.Enums;
 
 namespace CymruBlazor.Tests.Components.Layout;
 
@@ -10,19 +11,18 @@ public sealed class LayoutComponentTests : TestContextBase
     [Fact]
     public async Task CySidebar_ToggleAsync_InvertsCollapsedState()
     {
-#pragma warning disable CS0618
         // Arrange
         var eventFired = false;
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.Collapsed, false)
-            .Add(p => p.CollapsedChanged, val => eventFired = val));
+            .Add(p => p.State, SidebarState.Expanded)
+            .Add(p => p.StateChanged, val => eventFired = val == SidebarState.Compact));
 
         // Act - Safely synchronize state updates using the Blazor Dispatcher
         await cut.InvokeAsync(async () => await cut.Instance.ToggleAsync());
 
         // Assert
-        cut.Instance.Collapsed.ShouldBeTrue();
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+        cut.Instance.EffectiveCollapsed.ShouldBeTrue();
         eventFired.ShouldBeTrue();
-#pragma warning restore CS0618
     }
 }

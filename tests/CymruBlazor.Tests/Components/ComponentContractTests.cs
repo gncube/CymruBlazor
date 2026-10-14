@@ -131,21 +131,6 @@ public sealed class ComponentContractTests : TestContextBase
         ((IHasValidationState)field).ValidationState.ShouldBe(ValidationState.Invalid);
     }
 
-    [Theory]
-    [InlineData("CymruBlazor.Contracts.IHasVariant")]
-    [InlineData("CymruBlazor.Contracts.IHasIcon")]
-    [InlineData("CymruBlazor.Enums.ComponentVariant")]
-    [InlineData("CymruBlazor.Enums.IconPosition")]
-    public void Unused_Contracts_Are_Marked_Obsolete_For_Removal_In_2_0(string typeName)
-    {
-        var type = typeof(IHasSize).Assembly.GetType(typeName, throwOnError: true)!;
-
-        var obsolete = (ObsoleteAttribute?)Attribute.GetCustomAttribute(type, typeof(ObsoleteAttribute));
-
-        obsolete.ShouldNotBeNull();
-        obsolete.Message.ShouldNotBeNull();
-        obsolete.Message!.ShouldContain("2.0.0");
-    }
 
     [Fact]
     public void AddCymruBlazor_Registers_The_Real_Focus_Manager()

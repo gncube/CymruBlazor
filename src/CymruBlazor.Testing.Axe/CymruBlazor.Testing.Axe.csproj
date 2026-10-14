@@ -55,10 +55,12 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <!--
-      Package validation checks the package structure from the first release. There is no
-      PackageValidationBaselineVersion until a version has been published (see CONTRIBUTING.md).
+      Package validation compares this package with the last published version, so an accidental
+      breaking API change fails `dotnet pack`. Bump the baseline when a release is published
+      (see CONTRIBUTING.md). First published in 1.13.0.
     -->
     <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.13.0</PackageValidationBaselineVersion>
 
     <!-- XML documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
