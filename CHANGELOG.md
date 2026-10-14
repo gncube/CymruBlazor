@@ -8,6 +8,27 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [2.0.0] - 2026-10-14
+
+Major version 2.0.0: executes the breaking changes and obsolete member removals scheduled across the 1.x series and documented in `docs/MIGRATION-2.0.md`. Package validation compares against baseline 1.13.0 with intentional breaks recorded in `src/CymruBlazor/CompatibilitySuppressions.xml`.
+
+### Breaking Changes
+
+- **`CySidebar` legacy 2-state API removed:**
+  - Removed parameters `Collapsed` (`bool`), `CollapsedChanged` (`EventCallback<bool>`), and `CollapseMode` (`SidebarCollapseMode`). Use `State` (`SidebarState`), `StateChanged` (`EventCallback<SidebarState>`), and `States` (`IReadOnlyList<SidebarState>`) instead.
+  - Removed `SidebarCollapseMode.Disabled` enum value. Use `SidebarCollapseMode.NonCollapsible` instead.
+  - Cleaned up internal legacy parameter synchronization and compatibility bridging code. The `<aside>` element retains `data-collapse-mode` for styling compatibility and adds `data-state`.
+- **Unimplemented keyboard-navigation primitives removed (Roadmap D5):**
+  - Removed unused types in `CymruBlazor.Accessibility.Focus`: `IKeyboardNavigationService`, `KeyboardNavigationService`, `KeyboardNavigationResult`, `KeyboardNavigationOptions`, and `FocusNavigationMode`.
+- **Unused speculative contracts and enums removed:**
+  - Removed `CymruBlazor.Contracts.IHasIcon`, `CymruBlazor.Contracts.IHasVariant`, `CymruBlazor.Enums.ComponentVariant`, and `CymruBlazor.Enums.IconPosition`.
+
+### Changed
+
+- Updated `docs/MIGRATION-2.0.md` to serve as the complete 1.x → 2.0.0 migration guide.
+- Removed obsolete parameter listings from the `CySidebar` demo page.
+- Refactored test suite to verify modern `State`/`States` parameter behavior with zero compiler warnings (`-warnaserror:CS0618`).
+
 ## [1.13.0] - 2026-10-12
 
 Roadmap v1.13.0 (Phase G of `docs/IMPLEMENTATION-PLAN.md`). Additive only; nothing removed or changed.

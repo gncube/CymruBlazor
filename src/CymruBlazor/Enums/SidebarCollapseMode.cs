@@ -23,11 +23,5 @@ public enum SidebarCollapseMode
     /// <summary>
     /// Sidebar cannot be collapsed; toggle button is omitted.
     /// </summary>
-    NonCollapsible = 3,
-
-    /// <summary>
-    /// Obsolete alias for <see cref="NonCollapsible"/>.
-    /// </summary>
-    [Obsolete("Use NonCollapsible instead.", error: false)]
-    Disabled = NonCollapsible
+    NonCollapsible = 3
 }

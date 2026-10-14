@@ -388,9 +388,7 @@ else
         new("Brand", "RenderFragment?", "null", "Optional brand lockup rendered in the header row."),
         new("CollapsedBrand", "RenderFragment?", "null", "Brand shown instead of Brand in the Compact and IconOnly rails - typically the icon-sized logo."),
         new("ShowBrandWhenCollapsed", "bool", "true", "When false and no CollapsedBrand is set, the rails show only the size chevrons."),
-        new("ChildContent", "RenderFragment?", "null", "The navigation items rendered in the sidebar."),
-        new("Collapsed (Obsolete)", "bool", "false", "Legacy collapsed flag. Deprecated in favor of States and State."),
-        new("CollapseMode (Obsolete)", "SidebarCollapseMode", "Compact", "Legacy appearance mode. Deprecated in favor of States and State.")
+        new("ChildContent", "RenderFragment?", "null", "The navigation items rendered in the sidebar.")
     ];
 
     private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =

@@ -42,25 +42,24 @@ public sealed class CySidebarTests : TestContextBase
         cut.Find("*").ClassList.ShouldContain(expectedClass);
     }
 
-#pragma warning disable CS0618
     [Fact]
-    public void Sidebar_Should_Default_To_Compact_CollapseMode()
+    public void Sidebar_Should_Apply_Compact_Class_And_Attribute_When_In_Compact_State()
     {
         // Act
-        var cut = Render<CySidebar>(parameters => parameters.Add(p => p.Collapsed, true));
+        var cut = Render<CySidebar>(parameters => parameters.Add(p => p.State, SidebarState.Compact));
 
         // Assert
         cut.Find("*").ClassList.ShouldContain("cy-sidebar--compact");
         cut.Find("*").GetAttribute("data-collapse-mode").ShouldBe("compact");
+        cut.Find("*").GetAttribute("data-state").ShouldBe("compact");
     }
 
     [Fact]
-    public void Sidebar_Should_Apply_Compact_Class_When_CollapseMode_Is_Compact()
+    public void Sidebar_Should_Apply_Compact_Class_When_State_Is_Compact()
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Compact)
-            .Add(p => p.Collapsed, true));
+            .Add(p => p.State, SidebarState.Compact));
 
         // Assert
         var classes = cut.Find("*").ClassList;
@@ -70,12 +69,11 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Fact]
-    public void Sidebar_Should_Apply_IconOnly_Class_When_CollapseMode_Is_IconOnly()
+    public void Sidebar_Should_Apply_IconOnly_Class_When_State_Is_IconOnly()
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.IconOnly)
-            .Add(p => p.Collapsed, true));
+            .Add(p => p.State, SidebarState.IconOnly));
 
         // Assert
         var classes = cut.Find("*").ClassList;
@@ -84,12 +82,11 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Fact]
-    public void Sidebar_Should_Apply_Collapsed_Class_When_CollapseMode_Is_Hidden()
+    public void Sidebar_Should_Apply_Collapsed_Class_When_State_Is_Hidden()
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Hidden)
-            .Add(p => p.Collapsed, true));
+            .Add(p => p.State, SidebarState.Hidden));
 
         // Assert - the original "completely hidden" (width: 0) behaviour
         var classes = cut.Find("*").ClassList;
@@ -99,12 +96,12 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Fact]
-    public void Sidebar_Should_Never_Render_Collapsed_When_CollapseMode_Is_Disabled()
+    public void Sidebar_Should_Never_Render_Collapsed_When_Single_State_Configured()
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Disabled)
-            .Add(p => p.Collapsed, true));
+            .Add(p => p.States, [SidebarState.Expanded])
+            .Add(p => p.State, SidebarState.Expanded));
 
         // Assert
         var classes = cut.Find("*").ClassList;
@@ -114,37 +111,39 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Fact]
-    public async Task ToggleAsync_Should_Be_NoOp_When_CollapseMode_Is_Disabled()
+    public async Task ToggleAsync_Should_Be_NoOp_When_Single_State_Configured()
     {
         // Arrange
         var eventFired = false;
 
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Disabled)
-            .Add(p => p.Collapsed, false)
-            .Add(p => p.CollapsedChanged, _ => eventFired = true));
+            .Add(p => p.States, [SidebarState.Expanded])
+            .Add(p => p.State, SidebarState.Expanded)
+            .Add(p => p.StateChanged, _ => eventFired = true));
 
         // Act
         await cut.InvokeAsync(async () => await cut.Instance.ToggleAsync());
 
         // Assert
-        cut.Instance.Collapsed.ShouldBeFalse();
+        cut.Instance.State.ShouldBe(SidebarState.Expanded);
+        cut.Instance.EffectiveCollapsed.ShouldBeFalse();
         eventFired.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task ToggleAsync_Should_Flip_Collapsed_When_CollapseMode_Is_Compact()
+    public async Task ToggleAsync_Should_Flip_To_Compact_When_Two_States_Configured()
     {
         // Arrange
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Compact)
-            .Add(p => p.Collapsed, false));
+            .Add(p => p.States, [SidebarState.Expanded, SidebarState.Compact])
+            .Add(p => p.State, SidebarState.Expanded));
 
         // Act
         await cut.InvokeAsync(async () => await cut.Instance.ToggleAsync());
 
         // Assert
-        cut.Instance.Collapsed.ShouldBeTrue();
+        cut.Instance.State.ShouldBe(SidebarState.Compact);
+        cut.Instance.EffectiveCollapsed.ShouldBeTrue();
     }
 
     [Fact]
@@ -152,7 +151,7 @@ public sealed class CySidebarTests : TestContextBase
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.Collapsed, false)
+            .Add(p => p.State, SidebarState.Expanded)
             .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo")))
             .Add(p => p.ChildContent, (RenderFragment)(builder => builder.AddContent(0, "Nav"))));
 
@@ -161,14 +160,12 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Theory]
-    [InlineData(SidebarCollapseMode.Compact)]
-    [InlineData(SidebarCollapseMode.IconOnly)]
-    [InlineData(SidebarCollapseMode.Hidden)]
-    public void Should_Still_Render_Brand_When_Collapsed(SidebarCollapseMode mode)
+    [InlineData(SidebarState.Compact)]
+    [InlineData(SidebarState.IconOnly)]
+    public void Should_Still_Render_Brand_When_Collapsed(SidebarState state)
     {
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, mode)
-            .Add(p => p.Collapsed, true)
+            .Add(p => p.State, state)
             .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
 
         // Assert
@@ -180,7 +177,7 @@ public sealed class CySidebarTests : TestContextBase
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.Collapsed, false)
+            .Add(p => p.State, SidebarState.Expanded)
             .Add(p => p.Brand, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
 
         // Assert
@@ -189,27 +186,25 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Theory]
-    [InlineData(SidebarCollapseMode.Compact)]
-    [InlineData(SidebarCollapseMode.IconOnly)]
-    [InlineData(SidebarCollapseMode.Hidden)]
-    public void Should_Still_Render_Toggle_Button_When_Collapsed(SidebarCollapseMode mode)
+    [InlineData(SidebarState.Compact)]
+    [InlineData(SidebarState.IconOnly)]
+    public void Should_Still_Render_Toggle_Button_When_In_Rail_State(SidebarState state)
     {
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, mode)
-            .Add(p => p.Collapsed, true));
+            .Add(p => p.States, [SidebarState.Expanded, state])
+            .Add(p => p.State, state));
 
         // Assert
         cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(1);
-        cut.FindAll(".cy-sidebar__brand").Count.ShouldBe(0);
     }
 
     [Fact]
-    public void Should_Not_Render_Toggle_Button_When_CollapseMode_Is_Disabled_And_No_Brand()
+    public void Should_Not_Render_Toggle_Button_When_Single_State_And_No_Brand()
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.CollapseMode, SidebarCollapseMode.Disabled)
-            .Add(p => p.Collapsed, false));
+            .Add(p => p.States, [SidebarState.Expanded])
+            .Add(p => p.State, SidebarState.Expanded));
 
         // Assert
         cut.FindAll(".cy-sidebar__toggle").Count.ShouldBe(0);
@@ -217,39 +212,38 @@ public sealed class CySidebarTests : TestContextBase
     }
 
     [Theory]
-    [InlineData(SidebarPosition.Left, false, "m15 18-6-6 6-6")]
-    [InlineData(SidebarPosition.Left, true, "m9 18 6-6-6-6")]
-    [InlineData(SidebarPosition.Right, false, "m9 18 6-6-6-6")]
-    [InlineData(SidebarPosition.Right, true, "m15 18-6-6 6-6")]
+    [InlineData(SidebarPosition.Left, SidebarState.Expanded, "m15 18-6-6 6-6")]
+    [InlineData(SidebarPosition.Left, SidebarState.Compact, "m9 18 6-6-6-6")]
+    [InlineData(SidebarPosition.Right, SidebarState.Expanded, "m9 18 6-6-6-6")]
+    [InlineData(SidebarPosition.Right, SidebarState.Compact, "m15 18-6-6 6-6")]
     public void Toggle_Button_Icon_Points_Towards_The_Expand_Direction(
-        SidebarPosition position, bool collapsed, string expectedPathData)
+        SidebarPosition position, SidebarState state, string expectedPathData)
     {
         // Act
         var cut = Render<CySidebar>(parameters => parameters
             .Add(p => p.Position, position)
-            .Add(p => p.Collapsed, collapsed));
+            .Add(p => p.State, state));
 
         cut.Find(".cy-sidebar__toggle svg path").GetAttribute("d")
             .ShouldBe(expectedPathData);
     }
 
     [Fact]
-    public async Task Clicking_Toggle_Button_Should_Flip_Collapsed()
+    public async Task Clicking_Toggle_Button_Should_Cycle_State()
     {
         // Arrange
-        var collapsedValue = false;
+        SidebarState observedState = SidebarState.Expanded;
 
         var cut = Render<CySidebar>(parameters => parameters
-            .Add(p => p.Collapsed, false)
-            .Add(p => p.CollapsedChanged, value => collapsedValue = value));
+            .Add(p => p.State, SidebarState.Expanded)
+            .Add(p => p.StateChanged, value => observedState = value));
 
         // Act
         await cut.Find(".cy-sidebar__toggle").ClickAsync(new());
 
         // Assert
-        collapsedValue.ShouldBeTrue();
+        observedState.ShouldBe(SidebarState.Compact);
     }
-#pragma warning restore CS0618
 
     [Fact]
     public async Task CycleNextAsyncShouldCycleAcrossConfiguredStates()

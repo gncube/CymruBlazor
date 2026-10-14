@@ -7,7 +7,7 @@
     <div class="cy-sidebar__backdrop" @onclick="CloseMobileDrawerAsync" aria-hidden="true"></div>
 }
 
-<aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute"
+<aside id="@Id" class="@CssClass" style="@CssStyle" data-collapse-mode="@CollapseModeAttribute" data-state="@State.ToString().ToLowerInvariant()"
        tabindex="@(MobileOpen ? "-1" : null)"
        @onkeydown="HandleKeyDownAsync"
        @attributes="AdditionalAttributes">
@@ -86,7 +86,7 @@
             else if (ShowCycleOrToggle)
             {
                 <button type="button" class="cy-sidebar__toggle"
-                        @onclick="() => (States.Count > 1 ? CycleNextAsync() : ToggleAsync())"
+                        @onclick="CycleNextAsync"
                         aria-expanded="@(!EffectiveCollapsed)"
                         aria-label="@(EffectiveCollapsed ? ExpandText : CollapseText)"
                         tabindex="@(State == SidebarState.Hidden ? "-1" : null)">
@@ -102,8 +102,5 @@
 </aside>
 
 @code {
-#pragma warning disable CS0618
-    private bool ShowCycleOrToggle => CollapseMode != SidebarCollapseMode.NonCollapsible;
-#pragma warning restore CS0618
-
+    private bool ShowCycleOrToggle => States.Count > 1;
 }

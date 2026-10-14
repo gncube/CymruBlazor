@@ -1,18 +1,12 @@
 # Migrating to CymruBlazor 2.0.0
 
-CymruBlazor follows [Semantic Versioning](https://semver.org/): members
-scheduled for removal are marked `[Obsolete]` first, in a 1.x release, so
-existing code keeps compiling (with a warning) until 2.0.0. This document
-lists every member currently marked `[Obsolete]` in the library, why, and
-what to use instead.
+CymruBlazor follows [Semantic Versioning](https://semver.org/). In 2.0.0, all
+members previously marked `[Obsolete]` in the 1.x series have been removed.
+This document details what was removed, why, and how to update code migrating
+from CymruBlazor 1.x to 2.0.0.
 
-This is a living document: it is updated as new `[Obsolete]` members are
-added in 1.x releases, and each entry is removed once the member itself is
-removed in 2.0.0.
-
-> **Status:** all members below are warnings only (`error: false` or no
-> `error` argument), so they do not fail your build today. They will be
-> deleted in 2.0.0.
+> **Status:** All members below have been removed in CymruBlazor 2.0.0. If your
+> project relied on them, update to the replacements described below.
 
 ## `CySidebar`
 
