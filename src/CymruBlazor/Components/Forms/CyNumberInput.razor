@@ -3,18 +3,9 @@
 
 <div class="@BuildFieldCssClass("cy-field cy-field--number")">
 
-    <label for="@FieldId" class="cy-field__label">
-        @Label
-        @if (Required)
-        {
-            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
-        }
-    </label>
+    @RenderFieldLabel()
 
-    @if (!string.IsNullOrWhiteSpace(HintText))
-    {
-        <p id="@HintId" class="cy-field__hint">@HintText</p>
-    }
+    @RenderFieldHint()
 
     <div class="cy-input-affix">
 
@@ -39,11 +30,6 @@
 
     </div>
 
-    @if (HasValidationError)
-    {
-        <p id="@ErrorId" class="cy-field__error" role="alert">
-            @ValidationMessageText
-        </p>
-    }
+    @RenderFieldError()
 
 </div>

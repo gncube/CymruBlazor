@@ -4,18 +4,9 @@
 <fieldset class="@BuildFieldCssClass("cy-field cy-checkbox-group")" aria-describedby="@ComputedAriaDescribedBy"
           @attributes="AdditionalAttributes">
 
-    <legend class="cy-field__label">
-        @Label
-        @if (Required)
-        {
-            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
-        }
-    </legend>
+    @RenderFieldLegend()
 
-    @if (!string.IsNullOrWhiteSpace(HintText))
-    {
-        <p id="@HintId" class="cy-field__hint">@HintText</p>
-    }
+    @RenderFieldHint()
 
     <div class="cy-checkboxes">
         @if (Items is not null)
@@ -54,11 +45,6 @@
         }
     </div>
 
-    @if (HasValidationError)
-    {
-        <p id="@ErrorId" class="cy-field__error" role="alert">
-            @ValidationMessageText
-        </p>
-    }
+    @RenderFieldError()
 
 </fieldset>

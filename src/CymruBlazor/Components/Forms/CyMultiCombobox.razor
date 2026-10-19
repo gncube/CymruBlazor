@@ -4,18 +4,9 @@
 
 <div class="@BuildFieldCssClass("cy-field cy-combobox cy-combobox--multiple")" style="@ListStyle">
 
-    <label for="@FieldId" id="@LabelId" class="cy-field__label">
-        @Label
-        @if (Required)
-        {
-            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
-        }
-    </label>
+    @RenderFieldLabel(labelId: LabelId)
 
-    @if (!string.IsNullOrWhiteSpace(HintText))
-    {
-        <p id="@HintId" class="cy-field__hint">@HintText</p>
-    }
+    @RenderFieldHint()
 
     @if (_chips.Count > 0)
     {
@@ -113,11 +104,6 @@
 
     <div class="u-sr-only" role="status" aria-live="polite" aria-atomic="true">@_core.StatusText</div>
 
-    @if (HasValidationError)
-    {
-        <p id="@ErrorId" class="cy-field__error" role="alert">
-            @ValidationMessageText
-        </p>
-    }
+    @RenderFieldError()
 
 </div>

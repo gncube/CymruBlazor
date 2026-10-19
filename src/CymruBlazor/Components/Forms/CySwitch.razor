@@ -22,26 +22,12 @@
 
         </button>
 
-        <label id="@LabelId" for="@FieldId" class="cy-switch__label">
-            @Label
-            @if (Required)
-            {
-                <span class="cy-field__required-indicator" aria-hidden="true">*</span>
-            }
-        </label>
+        @RenderFieldLabel("cy-switch__label", labelId: LabelId)
 
     </div>
 
-    @if (!string.IsNullOrWhiteSpace(HintText))
-    {
-        <p id="@HintId" class="cy-field__hint">@HintText</p>
-    }
+    @RenderFieldHint()
 
-    @if (HasValidationError)
-    {
-        <p id="@ErrorId" class="cy-field__error" role="alert">
-            @ValidationMessageText
-        </p>
-    }
+    @RenderFieldError()
 
 </div>

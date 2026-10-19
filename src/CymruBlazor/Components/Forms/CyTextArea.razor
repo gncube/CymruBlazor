@@ -2,18 +2,9 @@
 
 <div class="@BuildFieldCssClass("cy-field")">
 
-    <label for="@FieldId" class="cy-field__label">
-        @Label
-        @if (Required)
-        {
-            <span class="cy-field__required-indicator" aria-hidden="true">*</span>
-        }
-    </label>
+    @RenderFieldLabel()
 
-    @if (!string.IsNullOrWhiteSpace(HintText))
-    {
-        <p id="@HintId" class="cy-field__hint">@HintText</p>
-    }
+    @RenderFieldHint()
 
     <textarea
         @attributes="AdditionalAttributes"
@@ -33,11 +24,6 @@
         <p id="@CountId" class="cy-field__hint cy-textarea__count" aria-live="polite">@CharacterCountMessage</p>
     }
 
-    @if (HasValidationError)
-    {
-        <p id="@ErrorId" class="cy-field__error" role="alert">
-            @ValidationMessageText
-        </p>
-    }
+    @RenderFieldError()
 
 </div>

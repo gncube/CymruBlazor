@@ -215,6 +215,84 @@ public abstract class CyFormFieldComponentBase<TValue> : InputBase<TValue>, IHas
             .AddClass("cy-field--invalid", EditContext is null && HasValidationError)
             .Build();
 
+    /// <summary>
+    /// Renders the shared label chrome for this field (<c>&lt;label&gt;</c> with required indicator).
+    /// </summary>
+    /// <param name="labelClass">The CSS class for the label element (defaults to <c>cy-field__label</c>).</param>
+    /// <param name="labelId">Optional HTML id for the label element.</param>
+    protected RenderFragment RenderFieldLabel(string labelClass = "cy-field__label", string? labelId = null) => builder =>
+    {
+        builder.OpenElement(0, "label");
+        builder.AddAttribute(1, "for", FieldId);
+        if (!string.IsNullOrWhiteSpace(labelId))
+        {
+            builder.AddAttribute(2, "id", labelId);
+        }
+        builder.AddAttribute(3, "class", labelClass);
+        builder.AddContent(4, Label);
+        if (Required)
+        {
+            builder.OpenElement(5, "span");
+            builder.AddAttribute(6, "class", "cy-field__required-indicator");
+            builder.AddAttribute(7, "aria-hidden", "true");
+            builder.AddContent(8, "*");
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    /// <summary>
+    /// Renders the shared fieldset legend chrome for grouping fields (<c>&lt;legend&gt;</c> with required indicator).
+    /// </summary>
+    /// <param name="legendClass">The CSS class for the legend element (defaults to <c>cy-field__label</c>).</param>
+    protected RenderFragment RenderFieldLegend(string legendClass = "cy-field__label") => builder =>
+    {
+        builder.OpenElement(0, "legend");
+        builder.AddAttribute(1, "class", legendClass);
+        builder.AddContent(2, Label);
+        if (Required)
+        {
+            builder.OpenElement(3, "span");
+            builder.AddAttribute(4, "class", "cy-field__required-indicator");
+            builder.AddAttribute(5, "aria-hidden", "true");
+            builder.AddContent(6, "*");
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    /// <summary>
+    /// Renders the shared hint text paragraph when <see cref="HintText"/> is set.
+    /// </summary>
+    protected RenderFragment RenderFieldHint() => builder =>
+    {
+        if (!string.IsNullOrWhiteSpace(HintText))
+        {
+            builder.OpenElement(0, "p");
+            builder.AddAttribute(1, "id", HintId);
+            builder.AddAttribute(2, "class", "cy-field__hint");
+            builder.AddContent(3, HintText);
+            builder.CloseElement();
+        }
+    };
+
+    /// <summary>
+    /// Renders the shared validation error paragraph when this field has a validation error.
+    /// </summary>
+    /// <param name="errorMessage">Optional override for the error message (defaults to <see cref="ValidationMessageText"/>).</param>
+    protected RenderFragment RenderFieldError(string? errorMessage = null) => builder =>
+    {
+        if (HasValidationError)
+        {
+            builder.OpenElement(0, "p");
+            builder.AddAttribute(1, "id", ErrorId);
+            builder.AddAttribute(2, "class", "cy-field__error");
+            builder.AddAttribute(3, "role", "alert");
+            builder.AddContent(4, errorMessage ?? ValidationMessageText);
+            builder.CloseElement();
+        }
+    };
+
     private string EnsureId()
     {
         if (string.IsNullOrWhiteSpace(Id))
