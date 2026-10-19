@@ -1,6 +1,8 @@
 @page "/forms/button"
 @namespace CymruBlazor.Demo.Pages.Components.Forms
 @implements IDisposable
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Routing
 @using CymruBlazor.Components.Button
 @using CymruBlazor.Components.Layout
 @using CymruBlazor.Demo.SharedComponents
@@ -16,26 +18,24 @@
 </CyPageHeader>
 
 <div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
-    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)"
+    <button type="button" role="tab" id="tab-examples" aria-controls="examples" aria-selected="@(_activeTab == Tab.Examples ? "true" : "false")"
             class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")"
-            @onclick="() => _activeTab = Tab.Examples">
+            @onclick="() => SetActiveTab(Tab.Examples)">
         @Strings.Nav.Examples
     </button>
-    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)"
+    <button type="button" role="tab" id="tab-api" aria-controls="api" aria-selected="@(_activeTab == Tab.Api ? "true" : "false")"
             class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")"
-            @onclick="() => _activeTab = Tab.Api">
+            @onclick="() => SetActiveTab(Tab.Api)">
         @Strings.Nav.Api
     </button>
-    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)"
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="accessibility" aria-selected="@(_activeTab == Tab.Accessibility ? "true" : "false")"
             class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")"
-            @onclick="() => _activeTab = Tab.Accessibility">
+            @onclick="() => SetActiveTab(Tab.Accessibility)">
         @Strings.Nav.Accessibility
     </button>
 </div>
 
-@if (_activeTab == Tab.Examples)
-{
-    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+<div role="tabpanel" id="examples" aria-labelledby="tab-examples" tabindex="0" class="@(_activeTab == Tab.Examples ? "" : "u-hidden")" hidden="@(_activeTab != Tab.Examples)">
     <span class="cb-panel-caption">@(Strings.Language == AppLanguage.Welsh ? "Rhagolwg" : "Preview")</span>
     <div class="cb-workbench-preview">
         <CyButton Variant="_variant" Size="_size" Disabled="_disabled" Loading="_loading">
@@ -61,20 +61,15 @@
             </a>
         </div>
     </div>
-    </div>
-}
-else if (_activeTab == Tab.Api)
-{
-    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+</div>
+
+<div role="tabpanel" id="api" aria-labelledby="tab-api" tabindex="0" class="@(_activeTab == Tab.Api ? "" : "u-hidden")" hidden="@(_activeTab != Tab.Api)">
     <DemoApiTable Parameters="ApiDocs" />
-    </div>
-}
-else
-{
-    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+</div>
+
+<div role="tabpanel" id="accessibility" aria-labelledby="tab-accessibility" tabindex="0" class="@(_activeTab == Tab.Accessibility ? "" : "u-hidden")" hidden="@(_activeTab != Tab.Accessibility)">
     <DemoAccessibilityChecklist Items="A11yItems" />
-    </div>
-}
+</div>
 
 @code {
     private enum Tab
@@ -90,9 +85,59 @@ else
     private bool _disabled;
     private bool _loading;
 
-    protected override void OnInitialized() => Strings.Changed += HandleStringsChanged;
+    protected override void OnInitialized()
+    {
+        Strings.Changed += HandleStringsChanged;
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        SyncTabWithUri(NavigationManager.Uri);
+    }
+
     private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
-    public void Dispose() => Strings.Changed -= HandleStringsChanged;
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (SyncTabWithUri(e.Location))
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void SetActiveTab(Tab tab)
+    {
+        _activeTab = tab;
+    }
+
+    private bool SyncTabWithUri(string uri)
+    {
+        var fragmentIndex = uri.IndexOf('#');
+        if (fragmentIndex < 0)
+        {
+            return false;
+        }
+
+        var fragment = uri[(fragmentIndex + 1)..].Trim().ToLowerInvariant();
+        var targetTab = fragment switch
+        {
+            "api" => Tab.Api,
+            "accessibility" => Tab.Accessibility,
+            "examples" => Tab.Examples,
+            _ => _activeTab
+        };
+
+        if (targetTab != _activeTab)
+        {
+            _activeTab = targetTab;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Dispose()
+    {
+        Strings.Changed -= HandleStringsChanged;
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
 
     private readonly IReadOnlyList<ComponentColour> _variantOptions =
     [
