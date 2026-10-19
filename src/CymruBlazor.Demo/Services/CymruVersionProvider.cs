@@ -10,13 +10,19 @@ namespace CymruBlazor.Demo.Services;
 /// </summary>
 public static class CymruVersionProvider
 {
-    private static readonly Lazy<string?> LazyDefaultVersion = new(() => ResolveVersion(typeof(CyBrandLogo).Assembly));
+    /// <summary>
+    /// Current release version of the CymruBlazor library used as fallback
+    /// when running from a build without Git tags (such as shallow CI clones).
+    /// </summary>
+    public const string FallbackVersion = "v2.0.1";
+
+    private static readonly Lazy<string> LazyDefaultVersion = new(() => ResolveVersion(typeof(CyBrandLogo).Assembly) ?? FallbackVersion);
 
     /// <summary>
-    /// Gets the formatted version string for the active CymruBlazor assembly (e.g. "v2.0.0", "v1.4.0-preview.1"),
-    /// or <see langword="null"/> if metadata could not be resolved.
+    /// Gets the formatted version string for the active CymruBlazor assembly (e.g. "v2.0.1", "v2.0.0"),
+    /// or <see cref="FallbackVersion"/> if metadata could not be resolved.
     /// </summary>
-    public static string? Version => LazyDefaultVersion.Value;
+    public static string Version => LazyDefaultVersion.Value;
 
     /// <summary>
     /// Resolves and formats the version from the specified assembly's metadata.
@@ -33,7 +39,7 @@ public static class CymruVersionProvider
             .InformationalVersion;
 
         var formatted = FormatVersion(informationalVersion);
-        if (!string.IsNullOrWhiteSpace(formatted))
+        if (!string.IsNullOrWhiteSpace(formatted) && !IsUninitializedVersion(formatted))
         {
             return formatted;
         }
@@ -41,10 +47,28 @@ public static class CymruVersionProvider
         var assemblyVersion = assembly.GetName().Version;
         if (assemblyVersion != null && assemblyVersion != new Version(0, 0, 0, 0))
         {
-            return FormatVersion(assemblyVersion.ToString(3));
+            var formattedAssemblyVersion = FormatVersion(assemblyVersion.ToString(3));
+            if (!string.IsNullOrWhiteSpace(formattedAssemblyVersion) && !IsUninitializedVersion(formattedAssemblyVersion))
+            {
+                return formattedAssemblyVersion;
+            }
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Determines whether the formatted version string represents an uninitialized or fallback 0.0.0 version.
+    /// </summary>
+    public static bool IsUninitializedVersion(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            return true;
+        }
+
+        var trimmed = version.Trim().TrimStart('v', 'V');
+        return trimmed.StartsWith("0.0.0", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

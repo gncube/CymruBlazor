@@ -11,7 +11,7 @@
       local-package-versions.props (imported below), pointing the
       samples at whatever was actually just packed.
     -->
-    <PackageVersion Include="CymruBlazor" Version="2.0.0" />
+    <PackageVersion Include="CymruBlazor" Version="2.0.1" />
     <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

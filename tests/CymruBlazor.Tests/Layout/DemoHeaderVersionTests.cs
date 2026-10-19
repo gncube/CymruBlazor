@@ -71,6 +71,39 @@ public sealed class DemoHeaderVersionTests : TestContextBase
         CymruVersionProvider.FormatVersion(input).ShouldBeNull();
     }
 
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData("", true)]
+    [InlineData("   ", true)]
+    [InlineData("0.0.0", true)]
+    [InlineData("0.0.0-preview.0", true)]
+    [InlineData("v0.0.0-preview.0", true)]
+    [InlineData("v0.0.0", true)]
+    [InlineData("V0.0.0.0", true)]
+    [InlineData("2.0.1", false)]
+    [InlineData("v2.0.1", false)]
+    [InlineData("v1.13.0", false)]
+    [InlineData("v2.0.0-preview.1", false)]
+    public void IsUninitializedVersion_Should_Identify_Uninitialized_Versions(string? input, bool expected)
+    {
+        CymruVersionProvider.IsUninitializedVersion(input).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void FallbackVersion_Should_Be_Set_To_Current_Release_V2_0_1()
+    {
+        CymruVersionProvider.FallbackVersion.ShouldBe("v2.0.1");
+    }
+
+    [Fact]
+    public void Authoritative_Version_Provider_Should_Never_Return_Uninitialized_Version()
+    {
+        var version = CymruVersionProvider.Version;
+
+        CymruVersionProvider.IsUninitializedVersion(version).ShouldBeFalse();
+        version.ShouldStartWith("v2.");
+    }
+
     [Fact]
     public void DemoHeader_Should_Render_Authoritative_Version_By_Default()
     {
