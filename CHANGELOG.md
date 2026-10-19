@@ -8,6 +8,35 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [2.0.1] - 2026-10-19
+
+Patch release following the 2.0.0 major milestone: introduces internal form chrome refactoring, Welsh linguistic refinements, demo and documentation navigation enhancements, and dependency updates. Fully backwards-compatible with 2.0.0 with zero breaking changes.
+
+### Refactored
+
+- **R1 Shared Field-Chrome Helpers** (`Forms`):
+  - Refactored all 11 form components (`CyTextBox`, `CyTextArea`, `CySelect`, `CyNumberInput`, `CyCheckbox`, `CyCheckboxGroup`, `CyRadioGroup`, `CyDateInput`, `CyCombobox`, `CyMultiCombobox`, and `CySwitch`) to use centralized internal render helpers in `CyFormFieldComponentBase` (`RenderFieldLabel`, `RenderFieldLegend`, `RenderFieldHint`, `RenderFieldError`).
+  - Preserves 100% DOM snapshot and attribute parity across all field states (verified via `CyFormFieldDefaultMarkupTests` and 1,355 unit tests) while eliminating repetitive markup duplication across form implementations.
+
+### Fixed & Improved
+
+- **Welsh Localisation Phrasing** (`Localisation`):
+  - Refined Welsh localization strings in `CyLocalizer.Welsh`: `BreadcrumbLabel` updated to natural Welsh `"Llwybr briwsion"` and `SidebarCollapse` to `"Crebachu'r bar ochr"`.
+  - Refined demo application strings in `AppStrings.WelshLibrary`: `TableOfContents` to `"Rhestr gynnwys"` and `ToggleDarkMode` to `"Toglo'r modd tywyll"`.
+- **Demo Navigation & Versioning** (`Demo`):
+  - Added `CymruVersionProvider` in the demo application to reliably resolve and display the library package/assembly version in the header badge across runtime environments.
+  - Fixed in-page Table of Contents (TOC) and anchor scrolling across demo component documentation pages.
+- **Three-Theme Accessibility Audit** (`Testing`):
+  - Completed containerized and local Playwright axe-core accessibility audit across light, dark, and high-contrast themes: 219 / 219 tests passing with zero violations.
+- **Downstream Consumer Verification**:
+  - Validated adoption against the `GenomicsHandbook` application (11 projects, 179 web tests green) verifying clean compilation and runtime compatibility with `CymruBlazor` 2.0.x.
+
+### Dependencies & Tooling
+
+- Updated Microsoft ASP.NET Core and Blazor packages from `10.0.12` to `10.0.13`.
+- Updated test dependencies: `Deque.AxeCore.Playwright` to `4.14.0`, `Microsoft.NET.Test.Sdk` to `18.11.0`, and `xunit.runner.visualstudio` to `4.0.1`.
+- Added `RELEASE-NOTES-v2.0.0.md` at repository root and updated `README.md` badge to reflect `Stable (2.x)`.
+
 ## [2.0.0] - 2026-10-14
 
 Major version 2.0.0: executes the breaking changes and obsolete member removals scheduled across the 1.x series and documented in `docs/MIGRATION-2.0.md`. Package validation compares against baseline 1.13.0 with intentional breaks recorded in `src/CymruBlazor/CompatibilitySuppressions.xml`.
