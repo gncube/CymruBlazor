@@ -56,7 +56,7 @@ public sealed class CyLocalizer : ICyLocalizer
     public static CyLocalizedStrings Welsh { get; } = new()
     {
         AlertDismiss = "Diystyru",
-        BreadcrumbLabel = "Briwsion bara",
+        BreadcrumbLabel = "Llwybr briwsion",
         NavigationLabel = "Prif ddewislen",
         NavigationOpen = "Agor y ddewislen",
         NavigationClose = "Cau'r ddewislen",
@@ -73,7 +73,7 @@ public sealed class CyLocalizer : ICyLocalizer
         SidebarClose = "Cau'r bar ochr",
         SidebarSizeGroup = "Maint y bar ochr",
         SidebarExpand = "Ehangu'r bar ochr",
-        SidebarCollapse = "Cwympo'r bar ochr",
+        SidebarCollapse = "Crebachu'r bar ochr",
         SidebarCompact = "Dangos bar ochr cryno",
         SidebarIconOnly = "Dangos eiconau'n unig",
         SidebarHide = "Cuddio'r bar ochr",
