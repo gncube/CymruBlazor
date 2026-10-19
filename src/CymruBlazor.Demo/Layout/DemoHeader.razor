@@ -42,10 +42,10 @@
 
     <Actions>
         <div class="cb-shell-header__actions">
-            <button type="button" class="cb-shell-header__search-trigger" aria-label="@Strings.Nav.SearchAriaLabel" title="@Strings.Nav.SearchTitle" @onclick="OnOpenSearch">
+            <button type="button" class="cb-shell-header__search-trigger" title="@Strings.Nav.SearchTitle" @onclick="OnOpenSearch">
                 <CyIcon Name="search" Size="16" />
                 <span class="search-text">@Strings.Nav.Search</span>
-                <kbd class="search-kbd">Ctrl+K</kbd>
+                <kbd class="search-kbd" aria-hidden="true">Ctrl+K</kbd>
             </button>
             <CyLanguageToggle CurrentLanguage="Strings.Language" CurrentLanguageChanged="HandleLanguageChanged" />
             <button type="button"

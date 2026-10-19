@@ -124,4 +124,28 @@ public sealed class DemoHeaderVersionTests : TestContextBase
         // Assert
         cut.FindAll(".cb-version-badge").ShouldBeEmpty();
     }
+
+    [Fact]
+    public void DemoHeader_Search_Trigger_Should_Follow_Label_In_Name_Guidelines()
+    {
+        // Act
+        var cut = Render<DemoHeader>();
+
+        // Assert
+        var searchBtn = cut.Find("button.cb-shell-header__search-trigger");
+        searchBtn.ShouldNotBeNull();
+
+        // Must not carry an overriding aria-label that mismatches visible content
+        searchBtn.HasAttribute("aria-label").ShouldBeFalse();
+
+        // Keyboard shortcut hint must be aria-hidden
+        var kbd = searchBtn.QuerySelector(".search-kbd");
+        kbd.ShouldNotBeNull();
+        kbd.GetAttribute("aria-hidden").ShouldBe("true");
+
+        // Visible search text should match AppStrings.Nav.Search
+        var searchText = searchBtn.QuerySelector(".search-text");
+        searchText.ShouldNotBeNull();
+        searchText.TextContent.Trim().ShouldBe("Search");
+    }
 }

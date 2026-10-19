@@ -61,8 +61,9 @@ public partial class CyLanguageToggle : CyLayoutComponentBase, IHasDisabledState
 
     /// <summary>
     /// Overrides the button's accessible name. By default it is written in
-    /// the language being switched <em>to</em> ("Newid yr iaith i Gymraeg" /
-    /// "Change the language to English").
+    /// the language being switched <em>to</em>, starting with the visible
+    /// language label ("Cymraeg - Newid yr iaith i'r Gymraeg" /
+    /// "English - Change the language to English") per WCAG 2.5.3 (Label in Name).
     /// </summary>
     [Parameter]
     public string? AriaLabel { get; set; }
@@ -105,8 +106,8 @@ public partial class CyLanguageToggle : CyLayoutComponentBase, IHasDisabledState
 
     private string ComputedAriaLabel =>
         AriaLabel ?? (TargetLanguage == AppLanguage.Welsh
-            ? "Newid yr iaith i Gymraeg"
-            : "Change the language to English");
+            ? "Cymraeg - Newid yr iaith i'r Gymraeg"
+            : "English - Change the language to English");
 
     protected override string BuildCssClass() =>
         CssBuilder.Empty

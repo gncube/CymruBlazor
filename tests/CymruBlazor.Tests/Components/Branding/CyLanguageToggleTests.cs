@@ -75,4 +75,32 @@ public sealed class CyLanguageToggleTests : TestContextBase
         cut.Find("button").HasAttribute("disabled").ShouldBeTrue();
         raised.ShouldBeFalse();
     }
+
+    [Fact]
+    public void Should_Include_Visible_Label_At_Start_Of_AriaLabel_When_Target_Is_Welsh()
+    {
+        // Act - CurrentLanguage is English, so target is Welsh ("Cymraeg")
+        var cut = Render<CyLanguageToggle>(parameters => parameters
+            .Add(p => p.CurrentLanguage, AppLanguage.English));
+
+        // Assert - Accessible name must start with the visible text "Cymraeg" per WCAG 2.5.3 (Label in Name)
+        var button = cut.Find("button");
+        var ariaLabel = button.GetAttribute("aria-label");
+        ariaLabel.ShouldNotBeNull();
+        ariaLabel.ShouldStartWith("Cymraeg");
+    }
+
+    [Fact]
+    public void Should_Include_Visible_Label_At_Start_Of_AriaLabel_When_Target_Is_English()
+    {
+        // Act - CurrentLanguage is Welsh, so target is English ("English")
+        var cut = Render<CyLanguageToggle>(parameters => parameters
+            .Add(p => p.CurrentLanguage, AppLanguage.Welsh));
+
+        // Assert - Accessible name must start with the visible text "English" per WCAG 2.5.3 (Label in Name)
+        var button = cut.Find("button");
+        var ariaLabel = button.GetAttribute("aria-label");
+        ariaLabel.ShouldNotBeNull();
+        ariaLabel.ShouldStartWith("English");
+    }
 }
