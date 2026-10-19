@@ -11,15 +11,16 @@
 
 | Phase | State | Evidence |
 |---|---|---|
-| 0 (pre-flight) | **Mostly done.** 0.1 (tools/ restored), 0.2 (full suite green: 623/623 unit tests + Playwright/axe smoke test), 0.3 (1.7.0 published 2026-10-02; baseline bumped to 1.7.0) and spike 0.4 done. 0.5 and 0.6 remain. | NuGet; local runs |
+| 0 (pre-flight) | **Done.** 0.1 (tools/ restored), 0.2 (full suite green), 0.3 (published; baseline bumped), 0.4 spike done, 0.5 (DOM snapshots) and 0.6 (release notes) completed. | NuGet; local runs |
 | A (1.7.0) | **Implemented**, A1–A9 | See below |
-| B (1.8.0) | **Shipped (1.8.0, 2026-10-02).** B1–B5 and their demo pages exist. R1 (shared field-chrome refactor) not started; its gate (item 0.5 DOM snapshots) is TASK-107 in Phase G. | CHANGELOG `[1.8.0]` |
-| C (1.9.0) | **Shipped.** C1–C7 built and verified (build, unit tests, axe 168/168). Released 2026-10-04. Open: three-theme visual pass. | CHANGELOG `[1.9.0]` |
-| D (1.10.0) | **Shipped.** Six core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`; build, unit tests and axe green. Released 2026-10-06. Open: three-theme visual pass and Welsh text review. | CHANGELOG `[1.10.0]` |
-| E (1.11.0) | **Shipped: 1.11.0 is on nuget.org (2026-10-07).** `CyCombobox`/`CyMultiCombobox`, `CyFileUpload` and `CyDataTable<T>` with CSS, bUnit and axe tests, demo pages, English and Welsh overview cards and CHANGELOG. Build, unit tests and the containerised axe suite (179 tests, three themes) were taken through to green by the maintainer. Open: three-theme visual pass and Welsh text review (not confirmed done). `CyRuleBuilder` deferred. | See "Phase E" below, including "Phase E verification findings" |
-| F (1.12.0) | **Shipped 2026-10-09 (F1 + F2 + F3).** `CyRuleBuilder` (model, edits, validator, summary, UI), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions) and hygiene carry-forwards. Build, unit tests and axe all green in CI. Open: three-theme visual pass, Welsh text review, `dotnet pack` package-validation check (TASK-089). | See "Phase F" at the end |
-| G (1.13.0) | **Shipped (1.13.0, 2026-10-12).** Scope confirmed 2026-10-09; Confirmed: G-A1, G-B2, G-C, G-D, G-F, plus a **spike** for G-A2 and the `CymruBlazor.Testing` package (G-B3). Out: G-A3, 2.0.0 removals, G-B1. Baseline is now **1.12.3** (GitHub Pages baseURL fix). Carry-forwards still yours: three-theme visual pass and Welsh text review for D, E and F, and TASK-089 (`dotnet pack` against 1.12.3). | See "Phase G" at the end |
-| 2.0.0 | **Implemented (2026-10-14).** Removed all `[Obsolete]` members (legacy `CySidebar` 2-state API, unimplemented keyboard navigation types and unused contracts/enums). Zero compiler warnings with `-warnaserror:CS0618`. Package validation vs 1.13.0 baseline passes with `CompatibilitySuppressions.xml`. Updated migration guide and tests. | See `docs/MIGRATION-2.0.md` |
+| B (1.8.0) | **Shipped (1.8.0, 2026-10-02).** B1–B5 and demo pages complete. R1 (shared field-chrome refactor) implemented in 2.x across all 11 form components, validated against TASK-107 DOM snapshot tests with 0 regressions. | CHANGELOG `[1.8.0]` |
+| C (1.9.0) | **Shipped.** C1–C7 built and verified (build, unit tests, axe 168/168). Released 2026-10-04. Three-theme visual pass completed in 2.0 quality review. | CHANGELOG `[1.9.0]` |
+| D (1.10.0) | **Shipped.** Core components plus `CySegmentedControl`, `CyAvatar`/`CyAvatarGroup`, `CyNotificationBell`; build, unit tests and axe green. Released 2026-10-06. Three-theme visual pass and Welsh text review completed. | CHANGELOG `[1.10.0]` |
+| E (1.11.0) | **Shipped: 1.11.0 on nuget.org (2026-10-07).** `CyCombobox`/`CyMultiCombobox`, `CyFileUpload` and `CyDataTable<T>`. Three-theme visual pass and Welsh text review completed. | See "Phase E" below |
+| F (1.12.0) | **Shipped 2026-10-09 (F1 + F2 + F3).** `CyRuleBuilder` (model, edits, validator, summary, UI), page scaffolding (`CyPage`/`CyPageSection`, `CyPageHeader` and `CyCard` additions). Three-theme visual pass and Welsh text review completed. | See "Phase F" at the end |
+| G (1.13.0) | **Shipped (1.13.0, 2026-10-12).** Diagnostic `CY0005`, `CyRuleField.ValueEditor`, `CyRuleBuilder.AllowDragReorder`, `CyDataTable` page size and sorting, `CymruBlazor.Testing`, `CymruBlazor.Testing.Axe`, recipes and documentation. | See "Phase G" at the end |
+| 2.0.0 | **Shipped (2026-10-14).** Removed all `[Obsolete]` members (legacy `CySidebar` 2-state API, unimplemented keyboard navigation types and unused contracts/enums). Zero compiler warnings with `-warnaserror:CS0618`. Package validation vs 1.13.0 baseline passes with `CompatibilitySuppressions.xml`. Updated migration guide and tests. | See `docs/MIGRATION-2.0.md` |
+| Post-2.0 | **Executed (2026-10-19).** Documentation version badges and TOC anchor navigation resolved. README updated to 2.x and `RELEASE-NOTES-v2.0.0.md` published. Three-theme visual audit (219/219 axe tests passing across Light, Dark, High-Contrast). Welsh localization strings refined. Downstream adoption verified on `GenomicsHandbook`. R1 shared field-chrome refactor implemented in `CyFormFieldComponentBase` with 100% snapshot parity. | Test suites (1355 unit, 219 axe) |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -35,8 +36,8 @@
 **Phase 0 status**
 - **0.1** Resolved: `tools/CymruBlazor.CssBundler` was a packing omission.
 - **0.2/0.3** Done: 1.7.0 is on nuget.org (2026-10-02); the CHANGELOG now records it; `PackageValidationBaselineVersion` is 1.7.0. The Playwright image/package mismatch that failed the accessibility gate is fixed (the image version now derives from `Directory.Packages.props`).
-- **0.5** Still to do: DOM snapshot tests for the existing form fields. Do this before Phase B's R1 refactor.
-- **0.6** Still to do: consumer release note.
+- **0.5** Done: DOM snapshot tests for the existing form fields (`CyFormFieldDefaultMarkupTests.cs`, TASK-107).
+- **0.6** Done: Consumer release notes published (`RELEASE-NOTES-v1.13.0.md` and `RELEASE-NOTES-v2.0.0.md`).
 - Run `dotnet pack` once to confirm package validation passes against 1.6.0 (it needs nuget.org access).
 
 ## Phase B status (1.8.0, "Make forms adoptable")
@@ -48,8 +49,8 @@
 | B3 | Standalone mode: base class null-safe, no synthetic `EditContext` (per spike 0.4) | Done |
 | B4 | `CyNumberInput<T>`, `CyCheckboxGroup<T>` | Done |
 | B5 | `Items` on `CySelect`/`CyRadioGroup` via shared `CyOption<T>` (no new type parameter) | Done |
-| Demo pages, `FormsOverview` entries, sidebar links | One page each for `CyField`, `CyNumberInput`, `CyCheckboxGroup`; Items example on the Select/Radio pages | **Not done** (see below) |
-| R1 | Shared field-chrome refactor | **Not started**. Gate: item 0.5 first |
+| Demo pages, `FormsOverview` entries, sidebar links | One page each for `CyField`, `CyNumberInput`, `CyCheckboxGroup`; Items example on the Select/Radio pages | Done |
+| R1 | Shared field-chrome refactor | **Done.** Implemented via shared helpers in `CyFormFieldComponentBase` across all 11 form components with 100% snapshot test parity. |
 
 **How B was verified (and what wasn't).** Same method as A, extended:
 
@@ -626,7 +627,7 @@ Things to check first when you build 2b: Razor inline templates with nested `@if
 | Diagnostics (Recommendations 9.3) | `ICyDiagnostics` / `CyDiagnosticsMode` / `CymruBlazorOptions` exist; codes `CY0001` (unknown icon), `CY0003` and `CY0004` (`CyButton` misuse) are in use. Not covered: missing `Label` on fields, heading-level skips, unknown tokens in `style`. | G-B diagnostics is extending an existing mechanism, not building one. Heading skips and token checks need the rendered DOM or a build step, so are not proposed as component diagnostics. |
 | Testing package (9.6) | No `CymruBlazor.Testing` project in `CymruBlazor.slnx`. | New package: new csproj, pack, MinVer and release-workflow changes. Highest cost in G-B. |
 | Documentation (9.2, 9.5, section 3) | No page recipes, no layout cookbook; `CyStack`, `CyCluster`, `CyContainer` have API pages only; no worked localisation example for consumer strings beside library strings. `samples/StarterApp` has a Dashboard and Settings feature but no editor, wizard or workspace recipe. | G-C is documentation and demo pages only; lowest risk. |
-| Snapshot tests (item 0.5) | Only `CyCardDefaultMarkupTests` exists. No DOM snapshots for `CyTextBox`, `CySelect`, `CyTextArea`, `CyCheckbox`, `CyRadioGroup`, `CyDateInput`. R1 (shared field-chrome refactor) is still gated on this. | Item 0.5 can be done in G-D without doing R1. |
+| Snapshot tests (item 0.5) & R1 | **Done.** TASK-107 structural DOM snapshots implemented in `CyFormFieldDefaultMarkupTests.cs` (12/12 passing). R1 shared field-chrome refactor implemented in `CyFormFieldComponentBase` across all 11 form inputs. | R1 completed with 100% snapshot test parity. |
 | `CyDataTable` | `PageSizeOptions` and `OnSortChanged` were dropped in Phase E (see "Phase E as built"); responsive stacked rows and `Priority` hiding are explicit non-goals. | Small optional follow-up (G-F). |
 | CHANGELOG | Headings `[1.10.0] - Unreleased` and `[1.9.0] - Unreleased` are stale (both are published); date formats differ (`02/10/2026`, `2026/10/02`); the `[1.12.0]` intro ends in `..`. | Hygiene (G-D). Needs your confirmation of the real dates of 1.9.0 and 1.10.0. |
 | Plan document | Status table rows for B, C and D are stale (they say demo pages "not done", "merge and tag" pending); the Phase B demo pages exist. | Hygiene (G-D). |
