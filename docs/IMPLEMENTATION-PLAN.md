@@ -37,7 +37,7 @@
 - **0.1** Resolved: `tools/CymruBlazor.CssBundler` was a packing omission.
 - **0.2/0.3** Done: 1.7.0 is on nuget.org (2026-10-02); the CHANGELOG now records it; `PackageValidationBaselineVersion` is 1.7.0. The Playwright image/package mismatch that failed the accessibility gate is fixed (the image version now derives from `Directory.Packages.props`).
 - **0.5** Done: DOM snapshot tests for the existing form fields (`CyFormFieldDefaultMarkupTests.cs`, TASK-107).
-- **0.6** Done: Consumer release notes published (`RELEASE-NOTES-v1.13.0.md` and `RELEASE-NOTES-v2.0.0.md`).
+- **0.6** Done: Consumer release notes published (`RELEASE-NOTES-v2.0.0.md`).
 - Run `dotnet pack` once to confirm package validation passes against 1.6.0 (it needs nuget.org access).
 
 ## Phase B status (1.8.0, "Make forms adoptable")
@@ -827,14 +827,14 @@ Written, not compiled (TASK-109):
 
 ### Phase G decision documents (hand-off 6)
 
-- `docs/Spike-G-A2-rule-builder-drag-reorder.md`: **feasible, medium effort, moderate risk.** The model already supports it (`Reorder`, `MoveTo`). It needs two additive changes to `sortable-list.js` (skip descendants of the dragged item; pass the source list id), an opt-in `AllowDragReorder`, an always-present list for empty groups, a non-focusable grip (the keyboard path stays the existing buttons and menu), and Playwright browser tests. **Your decision: build in 1.13.0 or defer.**
+- Spike G-A2 (`CyRuleBuilder` drag reorder): **feasible, medium effort, moderate risk.** The model already supports it (`Reorder`, `MoveTo`). It needs two additive changes to `sortable-list.js` (skip descendants of the dragged item; pass the source list id), an opt-in `AllowDragReorder`, an always-present list for empty groups, a non-focusable grip (the keyboard path stays the existing buttons and menu), and Playwright browser tests. **Your decision: build in 1.13.0 or defer.**
 - `docs/ADR/ADR-0003-testing-package-proposal.md` (Proposed): A two packages, B one package, C documentation only, D nothing. **Recommendation: C now, A when an outside consumer asks.** **Your decision.**
 
 ### Phase G decisions (2026-10-10) and remaining scope
 
 | Decision | Outcome |
 |---|---|
-| G-A2 drag reorder | **Build in 1.13.0**, opt-in `AllowDragReorder`, per `docs/Spike-G-A2-rule-builder-drag-reorder.md`. |
+| G-A2 drag reorder | **Build in 1.13.0**, opt-in `AllowDragReorder`, per the G-A2 spike. |
 | G-B3 testing package | **Both**: documentation first (`docs/Testing.md` recipe and copyable base class), then two packages (`CymruBlazor.Testing`, `CymruBlazor.Testing.Axe`) per ADR-0003 option A. ADR-0003 moves to Accepted when the packages land. |
 
 | Task | Description |
@@ -923,3 +923,13 @@ Still open, none blocking: three-theme visual pass and Welsh review for D, E, F 
 ### Decision: the repository's test bases stay separate from the packages (2026-10-12)
 
 Considered making `TestContextBase` derive from `CymruTestContext` and `AxeTestBase` reuse `CymruAxeTestBase`, to remove the duplication. Not done, deliberately: `CymruTestContext` calls `AddCymruBlazor()` and sets loose JavaScript interop, while the library's own 76 test classes (about 1,300 tests) rely on registering only what they need and on strict interop, so a merge would silently weaken them and could not be checked here without running them. `AxeTestBase` links the repository CSS by file path (resolving the development stylesheet's `@import`), finds the scoped bundle in the build output and carries the hosted-page helpers; `CymruAxeTestBase` inlines the packaged CSS. What is shared is small (the HTML shell and the `page-has-heading-one` rule). A comment in each base and a sentence in `docs/Testing.md` now say so. Revisit only if the two start to drift in a way that causes a bug.
+
+### 2.0.0 Major Release shipped (2026-10-14)
+
+The 2.0.0 major release executed all scheduled breaking changes and removals documented in `docs/MIGRATION-2.0.md`:
+- Removed legacy `CySidebar` 2-state API (`Collapsed`, `CollapsedChanged`, `CollapseMode`, `SidebarCollapseMode.Disabled`) in favor of `State`, `StateChanged`, `States` and `NonCollapsible`.
+- Removed unimplemented keyboard navigation primitives (`IKeyboardNavigationService` and related types in `CymruBlazor.Accessibility.Focus`).
+- Removed unused speculative contracts and enums (`IHasIcon`, `IHasVariant`, `ComponentVariant`, `IconPosition`).
+- Recorded intentional breaking changes in `src/CymruBlazor/CompatibilitySuppressions.xml` against the 1.13.0 baseline.
+- Updated all unit tests and verified zero compiler warnings under `-warnaserror:CS0618`.
+- Tagged and published `v2.0.0`.

@@ -44,10 +44,17 @@ CymruBlazor/
 ├─ docs/
 │  ├─ ADR/
 │  │  ├─ ADR-0001-dialog-on-native-dialog-element.md
-│  │  └─ ADR-0002-localisation-strings-service.md
+│  │  ├─ ADR-0002-localisation-strings-service.md
+│  │  └─ ADR-0003-testing-package-proposal.md
 │  ├─ Current-Solution-Structure.md    (this file)
+│  ├─ CymruBlazor-Improvement-Recommendations.md (initial 1.6.0 gap analysis against GenomicsHandbook.Web)
 │  ├─ CymruBlazor-Scaffold-Guide.md    (consumer-facing "how to install and use the package" guide)
-│  └─ MIGRATION-2.0.md                 (1.x to 2.0.0 migration guide)
+│  ├─ design-tokens.md                 (reference of design tokens)
+│  ├─ Diagnostics.md                   (compiler and runtime diagnostics CY0001–CY0005)
+│  ├─ IMPLEMENTATION-PLAN.md           (master roadmap and implementation record, 1.6.0 → 2.0.0)
+│  ├─ MIGRATION-2.0.md                 (1.x to 2.0.0 migration guide)
+│  ├─ Recipes.md                       (copy-and-adapt page and layout recipes)
+│  └─ Testing.md                       (bUnit and axe testing guide for consumers)
 ├─ scripts/
 │  ├─ Pack-Solution.ps1                (zips the repo for distribution/review; cleans bin/obj first)
 │  ├─ Run-AccessibilityTests.ps1       (host entry point: builds the Docker image, runs the container script inside it)
@@ -90,6 +97,7 @@ CymruBlazor/
 │  │  ├─ build/
 │  │  │  └─ BundleCss.targets          (bundles the library's CSS into the NuGet package on pack)
 │  │  ├─ wwwroot/                      (css/, js/)
+│  │  ├─ CompatibilitySuppressions.xml (package validation breaking-change suppressions vs 1.13.0 baseline)
 │  │  ├─ _Imports.razor
 │  │  └─ CymruBlazor.csproj
 │  │

@@ -65,7 +65,7 @@ the version below it, or lacks a file it relies on. Run it locally with
 `CymruBlazor.csproj` sets `EnablePackageValidation` with a
 `PackageValidationBaselineVersion`. `dotnet pack` compares the new package
 with that published baseline and fails with a `CP****` error on an accidental
-breaking API change, so 1.x patch and minor releases stay semver-compatible.
+breaking API change, so patch and minor releases stay semver-compatible.
 
 - The baseline is the **last published version**. After publishing `vX.Y.Z`,
   bump `PackageValidationBaselineVersion` to `X.Y.Z` in the next PR.
@@ -83,8 +83,8 @@ breaking API change, so 1.x patch and minor releases stay semver-compatible.
 - Release flow: update `CHANGELOG.md`, open a PR, merge, then
   `git tag -a vX.Y.Z -m "vX.Y.Z"` and push the tag (MinVer derives the version
   from the tag).
-- Marking something `[Obsolete]` ahead of a 2.0.0 removal? Add it to
-  `docs/MIGRATION-2.0.md` in the same PR, alongside the replacement API.
+- Marking something `[Obsolete]` ahead of a future major version removal? Add it to
+  the migration guide in the same PR, alongside the replacement API.
 
 ## Tests worth knowing about
 

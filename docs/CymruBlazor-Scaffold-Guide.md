@@ -6,13 +6,13 @@ This guide answers one question: **I have a new .NET/Blazor application and
 want to use the current CymruBlazor package — what do I need to install,
 configure and implement to get started correctly?**
 
-It documents the package as it is currently published in **v1.5.0**.
+It documents the package as it is currently published in **v2.1.0**.
 
 ---
 
 ## 0. Current status
 
-> **Status: Stable (1.x).** The current published version is `1.5.0`.
+> **Status: Stable (2.x).** The current published version is `2.1.0`.
 > CymruBlazor follows [Semantic Versioning](https://semver.org/): new
 > components and features arrive in minor releases, and breaking changes
 > are reserved for major releases.
@@ -23,10 +23,11 @@ It documents the package as it is currently published in **v1.5.0**.
   automatically on every push to `main`): <https://gncube.github.io/CymruBlazor/>
 - Release history: `CHANGELOG.md` in the repository, and
   [GitHub Releases](https://github.com/gncube/CymruBlazor/releases)
+- Migration guide from 1.x: [`docs/MIGRATION-2.0.md`](MIGRATION-2.0.md)
 
 Versioning is derived entirely from git tags by
 [MinVer](https://github.com/adamralph/minver) (tag prefix `v`, e.g. tag
-`v1.5.0` → package version `1.5.0`).
+`v2.1.0` → package version `2.1.0`).
 
 ---
 
@@ -54,7 +55,7 @@ dotnet add package CymruBlazor
 or with an explicit version:
 
 ```bash
-dotnet add package CymruBlazor --version 1.5.0
+dotnet add package CymruBlazor --version 2.1.0
 ```
 
 Using [Central Package Management (CPM)](https://learn.microsoft.com/nuget/consume-packages/central-package-management)?
@@ -63,7 +64,7 @@ version in your project file:
 
 ```xml
 <!-- Directory.Packages.props -->
-<PackageVersion Include="CymruBlazor" Version="1.5.0" />
+<PackageVersion Include="CymruBlazor" Version="2.1.0" />
 ```
 
 ```xml
@@ -264,9 +265,9 @@ Form components integrate with Blazor's `<EditForm>` and support `DataAnnotation
 
 ---
 
-## 8. Data Display (CyTable & CyPagination)
+## 8. Data Display (CyTable, CyDataTable & CyPagination)
 
-CymruBlazor v1.5.0 provides accessible table and pagination primitives:
+CymruBlazor provides accessible table and data display primitives (`CyTable`, `CyDataTable<TItem>`, and `CyPagination`):
 
 ```razor
 <!-- Accessible table with mandatory Caption and horizontal scroll region -->

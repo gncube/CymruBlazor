@@ -59,7 +59,7 @@
 
     <!--
       Package validation: fail `dotnet pack` on accidental breaking API
-      changes versus the last published release (1.x promises semver).
+      changes versus the last published release (promises semver).
       Bump PackageValidationBaselineVersion when a release is published
       (see CONTRIBUTING.md). Opt out offline with
       -p:EnablePackageValidation=false; CI never does. Intentional breaks

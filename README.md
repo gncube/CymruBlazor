@@ -67,5 +67,4 @@ Additional guides:
 
 ## Contributing
 
-Read [CONTRIBUTING.md](https://github.com/gncube/CymruBlazor/blob/main/CONTRIBUTING.md)
-before opening a pull request.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
