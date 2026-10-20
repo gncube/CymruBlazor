@@ -176,6 +176,8 @@ public static class DemoNavigationIndex
             "A key figure with a unit, a trend and a short description."),
         new("Content", "Avatar", "/content/avatar",
             "A person as a photo or initials, alone or in an overlapping group."),
+        new("Content", "Timeline", "/content/timeline",
+            "Chronological events, clinical histories, audit trails, and process milestones."),
 
         // 8. Data
         new("Data", "Overview", "/data",
@@ -291,3 +293,4 @@ public static class DemoNavigationIndex
         return 0;
     }
 }
+

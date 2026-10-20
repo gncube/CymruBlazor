@@ -1,0 +1,76 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyLayoutComponentBase
+
+<li id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    @attributes="AdditionalAttributes">
+
+    <div class="cy-timeline__node" aria-hidden="true">
+        <div class="cy-timeline__marker @MarkerClass">
+            @if (MarkerTemplate is not null)
+            {
+                @MarkerTemplate
+            }
+            else if (!string.IsNullOrWhiteSpace(Icon))
+            {
+                <CyIcon Name="@Icon" Size="@IconSize" />
+            }
+            else
+            {
+                <span class="cy-timeline__dot"></span>
+            }
+        </div>
+        @if (ShowStem)
+        {
+            <div class="cy-timeline__stem"></div>
+        }
+    </div>
+
+    <div class="cy-timeline__content">
+        <div class="cy-timeline__header">
+            @if (!string.IsNullOrWhiteSpace(Title) || TitleTemplate is not null)
+            {
+                @RenderHeading()
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Time) || DateTime.HasValue)
+            {
+                <time class="cy-timeline__time" datetime="@DateTimeString">
+                    @(Time ?? DateTimeString)
+                </time>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(BadgeText))
+            {
+                <CyBadge Variant="@BadgeVariant" Pill="true">@BadgeText</CyBadge>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Actor))
+        {
+            <div class="cy-timeline__actor">@Actor</div>
+        }
+
+        @if (ChildContent is not null)
+        {
+            <div class="cy-timeline__body">
+                @ChildContent
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <div class="cy-timeline__body">
+                <p>@Description</p>
+            </div>
+        }
+
+        @if (Actions is not null)
+        {
+            <div class="cy-timeline__actions">
+                @Actions
+            </div>
+        }
+    </div>
+
+</li>

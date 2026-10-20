@@ -62,6 +62,10 @@
                 <Header><strong>CyStatCard</strong></Header>
                 <ChildContent>Ffigur allweddol gyda uned, tuedd a disgrifiad byr.</ChildContent>
             </CyCard>
+            <CyCard Href="/content/timeline">
+                <Header><strong>CyTimeline</strong></Header>
+                <ChildContent>Digwyddiadau cronolegol, hanesion clinigol, a cherrig milltir proses.</ChildContent>
+            </CyCard>
             <CyCard Href="/content/avatar">
                 <Header><strong>CyAvatar</strong></Header>
                 <ChildContent>Person fel llun neu lythrennau blaen, ar ei ben ei hun neu mewn grŵp.</ChildContent>
@@ -151,6 +155,10 @@ else
                 <Header><strong>CyStatCard</strong></Header>
                 <ChildContent>A key figure with a unit, a trend and a short description.</ChildContent>
             </CyCard>
+            <CyCard Href="/content/timeline">
+                <Header><strong>CyTimeline</strong></Header>
+                <ChildContent>Chronological events, clinical histories, audit trails, and process milestones.</ChildContent>
+            </CyCard>
             <CyCard Href="/content/avatar">
                 <Header><strong>CyAvatar</strong></Header>
                 <ChildContent>A person as a photo or initials, alone or in an overlapping group.</ChildContent>
@@ -189,3 +197,4 @@ else
     private void HandleStringsChanged() => InvokeAsync(StateHasChanged);
     public void Dispose() => Strings.Changed -= HandleStringsChanged;
 }
+

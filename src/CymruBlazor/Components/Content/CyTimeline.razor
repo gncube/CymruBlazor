@@ -1,0 +1,40 @@
+@namespace CymruBlazor.Components.Content
+@inherits CyLayoutComponentBase
+
+<ol id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    aria-label="@AriaLabelValue"
+    @attributes="AdditionalAttributes">
+    <CascadingValue Value="this" IsFixed="true">
+        @if (Items is not null)
+        {
+            @for (var i = 0; i < Items.Count; i++)
+            {
+                var item = Items[i];
+                var isLast = i == Items.Count - 1;
+                @if (ItemTemplate is not null)
+                {
+                    @ItemTemplate(item)
+                }
+                else
+                {
+                    <CyTimelineItem Title="@item.Title"
+                                    Time="@item.Time"
+                                    DateTime="@item.DateTime"
+                                    Description="@item.Description"
+                                    Actor="@item.Actor"
+                                    Icon="@item.Icon"
+                                    Colour="@item.Colour"
+                                    BadgeText="@item.BadgeText"
+                                    BadgeColour="@item.BadgeColour"
+                                    IsLast="@isLast" />
+                }
+            }
+        }
+        else
+        {
+            @ChildContent
+        }
+    </CascadingValue>
+</ol>

@@ -8,6 +8,21 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [2.1.0] - Unreleased
+
+Minor release introducing the `CyTimeline` and `CyTimelineItem` component suite for clinical activity tracking and chronological milestone inspection, expanding content presentation capabilities in compliance with WCAG 2.2 AA.
+
+### Added
+
+- **`CyTimeline` & `CyTimelineItem`** (`Content`):
+  - Added new accessible timeline component suite (`CyTimeline`, `CyTimelineItem`, `CyTimelineItemModel`, `CyTimelineLineStyle`, and `CyTimelineText`) adhering to the NHS Wales Design System `progress-timeline` specification.
+  - Supports both declarative child composition and data-bound collection binding via `Items` and `ItemTemplate`.
+  - Accessible ordered list semantics (`<ol>` with `<li>`), configurable heading levels (1 to 6 or paragraph), valid `<time datetime="...">` timestamps, and decorative stem suppression on terminal milestones.
+  - Full support for semantic marker nodes (`Neutral`, `Primary`, `Success`, `Warning`, `Danger`, `Info`), custom marker templates, status badge pills, actor attribution, and interactive action buttons.
+  - Styling variants: default medium density and compact (`ComponentSize.Small`), solid, dashed, and dotted connecting stem lines.
+  - Robust accessibility support verified across Light, Dark, and High-Contrast (forced-colors) themes with zero axe violations.
+  - Dedicated interactive documentation and live examples at `/content/timeline` with Welsh localization support.
+
 ## [2.0.1] - 2026-10-19
 
 Patch release following the 2.0.0 major milestone: introduces internal form chrome refactoring, Welsh linguistic refinements, demo and documentation navigation enhancements, and dependency updates. Fully backwards-compatible with 2.0.0 with zero breaking changes.

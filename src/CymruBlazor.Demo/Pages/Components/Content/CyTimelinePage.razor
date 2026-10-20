@@ -1,0 +1,183 @@
+@page "/content/timeline"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyTimeline" Subtitle="Chronological events, clinical histories, audit trails, and process milestones.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyTimeline" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+        <span class="cb-panel-caption">Clinical Lab Workflow</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+            <CyTimeline Label="Clinical specimen journey">
+                <CyTimelineItem Title="Specimen Collected"
+                                Time="08:45, 20 Oct 2026"
+                                DateTime="@_sampleCollectedTime"
+                                Actor="Phlebotomy Clinic, University Hospital of Wales"
+                                Colour="ComponentColour.Success"
+                                Icon="check"
+                                BadgeText="Collected"
+                                BadgeColour="ComponentColour.Success">
+                    <p>Venous blood sample collected in EDTA tube (Bar-code: W9827361).</p>
+                </CyTimelineItem>
+
+                <CyTimelineItem Title="Received at Genomics Laboratory"
+                                Time="10:15, 20 Oct 2026"
+                                DateTime="@_labReceivedTime"
+                                Actor="Central Sample Reception"
+                                Colour="ComponentColour.Success"
+                                Icon="check"
+                                BadgeText="Logged"
+                                BadgeColour="ComponentColour.Success">
+                    <p>Sample logged into laboratory information management system (LIMS). Integrity verified.</p>
+                </CyTimelineItem>
+
+                <CyTimelineItem Title="Next-Generation Sequencing"
+                                Time="12:30, 20 Oct 2026"
+                                DateTime="@_sequencingTime"
+                                Actor="Illumina NovaSeq X Automated Pipeline"
+                                Colour="ComponentColour.Primary"
+                                Icon="history"
+                                BadgeText="In Progress"
+                                BadgeColour="ComponentColour.Primary">
+                    <p>Whole exome sequencing in progress. Estimated run completion time: 4 hours.</p>
+                </CyTimelineItem>
+
+                <CyTimelineItem Title="Variant Curation & Clinical Review"
+                                Time="Pending"
+                                Actor="Consultant Clinical Geneticist"
+                                Colour="ComponentColour.Neutral"
+                                BadgeText="Queued"
+                                BadgeColour="ComponentColour.Neutral">
+                    <p>Awaiting variant calling and primary filtering.</p>
+                </CyTimelineItem>
+            </CyTimeline>
+        </div>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none; margin-top: var(--cymru-space-6);">
+            <span class="cb-panel-caption">Compact & Dashed Style</span>
+            <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+                <CyTimeline Density="ComponentSize.Small" LineStyle="CyTimelineLineStyle.Dashed" Label="Order audit history">
+                    <CyTimelineItem Title="Order Placed" Time="Yesterday at 16:20" Colour="ComponentColour.Success" Icon="check" Description="Test requested by Dr. Rhys Morgan." />
+                    <CyTimelineItem Title="Dispatched to Lab" Time="Today at 09:10" Colour="ComponentColour.Info" Icon="history" Description="Courier transit confirmed." />
+                    <CyTimelineItem Title="Result Authorisation" Time="Estimated 21 Oct" Colour="ComponentColour.Neutral" Description="Requires second-checker sign-off." />
+                </CyTimeline>
+            </div>
+        </div>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none; margin-top: var(--cymru-space-6);">
+            <span class="cb-panel-caption">Code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyTimeline.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly DateTimeOffset _sampleCollectedTime = new(2026, 10, 20, 8, 45, 0, TimeSpan.FromHours(1));
+    private readonly DateTimeOffset _labReceivedTime = new(2026, 10, 20, 10, 15, 0, TimeSpan.FromHours(1));
+    private readonly DateTimeOffset _sequencingTime = new(2026, 10, 20, 12, 30, 0, TimeSpan.FromHours(1));
+
+    private string GeneratedCode => """
+        <CyTimeline Label="Clinical specimen journey">
+            <CyTimelineItem Title="Specimen Collected"
+                            Time="08:45, 20 Oct 2026"
+                            DateTime="@collectedTime"
+                            Actor="Phlebotomy Clinic"
+                            Colour="ComponentColour.Success"
+                            Icon="check"
+                            BadgeText="Collected"
+                            BadgeColour="ComponentColour.Success">
+                <p>Venous blood sample collected in EDTA tube.</p>
+            </CyTimelineItem>
+
+            <CyTimelineItem Title="Received at Genomics Laboratory"
+                            Time="10:15, 20 Oct 2026"
+                            DateTime="@receivedTime"
+                            Actor="Central Sample Reception"
+                            Colour="ComponentColour.Success"
+                            Icon="check"
+                            BadgeText="Logged"
+                            BadgeColour="ComponentColour.Success">
+                <p>Sample logged into laboratory information management system.</p>
+            </CyTimelineItem>
+
+            <CyTimelineItem Title="Next-Generation Sequencing"
+                            Time="12:30, 20 Oct 2026"
+                            DateTime="@sequencingTime"
+                            Actor="Illumina NovaSeq X Pipeline"
+                            Colour="ComponentColour.Primary"
+                            Icon="history"
+                            BadgeText="In Progress"
+                            BadgeColour="ComponentColour.Primary">
+                <p>Whole exome sequencing in progress.</p>
+            </CyTimelineItem>
+        </CyTimeline>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyTimeline.Label", "string?", "null", "Accessible label for the timeline. Falls back to DefaultLabel if none provided."),
+        new("CyTimeline.Density", "ComponentSize", "ComponentSize.Medium", "Visual density: Medium (default) or Small (compact)."),
+        new("CyTimeline.LineStyle", "CyTimelineLineStyle", "Solid", "Connecting stem line style: Solid, Dashed, or Dotted."),
+        new("CyTimeline.Items", "IReadOnlyList<CyTimelineItemModel>?", "null", "Data-driven collection of timeline items."),
+        new("CyTimeline.ItemTemplate", "RenderFragment<CyTimelineItemModel>?", "null", "Custom item template for data-driven timelines."),
+        new("CyTimeline.Text", "CyTimelineText?", "null", "Localised timeline phrases."),
+        new("CyTimelineItem.Title", "string?", "null", "Headline title for the milestone."),
+        new("CyTimelineItem.TitleTemplate", "RenderFragment?", "null", "Custom template for rendering the headline."),
+        new("CyTimelineItem.HeadingLevel", "int?", "3", "Heading tag level (1-6 for h1-h6). When null, renders a paragraph."),
+        new("CyTimelineItem.Time", "string?", "null", "Human-readable time or date string."),
+        new("CyTimelineItem.DateTime", "DateTimeOffset?", "null", "Machine-readable timestamp used for the <time datetime> attribute."),
+        new("CyTimelineItem.Description", "string?", "null", "Short description text. Rendered as a paragraph unless ChildContent is provided."),
+        new("CyTimelineItem.Actor", "string?", "null", "Attribution or responsible actor (e.g. clinician or system)."),
+        new("CyTimelineItem.Colour", "ComponentColour", "Neutral", "Semantic colour for the marker node: Neutral, Primary, Success, Warning, Danger, Info."),
+        new("CyTimelineItem.Icon", "string?", "null", "Name of an icon from the registry (e.g. check, clock, alert-circle)."),
+        new("CyTimelineItem.BadgeText", "string?", "null", "Optional status badge pill displayed next to the heading."),
+        new("CyTimelineItem.BadgeColour", "ComponentColour", "Neutral", "Semantic colour for the status badge pill."),
+        new("CyTimelineItem.Actions", "RenderFragment?", "null", "Action buttons or links placed at the bottom of the item."),
+        new("CyTimelineItem.IsLast", "bool?", "null", "Explicitly hides the stem line. When null, the last child in CSS is automatically handled.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Ordered list semantics", "Rendered as an <ol> containing <li> items, announcing milestone order and count to screen readers."),
+        new("Decorative stem and markers", "Markers, icons, and connecting stems are marked aria-hidden='true' to avoid screen reader clutter."),
+        new("Machine-readable time", "Renders a valid <time datetime='...'> element with ISO 8601 timestamps alongside formatted dates."),
+        new("No colour-only meaning", "Status is always conveyed through text labels, badges, or icons in addition to colour (WCAG 1.4.1)."),
+        new("High contrast mode", "Markers and stem lines adapt to system colours (ButtonText, CanvasText) in forced-colors mode.")
+    ];
+}

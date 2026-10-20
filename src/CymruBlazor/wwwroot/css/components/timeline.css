@@ -1,0 +1,249 @@
+@layer components;
+
+/*
+ * CymruBlazor Timeline - CyTimeline, CyTimelineItem
+ *
+ * Sourced from the NHS Wales Design System (progress-timeline spec).
+ * Provides accessible, chronological milestone tracking for clinical workflows,
+ * audit trails, and patient histories.
+ * Semantic tokens only: dark and high-contrast modes follow automatically.
+ */
+
+/* ==========================================================================
+   CyTimeline Root
+   ========================================================================== */
+
+.cy-timeline {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  color: var(--cymru-color-text);
+}
+
+/* ==========================================================================
+   CyTimeline Item
+   ========================================================================== */
+
+.cy-timeline__item {
+  position: relative;
+  display: flex;
+  gap: var(--cymru-space-4);
+  margin: 0;
+  padding: 0;
+}
+
+/* Node containing the marker and vertical stem */
+.cy-timeline__node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+}
+
+/* The circular marker node */
+.cy-timeline__marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--cymru-radius-circle);
+  border-width: var(--cymru-border-width-medium);
+  border-style: solid;
+  box-sizing: border-box;
+  z-index: 1;
+  flex-shrink: 0;
+  background-color: var(--cymru-color-surface);
+  border-color: var(--cymru-color-border-strong);
+  color: var(--cymru-color-text-muted);
+}
+
+/* Default dot inside an iconless marker */
+.cy-timeline__dot {
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--cymru-radius-circle);
+  background-color: currentColor;
+}
+
+/* Semantic colour variants for markers */
+.cy-timeline__marker--primary {
+  background-color: var(--cymru-color-primary-subtle);
+  border-color: var(--cymru-color-primary);
+  color: var(--cymru-color-primary);
+}
+
+.cy-timeline__marker--secondary {
+  background-color: var(--cymru-color-surface-alt);
+  border-color: var(--cymru-color-secondary);
+  color: var(--cymru-color-secondary);
+}
+
+.cy-timeline__marker--success {
+  background-color: var(--cymru-color-success-background);
+  border-color: var(--cymru-color-success);
+  color: var(--cymru-color-success);
+}
+
+.cy-timeline__marker--warning {
+  background-color: var(--cymru-color-warning-background);
+  border-color: var(--cymru-color-warning);
+  color: var(--cymru-color-warning);
+}
+
+.cy-timeline__marker--danger {
+  background-color: var(--cymru-color-danger-background);
+  border-color: var(--cymru-color-danger);
+  color: var(--cymru-color-danger);
+}
+
+.cy-timeline__marker--info {
+  background-color: var(--cymru-color-info-background);
+  border-color: var(--cymru-color-info);
+  color: var(--cymru-color-info);
+}
+
+/* The vertical connecting stem line */
+.cy-timeline__stem {
+  position: absolute;
+  top: 2rem;
+  bottom: 0;
+  left: 50%;
+  width: var(--cymru-border-width-medium);
+  transform: translateX(-50%);
+  background-color: var(--cymru-color-border);
+}
+
+/* Suppress stem line on final milestone */
+.cy-timeline__item:last-child .cy-timeline__stem,
+.cy-timeline__item--last .cy-timeline__stem {
+  display: none;
+}
+
+/* Stem line style variants */
+.cy-timeline--dashed .cy-timeline__stem {
+  background-color: transparent;
+  border-left: var(--cymru-border-width-medium) dashed var(--cymru-color-border);
+  width: 0;
+}
+
+.cy-timeline--dotted .cy-timeline__stem {
+  background-color: transparent;
+  border-left: var(--cymru-border-width-medium) dotted var(--cymru-color-border);
+  width: 0;
+}
+
+/* Content block */
+.cy-timeline__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-bottom: var(--cymru-space-6);
+}
+
+.cy-timeline__item:last-child .cy-timeline__content,
+.cy-timeline__item--last .cy-timeline__content {
+  padding-bottom: 0;
+}
+
+/* Header row (title, time, badge) */
+.cy-timeline__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--cymru-space-2) var(--cymru-space-3);
+  margin-bottom: var(--cymru-space-1);
+}
+
+.cy-timeline__title {
+  margin: 0;
+  font-size: var(--cymru-font-size-md);
+  font-weight: var(--cymru-font-weight-semibold);
+  color: var(--cymru-color-text);
+  line-height: var(--cymru-line-height-heading);
+}
+
+.cy-timeline__time {
+  font-size: var(--cymru-font-size-sm);
+  color: var(--cymru-color-text-muted);
+}
+
+.cy-timeline__actor {
+  font-size: var(--cymru-font-size-sm);
+  color: var(--cymru-color-text-muted);
+  margin-bottom: var(--cymru-space-1);
+}
+
+.cy-timeline__body {
+  color: var(--cymru-color-text);
+  font-size: var(--cymru-font-size-md);
+  line-height: var(--cymru-line-height-body);
+}
+
+.cy-timeline__body p:first-child {
+  margin-top: 0;
+}
+
+.cy-timeline__body p:last-child {
+  margin-bottom: 0;
+}
+
+.cy-timeline__actions {
+  margin-top: var(--cymru-space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cymru-space-2);
+}
+
+/* ==========================================================================
+   Density: Compact
+   ========================================================================== */
+
+.cy-timeline--compact .cy-timeline__node {
+  width: 1.5rem;
+}
+
+.cy-timeline--compact .cy-timeline__marker {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.cy-timeline--compact .cy-timeline__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.cy-timeline--compact .cy-timeline__stem {
+  top: 1.5rem;
+}
+
+.cy-timeline--compact .cy-timeline__content {
+  padding-bottom: var(--cymru-space-4);
+}
+
+/* ==========================================================================
+   High Contrast / Forced-Colors Mode
+   ========================================================================== */
+
+@media (forced-colors: active) {
+  .cy-timeline__marker {
+    border-color: ButtonText;
+  }
+
+  .cy-timeline__dot {
+    background-color: ButtonText;
+  }
+
+  .cy-timeline__stem {
+    background-color: ButtonText;
+  }
+
+  .cy-timeline--dashed .cy-timeline__stem,
+  .cy-timeline--dotted .cy-timeline__stem {
+    border-left-color: ButtonText;
+  }
+}
