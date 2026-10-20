@@ -8,7 +8,7 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
-## [2.1.0] - Unreleased
+## [2.1.0] - 2026-10-20
 
 Minor release introducing the `CyTimeline` audit trail component suite and `CyDataTable<TItem>` expandable rows for master-detail inspection, expanding clinical data display capabilities in compliance with WCAG 2.2 AA.
 
