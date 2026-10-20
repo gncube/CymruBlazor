@@ -1,0 +1,238 @@
+/*
+ * CyAvatar Component Styles
+ * BEM CSS following CymruBlazor design tokens
+ */
+
+.cy-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cymru-radius-circle, 50%);
+  background-color: var(--cymru-color-surface-hover, #dee0e2);
+  color: var(--cymru-color-text, #0b0c0c);
+  font-family: var(--cymru-font-family-base, sans-serif);
+  font-weight: var(--cymru-font-weight-bold, 700);
+  line-height: 1;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  user-select: none;
+  overflow: visible;
+  vertical-align: middle;
+}
+
+/* Sizing scale */
+.cy-avatar--xs {
+  inline-size: 24px;
+  block-size: 24px;
+  font-size: var(--cymru-font-size-xs, 0.6875rem);
+}
+
+.cy-avatar--sm {
+  inline-size: 28px;
+  block-size: 28px;
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+}
+
+.cy-avatar--md {
+  inline-size: 36px;
+  block-size: 36px;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+}
+
+.cy-avatar--lg {
+  inline-size: 44px;
+  block-size: 44px;
+  font-size: var(--cymru-font-size-lg, 1.125rem);
+}
+
+.cy-avatar--xl {
+  inline-size: 56px;
+  block-size: 56px;
+  font-size: var(--cymru-font-size-xl, 1.375rem);
+}
+
+/* Inner elements */
+.cy-avatar__image {
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: var(--cymru-radius-circle, 50%);
+  object-fit: cover;
+  display: block;
+}
+
+.cy-avatar__initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: var(--cymru-radius-circle, 50%);
+  text-transform: uppercase;
+}
+
+/* Interactive avatar button */
+.cy-avatar--interactive {
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  outline: none;
+  touch-action: manipulation;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+}
+
+.cy-avatar--interactive:focus-visible {
+  outline: var(--cymru-focus-ring-width, 2px) solid var(--cymru-focus-ring-color, var(--cymru-color-focus-outline, #005ea5));
+  outline-offset: var(--cymru-focus-ring-offset, 2px);
+}
+
+/* Status Indicator Dot */
+.cy-avatar__status {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  border-radius: var(--cymru-radius-circle, 50%);
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px var(--cymru-color-surface, #ffffff);
+  z-index: 1;
+}
+
+.cy-avatar--xs .cy-avatar__status {
+  inline-size: 6px;
+  block-size: 6px;
+}
+
+.cy-avatar--sm .cy-avatar__status {
+  inline-size: 8px;
+  block-size: 8px;
+}
+
+.cy-avatar--md .cy-avatar__status {
+  inline-size: 10px;
+  block-size: 10px;
+}
+
+.cy-avatar--lg .cy-avatar__status {
+  inline-size: 12px;
+  block-size: 12px;
+}
+
+.cy-avatar--xl .cy-avatar__status {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+/* Status colours */
+.cy-avatar__status--online {
+  background-color: var(--cymru-color-success-background, #107569);
+}
+
+.cy-avatar__status--busy {
+  background-color: var(--cymru-color-danger-background, #d4351c);
+  animation: cy-avatar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.cy-avatar__status--away {
+  background-color: var(--cymru-color-warning-background, #b27300);
+}
+
+.cy-avatar__status--offline {
+  background-color: var(--cymru-color-border-strong, #8f9298);
+}
+
+@keyframes cy-avatar-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cy-avatar__status--busy {
+    animation: none;
+  }
+}
+
+/* Semantic Colour Variants */
+.cy-avatar--primary {
+  background-color: var(--cymru-color-primary, #005ea5);
+  color: var(--cymru-color-surface, #ffffff);
+}
+
+.cy-avatar--secondary {
+  background-color: var(--cymru-color-secondary, #4c6272);
+  color: #ffffff;
+}
+
+.cy-avatar--tertiary {
+  background-color: var(--cymru-color-secondary, #4c6272);
+  color: #ffffff;
+}
+
+.cy-avatar--success {
+  background-color: var(--cymru-color-success-background, #107569);
+  color: var(--cymru-color-success-text, #ffffff);
+}
+
+.cy-avatar--warning {
+  background-color: var(--cymru-color-warning-background, #ffdd00);
+  color: var(--cymru-color-warning-text, #0b0c0c);
+}
+
+.cy-avatar--danger {
+  background-color: var(--cymru-color-danger-background, #d4351c);
+  color: var(--cymru-color-danger-text, #ffffff);
+}
+
+.cy-avatar--info {
+  background-color: var(--cymru-color-info-background, #1d70b8);
+  color: var(--cymru-color-info-text, #ffffff);
+}
+
+.cy-avatar--surface {
+  background-color: var(--cymru-color-surface-alt, #f3f2f1);
+  color: var(--cymru-color-text, #0b0c0c);
+}
+
+.cy-avatar--neutral {
+  background-color: var(--cymru-color-surface-hover, #dee0e2);
+  color: var(--cymru-color-text, #0b0c0c);
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] .cy-avatar__status {
+  box-shadow: 0 0 0 2px var(--cymru-color-surface, #1e293b);
+}
+
+[data-theme="dark"] .cy-avatar__status--online {
+  background-color: var(--cymru-color-success-background, #1db954);
+}
+
+[data-theme="dark"] .cy-avatar__status--busy {
+  background-color: var(--cymru-color-danger-background, #f87171);
+}
+
+[data-theme="dark"] .cy-avatar__status--away {
+  background-color: var(--cymru-color-warning-background, #fbbf24);
+}
+
+[data-theme="dark"] .cy-avatar__status--offline {
+  background-color: var(--cymru-color-border-strong, #64748b);
+}
+
+@media (forced-colors: active) {
+  .cy-avatar {
+    border: var(--cymru-border-width-thin, 1px) solid CanvasText;
+  }
+
+  .cy-avatar__status {
+    outline: 2px solid Canvas;
+  }
+}

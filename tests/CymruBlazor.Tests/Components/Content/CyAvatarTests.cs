@@ -1,7 +1,7 @@
 using Bunit;
 using Shouldly;
 using Xunit;
-
+using Microsoft.AspNetCore.Components.Web;
 using CymruBlazor.Components.Content;
 using CymruBlazor.Enums;
 
@@ -16,6 +16,10 @@ public sealed class CyAvatarTests : TestContextBase
     [InlineData("  Ann   Marie  Jones ", "AJ")]
     [InlineData("(Dr) Sam Lee", "DL")]
     [InlineData("élan vital", "ÉV")]
+    [InlineData("user.name@org.uk", "UN")]
+    [InlineData("jane.doe@example.com", "JD")]
+    [InlineData("first_last@domain.com", "FL")]
+    [InlineData("single@domain.com", "S")]
     public void Should_Work_Out_Initials(string name, string expected)
     {
         CyAvatar.ComputeInitials(name).ShouldBe(expected);
@@ -25,6 +29,8 @@ public sealed class CyAvatarTests : TestContextBase
     public void Should_Fall_Back_To_A_Question_Mark_When_There_Are_No_Letters()
     {
         CyAvatar.ComputeInitials("--").ShouldBe("?");
+        CyAvatar.ComputeInitials(null).ShouldBe("?");
+        CyAvatar.ComputeInitials("").ShouldBe("?");
     }
 
     [Fact]
@@ -32,6 +38,23 @@ public sealed class CyAvatarTests : TestContextBase
     {
         CyAvatar.ToneFor("Gwen Davies").ShouldBe(CyAvatar.ToneFor("gwen davies "));
         CyAvatar.ToneFor("Gwen Davies").ShouldBeInRange(0, 5);
+    }
+
+    [Fact]
+    public void Should_Generate_Deterministic_Hue()
+    {
+        var hue1 = CyAvatar.HueFor("Gwen Davies");
+        var hue2 = CyAvatar.HueFor("gwen davies ");
+        hue1.ShouldBe(hue2);
+        hue1.ShouldBeInRange(0, 359);
+    }
+
+    [Fact]
+    public void Should_Apply_Deterministic_Hue_In_Inline_Style()
+    {
+        var cut = Render<CyAvatar>(p => p.Add(c => c.Name, "Jane Doe"));
+        var avatar = cut.Find(".cy-avatar");
+        avatar.GetAttribute("style")!.ShouldContain("--cy-avatar-hue");
     }
 
     [Fact]
@@ -44,6 +67,18 @@ public sealed class CyAvatarTests : TestContextBase
         avatar.GetAttribute("aria-label").ShouldBe("Gwen Davies");
         cut.Find(".cy-avatar__initials").GetAttribute("aria-hidden").ShouldBe("true");
         cut.Find(".cy-avatar__initials").TextContent.ShouldBe("GD");
+    }
+
+    [Fact]
+    public void Should_Prefer_Alt_Text_For_Aria_Label_When_Supplied()
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Gwen Davies")
+            .Add(c => c.Alt, "Profile photo of Gwen"));
+
+        var avatar = cut.Find(".cy-avatar");
+        avatar.GetAttribute("role").ShouldBe("img");
+        avatar.GetAttribute("aria-label").ShouldBe("Profile photo of Gwen");
     }
 
     [Fact]
@@ -71,6 +106,80 @@ public sealed class CyAvatarTests : TestContextBase
         image.GetAttribute("alt").ShouldBe(string.Empty);
         cut.FindAll(".cy-avatar__initials").Count.ShouldBe(0);
         cut.Find(".cy-avatar").ClassList.ShouldContain("cy-avatar--image");
+    }
+
+    [Fact]
+    public void Should_Fallback_To_Initials_When_Image_Fails_To_Load()
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Jane Doe")
+            .Add(c => c.ImageUrl, "/broken.jpg"));
+
+        cut.FindAll("img.cy-avatar__image").Count.ShouldBe(1);
+        cut.FindAll(".cy-avatar__initials").Count.ShouldBe(0);
+
+        // Simulate image load error
+        cut.Find("img.cy-avatar__image").TriggerEvent("onerror", EventArgs.Empty);
+
+        cut.FindAll("img.cy-avatar__image").Count.ShouldBe(0);
+        var initials = cut.Find(".cy-avatar__initials");
+        initials.TextContent.ShouldBe("JD");
+        cut.Find(".cy-avatar").ClassList.ShouldNotContain("cy-avatar--image");
+    }
+
+    [Theory]
+    [InlineData(AvatarStatus.Online, "cy-avatar__status--online")]
+    [InlineData(AvatarStatus.Busy, "cy-avatar__status--busy")]
+    [InlineData(AvatarStatus.Away, "cy-avatar__status--away")]
+    [InlineData(AvatarStatus.Offline, "cy-avatar__status--offline")]
+    public void Should_Render_Status_Indicator_Dot(AvatarStatus status, string expectedClass)
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Jane Doe")
+            .Add(c => c.Status, status));
+
+        var dot = cut.Find($".cy-avatar__status.{expectedClass}");
+        dot.GetAttribute("aria-hidden").ShouldBe("true");
+    }
+
+    [Fact]
+    public void Should_Not_Render_Status_Dot_When_Status_Is_None()
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Jane Doe")
+            .Add(c => c.Status, AvatarStatus.None));
+
+        cut.FindAll(".cy-avatar__status").Count.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(ComponentColour.Primary, "cy-avatar--primary")]
+    [InlineData(ComponentColour.Danger, "cy-avatar--danger")]
+    [InlineData(ComponentColour.Success, "cy-avatar--success")]
+    public void Should_Apply_Colour_Variant(ComponentColour colour, string expectedClass)
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Jane Doe")
+            .Add(c => c.Colour, colour));
+
+        cut.Find(".cy-avatar").ClassList.ShouldContain(expectedClass);
+    }
+
+    [Fact]
+    public void Should_Render_Button_And_Trigger_OnClick_When_Handler_Supplied()
+    {
+        var clicked = false;
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Jane Doe")
+            .Add(c => c.OnClick, (MouseEventArgs e) => clicked = true));
+
+        var button = cut.Find("button.cy-avatar");
+        button.ClassList.ShouldContain("cy-avatar--interactive");
+        button.HasAttribute("role").ShouldBeFalse();
+        button.GetAttribute("aria-label").ShouldBe("JD, Jane Doe");
+
+        button.Click();
+        clicked.ShouldBeTrue();
     }
 
     [Fact]

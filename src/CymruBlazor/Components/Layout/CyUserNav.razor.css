@@ -1,0 +1,385 @@
+/*
+ * CyUserNav Component Styles
+ * BEM CSS following CymruBlazor design tokens
+ */
+
+.cy-user-nav {
+  position: relative;
+  display: inline-flex;
+  font-family: var(--cymru-font-family-base, sans-serif);
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Unauthenticated State
+   ========================================================================== */
+
+.cy-user-nav__login {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-2, 0.5rem);
+  min-inline-size: 44px;
+  min-block-size: 36px;
+  padding-block: var(--cymru-space-1, 0.25rem);
+  padding-inline: var(--cymru-space-3, 0.75rem);
+  border-radius: var(--cymru-radius-pill, 9999px);
+  border: 1px solid var(--cymru-color-border, #d1d5db);
+  background-color: var(--cymru-color-surface, #ffffff);
+  color: var(--cymru-color-text, #111827);
+  font-family: inherit;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+  font-weight: var(--cymru-font-weight-medium, 500);
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.cy-user-nav__login:hover {
+  background-color: var(--cymru-color-surface-hover, #f3f4f6);
+  border-color: var(--cymru-color-primary, #005ea5);
+}
+
+.cy-user-nav__login:focus-visible {
+  outline: var(--cymru-focus-ring-width, 2px) solid var(--cymru-focus-ring-color, var(--cymru-color-focus-outline, #005ea5));
+  outline-offset: var(--cymru-focus-ring-offset, 2px);
+}
+
+.cy-user-nav__login-label {
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Authenticated State Trigger
+   ========================================================================== */
+
+.cy-user-nav__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cymru-space-2, 0.5rem);
+  min-inline-size: 44px;
+  min-block-size: 36px;
+  padding-block: 2px;
+  padding-inline-start: 2px;
+  padding-inline-end: var(--cymru-space-3, 0.75rem);
+  border-radius: var(--cymru-radius-pill, 9999px);
+  border: 1px solid var(--cymru-color-border, #d1d5db);
+  background-color: var(--cymru-color-surface, #ffffff);
+  color: var(--cymru-color-text, #111827);
+  font-family: inherit;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+  font-weight: var(--cymru-font-weight-medium, 500);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.cy-user-nav__trigger:hover {
+  background-color: var(--cymru-color-surface-hover, #f3f4f6);
+  border-color: var(--cymru-color-primary, #005ea5);
+}
+
+.cy-user-nav__trigger:focus-visible {
+  outline: var(--cymru-focus-ring-width, 2px) solid var(--cymru-focus-ring-color, var(--cymru-color-focus-outline, #005ea5));
+  outline-offset: var(--cymru-focus-ring-offset, 2px);
+}
+
+.cy-user-nav__name {
+  max-inline-size: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--cymru-font-weight-medium, 500);
+}
+
+.cy-user-nav__status-dot {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: var(--cymru-radius-circle, 50%);
+  flex-shrink: 0;
+}
+
+.cy-user-nav__status-dot--online {
+  background-color: var(--cymru-color-success-background, #107569);
+}
+
+.cy-user-nav__status-dot--busy {
+  background-color: var(--cymru-color-danger-background, #d4351c);
+}
+
+.cy-user-nav__status-dot--away {
+  background-color: var(--cymru-color-warning-background, #b27300);
+}
+
+.cy-user-nav__status-dot--offline {
+  background-color: var(--cymru-color-border-strong, #8f9298);
+}
+
+.cy-user-nav__chevron {
+  color: var(--cymru-color-text-muted, #6b7280);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.cy-user-nav__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   Dropdown Menu
+   ========================================================================== */
+
+.cy-user-nav__menu {
+  position: absolute;
+  inset-block-start: calc(100% + var(--cymru-space-2, 0.5rem));
+  inset-inline-end: 0;
+  min-inline-size: 260px;
+  max-inline-size: 360px;
+  border-radius: var(--cymru-radius-lg, 0.75rem);
+  border: 1px solid var(--cymru-color-border, #d1d5db);
+  background-color: var(--cymru-color-surface, #ffffff);
+  box-shadow: var(--cymru-shadow-lg, 0 4px 16px rgb(27 41 74 / 0.18));
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Profile header card */
+.cy-user-nav__profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-3, 0.75rem);
+  padding: var(--cymru-space-3, 0.75rem) var(--cymru-space-4, 1rem);
+  background-color: var(--cymru-color-surface-alt, #f9fafb);
+  border-block-end: 1px solid var(--cymru-color-border, #d1d5db);
+  box-sizing: border-box;
+}
+
+.cy-user-nav__profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+  flex: 1;
+}
+
+.cy-user-nav__profile-name {
+  font-weight: var(--cymru-font-weight-bold, 700);
+  font-size: var(--cymru-font-size-md, 1rem);
+  color: var(--cymru-color-text, #111827);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cy-user-nav__profile-email {
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+  color: var(--cymru-color-text-muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cy-user-nav__status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--cymru-font-size-xs, 0.75rem);
+  font-weight: var(--cymru-font-weight-medium, 500);
+  padding-block: 2px;
+  padding-inline: var(--cymru-space-2, 0.5rem);
+  border-radius: var(--cymru-radius-pill, 9999px);
+  width: fit-content;
+  margin-block-start: 4px;
+}
+
+.cy-user-nav__status-chip-dot {
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: var(--cymru-radius-circle, 50%);
+  flex-shrink: 0;
+}
+
+.cy-user-nav__status-chip--online {
+  background-color: var(--cymru-color-success-background, #ecfdf5);
+  color: var(--cymru-color-success-text, #107569);
+}
+
+.cy-user-nav__status-chip--online .cy-user-nav__status-chip-dot {
+  background-color: var(--cymru-color-success-background, #107569);
+}
+
+.cy-user-nav__status-chip--busy {
+  background-color: var(--cymru-color-danger-background, #fef2f2);
+  color: var(--cymru-color-danger-text, #d4351c);
+}
+
+.cy-user-nav__status-chip--busy .cy-user-nav__status-chip-dot {
+  background-color: var(--cymru-color-danger-background, #d4351c);
+}
+
+.cy-user-nav__status-chip--away {
+  background-color: var(--cymru-color-warning-background, #fffbeb);
+  color: var(--cymru-color-warning-text, #0b0c0c);
+}
+
+.cy-user-nav__status-chip--away .cy-user-nav__status-chip-dot {
+  background-color: var(--cymru-color-warning-background, #b27300);
+}
+
+.cy-user-nav__status-chip--offline {
+  background-color: var(--cymru-color-surface-hover, #f3f4f6);
+  color: var(--cymru-color-text-muted, #6b7280);
+}
+
+.cy-user-nav__status-chip--offline .cy-user-nav__status-chip-dot {
+  background-color: var(--cymru-color-border-strong, #8f9298);
+}
+
+/* Menu items list slot */
+.cy-user-nav__menu-items {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--cymru-space-1, 0.25rem);
+}
+
+.cy-user-nav__menu-items ::deep a,
+.cy-user-nav__menu-items ::deep button,
+.cy-user-nav__menu-items ::deep .cy-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-2, 0.5rem);
+  padding: var(--cymru-space-2, 0.5rem) var(--cymru-space-4, 1rem);
+  color: var(--cymru-color-text, #111827);
+  font-family: inherit;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+  box-sizing: border-box;
+  min-block-size: 36px;
+  transition: background-color 0.12s ease;
+}
+
+.cy-user-nav__menu-items ::deep a:hover,
+.cy-user-nav__menu-items ::deep button:hover,
+.cy-user-nav__menu-items ::deep .cy-menu-item:hover {
+  background-color: var(--cymru-color-surface-hover, #f3f4f6);
+}
+
+.cy-user-nav__menu-items ::deep a:focus-visible,
+.cy-user-nav__menu-items ::deep button:focus-visible,
+.cy-user-nav__menu-items ::deep .cy-menu-item:focus-visible {
+  outline: var(--cymru-focus-ring-width, 2px) solid var(--cymru-focus-ring-color, var(--cymru-color-focus-outline, #005ea5));
+  outline-offset: -2px;
+}
+
+/* Logout action slot */
+.cy-user-nav__logout {
+  border-block-start: 1px solid var(--cymru-color-border, #d1d5db);
+  padding: var(--cymru-space-2, 0.5rem);
+  box-sizing: border-box;
+}
+
+.cy-user-nav__logout-action {
+  display: flex;
+  align-items: center;
+  gap: var(--cymru-space-2, 0.5rem);
+  width: 100%;
+  min-block-size: 36px;
+  padding: var(--cymru-space-2, 0.5rem) var(--cymru-space-3, 0.75rem);
+  border-radius: var(--cymru-radius-md, 0.5rem);
+  border: none;
+  background-color: transparent;
+  color: var(--cymru-color-danger-text, #d4351c);
+  font-family: inherit;
+  font-size: var(--cymru-font-size-sm, 0.875rem);
+  font-weight: var(--cymru-font-weight-medium, 500);
+  cursor: pointer;
+  text-align: start;
+  transition: background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.cy-user-nav__logout-action:hover {
+  background-color: var(--cymru-color-danger-background, #fef2f2);
+}
+
+.cy-user-nav__logout-action:focus-visible {
+  outline: var(--cymru-focus-ring-width, 2px) solid var(--cymru-focus-ring-color, var(--cymru-color-focus-outline, #005ea5));
+  outline-offset: -2px;
+}
+
+/* ==========================================================================
+   Dark Theme Overrides
+   ========================================================================== */
+
+[data-theme="dark"] .cy-user-nav__login,
+[data-theme="dark"] .cy-user-nav__trigger {
+  background-color: var(--cymru-color-surface, #1e293b);
+  border-color: var(--cymru-color-border, #334155);
+  color: var(--cymru-color-text, #f1f5f9);
+}
+
+[data-theme="dark"] .cy-user-nav__login:hover,
+[data-theme="dark"] .cy-user-nav__trigger:hover {
+  background-color: var(--cymru-color-surface-hover, #334155);
+}
+
+[data-theme="dark"] .cy-user-nav__menu {
+  background-color: var(--cymru-color-surface, #1e293b);
+  border-color: var(--cymru-color-border, #334155);
+}
+
+[data-theme="dark"] .cy-user-nav__profile-header {
+  background-color: var(--cymru-color-surface-alt, #0f172a);
+  border-color: var(--cymru-color-border, #334155);
+}
+
+[data-theme="dark"] .cy-user-nav__logout {
+  border-color: var(--cymru-color-border, #334155);
+}
+
+[data-theme="dark"] .cy-user-nav__status-chip--online {
+  background-color: color-mix(in srgb, var(--cymru-color-success, #107569) 20%, transparent);
+  color: var(--cymru-color-success-text, #34d399);
+}
+
+[data-theme="dark"] .cy-user-nav__status-chip--busy {
+  background-color: color-mix(in srgb, var(--cymru-color-danger, #d4351c) 20%, transparent);
+  color: var(--cymru-color-danger-text, #f87171);
+}
+
+[data-theme="dark"] .cy-user-nav__status-chip--away {
+  background-color: color-mix(in srgb, var(--cymru-color-warning, #ffdd00) 20%, transparent);
+  color: var(--cymru-color-warning-text, #fbbf24);
+}
+
+[data-theme="dark"] .cy-user-nav__status-chip--offline {
+  background-color: var(--cymru-color-surface-hover, #334155);
+  color: var(--cymru-color-text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .cy-user-nav__logout-action {
+  color: var(--cymru-color-danger-text, #f87171);
+}
+
+[data-theme="dark"] .cy-user-nav__logout-action:hover {
+  background-color: color-mix(in srgb, var(--cymru-color-danger, #d4351c) 20%, transparent);
+}
+
+@media (forced-colors: active) {
+  .cy-user-nav__login,
+  .cy-user-nav__trigger,
+  .cy-user-nav__menu {
+    border: var(--cymru-border-width-thin, 1px) solid CanvasText;
+  }
+}

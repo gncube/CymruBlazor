@@ -1,0 +1,135 @@
+@page "/layouts/usernav"
+@namespace CymruBlazor.Demo.Pages.Components.Layout
+@using CymruBlazor.Components.Button
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Components.Forms
+@using CymruBlazor.Components.Layout
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyUserNav" Subtitle="An accessible user profile navigation component with authenticated avatar pill and unauthenticated action trigger.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Layout" Href="/layouts" />
+            <CyBreadcrumbItem Text="CyUserNav" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+    <span class="cb-panel-caption">Preview</span>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+        <div>
+            <span style="font-weight: var(--cymru-font-weight-bold); display: block; margin-bottom: var(--cymru-space-2);">Unauthenticated State:</span>
+            <div style="display:flex; gap: var(--cymru-space-4); align-items:center;">
+                <CyUserNav IsAuthenticated="false" OnLogin="HandleLogin" />
+                <CyUserNav IsAuthenticated="false" LoginText="Sign in" LoginHref="/auth/login" />
+            </div>
+        </div>
+
+        <div>
+            <span style="font-weight: var(--cymru-font-weight-bold); display: block; margin-bottom: var(--cymru-space-2);">Authenticated State:</span>
+            <div style="display:flex; gap: var(--cymru-space-4); align-items:center; flex-wrap: wrap;">
+                <CyUserNav IsAuthenticated="true"
+                           DisplayName="Dr Jane Doe"
+                           Email="jane.doe@wales.nhs.uk"
+                           Status="AvatarStatus.Online"
+                           OnLogout="HandleLogout">
+                    <MenuItems>
+                        <a href="/profile" role="menuitem">My Profile</a>
+                        <a href="/settings" role="menuitem">Account Settings</a>
+                    </MenuItems>
+                </CyUserNav>
+
+                <CyUserNav IsAuthenticated="true"
+                           DisplayName="Rhys Gruffudd"
+                           Email="rhys.gruffudd@cymru.nhs.uk"
+                           Status="AvatarStatus.Busy"
+                           OnLogout="HandleLogout" />
+            </div>
+        </div>
+
+        <p aria-live="polite" style="margin:0;">Last action: <strong>@(_lastAction ?? "none")</strong></p>
+    </div>
+
+    <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+        <span class="cb-panel-caption">Code</span>
+        <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+        <a class="cb-open-in-github"
+           href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Layout/CyUserNav.razor"
+           target="_blank" rel="noopener noreferrer">
+            Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+        </a>
+    </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+    <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+    <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+    private string? _lastAction;
+
+    private void HandleLogin() => _lastAction = "Login clicked";
+    private void HandleLogout() => _lastAction = "Logout clicked";
+
+    private string GeneratedCode => """
+        <CyUserNav IsAuthenticated="true"
+                   DisplayName="Dr Jane Doe"
+                   Email="jane.doe@wales.nhs.uk"
+                   Status="AvatarStatus.Online"
+                   OnLogout="HandleLogout">
+            <MenuItems>
+                <a href="/profile" role="menuitem">My Profile</a>
+                <a href="/settings" role="menuitem">Account Settings</a>
+            </MenuItems>
+        </CyUserNav>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("IsAuthenticated", "bool", "false", "Whether the user is signed in."),
+        new("DisplayName", "string?", "null", "The display name of the user."),
+        new("Name", "string?", "null", "Alias for DisplayName."),
+        new("Email", "string?", "null", "User email address or username shown in the profile card."),
+        new("AvatarUrl", "string?", "null", "Photo URL for the avatar."),
+        new("Status", "AvatarStatus", "None", "User presence: None, Online, Busy, Away, Offline."),
+        new("AvatarColour", "ComponentColour", "Unspecified", "Avatar background colour variant."),
+        new("LoginText", "string", "Log in", "Label for the unauthenticated state trigger."),
+        new("LoginHref", "string?", "null", "Optional href for unauthenticated link."),
+        new("OnLogin", "EventCallback<MouseEventArgs>", "-", "Callback when unauthenticated trigger is clicked."),
+        new("MenuItems", "RenderFragment?", "null", "Custom navigation links slot inside the dropdown menu."),
+        new("LogoutContent", "RenderFragment?", "null", "Custom logout slot."),
+        new("OnLogout", "EventCallback", "-", "Callback invoked on sign-out action."),
+        new("LogoutText", "string", "Log out", "Label for default logout button."),
+        new("Open", "bool", "false", "Two-way bindable open state.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("WAI-ARIA Menu Button Pattern", "Trigger has aria-haspopup=\"menu\" and aria-expanded; dropdown container has role=\"menu\" with labelledby reference."),
+        new("Keyboard Dismissal", "Escape key dismisses the menu and returns focus to the trigger button; Tab key dismisses without moving focus back."),
+        new("Click-outside dismissal", "Pressing outside the user navigation menu automatically dismisses it."),
+        new("Minimum Touch Target", "Trigger button and items meet WCAG 2.2 AA target size (>= 24x24px, with 36px height).")
+    ];
+}

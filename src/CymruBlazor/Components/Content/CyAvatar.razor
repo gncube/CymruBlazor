@@ -1,7 +1,24 @@
 @namespace CymruBlazor.Components.Content
 @inherits CyComponentBase
 
-@if (Decorative)
+@if (OnClick.HasDelegate)
+{
+    <button id="@Id"
+            type="button"
+            class="@CssClass"
+            style="@CssStyle"
+            aria-label="@(Decorative ? null : AccessibleLabel)"
+            aria-hidden="@(Decorative ? "true" : null)"
+            @onclick="OnClick"
+            @attributes="AdditionalAttributes">
+        @Content
+        @if (Status != AvatarStatus.None)
+        {
+            <span class="@StatusCssClass" aria-hidden="true"></span>
+        }
+    </button>
+}
+else if (Decorative)
 {
     <span id="@Id"
           class="@CssClass"
@@ -9,6 +26,10 @@
           aria-hidden="true"
           @attributes="AdditionalAttributes">
         @Content
+        @if (Status != AvatarStatus.None)
+        {
+            <span class="@StatusCssClass" aria-hidden="true"></span>
+        }
     </span>
 }
 else
@@ -17,18 +38,22 @@ else
           class="@CssClass"
           style="@CssStyle"
           role="img"
-          aria-label="@Name"
+          aria-label="@AccessibleLabel"
           @attributes="AdditionalAttributes">
         @Content
+        @if (Status != AvatarStatus.None)
+        {
+            <span class="@StatusCssClass" aria-hidden="true"></span>
+        }
     </span>
 }
 
 @code {
     private RenderFragment Content => __builder =>
     {
-        if (!string.IsNullOrWhiteSpace(ImageUrl))
+        if (HasActiveImage)
         {
-            <img class="cy-avatar__image" src="@ImageUrl" alt="" />
+            <img class="cy-avatar__image" src="@ImageUrl" alt="" @onerror="HandleImageError" />
         }
         else
         {

@@ -1,0 +1,137 @@
+@namespace CymruBlazor.Components.Layout
+@inherits CyLayoutComponentBase
+@using CymruBlazor.Components.Content
+@using CymruBlazor.Enums
+
+<div id="@Id"
+     @ref="_root"
+     class="@CssClass"
+     style="@CssStyle"
+     @attributes="AdditionalAttributes">
+
+    @if (!IsAuthenticated)
+    {
+        @if (!string.IsNullOrWhiteSpace(LoginHref))
+        {
+            <a href="@LoginHref"
+               class="cy-user-nav__login cy-user-nav__login--link"
+               @onclick="HandleLoginClickAsync">
+                <CyIcon Name="user" Size="18" />
+                <span class="cy-user-nav__login-label">@LoginText</span>
+            </a>
+        }
+        else
+        {
+            <button type="button"
+                    class="cy-user-nav__login cy-user-nav__login--button"
+                    @onclick="HandleLoginClickAsync">
+                <CyIcon Name="user" Size="18" />
+                <span class="cy-user-nav__login-label">@LoginText</span>
+            </button>
+        }
+    }
+    else
+    {
+        <button @ref="_trigger"
+                id="@TriggerId"
+                type="button"
+                class="cy-user-nav__trigger"
+                aria-haspopup="menu"
+                aria-expanded="@(Open ? "true" : "false")"
+                aria-controls="@(Open ? MenuId : null)"
+                aria-label="@TriggerAriaLabel"
+                @onclick="ToggleMenuAsync"
+                @onkeydown="HandleTriggerKeyDownAsync">
+
+            <CyAvatar Size="ComponentSize.Small"
+                      Name="@EffectiveName"
+                      ImageUrl="@AvatarUrl"
+                      Status="@Status"
+                      Colour="@AvatarColour"
+                      Decorative="true" />
+
+            <span class="cy-user-nav__name">@EffectiveName</span>
+
+            @if (Status != AvatarStatus.None)
+            {
+                <span class="cy-user-nav__status-dot cy-user-nav__status-dot--@Status.ToString().ToLowerInvariant()"
+                      aria-hidden="true">
+                </span>
+            }
+
+            <CyIcon Name="chevron-down"
+                    Size="16"
+                    Class="@($"cy-user-nav__chevron {(Open ? "cy-user-nav__chevron--open" : "")}")" />
+        </button>
+
+        @if (Open)
+        {
+            <div id="@MenuId"
+                 @ref="_menu"
+                 class="cy-user-nav__menu"
+                 role="menu"
+                 aria-labelledby="@TriggerId"
+                 @onkeydown="HandleMenuKeyDownAsync">
+
+                @if (ProfileHeader is not null)
+                {
+                    <div class="cy-user-nav__profile-header" role="none">
+                        @ProfileHeader
+                    </div>
+                }
+                else
+                {
+                    <div class="cy-user-nav__profile-header" role="none">
+                        <CyAvatar Size="ComponentSize.Large"
+                                  Name="@EffectiveName"
+                                  ImageUrl="@AvatarUrl"
+                                  Status="@Status"
+                                  Colour="@AvatarColour"
+                                  Decorative="true" />
+                        <div class="cy-user-nav__profile-details">
+                            <span class="cy-user-nav__profile-name">@EffectiveName</span>
+                            @if (!string.IsNullOrWhiteSpace(Email))
+                            {
+                                <span class="cy-user-nav__profile-email">@Email</span>
+                            }
+                            @if (Status != AvatarStatus.None)
+                            {
+                                <span class="cy-user-nav__status-chip cy-user-nav__status-chip--@Status.ToString().ToLowerInvariant()">
+                                    <span class="cy-user-nav__status-chip-dot" aria-hidden="true"></span>
+                                    <span>@StatusLabel(Status)</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (EffectiveMenuItems is not null)
+                {
+                    <div class="cy-user-nav__menu-items" role="none">
+                        @EffectiveMenuItems
+                    </div>
+                }
+
+                @if (LogoutContent is not null)
+                {
+                    <div class="cy-user-nav__logout" role="none">
+                        @LogoutContent
+                    </div>
+                }
+                else if (OnLogout.HasDelegate)
+                {
+                    <div class="cy-user-nav__logout" role="none">
+                        <button type="button"
+                                class="cy-user-nav__logout-action"
+                                role="menuitem"
+                                @onclick="HandleLogoutClickAsync">
+                            <CyIcon Name="logout" Size="18" />
+                            <span>@LogoutText</span>
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    }
+
+</div>
