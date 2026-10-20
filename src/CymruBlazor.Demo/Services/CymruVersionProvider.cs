@@ -5,8 +5,8 @@ namespace CymruBlazor.Demo.Services;
 
 /// <summary>
 /// Authoritative provider for the resolved CymruBlazor library version.
-/// Inspects assembly informational version attributes to dynamically resolve
-/// package versions including prerelease tags, avoiding manual hardcoded constants.
+/// Inspects central package metadata (Directory.Packages.props) and assembly attributes
+/// to dynamically resolve package versions, avoiding manual hardcoded constants.
 /// </summary>
 public static class CymruVersionProvider
 {
@@ -26,6 +26,8 @@ public static class CymruVersionProvider
 
     /// <summary>
     /// Resolves and formats the version from the specified assembly's metadata.
+    /// Prioritizes central package alignment metadata (<c>CymruBlazorPackageVersion</c>) from <c>Directory.Packages.props</c>,
+    /// before checking assembly informational or version attributes.
     /// </summary>
     public static string? ResolveVersion(Assembly? assembly)
     {
@@ -34,6 +36,31 @@ public static class CymruVersionProvider
             return null;
         }
 
+        // 1. Authoritative: Central Package Version from Directory.Packages.props stamped as AssemblyMetadata
+        var packageVersionMeta = assembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => string.Equals(a.Key, "CymruBlazorPackageVersion", StringComparison.OrdinalIgnoreCase))?
+            .Value;
+
+        var formattedPackageVersion = FormatVersion(packageVersionMeta);
+        if (!string.IsNullOrWhiteSpace(formattedPackageVersion) && !IsUninitializedVersion(formattedPackageVersion))
+        {
+            return formattedPackageVersion;
+        }
+
+        // Also check demo/entry assembly if the specified assembly does not carry the attribute
+        var entryPackageVersionMeta = typeof(CymruVersionProvider).Assembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => string.Equals(a.Key, "CymruBlazorPackageVersion", StringComparison.OrdinalIgnoreCase))?
+            .Value;
+
+        var formattedEntryVersion = FormatVersion(entryPackageVersionMeta);
+        if (!string.IsNullOrWhiteSpace(formattedEntryVersion) && !IsUninitializedVersion(formattedEntryVersion))
+        {
+            return formattedEntryVersion;
+        }
+
+        // 2. AssemblyInformationalVersion (e.g. from tag release)
         var informationalVersion = assembly
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion;
@@ -44,6 +71,7 @@ public static class CymruVersionProvider
             return formatted;
         }
 
+        // 3. AssemblyVersion
         var assemblyVersion = assembly.GetName().Version;
         if (assemblyVersion != null && assemblyVersion != new Version(0, 0, 0, 0))
         {
@@ -54,7 +82,7 @@ public static class CymruVersionProvider
             }
         }
 
-        return null;
+        return FallbackVersion;
     }
 
     /// <summary>

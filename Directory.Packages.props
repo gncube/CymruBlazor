@@ -1,17 +1,27 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CymruBlazorPackageVersion>2.0.1</CymruBlazorPackageVersion>
   </PropertyGroup>
+
+  <!--
+    Stamp the central package version into assembly metadata so the demo application
+    and components can resolve the authoritative release version without preview suffixes.
+  -->
+  <ItemGroup Condition="'$(CymruBlazorPackageVersion)' != ''">
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>CymruBlazorPackageVersion</_Parameter1>
+      <_Parameter2>$(CymruBlazorPackageVersion)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
   <ItemGroup Label="ASP.NET Core / Blazor">
     <!--
-      Placeholder only. MinVer computes a new CymruBlazor version on
-      every commit (see CONTRIBUTING.md), so there is no fixed version
-      that stays correct here. Run ./New-LocalPackageFeed.ps1 before
-      building the samples - it packs the library and overrides this via
-      local-package-versions.props (imported below), pointing the
-      samples at whatever was actually just packed.
+      MinVer computes a new CymruBlazor version on tag releases.
+      CymruBlazorPackageVersion defines the authoritative central package version (2.0.1)
+      consumed by samples and the demo application header.
     -->
-    <PackageVersion Include="CymruBlazor" Version="2.0.1" />
+    <PackageVersion Include="CymruBlazor" Version="$(CymruBlazorPackageVersion)" />
     <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

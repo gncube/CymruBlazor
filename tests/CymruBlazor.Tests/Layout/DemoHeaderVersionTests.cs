@@ -96,6 +96,14 @@ public sealed class DemoHeaderVersionTests : TestContextBase
     }
 
     [Fact]
+    public void Authoritative_Version_Provider_Should_Match_Central_Package_Version_V2_0_1()
+    {
+        var version = CymruVersionProvider.Version;
+
+        version.ShouldBe("v2.0.1");
+    }
+
+    [Fact]
     public void Authoritative_Version_Provider_Should_Never_Return_Uninitialized_Version()
     {
         var version = CymruVersionProvider.Version;
@@ -112,7 +120,7 @@ public sealed class DemoHeaderVersionTests : TestContextBase
 
         // Assert
         var badge = cut.Find(".cb-version-badge");
-        badge.TextContent.Trim().ShouldBe(CymruVersionProvider.Version);
+        badge.TextContent.Trim().ShouldBe("v2.0.1");
     }
 
     [Fact]
