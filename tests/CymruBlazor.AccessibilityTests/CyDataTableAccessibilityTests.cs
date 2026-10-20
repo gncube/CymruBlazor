@@ -51,7 +51,12 @@ public sealed class CyDataTableAccessibilityTests : AxeTestBase
             .Add(c => c.RowLabel, r => r.Name)
             .Add(c => c.MaxHeight, "12rem")),
         Markup(p => p.Add(c => c.Items, new List<Row>())),
-        Markup(p => p.Add(c => c.Items, new List<Row>()).Add(c => c.Loading, true)));
+        Markup(p => p.Add(c => c.Items, new List<Row>()).Add(c => c.Loading, true)),
+        Markup(p => p
+            .Add(c => c.Items, Rows)
+            .Add(c => c.RowLabel, r => r.Name)
+            .Add(c => c.DetailTemplate, r => builder => builder.AddContent(0, $"Notes for {r.Name}"))
+            .Add(c => c.ExpandedItems, [Rows[0]])));
 
     [Fact]
     public async Task Should_Have_No_Violations_In_All_States()

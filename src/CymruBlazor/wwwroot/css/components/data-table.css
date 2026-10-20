@@ -193,7 +193,87 @@
   color: var(--cymru-color-text-muted);
 }
 
+
+/* ---- expandable rows */
+
+.cy-data-table .cy-data-table__expand-cell {
+  inline-size: 1%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.cy-data-table__expand-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--cymru-radius-sm);
+  background-color: transparent;
+  color: var(--cymru-color-text-muted);
+  cursor: pointer;
+  transition: transform 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.cy-data-table__expand-button:hover {
+  background-color: var(--cymru-color-surface-hover);
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table__expand-button:focus-visible {
+  outline: var(--cymru-border-width-focus) solid var(--cymru-color-focus-outline);
+  outline-offset: 2px;
+}
+
+.cy-data-table__expand-icon {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.cy-data-table__expand-icon--expanded {
+  transform: rotate(90deg);
+}
+
+.cy-data-table .cy-data-table__row--expanded {
+  background-color: var(--cymru-color-surface-hover);
+}
+
+.cy-data-table .cy-data-table__detail-row {
+  background-color: var(--cymru-color-surface-alt);
+}
+
+.cy-data-table .cy-data-table__detail-cell {
+  padding: var(--cymru-space-4) var(--cymru-space-6);
+  border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+  color: var(--cymru-color-text);
+}
+
+.cy-data-table__detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cymru-space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cy-data-table__expand-button,
+  .cy-data-table__expand-icon {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
+  .cy-data-table .cy-data-table__expand-button:focus-visible {
+    outline: 2px solid Highlight;
+  }
+
+  .cy-data-table .cy-data-table__detail-row {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
   .cy-data-table .cy-data-table__row--selected {
     forced-color-adjust: none;
     background-color: Highlight;

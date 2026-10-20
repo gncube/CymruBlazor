@@ -632,4 +632,163 @@ public sealed class CyDataTableTests : TestContextBase
 
         calls.ShouldBe(1);
     }
+
+    // ---------------------------------------------------------------- expandable rows
+
+    [Fact]
+    public void Should_Render_Expand_Column_Header_And_Buttons_When_DetailTemplate_Is_Provided()
+    {
+        var cut = RenderTable(p => p
+            .Add(c => c.DetailTemplate, person => builder => builder.AddContent(0, $"Notes for {person.Name}")));
+
+        var header = cut.Find("thead th.cy-data-table__expand-cell");
+        header.TextContent.Trim().ShouldBe("Details");
+
+        var buttons = cut.FindAll("tbody button.cy-data-table__expand-button");
+        buttons.Count.ShouldBe(People.Count);
+
+        var firstBtn = buttons[0];
+        firstBtn.GetAttribute("aria-expanded").ShouldBe("false");
+        var controlId = firstBtn.GetAttribute("aria-controls");
+        controlId.ShouldNotBeNullOrWhiteSpace();
+
+        cut.FindAll("tbody tr.cy-data-table__detail-row").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Should_Expand_And_Collapse_Row_On_Button_Click()
+    {
+        var cut = RenderTable(p => p
+            .Add(c => c.RowLabel, person => person.Name)
+            .Add(c => c.DetailTemplate, person => builder => builder.AddMarkupContent(0, $"<div class=\"custom-detail\">Notes for {person.Name}</div>")));
+
+        var firstBtn = cut.Find("tbody button.cy-data-table__expand-button");
+        firstBtn.GetAttribute("aria-label").ShouldBe("Expand details for Carys");
+
+        await firstBtn.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        firstBtn.GetAttribute("aria-expanded").ShouldBe("true");
+        firstBtn.GetAttribute("aria-label").ShouldBe("Collapse details for Carys");
+
+        var detailRow = cut.Find("tbody tr.cy-data-table__detail-row");
+        detailRow.Id.ShouldBe(firstBtn.GetAttribute("aria-controls"));
+
+        var cell = detailRow.QuerySelector("td.cy-data-table__detail-cell");
+        cell.ShouldNotBeNull();
+        cell.GetAttribute("colspan").ShouldBe("3"); // 2 columns + 1 expand column
+        cell.QuerySelector(".custom-detail")!.TextContent.ShouldBe("Notes for Carys");
+
+        // Click again to collapse
+        await firstBtn.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        firstBtn.GetAttribute("aria-expanded").ShouldBe("false");
+        cut.FindAll("tbody tr.cy-data-table__detail-row").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Should_Respect_AutoCollapseDetails()
+    {
+        var cut = RenderTable(p => p
+            .Add(c => c.AutoCollapseDetails, true)
+            .Add(c => c.DetailTemplate, person => builder => builder.AddContent(0, $"Details for {person.Name}")));
+
+        await cut.FindAll("tbody button.cy-data-table__expand-button")[0].ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        cut.FindAll("tbody tr.cy-data-table__detail-row").Count.ShouldBe(1);
+        cut.FindAll("tbody button.cy-data-table__expand-button")[0].GetAttribute("aria-expanded").ShouldBe("true");
+
+        // Expand second row - first should collapse
+        await cut.FindAll("tbody button.cy-data-table__expand-button")[1].ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        cut.FindAll("tbody tr.cy-data-table__detail-row").Count.ShouldBe(1);
+        cut.FindAll("tbody button.cy-data-table__expand-button")[0].GetAttribute("aria-expanded").ShouldBe("false");
+        cut.FindAll("tbody button.cy-data-table__expand-button")[1].GetAttribute("aria-expanded").ShouldBe("true");
+        cut.Find("tbody tr.cy-data-table__detail-row").TextContent.ShouldContain("Details for Aled");
+    }
+
+    [Fact]
+    public async Task Should_Support_ExpandedItems_TwoWay_Binding_And_Events()
+    {
+        IReadOnlyList<Person>? expandedItems = null;
+        (Person Item, bool Expanded)? lastEvent = null;
+
+        var cut = RenderTable(p => p
+            .Add(c => c.DetailTemplate, person => builder => builder.AddContent(0, person.Name))
+            .Add(c => c.ExpandedItems, expandedItems)
+            .Add(c => c.ExpandedItemsChanged, EventCallback.Factory.Create<IReadOnlyList<Person>>(this, items => expandedItems = items))
+            .Add(c => c.OnRowExpandChanged, EventCallback.Factory.Create<(Person, bool)>(this, ev => lastEvent = ev)));
+
+        await cut.FindAll("tbody button.cy-data-table__expand-button")[0].ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        expandedItems.ShouldNotBeNull();
+        expandedItems.Count.ShouldBe(1);
+        expandedItems[0].Id.ShouldBe(People[0].Id);
+
+        lastEvent.ShouldNotBeNull();
+        lastEvent.Value.Item.Id.ShouldBe(People[0].Id);
+        lastEvent.Value.Expanded.ShouldBeTrue();
+
+        // Collapse: re-query after re-render!
+        await cut.FindAll("tbody button.cy-data-table__expand-button")[0].ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        expandedItems.ShouldBeEmpty();
+        lastEvent.Value.Expanded.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task Should_Support_Programmatic_Expand_Collapse_Methods()
+    {
+        var cut = RenderTable(p => p
+            .Add(c => c.DetailTemplate, person => builder => builder.AddContent(0, person.Name)));
+
+        cut.Instance.IsExpanded(People[0]).ShouldBeFalse();
+
+        await cut.InvokeAsync(() => cut.Instance.ExpandRowDetailsAsync(People[0]));
+        cut.Instance.IsExpanded(People[0]).ShouldBeTrue();
+
+        await cut.InvokeAsync(() => cut.Instance.CollapseRowDetailsAsync(People[0]));
+        cut.Instance.IsExpanded(People[0]).ShouldBeFalse();
+
+        await cut.InvokeAsync(() => cut.Instance.ToggleRowDetailsAsync(People[1]));
+        cut.Instance.IsExpanded(People[1]).ShouldBeTrue();
+
+        await cut.InvokeAsync(() => cut.Instance.CollapseAllDetailsAsync());
+        cut.Instance.IsExpanded(People[1]).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Should_Calculate_ColumnSpan_Correctly_With_All_Optional_Columns()
+    {
+        var cut = RenderTable(p => p
+            .Add(c => c.Items, new List<Person>()) // Empty to render message row with colspan
+            .Add(c => c.SelectionMode, CyDataSelectionMode.Multiple)
+            .Add(c => c.RowLabel, p => p.Name)
+            .Add(c => c.DetailTemplate, p => builder => builder.AddContent(0, "Details"))
+            .Add(c => c.RowActions, p => builder => builder.AddContent(0, "Action")),
+            withItems: false);
+
+        // 2 data columns + 1 selection + 1 expand + 1 action = 5
+        var emptyCell = cut.Find("tbody td.cy-data-table__message");
+        emptyCell.GetAttribute("colspan").ShouldBe("5");
+    }
+
+    [Fact]
+    public void Should_Use_Custom_Text_For_Expand_Column_And_Button_Labels()
+    {
+        var customText = new CyDataTableText
+        {
+            ExpandColumn = "Manylion",
+            ExpandRow = "Ehangu {0}",
+            CollapseRow = "Crebachu {0}"
+        };
+
+        var cut = RenderTable(p => p
+            .Add(c => c.RowLabel, p => p.Name)
+            .Add(c => c.Text, customText)
+            .Add(c => c.DetailTemplate, p => builder => builder.AddContent(0, "Details")));
+
+        var header = cut.Find("thead th.cy-data-table__expand-cell");
+        header.TextContent.Trim().ShouldBe("Manylion");
+
+        var firstBtn = cut.Find("tbody button.cy-data-table__expand-button");
+        firstBtn.GetAttribute("aria-label").ShouldBe("Ehangu Carys");
+    }
 }

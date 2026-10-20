@@ -35,8 +35,13 @@ namespace CymruBlazor.Components.Data;
 /// selection control and any focusable content in its cells, then the pagination. There is no arrow-key cell navigation.
 /// </para>
 /// <para>
+/// <b>Expandable rows.</b> Provide <see cref="DetailTemplate"/> to render master-detail disclosure rows. Each row receives an
+/// accessible expand/collapse button with <c>aria-expanded</c> and <c>aria-controls</c>. Use <see cref="AutoCollapseDetails"/>
+/// to ensure only one row is open at a time, or bind <see cref="ExpandedItems"/> / listen to <see cref="OnRowExpandChanged"/>.
+/// </para>
+/// <para>
 /// <b>Not included</b> (use <c>QuickGrid</c> or build on this): virtualisation, inline editing, column resizing,
-/// reordering or hiding, stacked rows on small screens, grouping, expandable rows, a filter UI and export. After a page
+/// reordering or hiding, stacked rows on small screens, grouping, a filter UI and export. After a page
 /// change focus moves to the "Showing 11 to 20 of 134" line, because the pagination replaces the pressed button.
 /// </para>
 /// </remarks>
@@ -46,6 +51,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     private static readonly CyDataTableText DefaultText = new();
 
     private readonly Dictionary<object, TItem> _selected = [];
+    private readonly Dictionary<object, TItem> _expanded = [];
     private IReadOnlyList<TItem> _view = [];
     private CancellationTokenSource? _cts;
     private ElementReference _range;
@@ -70,6 +76,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     private int _seenPage = 1;
     private int _seenPageSize;
     private IReadOnlyList<TItem>? _seenSelected;
+    private IReadOnlyList<TItem>? _seenExpanded;
 
     // What the provider was last asked for.
     private bool _hasLoaded;
@@ -197,6 +204,26 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     [Parameter]
     public string? MaxHeight { get; set; }
 
+    /// <summary>Template rendered in an expanded row below the main row for master-detail views.</summary>
+    [Parameter]
+    public RenderFragment<TItem>? DetailTemplate { get; set; }
+
+    /// <summary>When true, expanding any row automatically collapses all other expanded rows. Default false.</summary>
+    [Parameter]
+    public bool AutoCollapseDetails { get; set; }
+
+    /// <summary>The currently expanded rows. Two-way bindable; each change assigns a new list.</summary>
+    [Parameter]
+    public IReadOnlyList<TItem>? ExpandedItems { get; set; }
+
+    /// <summary>Raised when the list of expanded items changes.</summary>
+    [Parameter]
+    public EventCallback<IReadOnlyList<TItem>> ExpandedItemsChanged { get; set; }
+
+    /// <summary>Raised when a row is expanded or collapsed.</summary>
+    [Parameter]
+    public EventCallback<(TItem Item, bool Expanded)> OnRowExpandChanged { get; set; }
+
     /// <summary>The phrases the table shows and announces; defaults to English.</summary>
     [Parameter]
     public CyDataTableText? Text { get; set; }
@@ -228,7 +255,10 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             .Select(size => new CyOption<int>(size, size.ToString(CultureInfo.CurrentCulture)));
 
     private int ColumnSpan =>
-        Columns.Count + (SelectionMode != CyDataSelectionMode.None ? 1 : 0) + (RowActions is not null ? 1 : 0);
+        Columns.Count
+        + (SelectionMode != CyDataSelectionMode.None ? 1 : 0)
+        + (DetailTemplate is not null ? 1 : 0)
+        + (RowActions is not null ? 1 : 0);
 
     private bool AllPageSelected => _view.Count > 0 && _view.All(IsSelected);
 
@@ -376,6 +406,17 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             foreach (var item in SelectedItems)
             {
                 _selected[KeyOf(item)] = item;
+            }
+        }
+
+        if (ExpandedItems is not null && !ReferenceEquals(ExpandedItems, _seenExpanded))
+        {
+            _seenExpanded = ExpandedItems;
+            _expanded.Clear();
+
+            foreach (var item in ExpandedItems)
+            {
+                _expanded[KeyOf(item)] = item;
             }
         }
     }
@@ -732,6 +773,149 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
     private static string Format(string format, params object[] args) =>
         string.Format(CultureInfo.CurrentCulture, format, args);
+
+    // ---- expandable rows
+
+    /// <summary>Checks whether a given row is currently expanded.</summary>
+    public bool IsExpanded(TItem item) => _expanded.ContainsKey(KeyOf(item));
+
+    /// <summary>Toggles the expansion state of a row.</summary>
+    public async Task ToggleRowDetailsAsync(TItem item)
+    {
+        if (IsExpanded(item))
+        {
+            await CollapseRowDetailsAsync(item);
+        }
+        else
+        {
+            await ExpandRowDetailsAsync(item);
+        }
+    }
+
+    /// <summary>Expands a row's details.</summary>
+    public async Task ExpandRowDetailsAsync(TItem item)
+    {
+        var key = KeyOf(item);
+        if (_expanded.ContainsKey(key))
+        {
+            return;
+        }
+
+        if (AutoCollapseDetails)
+        {
+            _expanded.Clear();
+        }
+
+        _expanded[key] = item;
+        await PublishExpandedAsync(item, true);
+    }
+
+    /// <summary>Collapses a row's details.</summary>
+    public async Task CollapseRowDetailsAsync(TItem item)
+    {
+        var key = KeyOf(item);
+        if (!_expanded.Remove(key))
+        {
+            return;
+        }
+
+        await PublishExpandedAsync(item, false);
+    }
+
+    /// <summary>Collapses all expanded rows.</summary>
+    public async Task CollapseAllDetailsAsync()
+    {
+        if (_expanded.Count == 0)
+        {
+            return;
+        }
+
+        _expanded.Clear();
+        var list = _expanded.Values.ToList();
+        _seenExpanded = list;
+
+        if (ExpandedItemsChanged.HasDelegate)
+        {
+            await ExpandedItemsChanged.InvokeAsync(list);
+        }
+    }
+
+    private async Task PublishExpandedAsync(TItem item, bool isExpanded)
+    {
+        var list = _expanded.Values.ToList();
+        _seenExpanded = list;
+
+        if (ExpandedItemsChanged.HasDelegate)
+        {
+            await ExpandedItemsChanged.InvokeAsync(list);
+        }
+
+        if (OnRowExpandChanged.HasDelegate)
+        {
+            await OnRowExpandChanged.InvokeAsync((item, isExpanded));
+        }
+    }
+
+    private string ExpandRowLabel(TItem item, bool isExpanded)
+    {
+        var label = RowLabel?.Invoke(item);
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            var firstVal = Columns.Count > 0 && Columns[0].Value is not null
+                ? Convert.ToString(Columns[0].Value!(item), CultureInfo.CurrentCulture)
+                : null;
+
+            label = !string.IsNullOrWhiteSpace(firstVal) ? firstVal : "row";
+        }
+
+        return Format(isExpanded ? EffectiveText.CollapseRow : EffectiveText.ExpandRow, label);
+    }
+
+    private int IndexOf(TItem item)
+    {
+        for (var i = 0; i < _view.Count; i++)
+        {
+            if (EqualityComparer<TItem>.Default.Equals(_view[i], item))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private string RowDetailId(TItem item)
+    {
+        var key = KeySelector?.Invoke(item)?.ToString();
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            var index = IndexOf(item);
+            key = index >= 0 ? index.ToString(CultureInfo.InvariantCulture) : Math.Abs(item?.GetHashCode() ?? 0).ToString(CultureInfo.InvariantCulture);
+        }
+
+        return $"{Id}-detail-{SanitizeId(key)}";
+    }
+
+    private string RowTriggerId(TItem item)
+    {
+        var key = KeySelector?.Invoke(item)?.ToString();
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            var index = IndexOf(item);
+            key = index >= 0 ? index.ToString(CultureInfo.InvariantCulture) : Math.Abs(item?.GetHashCode() ?? 0).ToString(CultureInfo.InvariantCulture);
+        }
+
+        return $"{Id}-expand-{SanitizeId(key)}";
+    }
+
+    private static string SanitizeId(string value) =>
+        System.Text.RegularExpressions.Regex.Replace(value, @"[^a-zA-Z0-9_\-]", "-");
+
+    private static string RowClass(bool selected, bool expanded) =>
+        CssBuilder.Empty
+            .AddClass("cy-data-table__row")
+            .AddClass("cy-data-table__row--selected", selected)
+            .AddClass("cy-data-table__row--expanded", expanded)
+            .Build();
 
     /// <inheritdoc />
     public void Dispose()

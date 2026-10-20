@@ -45,6 +45,26 @@
         <p style="margin:0;">Page size: <strong>@_pageSize</strong>. Last sort change: <strong>@_lastSort</strong>.</p>
     </div>
 
+    <h2 class="cb-section-title">Expandable rows / Master-detail</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Appointments with clinical notes" Columns="_columns" Items="_appointments"
+                     PageSize="4" RowLabel="a => a.Patient" KeySelector="a => a.Id">
+            <DetailTemplate Context="appointment">
+                <div style="display: flex; flex-direction: column; gap: var(--cymru-space-2);">
+                    <h4 style="margin: 0; font-size: var(--cymru-font-size-md); font-weight: var(--cymru-font-weight-bold);">
+                        Clinical Details: @appointment.Patient
+                    </h4>
+                    <p style="margin: 0; color: var(--cymru-color-text-muted);">
+                        Clinic: <strong>@appointment.Clinic</strong> | Duration: <strong>@appointment.Minutes minutes</strong> | NHS ID: <strong>948-@appointment.Id-@((appointment.Id * 137) % 1000)</strong>
+                    </p>
+                    <p style="margin: 0;">
+                        Referral notes: Patient referred from primary care for secondary assessment. Previous investigations reviewed.
+                    </p>
+                </div>
+            </DetailTemplate>
+        </CyDataTable>
+    </div>
+
     <h2 class="cb-section-title">Welsh phrases</h2>
     <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
         <CyDataTable TItem="Appointment" Caption="Apwyntiadau" Columns="_columns" Items="_appointments" PageSize="3" Text="_welshText" />
@@ -162,6 +182,10 @@ else
         new("Items / ItemsProvider", "IReadOnlyList<TItem> / Func<CyDataTableRequest, CancellationToken, Task<CyDataTableResult<TItem>>>", "null", "In-memory rows or a server page at a time; not both."),
         new("SortKey / SortDescending", "string? / bool", "null / false", "Two-way bindable. AllowUnsorted adds a third step."),
         new("SelectionMode", "CyDataSelectionMode", "None", "None, Single (radio) or Multiple (checkbox)."),
+        new("DetailTemplate", "RenderFragment<TItem>?", "null", "Template rendered in an accessible disclosure row below the main row for master-detail views."),
+        new("AutoCollapseDetails", "bool", "false", "When true, expanding any row automatically collapses all other open rows."),
+        new("ExpandedItems", "IReadOnlyList<TItem>?", "null", "The currently expanded rows. Two-way bindable (@bind-ExpandedItems)."),
+        new("OnRowExpandChanged", "EventCallback<(TItem Item, bool Expanded)>", "-", "Raised when a row is expanded or collapsed."),
         new("SelectedItems / KeySelector / RowLabel", "-", "-", "Two-way selection; a stable row key (required with a provider); the name of each row's control (required with selection)."),
         new("PageSize / Page", "int", "0 / 1", "0 turns paging off. Both are two-way bindable (PageSize needs PageSizeOptions to change)."),
         new("PageSizeOptions", "IReadOnlyList<int>?", "null", "Shows a labelled \"Rows per page\" select beside the pagination. Choosing a size returns to page 1 and announces it. The current PageSize is always offered. Null renders nothing extra."),
@@ -178,6 +202,7 @@ else
         new("Real table", "A captioned table in the keyboard-reachable scroll region of CyTable, with scoped headers and optional row headers."),
         new("aria-sort", "Only the sorted column has aria-sort; the direction also shows as an icon, and each change is announced."),
         new("Selection", "Each row has a checkbox or radio named with the row's label; the header checkbox selects the current page; the count is visible text."),
+        new("Expandable rows", "Each expander button has an accessible name, aria-expanded state, and aria-controls referencing the detail row ID."),
         new("Paging", "After a page change focus moves to the \"Showing 4 to 6 of 7\" line, and the new page is announced."),
         new("Loading and errors", "aria-busy while loading; a failure shows an alert and a Retry button without exception text.")
     ];

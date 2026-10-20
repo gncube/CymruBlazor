@@ -63,4 +63,13 @@ public sealed record CyDataTableText
 
     /// <summary>Hidden heading of the row-actions column.</summary>
     public string ActionsHeader { get; init; } = "Actions";
+
+    /// <summary>Hidden heading of the row-expansion column.</summary>
+    public string ExpandColumn { get; init; } = "Details";
+
+    /// <summary>Accessible name of a row's expand button when collapsed. {0} the row's label.</summary>
+    public string ExpandRow { get; init; } = "Expand details for {0}";
+
+    /// <summary>Accessible name of a row's expand button when expanded. {0} the row's label.</summary>
+    public string CollapseRow { get; init; } = "Collapse details for {0}";
 }

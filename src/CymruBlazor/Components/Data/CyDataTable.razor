@@ -40,6 +40,13 @@
                     </th>
                 }
 
+                @if (DetailTemplate is not null)
+                {
+                    <th scope="col" class="cy-data-table__expand-cell">
+                        <span class="u-sr-only">@EffectiveText.ExpandColumn</span>
+                    </th>
+                }
+
                 @foreach (var column in Columns)
                 {
                     var col = column;
@@ -110,8 +117,9 @@
                 {
                     var current = item;
                     var selected = IsSelected(current);
+                    var isExpanded = IsExpanded(current);
 
-                    <tr class="@(selected ? "cy-data-table__row cy-data-table__row--selected" : "cy-data-table__row")">
+                    <tr class="@RowClass(selected, isExpanded)">
 
                         @if (SelectionMode != CyDataSelectionMode.None)
                         {
@@ -138,6 +146,23 @@
                             </td>
                         }
 
+                        @if (DetailTemplate is not null)
+                        {
+                            <td class="cy-data-table__expand-cell">
+                                <button
+                                    type="button"
+                                    id="@RowTriggerId(current)"
+                                    class="cy-data-table__expand-button"
+                                    aria-expanded="@(isExpanded ? "true" : "false")"
+                                    aria-controls="@RowDetailId(current)"
+                                    aria-label="@ExpandRowLabel(current, isExpanded)"
+                                    @onclick="() => ToggleRowDetailsAsync(current)"
+                                    @onclick:stopPropagation="true">
+                                    <CyIcon Name="chevron-right" Class="@(isExpanded ? "cy-data-table__expand-icon cy-data-table__expand-icon--expanded" : "cy-data-table__expand-icon")" Size="16" />
+                                </button>
+                            </td>
+                        }
+
                         @foreach (var column in Columns)
                         {
                             var col = column;
@@ -158,6 +183,17 @@
                         }
 
                     </tr>
+
+                    @if (DetailTemplate is not null && isExpanded)
+                    {
+                        <tr id="@RowDetailId(current)" class="cy-data-table__detail-row">
+                            <td colspan="@ColumnSpan" class="cy-data-table__detail-cell">
+                                <div class="cy-data-table__detail-content">
+                                    @DetailTemplate(current)
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

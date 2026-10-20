@@ -10,10 +10,19 @@ Full detail for every release is also available as auto-generated
 
 ## [2.1.0] - Unreleased
 
-Minor release introducing the `CyTimeline` and `CyTimelineItem` component suite for clinical activity tracking and chronological milestone inspection, expanding content presentation capabilities in compliance with WCAG 2.2 AA.
+Minor release introducing the `CyTimeline` audit trail component suite and `CyDataTable<TItem>` expandable rows for master-detail inspection, expanding clinical data display capabilities in compliance with WCAG 2.2 AA.
 
 ### Added
 
+- **`CyDataTable<TItem>` Expandable Rows / Master-Detail** (`Data`):
+  - Added native expandable rows support via `DetailTemplate`, allowing rich master-detail disclosure panels directly below table rows.
+  - Accessible toggle control with `aria-expanded` and `aria-controls` referencing unique row detail region IDs, animated chevron disclosure indicators, and keyboard activation (`Enter` / `Space`).
+  - Single-expand mode via `AutoCollapseDetails` parameter (expanding a row collapses others).
+  - Two-way binding support for `@bind-ExpandedItems` and `OnRowExpandChanged` event callbacks.
+  - Programmatic API methods: `ToggleRowDetailsAsync`, `ExpandRowDetailsAsync`, `CollapseRowDetailsAsync`, `CollapseAllDetailsAsync`, and `IsExpanded`.
+  - Added localized strings to `CyDataTableText`: `ExpandColumn` ("Details"), `ExpandRow` ("Expand details for {0}"), and `CollapseRow` ("Collapse details for {0}").
+  - Seamless multi-theme styling in `data-table.css` supporting Light, Dark, and High-Contrast (`forced-colors: active`) modes with zero axe accessibility violations.
+  - Interactive master-detail showcase added to the demo at `/data/data-table`.
 - **`CyTimeline` & `CyTimelineItem`** (`Content`):
   - Added new accessible timeline component suite (`CyTimeline`, `CyTimelineItem`, `CyTimelineItemModel`, `CyTimelineLineStyle`, and `CyTimelineText`) adhering to the NHS Wales Design System `progress-timeline` specification.
   - Supports both declarative child composition and data-bound collection binding via `Items` and `ItemTemplate`.
