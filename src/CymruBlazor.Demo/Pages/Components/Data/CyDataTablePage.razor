@@ -1,5 +1,6 @@
 @page "/data/data-table"
 @namespace CymruBlazor.Demo.Pages.Components.Data
+@using CymruBlazor.Components.Button
 @using CymruBlazor.Components.Data
 @using CymruBlazor.Demo.SharedComponents
 
@@ -30,12 +31,40 @@
     <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
         <CyDataTable TItem="Appointment" Caption="Appointments" Columns="_columns" Items="_appointments"
                      PageSize="4" SelectionMode="CyDataSelectionMode.Multiple" RowLabel="a => a.Patient"
-                     KeySelector="a => a.Id" @bind-SelectedItems="_selected" />
+                     KeySelector="a => a.Id" @bind-SelectedItems="_selected" ShowSelectAllAcrossPages="true">
+            <BulkActions Context="selectedItems">
+                <CyButton Variant="ComponentColour.Secondary" Size="ComponentSize.Small" OnClick="() => NotifySelected(selectedItems)">
+                    Notify Selected
+                </CyButton>
+                <CyButton Variant="ComponentColour.Tertiary" Size="ComponentSize.Small" OnClick="() => ExportSelected(selectedItems)">
+                    Export
+                </CyButton>
+            </BulkActions>
+        </CyDataTable>
+        @if (!string.IsNullOrEmpty(_bulkMessage))
+        {
+            <p style="margin: var(--cymru-space-2) 0 0; color: var(--cymru-color-brand);">@_bulkMessage</p>
+        }
+    </div>
+
+    <h2 class="cb-section-title">Column filtering and global search</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <CyDataTable TItem="Appointment" Caption="Searchable Appointments" Columns="_filterableColumns" Items="_appointments"
+                     PageSize="4" ShowSearch="true" RowLabel="a => a.Patient" KeySelector="a => a.Id" />
+    </div>
+
+    <h2 class="cb-section-title">Responsive stacked-row mode (mobile / narrow screens)</h2>
+    <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
+        <p class="cb-panel-caption" style="text-transform:none; letter-spacing:0; margin-bottom: var(--cymru-space-2);">
+            On viewports under 768px, rows automatically transform into accessible key-value cards using <code>data-label</code> attributes.
+        </p>
+        <CyDataTable TItem="Appointment" Caption="Responsive Clinic Appointments" Columns="_columns" Items="_appointments"
+                     PageSize="3" Responsive="true" RowLabel="a => a.Patient" KeySelector="a => a.Id" />
     </div>
 
     <h2 class="cb-section-title">From an async provider</h2>
     <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column;">
-        <CyDataTable TItem="Appointment" Caption="Appointments from a server" Columns="_columns" ItemsProvider="LoadAsync" PageSize="3" />
+        <CyDataTable TItem="Appointment" Caption="Appointments from a server" Columns="_filterableColumns" ItemsProvider="LoadAsync" PageSize="3" ShowSearch="true" />
     </div>
 
     <h2 class="cb-section-title">Rows per page and sort changes</h2>
@@ -95,6 +124,7 @@ else
     public sealed record Appointment(int Id, string Patient, string Clinic, int Minutes);
 
     private Tab _activeTab = Tab.Examples;
+    private string? _bulkMessage;
 
     private IReadOnlyList<Appointment>? _selected;
 
@@ -110,10 +140,17 @@ else
     ];
 
     private IReadOnlyList<CyDataColumn<Appointment>> _columns = default!;
+    private IReadOnlyList<CyDataColumn<Appointment>> _filterableColumns = default!;
 
     private readonly IReadOnlyList<int> _pageSizes = [2, 4, 8];
     private int _pageSize = 4;
     private string _lastSort = "none";
+
+    private void NotifySelected(IReadOnlyList<Appointment> items) =>
+        _bulkMessage = $"Notified {items.Count} patient(s)";
+
+    private void ExportSelected(IReadOnlyList<Appointment> items) =>
+        _bulkMessage = $"Exported {items.Count} patient(s)";
 
     private void HandleSortChanged(CyDataSortChange change) =>
         _lastSort = change.Key is null ? "cleared" : $"{change.Key} {(change.Descending ? "descending" : "ascending")}";
@@ -129,7 +166,8 @@ else
         RowsPerPageChanged = "{0} rhes y dudalen. Tudalen 1 o {1}."
     };
 
-    protected override void OnInitialized() =>
+    protected override void OnInitialized()
+    {
         _columns =
         [
             new CyDataColumn<Appointment> { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
@@ -137,11 +175,36 @@ else
             new CyDataColumn<Appointment> { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
         ];
 
+        _filterableColumns =
+        [
+            new CyDataColumn<Appointment> { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true, Filterable = true, FilterPlaceholder = "Filter patient..." },
+            new CyDataColumn<Appointment> { Header = "Clinic", Value = a => a.Clinic, Sortable = true, Filterable = true, FilterPlaceholder = "Filter clinic..." },
+            new CyDataColumn<Appointment> { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
+        ];
+    }
+
     private async Task<CyDataTableResult<Appointment>> LoadAsync(CyDataTableRequest request, CancellationToken token)
     {
         await Task.Delay(400, token);
 
         IEnumerable<Appointment> rows = _appointments;
+
+        if (!string.IsNullOrWhiteSpace(request.SearchQuery))
+        {
+            var q = request.SearchQuery.Trim();
+            rows = rows.Where(a => a.Patient.Contains(q, StringComparison.OrdinalIgnoreCase) || a.Clinic.Contains(q, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (request.Filters is not null)
+        {
+            foreach (var (k, v) in request.Filters)
+            {
+                if (string.IsNullOrWhiteSpace(v)) continue;
+                if (k == "Patient") rows = rows.Where(a => a.Patient.Contains(v, StringComparison.OrdinalIgnoreCase));
+                else if (k == "Clinic") rows = rows.Where(a => a.Clinic.Contains(v, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
         rows = (request.SortKey, request.SortDescending) switch
         {
             ("Patient", false) => rows.OrderBy(a => a.Patient),
@@ -164,12 +227,22 @@ else
                      PageSize="4"
                      SelectionMode="CyDataSelectionMode.Multiple"
                      RowLabel="a => a.Patient" KeySelector="a => a.Id"
-                     @bind-SelectedItems="_selected" />
+                     @bind-SelectedItems="_selected"
+                     ShowSelectAllAcrossPages="true"
+                     ShowSearch="true"
+                     Responsive="true">
+            <BulkActions Context="selectedItems">
+                <CyButton Variant="ComponentColour.Secondary" Size="ComponentSize.Small" OnClick="() => NotifySelected(selectedItems)">
+                    Notify Selected
+                </CyButton>
+            </BulkActions>
+        </CyDataTable>
 
         @code {
             private IReadOnlyList<CyDataColumn<Appointment>> _columns =
             [
-                new() { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true },
+                new() { Header = "Patient", Value = a => a.Patient, Sortable = true, RowHeader = true, Filterable = true },
+                new() { Header = "Clinic", Value = a => a.Clinic, Sortable = true, Filterable = true },
                 new() { Header = "Minutes", Value = a => a.Minutes, Sortable = true, Align = CyColumnAlign.End }
             ];
         }
@@ -178,10 +251,19 @@ else
     private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
     [
         new("Caption", "string", "-", "Required accessible name."),
-        new("Columns", "IReadOnlyList<CyDataColumn<TItem>>", "-", "Header, Value or Cell, Sortable, SortKey, Compare, Align, Width, RowHeader and more."),
+        new("Columns", "IReadOnlyList<CyDataColumn<TItem>>", "-", "Header, Value or Cell, Sortable, SortKey, Compare, Align, Width, RowHeader, Filterable, FilterPlaceholder, FilterPredicate, FilterTemplate and more."),
         new("Items / ItemsProvider", "IReadOnlyList<TItem> / Func<CyDataTableRequest, CancellationToken, Task<CyDataTableResult<TItem>>>", "null", "In-memory rows or a server page at a time; not both."),
         new("SortKey / SortDescending", "string? / bool", "null / false", "Two-way bindable. AllowUnsorted adds a third step."),
         new("SelectionMode", "CyDataSelectionMode", "None", "None, Single (radio) or Multiple (checkbox)."),
+        new("BulkActions", "RenderFragment<IReadOnlyList<TItem>>?", "null", "Toolbar actions displayed inside the sticky selection bar when one or more rows are selected."),
+        new("ShowSelectAllAcrossPages", "bool", "false", "When true, displays a banner link to select all records across all pages when all items on the current page are selected."),
+        new("OnSelectionChanged", "EventCallback<IReadOnlyList<TItem>>", "-", "Raised whenever row selection changes with the updated list of selected items."),
+        new("EnableFiltering", "bool", "true", "Enables the column filter input row in the table header. Active if true or if any column has Filterable set."),
+        new("ShowSearch", "bool", "false", "Renders a debounced global search bar above the table."),
+        new("SearchQuery", "string?", "null", "Two-way bindable global search filter string (@bind-SearchQuery)."),
+        new("Filters", "IReadOnlyDictionary<string, string>?", "null", "Two-way bindable per-column filter values dictionary (@bind-Filters)."),
+        new("FilterDebounceMs", "int", "250", "Debounce delay in milliseconds for filter and search input changes (0 to disable)."),
+        new("Responsive", "bool", "true", "When true, transforms table rows into stacked key-value cards on mobile viewports (< 768px)."),
         new("DetailTemplate", "RenderFragment<TItem>?", "null", "Template rendered in an accessible disclosure row below the main row for master-detail views."),
         new("AutoCollapseDetails", "bool", "false", "When true, expanding any row automatically collapses all other open rows."),
         new("ExpandedItems", "IReadOnlyList<TItem>?", "null", "The currently expanded rows. Two-way bindable (@bind-ExpandedItems)."),
@@ -202,6 +284,10 @@ else
         new("Real table", "A captioned table in the keyboard-reachable scroll region of CyTable, with scoped headers and optional row headers."),
         new("aria-sort", "Only the sorted column has aria-sort; the direction also shows as an icon, and each change is announced."),
         new("Selection", "Each row has a checkbox or radio named with the row's label; the header checkbox selects the current page; the count is visible text."),
+        new("Tri-state selection", "Header checkbox supports tri-state (mixed) aria-checked when some, but not all, rows are selected, with dynamic screen reader announcements."),
+        new("Keyboard range selection", "Space key toggles row selection when a row has focus. Shift+Click enables contiguous range selection without mouse drag."),
+        new("Sticky bulk actions", "Bulk action toolbar appears dynamically with live region selection count, action controls, and an accessible clear button."),
+        new("Responsive card mode", "Narrow viewports (< 768px) stack data into accessible key-value card structures using data-label attributes without horizontal overflow."),
         new("Expandable rows", "Each expander button has an accessible name, aria-expanded state, and aria-controls referencing the detail row ID."),
         new("Paging", "After a page change focus moves to the \"Showing 4 to 6 of 7\" line, and the new page is announced."),
         new("Loading and errors", "aria-busy while loading; a failure shows an alert and a Retry button without exception text.")

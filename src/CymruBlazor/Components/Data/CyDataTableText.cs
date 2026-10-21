@@ -28,11 +28,23 @@ public sealed record CyDataTableText
     /// <summary>Accessible name of the header checkbox when not every row on the page is selected.</summary>
     public string SelectAllRows { get; init; } = "Select all rows on this page";
 
+    /// <summary>Accessible name of the header checkbox in mixed/indeterminate state.</summary>
+    public string SelectAllIndeterminate { get; init; } = "Some rows selected. Select all rows on this page";
+
     /// <summary>Accessible name of the header checkbox when every row on the page is selected.</summary>
     public string ClearPageRows { get; init; } = "Deselect all rows on this page";
 
     /// <summary>Visible and announced selection count. {0} the count.</summary>
     public string SelectedCount { get; init; } = "{0} selected";
+
+    /// <summary>Action button to clear the current selection.</summary>
+    public string ClearSelection { get; init; } = "Clear selection";
+
+    /// <summary>Action to select all items across all pages. {0} the total count.</summary>
+    public string SelectAllAcrossPages { get; init; } = "Select all {0} items";
+
+    /// <summary>Announcement when selection is cleared.</summary>
+    public string SelectionCleared { get; init; } = "Selection cleared.";
 
     /// <summary>The range line under the table. {0} first row, {1} last row, {2} total.</summary>
     public string ShowingRange { get; init; } = "Showing {0} to {1} of {2}";
@@ -72,4 +84,19 @@ public sealed record CyDataTableText
 
     /// <summary>Accessible name of a row's expand button when expanded. {0} the row's label.</summary>
     public string CollapseRow { get; init; } = "Collapse details for {0}";
+
+    /// <summary>Placeholder for search input.</summary>
+    public string SearchPlaceholder { get; init; } = "Search table...";
+
+    /// <summary>Accessible label for global search input.</summary>
+    public string SearchLabel { get; init; } = "Search table";
+
+    /// <summary>Accessible label for column filter input. {0} column header.</summary>
+    public string FilterColumn { get; init; } = "Filter by {0}";
+
+    /// <summary>Announcement after filters are applied. {0} active filter count, {1} results count.</summary>
+    public string FiltersApplied { get; init; } = "Filters applied: {0} active, {1} results.";
+
+    /// <summary>Action to clear all filters.</summary>
+    public string ClearAllFilters { get; init; } = "Clear filters";
 }

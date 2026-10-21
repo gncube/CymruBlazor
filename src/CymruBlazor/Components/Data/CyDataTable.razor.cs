@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using CymruBlazor.Components.Core;
 using CymruBlazor.Components.Forms;
@@ -77,6 +78,14 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     private int _seenPageSize;
     private IReadOnlyList<TItem>? _seenSelected;
     private IReadOnlyList<TItem>? _seenExpanded;
+    private string? _seenSearchQuery;
+    private IReadOnlyDictionary<string, string>? _seenFilters;
+
+    // Working state for filters, search and selection
+    private readonly Dictionary<string, string> _filters = new(StringComparer.OrdinalIgnoreCase);
+    private string? _searchQuery;
+    private object? _lastSelectedKey;
+    private System.Threading.Timer? _debounceTimer;
 
     // What the provider was last asked for.
     private bool _hasLoaded;
@@ -85,6 +94,8 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     private bool _loadedSortDescending;
     private int _loadedPage;
     private int _loadedPageSize;
+    private string? _loadedSearchQuery;
+    private Dictionary<string, string>? _loadedFilters;
 
     /// <summary>The table's caption: required, so every table has an accessible name.</summary>
     [Parameter, EditorRequired]
@@ -141,6 +152,18 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     /// <summary>Raised with the new selection.</summary>
     [Parameter]
     public EventCallback<IReadOnlyList<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>Raised with the new selection (alternative to two-way binding <see cref="SelectedItems"/>).</summary>
+    [Parameter]
+    public EventCallback<IReadOnlyList<TItem>> OnSelectionChanged { get; set; }
+
+    /// <summary>Custom template rendered inside the sticky bulk actions bar when one or more rows are selected.</summary>
+    [Parameter]
+    public RenderFragment<IReadOnlyList<TItem>>? BulkActions { get; set; }
+
+    /// <summary>Whether to show a "Select all {N} items" action in the bulk toolbar when items are paged in-memory. Default true.</summary>
+    [Parameter]
+    public bool ShowSelectAllAcrossPages { get; set; } = true;
 
     /// <summary>
     /// A stable identity for a row (an id), so a selection survives paging and reloads. Defaults to the row object itself,
@@ -228,6 +251,42 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     [Parameter]
     public CyDataTableText? Text { get; set; }
 
+    /// <summary>Enables the column filter row under the table header. Defaults to false (automatically true if any column defines a filter).</summary>
+    [Parameter]
+    public bool EnableFiltering { get; set; }
+
+    /// <summary>Shows a global search input in the filter bar above the table. Default false.</summary>
+    [Parameter]
+    public bool ShowSearch { get; set; }
+
+    /// <summary>The global search text. Two-way bindable (<c>@bind-SearchQuery</c>).</summary>
+    [Parameter]
+    public string? SearchQuery { get; set; }
+
+    /// <summary>Raised when the search query changes.</summary>
+    [Parameter]
+    public EventCallback<string?> SearchQueryChanged { get; set; }
+
+    /// <summary>Active column filter key-value pairs. Two-way bindable (<c>@bind-Filters</c>).</summary>
+    [Parameter]
+    public IReadOnlyDictionary<string, string>? Filters { get; set; }
+
+    /// <summary>Raised when the active column filters change.</summary>
+    [Parameter]
+    public EventCallback<IReadOnlyDictionary<string, string>> FiltersChanged { get; set; }
+
+    /// <summary>Raised after any search or filter change with the new filter dictionary and search query.</summary>
+    [Parameter]
+    public EventCallback<CyDataTableFilterChange> OnFilterChanged { get; set; }
+
+    /// <summary>Milliseconds to debounce search and column filter typing before applying. Default 250ms.</summary>
+    [Parameter]
+    public int FilterDebounceMs { get; set; } = 250;
+
+    /// <summary>Whether to transform table rows into card rows on small viewports (<c>&lt; 768px</c>). Default true.</summary>
+    [Parameter]
+    public bool Responsive { get; set; } = true;
+
     /// <inheritdoc />
     protected override string BaseCssClass => "cy-data-table";
 
@@ -260,7 +319,21 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         + (DetailTemplate is not null ? 1 : 0)
         + (RowActions is not null ? 1 : 0);
 
+    private bool AnyPageSelected => _view.Count > 0 && _view.Any(IsSelected);
+
     private bool AllPageSelected => _view.Count > 0 && _view.All(IsSelected);
+
+    private bool SomePageSelected => AnyPageSelected && !AllPageSelected;
+
+    private string SelectAllHeaderLabel => SomePageSelected
+        ? EffectiveText.SelectAllIndeterminate
+        : (AllPageSelected ? EffectiveText.ClearPageRows : EffectiveText.SelectAllRows);
+
+    private bool HasColumnFilters => EnableFiltering || Columns.Any(c => c.Filterable || c.FilterTemplate is not null);
+
+    private bool HasActiveFilters => _filters.Count > 0 || !string.IsNullOrWhiteSpace(_searchQuery);
+
+    private IReadOnlyList<TItem> SelectedItemsList => _selected.Values.ToList();
 
     private string PaginationLabel => Format(EffectiveText.PaginationLabel, Caption);
 
@@ -280,6 +353,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             .AddClass(BaseCssClass)
             .AddClass("cy-data-table--sticky", !string.IsNullOrWhiteSpace(MaxHeight))
             .AddClass("cy-data-table--busy", Loading)
+            .AddClass("cy-data-table--responsive", Responsive)
             .AddClass(Class)
             .Build();
 
@@ -366,7 +440,9 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
             || _loadedSortKey != _sortKey
             || _loadedSortDescending != _sortDescending
             || _loadedPage != _page
-            || _loadedPageSize != _pageSize;
+            || _loadedPageSize != _pageSize
+            || _loadedSearchQuery != _searchQuery
+            || !FiltersEqual(_loadedFilters, _filters);
 
         if (changed)
         {
@@ -394,6 +470,25 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         {
             _page = Math.Max(1, Page);
             _seenPage = Page;
+        }
+
+        if (!_paramsSeen || SearchQuery != _seenSearchQuery)
+        {
+            _searchQuery = SearchQuery;
+            _seenSearchQuery = SearchQuery;
+        }
+
+        if (Filters is not null && !ReferenceEquals(Filters, _seenFilters))
+        {
+            _seenFilters = Filters;
+            _filters.Clear();
+            foreach (var (k, v) in Filters)
+            {
+                if (!string.IsNullOrWhiteSpace(v))
+                {
+                    _filters[k] = v;
+                }
+            }
         }
 
         _paramsSeen = true;
@@ -428,6 +523,29 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
     {
         IEnumerable<TItem> rows = Items ?? Array.Empty<TItem>();
 
+        if (!string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            var query = _searchQuery.Trim();
+            rows = rows.Where(row => MatchesSearch(row, query));
+        }
+
+        if (_filters.Count > 0)
+        {
+            foreach (var (filterKey, filterValue) in _filters)
+            {
+                if (string.IsNullOrWhiteSpace(filterValue))
+                {
+                    continue;
+                }
+
+                var col = Columns.FirstOrDefault(c => string.Equals(c.EffectiveFilterKey, filterKey, StringComparison.OrdinalIgnoreCase));
+                if (col is not null)
+                {
+                    rows = rows.Where(row => MatchesColumnFilter(col, row, filterValue));
+                }
+            }
+        }
+
         if (SortColumn is { } column)
         {
             var comparer = column.Compare is { } compare
@@ -451,6 +569,74 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         _view = list;
     }
 
+    private bool MatchesSearch(TItem item, string query)
+    {
+        foreach (var col in Columns)
+        {
+            if (col.FilterPredicate is not null)
+            {
+                if (col.FilterPredicate(item, query))
+                {
+                    return true;
+                }
+            }
+            else if (col.Value is not null)
+            {
+                var val = Convert.ToString(col.Value(item), CultureInfo.CurrentCulture);
+                if (val is not null && val.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool MatchesColumnFilter(CyDataColumn<TItem> col, TItem item, string filterValue)
+    {
+        if (col.FilterPredicate is not null)
+        {
+            return col.FilterPredicate(item, filterValue);
+        }
+
+        if (col.Value is not null)
+        {
+            var val = Convert.ToString(col.Value(item), CultureInfo.CurrentCulture);
+            return val is not null && val.Contains(filterValue, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return true;
+    }
+
+    private static bool FiltersEqual(Dictionary<string, string>? a, Dictionary<string, string>? b)
+    {
+        if (ReferenceEquals(a, b))
+        {
+            return true;
+        }
+
+        if (a is null || b is null)
+        {
+            return (a?.Count ?? 0) == 0 && (b?.Count ?? 0) == 0;
+        }
+
+        if (a.Count != b.Count)
+        {
+            return false;
+        }
+
+        foreach (var (k, v) in a)
+        {
+            if (!b.TryGetValue(k, out var bv) || !string.Equals(v, bv, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private async Task LoadAsync()
     {
         CancelLoad();
@@ -464,6 +650,8 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         _loadedSortDescending = _sortDescending;
         _loadedPage = _page;
         _loadedPageSize = _pageSize;
+        _loadedSearchQuery = _searchQuery;
+        _loadedFilters = new Dictionary<string, string>(_filters, StringComparer.OrdinalIgnoreCase);
 
         _loading = true;
         _loadError = false;
@@ -471,7 +659,8 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
         try
         {
-            var result = await ItemsProvider!(new CyDataTableRequest(_page, _pageSize, _sortKey, _sortDescending), token);
+            var filterDict = _filters.Count > 0 ? new Dictionary<string, string>(_filters) : null;
+            var result = await ItemsProvider!(new CyDataTableRequest(_page, _pageSize, _sortKey, _sortDescending, filterDict, _searchQuery), token);
 
             if (version != _loadVersion || token.IsCancellationRequested)
             {
@@ -733,6 +922,227 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
         {
             await SelectedItemsChanged.InvokeAsync(list);
         }
+
+        if (OnSelectionChanged.HasDelegate)
+        {
+            await OnSelectionChanged.InvokeAsync(list);
+        }
+    }
+
+    private async Task HandleRowSelectClickAsync(TItem item, MouseEventArgs e)
+    {
+        if (SelectionMode != CyDataSelectionMode.Multiple)
+        {
+            return;
+        }
+
+        if (e.ShiftKey && _lastSelectedKey is not null)
+        {
+            var lastIdx = -1;
+            var currentIdx = -1;
+
+            for (var i = 0; i < _view.Count; i++)
+            {
+                var k = KeyOf(_view[i]);
+                if (Equals(k, _lastSelectedKey))
+                {
+                    lastIdx = i;
+                }
+                if (Equals(k, KeyOf(item)))
+                {
+                    currentIdx = i;
+                }
+            }
+
+            if (lastIdx != -1 && currentIdx != -1)
+            {
+                var start = Math.Min(lastIdx, currentIdx);
+                var end = Math.Max(lastIdx, currentIdx);
+
+                for (var i = start; i <= end; i++)
+                {
+                    var rowItem = _view[i];
+                    _selected[KeyOf(rowItem)] = rowItem;
+                }
+
+                _lastSelectedKey = KeyOf(item);
+                await PublishSelectionAsync();
+                return;
+            }
+        }
+
+        _lastSelectedKey = KeyOf(item);
+    }
+
+    private async Task HandleRowKeyDownAsync(TItem item, KeyboardEventArgs e)
+    {
+        if (SelectionMode == CyDataSelectionMode.None)
+        {
+            return;
+        }
+
+        if (e.Key is " " or "Spacebar")
+        {
+            if (SelectionMode == CyDataSelectionMode.Multiple)
+            {
+                var nowSelected = !IsSelected(item);
+                await ToggleAsync(item, nowSelected);
+            }
+            else
+            {
+                await SelectSingleAsync(item);
+            }
+        }
+    }
+
+    /// <summary>Clears the current selection.</summary>
+    public async Task ClearSelectionAsync()
+    {
+        if (_selected.Count == 0)
+        {
+            return;
+        }
+
+        _selected.Clear();
+        _lastSelectedKey = null;
+        _status = EffectiveText.SelectionCleared;
+        await PublishSelectionAsync();
+    }
+
+    /// <summary>Selects all items across all pages when in memory.</summary>
+    public async Task SelectAllRecordsAsync()
+    {
+        if (Items is null)
+        {
+            return;
+        }
+
+        foreach (var item in Items)
+        {
+            _selected[KeyOf(item)] = item;
+        }
+
+        await PublishSelectionAsync();
+    }
+
+    // ---- filtering and search
+
+    private string? GetFilterValue(string key) =>
+        _filters.TryGetValue(key, out var val) ? val : null;
+
+    private void HandleSearchInputAsync(ChangeEventArgs e)
+    {
+        _searchQuery = e.Value?.ToString();
+        TriggerDebounceTimer();
+    }
+
+    private async Task ClearSearchAsync()
+    {
+        _searchQuery = null;
+        await ApplyFiltersAsync();
+    }
+
+    private void HandleColumnFilterInputAsync(string key, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            _filters.Remove(key);
+        }
+        else
+        {
+            _filters[key] = value;
+        }
+
+        TriggerDebounceTimer();
+    }
+
+    /// <summary>Sets an individual column filter programmatically.</summary>
+    public async Task SetColumnFilterAsync(string key, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            _filters.Remove(key);
+        }
+        else
+        {
+            _filters[key] = value;
+        }
+
+        await ApplyFiltersAsync();
+    }
+
+    /// <summary>Clears an individual column filter programmatically.</summary>
+    public async Task ClearColumnFilterAsync(string key)
+    {
+        if (_filters.Remove(key))
+        {
+            await ApplyFiltersAsync();
+        }
+    }
+
+    /// <summary>Clears all active column filters and the global search query.</summary>
+    public async Task ClearAllFiltersAsync()
+    {
+        var hadFilters = _filters.Count > 0 || !string.IsNullOrWhiteSpace(_searchQuery);
+        if (!hadFilters)
+        {
+            return;
+        }
+
+        _filters.Clear();
+        _searchQuery = null;
+        await ApplyFiltersAsync();
+    }
+
+    private void TriggerDebounceTimer()
+    {
+        if (FilterDebounceMs <= 0)
+        {
+            _ = InvokeAsync(ApplyFiltersAsync);
+            return;
+        }
+
+        _debounceTimer?.Dispose();
+        _debounceTimer = new System.Threading.Timer(_ =>
+        {
+            _ = InvokeAsync(ApplyFiltersAsync);
+        }, null, FilterDebounceMs, System.Threading.Timeout.Infinite);
+    }
+
+    private async Task ApplyFiltersAsync()
+    {
+        _debounceTimer?.Dispose();
+        _debounceTimer = null;
+
+        var pageChanged = _page != 1;
+        _page = 1;
+
+        await Reapply();
+
+        var activeCount = _filters.Count + (!string.IsNullOrWhiteSpace(_searchQuery) ? 1 : 0);
+        _status = Format(EffectiveText.FiltersApplied, activeCount, _total);
+
+        if (SearchQueryChanged.HasDelegate)
+        {
+            await SearchQueryChanged.InvokeAsync(_searchQuery);
+        }
+
+        if (FiltersChanged.HasDelegate)
+        {
+            await FiltersChanged.InvokeAsync(new Dictionary<string, string>(_filters));
+        }
+
+        if (OnFilterChanged.HasDelegate)
+        {
+            await OnFilterChanged.InvokeAsync(new CyDataTableFilterChange(new Dictionary<string, string>(_filters), _searchQuery));
+        }
+
+        if (pageChanged && PageChanged.HasDelegate)
+        {
+            await PageChanged.InvokeAsync(_page);
+        }
+
+        StateHasChanged();
     }
 
     // ---- cells
@@ -927,6 +1337,8 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
         _disposed = true;
         CancelLoad();
+        _debounceTimer?.Dispose();
+        _debounceTimer = null;
         GC.SuppressFinalize(this);
     }
 }
