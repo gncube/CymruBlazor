@@ -35,15 +35,38 @@ public enum CyColumnAlign
 /// <param name="PageSize">Rows per page; 0 when paging is off (return everything).</param>
 /// <param name="SortKey">The key of the column to sort by, or <see langword="null"/> for the data's natural order.</param>
 /// <param name="SortDescending">Whether the sort is descending.</param>
-/// <param name="Filters">Active column filter key-value pairs, if any.</param>
-/// <param name="SearchQuery">Global search query, if any.</param>
 public sealed record CyDataTableRequest(
     int Page,
     int PageSize,
     string? SortKey,
-    bool SortDescending,
-    IReadOnlyDictionary<string, string>? Filters = null,
-    string? SearchQuery = null);
+    bool SortDescending)
+{
+    /// <summary>Active column filter key-value pairs, if any.</summary>
+    public IReadOnlyDictionary<string, string>? Filters { get; init; }
+
+    /// <summary>Global search query, if any.</summary>
+    public string? SearchQuery { get; init; }
+
+    /// <summary>Constructs a request with optional filters and search query.</summary>
+    /// <param name="page">The page to return, starting at 1.</param>
+    /// <param name="pageSize">Rows per page; 0 when paging is off (return everything).</param>
+    /// <param name="sortKey">The key of the column to sort by, or <see langword="null"/> for natural order.</param>
+    /// <param name="sortDescending">Whether the sort is descending.</param>
+    /// <param name="filters">Active column filter key-value pairs, if any.</param>
+    /// <param name="searchQuery">Global search query, if any.</param>
+    public CyDataTableRequest(
+        int page,
+        int pageSize,
+        string? sortKey,
+        bool sortDescending,
+        IReadOnlyDictionary<string, string>? filters,
+        string? searchQuery = null)
+        : this(page, pageSize, sortKey, sortDescending)
+    {
+        Filters = filters;
+        SearchQuery = searchQuery;
+    }
+}
 
 /// <summary>The sort after a change, raised by <c>CyDataTable.OnSortChanged</c>.</summary>
 /// <param name="Key">The sorted column's key, or <see langword="null"/> when sorting was cleared.</param>
