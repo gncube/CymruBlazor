@@ -8,6 +8,50 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [2.3.0] - 2026-10-21
+
+Minor release introducing clinical workflow enhancements for `CyDataTable<TItem>` including multi-row selection, tri-state select-all header, sticky bulk action bar, per-column filtering and global search, and responsive stacked cards for mobile viewports. Fully backwards-compatible with 1.13.0 baseline and 2.x releases.
+
+### Added
+
+- **`CyDataTable<TItem>` Multi-Row Selection & Bulk Actions** (`Data`):
+  - Accessible row selection with tri-state ("mixed" / indeterminate) "Select All" header checkbox, spacebar keyboard toggling, and `Shift + Click` range selection.
+  - Two-way binding support via `@bind-SelectedItems` and `OnSelectionChanged` event callbacks.
+  - Sticky bulk actions toolbar (`BulkActions` template slot) with selected items count, `ClearSelection` link, and contextual action buttons.
+  - Cross-page selection banner (`ShowSelectAllAcrossPages`) for selecting all matching records across all pages.
+- **`CyDataTable<TItem>` Column Filtering & Search** (`Data`):
+  - Per-column filtering via `Filterable`, `FilterKey`, `FilterPlaceholder`, and custom `FilterTemplate` / `FilterPredicate`.
+  - Global search bar via `ShowSearch` rendered above the table with clear action.
+  - Debounced filter callbacks configurable via `FilterDebounceMs` (default 300ms).
+  - Integration with server-side / async `CyDataTableItemsProvider` through `CyDataTableRequest.Filters` and `CyDataTableRequest.SearchQuery`.
+- **`CyDataTable<TItem>` Responsive Stacked Cards** (`Data`):
+  - Automatic transformation into accessible key-value card rows on narrow viewports (`< 768px`) using CSS and automatic `data-label` cell attributes to eliminate horizontal scrolling on mobile.
+- **Welsh Localisation** (`Localisation`):
+  - Localized phrases in `CyDataTableText`: `SelectAllIndeterminate`, `ClearSelection`, `SelectAllAcrossPages`, `SelectionCleared`, `SearchPlaceholder`, `SearchLabel`, `FilterColumn`, `FiltersApplied`, and `ClearAllFilters`.
+
+### Fixed
+
+- **API Compatibility** (`Data`):
+  - Preserved `CyDataTableRequest` 4-argument primary constructor and deconstructor signatures alongside new 6-argument constructor and init properties, ensuring 100% binary and source backwards compatibility with published NuGet packages.
+
+## [2.2.0] - 2026-10-21
+
+Minor release introducing accessible, theme-aware avatar and user profile components (`CyAvatar` and `CyUserNav`) following NHS Wales Design System tokens.
+
+### Added
+
+- **`CyAvatar`** (`Content`):
+  - Accessible avatar component supporting initials, image URL with initials fallback, and status indicator dots.
+  - Smart 2-letter initials algorithm handling multi-word names and email addresses.
+  - Deterministic accessible background hue generation from name string hash when no image is supplied.
+  - Status indicators (`Online`, `Busy` with pulse animation, `Away`, `Offline`) with high-contrast borders.
+  - Size variants: `Small` (28px), `Medium` (36px, default), `Large` (44px), `XLarge` (56px).
+- **`CyUserNav`** (`Layout`):
+  - Dual-state user navigation component for unauthenticated and authenticated states.
+  - WAI-ARIA menu button pattern with keyboard navigation (`Enter`, `Space`, `Escape`, `ArrowDown`, `ArrowUp`, `Home`, `End`).
+  - Dropdown profile menu card with large avatar, user name, status chip, customizable navigation links (`MenuItems`), and sign-out slot (`LogoutContent`).
+  - Automatic click-outside and `Escape` key dismissal.
+
 ## [2.1.0] - 2026-10-20
 
 Minor release introducing the `CyTimeline` audit trail component suite and `CyDataTable<TItem>` expandable rows for master-detail inspection, expanding clinical data display capabilities in compliance with WCAG 2.2 AA.
