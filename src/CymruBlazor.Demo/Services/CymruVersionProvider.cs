@@ -26,9 +26,8 @@ public static class CymruVersionProvider
 
     /// <summary>
     /// Resolves and formats the version from the specified assembly's metadata.
-    /// Prioritizes dynamic Git-derived version metadata from MinVer (<c>AssemblyInformationalVersionAttribute</c>),
-    /// then central package alignment metadata (<c>CymruBlazorPackageVersion</c>) from <c>Directory.Packages.props</c>,
-    /// before checking assembly version attributes.
+    /// Prioritizes central package alignment metadata (<c>CymruBlazorPackageVersion</c>) from <c>Directory.Packages.props</c>,
+    /// before checking assembly informational or version attributes.
     /// </summary>
     public static string? ResolveVersion(Assembly? assembly)
     {
@@ -37,18 +36,7 @@ public static class CymruVersionProvider
             return null;
         }
 
-        // 1. Dynamic Git tag / release version from MinVer (AssemblyInformationalVersion)
-        var informationalVersion = assembly
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion;
-
-        var formatted = FormatVersion(informationalVersion);
-        if (!string.IsNullOrWhiteSpace(formatted) && !IsUninitializedVersion(formatted))
-        {
-            return formatted;
-        }
-
-        // 2. Authoritative: Central Package Version from Directory.Packages.props stamped as AssemblyMetadata
+        // 1. Authoritative: Central Package Version from Directory.Packages.props stamped as AssemblyMetadata
         var packageVersionMeta = assembly
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(a => string.Equals(a.Key, "CymruBlazorPackageVersion", StringComparison.OrdinalIgnoreCase))?
@@ -70,6 +58,17 @@ public static class CymruVersionProvider
         if (!string.IsNullOrWhiteSpace(formattedEntryVersion) && !IsUninitializedVersion(formattedEntryVersion))
         {
             return formattedEntryVersion;
+        }
+
+        // 2. AssemblyInformationalVersion (e.g. from tag release)
+        var informationalVersion = assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+
+        var formatted = FormatVersion(informationalVersion);
+        if (!string.IsNullOrWhiteSpace(formatted) && !IsUninitializedVersion(formatted))
+        {
+            return formatted;
         }
 
         // 3. AssemblyVersion
