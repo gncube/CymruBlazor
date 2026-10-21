@@ -14,20 +14,21 @@ public static class CymruVersionProvider
     /// Current release version of the CymruBlazor library used as fallback
     /// when running from a build without Git tags (such as shallow CI clones).
     /// </summary>
-    public const string FallbackVersion = "v2.0.1";
+    public const string FallbackVersion = "v2.3.0";
 
     private static readonly Lazy<string> LazyDefaultVersion = new(() => ResolveVersion(typeof(CyBrandLogo).Assembly) ?? FallbackVersion);
 
     /// <summary>
-    /// Gets the formatted version string for the active CymruBlazor assembly (e.g. "v2.0.1", "v2.0.0"),
+    /// Gets the formatted version string for the active CymruBlazor assembly (e.g. "v2.3.0", "v2.2.0"),
     /// or <see cref="FallbackVersion"/> if metadata could not be resolved.
     /// </summary>
     public static string Version => LazyDefaultVersion.Value;
 
     /// <summary>
     /// Resolves and formats the version from the specified assembly's metadata.
-    /// Prioritizes central package alignment metadata (<c>CymruBlazorPackageVersion</c>) from <c>Directory.Packages.props</c>,
-    /// before checking assembly informational or version attributes.
+    /// Prioritizes dynamic Git-derived version metadata from MinVer (<c>AssemblyInformationalVersionAttribute</c>),
+    /// then central package alignment metadata (<c>CymruBlazorPackageVersion</c>) from <c>Directory.Packages.props</c>,
+    /// before checking assembly version attributes.
     /// </summary>
     public static string? ResolveVersion(Assembly? assembly)
     {
@@ -36,7 +37,18 @@ public static class CymruVersionProvider
             return null;
         }
 
-        // 1. Authoritative: Central Package Version from Directory.Packages.props stamped as AssemblyMetadata
+        // 1. Dynamic Git tag / release version from MinVer (AssemblyInformationalVersion)
+        var informationalVersion = assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+
+        var formatted = FormatVersion(informationalVersion);
+        if (!string.IsNullOrWhiteSpace(formatted) && !IsUninitializedVersion(formatted))
+        {
+            return formatted;
+        }
+
+        // 2. Authoritative: Central Package Version from Directory.Packages.props stamped as AssemblyMetadata
         var packageVersionMeta = assembly
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(a => string.Equals(a.Key, "CymruBlazorPackageVersion", StringComparison.OrdinalIgnoreCase))?
@@ -58,17 +70,6 @@ public static class CymruVersionProvider
         if (!string.IsNullOrWhiteSpace(formattedEntryVersion) && !IsUninitializedVersion(formattedEntryVersion))
         {
             return formattedEntryVersion;
-        }
-
-        // 2. AssemblyInformationalVersion (e.g. from tag release)
-        var informationalVersion = assembly
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion;
-
-        var formatted = FormatVersion(informationalVersion);
-        if (!string.IsNullOrWhiteSpace(formatted) && !IsUninitializedVersion(formatted))
-        {
-            return formatted;
         }
 
         // 3. AssemblyVersion

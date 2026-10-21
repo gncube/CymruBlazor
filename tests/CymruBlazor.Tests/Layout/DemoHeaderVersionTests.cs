@@ -82,6 +82,8 @@ public sealed class DemoHeaderVersionTests : TestContextBase
     [InlineData("V0.0.0.0", true)]
     [InlineData("2.0.1", false)]
     [InlineData("v2.0.1", false)]
+    [InlineData("2.3.0", false)]
+    [InlineData("v2.3.0", false)]
     [InlineData("v1.13.0", false)]
     [InlineData("v2.0.0-preview.1", false)]
     public void IsUninitializedVersion_Should_Identify_Uninitialized_Versions(string? input, bool expected)
@@ -90,17 +92,17 @@ public sealed class DemoHeaderVersionTests : TestContextBase
     }
 
     [Fact]
-    public void FallbackVersion_Should_Be_Set_To_Current_Release_V2_0_1()
+    public void FallbackVersion_Should_Be_Set_To_Current_Release_V2_3_0()
     {
-        CymruVersionProvider.FallbackVersion.ShouldBe("v2.0.1");
+        CymruVersionProvider.FallbackVersion.ShouldBe("v2.3.0");
     }
 
     [Fact]
-    public void Authoritative_Version_Provider_Should_Match_Central_Package_Version_V2_0_1()
+    public void Authoritative_Version_Provider_Should_Match_Current_Release_Version_V2_3_0()
     {
         var version = CymruVersionProvider.Version;
 
-        version.ShouldBe("v2.0.1");
+        version.ShouldBe("v2.3.0");
     }
 
     [Fact]
@@ -120,7 +122,7 @@ public sealed class DemoHeaderVersionTests : TestContextBase
 
         // Assert
         var badge = cut.Find(".cb-version-badge");
-        badge.TextContent.Trim().ShouldBe("v2.0.1");
+        badge.TextContent.Trim().ShouldBe("v2.3.0");
     }
 
     [Fact]
