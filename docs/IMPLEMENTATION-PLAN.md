@@ -21,6 +21,7 @@
 | G (1.13.0) | **Shipped (1.13.0, 2026-10-12).** Diagnostic `CY0005`, `CyRuleField.ValueEditor`, `CyRuleBuilder.AllowDragReorder`, `CyDataTable` page size and sorting, `CymruBlazor.Testing`, `CymruBlazor.Testing.Axe`, recipes and documentation. | See "Phase G" at the end |
 | 2.0.0 | **Shipped (2026-10-14).** Removed all `[Obsolete]` members (legacy `CySidebar` 2-state API, unimplemented keyboard navigation types and unused contracts/enums). Zero compiler warnings with `-warnaserror:CS0618`. Package validation vs 1.13.0 baseline passes with `CompatibilitySuppressions.xml`. Updated migration guide and tests. | See `docs/MIGRATION-2.0.md` |
 | Post-2.0 | **Executed (2026-10-19).** Documentation version badges and TOC anchor navigation resolved. README updated to 2.x and `RELEASE-NOTES-v2.0.0.md` published. Three-theme visual audit (219/219 axe tests passing across Light, Dark, High-Contrast). Welsh localization strings refined. Downstream adoption verified on `GenomicsHandbook`. R1 shared field-chrome refactor implemented in `CyFormFieldComponentBase` with 100% snapshot parity. | Test suites (1355 unit, 219 axe) |
+| 2.3.1 | **Implemented (2026-10-27).** Fixed CyDataTable bulk-bar label format bug and defaulted Responsive to alse for backwards compatibility. Simplified CyUserNav to accessible disclosure semantics and added CyUserNavText localization. Updated package baseline to 2.3.0. | Full test suite green (1436 unit, 238 axe) |
 
 **How A was verified (and what wasn't).** .NET 10 was installed in the sandbox, but nuget.org is blocked, so the repo's own test projects (xunit, bUnit, Shouldly, Playwright) could **not** be restored or run. Instead the library was compiled from source with a stub for `Mediator`, with the repo's `.editorconfig`, and exercised through a purpose-built harness (`HtmlRenderer` plus a small event-dispatching renderer): 69 checks, all passing. The library emits only the 14 `ASP0006` warnings already present in the untouched 1.6.0 build. A reflection diff of the public API against the original 1.6.0 build shows **0 removed or changed members** (44 additions). The new bUnit/xunit and axe tests in `tests/` have now passed in CI.
 
@@ -933,3 +934,14 @@ The 2.0.0 major release executed all scheduled breaking changes and removals doc
 - Recorded intentional breaking changes in `src/CymruBlazor/CompatibilitySuppressions.xml` against the 1.13.0 baseline.
 - Updated all unit tests and verified zero compiler warnings under `-warnaserror:CS0618`.
 - Tagged and published `v2.0.0`.
+
+### 2.3.1 Patch Release (2026-10-27)
+
+Patch release addressing regressions in `CyDataTable` responsive mode and `CyUserNav` accessibility semantics:
+- Defaulted `CyDataTable<TItem>.Responsive` to `false` to avoid unintentional layout shifts for existing consumers on mobile screens.
+- Corrected string formatting bug in `CyDataTable` bulk actions toolbar `aria-label`.
+- Simplified `CyUserNav` to accessible disclosure semantics (`aria-haspopup="true"`), eliminating ARIA parent/child hierarchy violations on nested links and buttons.
+- Fixed `CyUserNav` late-authentication click-outside JavaScript handler registration in `OnAfterRenderAsync`.
+- Added `CyUserNavText` for Welsh localization of user navigation strings.
+- Upgraded `PackageValidationBaselineVersion` across all packages to `2.3.0` with verified 0 compatibility suppressions.
+- Verified 100% green on 1436 bUnit tests and 238 Playwright axe-core accessibility tests across Light, Dark, and High-Contrast themes.

@@ -8,6 +8,33 @@ see `CONTRIBUTING.md` for the release process.
 Full detail for every release is also available as auto-generated
 [GitHub Releases](https://github.com/gncube/CymruBlazor/releases).
 
+## [2.3.1] - 2026-10-27
+
+Patch release addressing regressions in `CyDataTable` responsive layout and `CyUserNav` authentication lifecycle, simplifying user navigation accessibility semantics, and establishing package validation against the 2.3.0 baseline.
+
+### Changed
+
+- **`CyDataTable<TItem>` Responsive Mode Default** (`Data`):
+  - Changed `Responsive` parameter default to `false` (opt-in) to preserve backwards compatibility and prevent unintended card-layout shifts on mobile viewports for existing tables.
+- **`CyUserNav` Accessibility Semantics** (`Layout`):
+  - Simplified from ARIA desktop menu (`role="menu"`) to accessible disclosure container (`aria-haspopup="true"` with standard links and action buttons), resolving screen reader hierarchy violations and eliminating complex menu item roles.
+
+### Fixed
+
+- **`CyDataTable<TItem>` Bulk Action Bar Label** (`Data`):
+  - Corrected unformatted placeholder bug in bulk actions toolbar `aria-label`, now properly formatting `@Format(EffectiveText.SelectedCount, SelectedCount)`.
+- **`CyUserNav` Late-Authentication Event Binding** (`Layout`):
+  - Updated `OnAfterRenderAsync` to dynamically register the click-outside JavaScript handler when user authentication state changes after initial render.
+
+### Added
+
+- **Welsh Localisation** (`Localisation`):
+  - Added `CyUserNavText` record supporting localized strings for `UserNavigation`, `StatusLabel`, and status text values.
+
+### Tooling
+
+- Bumped `PackageValidationBaselineVersion` across all library and testing packages to `2.3.0` and regenerated `CompatibilitySuppressions.xml`.
+
 ## [2.3.0] - 2026-10-21
 
 Minor release introducing clinical workflow enhancements for `CyDataTable<TItem>` including multi-row selection, tri-state select-all header, sticky bulk action bar, per-column filtering and global search, and responsive stacked cards for mobile viewports. Fully backwards-compatible with 1.13.0 baseline and 2.x releases.
