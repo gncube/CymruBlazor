@@ -62,6 +62,7 @@
 
 @import "components/accordion.css" layer(components);
 @import "components/details.css" layer(components);
+@import "components/callouts.css" layer(components);
 @import "components/badges.css" layer(components);
 @import "components/code-block.css" layer(components);
 @import "components/tabs.css" layer(components);

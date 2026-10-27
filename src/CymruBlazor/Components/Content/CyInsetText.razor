@@ -1,0 +1,18 @@
+@inherits CyLayoutComponentBase
+@namespace CymruBlazor.Components.Content
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="@Role"
+    @attributes="AdditionalAttributes">
+
+    @if (ShowVisuallyHiddenText && !string.IsNullOrWhiteSpace(EffectiveVisuallyHiddenText))
+    {
+        <span class="cy-visually-hidden">@EffectiveVisuallyHiddenText</span>
+    }
+
+    @ChildContent
+
+</div>

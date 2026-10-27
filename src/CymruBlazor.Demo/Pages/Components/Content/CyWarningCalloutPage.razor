@@ -1,0 +1,125 @@
+@page "/content/warning-callout"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyWarningCallout" Subtitle="NHS warning callout for critical clinical alerts, instructions, and safety advice.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyWarningCallout" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+
+            <h2 style="margin: 0; font-size: 1.125rem;">1. Standard NHS Warning Callout</h2>
+            <CyWarningCallout Heading="School, nursery or work" HeadingLevel="3">
+                <p>Stay away from school, nursery or work until 48 hours after you've stopped vomiting or having diarrhoea.</p>
+            </CyWarningCallout>
+
+            <h2 style="margin: 0; font-size: 1.125rem;">2. Urgent Clinical Alert (Danger Severity)</h2>
+            <CyWarningCallout Heading="Call 999 or go to A&amp;E now if:" Severity="ComponentColour.Danger" HeadingLevel="3">
+                <ul style="margin: 0; padding-inline-start: var(--cymru-space-5);">
+                    <li>your child has signs of breathing difficulties</li>
+                    <li>your child is unusually floppy, drowsy, or unresponsive</li>
+                    <li>your child has blue, pale, or blotchy skin or lips</li>
+                </ul>
+            </CyWarningCallout>
+
+            <h2 style="margin: 0; font-size: 1.125rem;">3. Custom Role &amp; Welsh Localisation (Cymraeg)</h2>
+            <CyWarningCallout Heading="Ysgol, meithrinfa neu waith" HeadingLevel="3" Role="note" Text="_welshText">
+                <p>Arhoswch i ffwrdd o'r ysgol, meithrinfa neu waith tan 48 awr ar ôl i chi roi'r gorau i chwydu neu gael dolur rhydd.</p>
+            </CyWarningCallout>
+
+        </div>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyWarningCallout.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly CyWarningCalloutText _welshText = new()
+    {
+        VisuallyHiddenPrefix = "Pwysig: ",
+        DefaultHeading = "Pwysig"
+    };
+
+    private string GeneratedCode => """
+        @* 1. Standard NHS Warning Callout *@
+        <CyWarningCallout Heading="School, nursery or work" HeadingLevel="3">
+            <p>Stay away from school, nursery or work until 48 hours after symptoms stop.</p>
+        </CyWarningCallout>
+
+        @* 2. Urgent / emergency danger severity *@
+        <CyWarningCallout Heading="Call 999 or go to A&E now if:" Severity="ComponentColour.Danger" HeadingLevel="3">
+            <p>Your child has signs of serious breathing difficulties or is unresponsive.</p>
+        </CyWarningCallout>
+
+        @* 3. Welsh localisation & custom role *@
+        <CyWarningCallout Heading="Ysgol, meithrinfa neu waith" HeadingLevel="3" Role="note" Text="_welshText">
+            <p>Arhoswch i ffwrdd o'r ysgol, meithrinfa neu waith tan 48 awr.</p>
+        </CyWarningCallout>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyWarningCallout.Heading", "string?", "null", "The callout heading text. Can also be set via Title."),
+        new("CyWarningCallout.HeadingTemplate", "RenderFragment?", "null", "Custom render fragment for the heading markup."),
+        new("CyWarningCallout.HeadingLevel", "int", "3", "Heading tag level (1-6). Defaults to 3 (<c>&lt;h3&gt;</c>)."),
+        new("CyWarningCallout.Role", "string?", "\"alert\"", "The ARIA role for assistive technology. Defaults to \"alert\", or \"note\" / \"region\" / null."),
+        new("CyWarningCallout.Severity", "ComponentColour", "Warning", "Visual severity / accent color (Warning, Danger, Info, Primary, Success)."),
+        new("CyWarningCallout.VisuallyHiddenPrefix", "string?", "null", "Custom screen reader prefix. Overrides EffectiveText.VisuallyHiddenPrefix."),
+        new("CyWarningCallout.ShowVisuallyHiddenPrefix", "bool", "true", "Whether to render the visually hidden prefix for screen readers."),
+        new("CyWarningCallout.ShowHeading", "bool", "true", "Whether to render a heading element at all."),
+        new("CyWarningCallout.Text", "CyWarningCalloutText?", "null", "Localized text phrases. Defaults to English (\"Important: \")."),
+        new("CyWarningCallout.ChildContent", "RenderFragment?", "null", "The warning callout body content."),
+        new("CyWarningCallout.Id", "string?", "generated", "HTML id attribute. Generated if omitted."),
+        new("CyWarningCallout.Class", "string?", "null", "Additional CSS classes applied to the container."),
+        new("CyWarningCallout.Style", "string?", "null", "Inline CSS styles applied to the container.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Accessible alert role", "Defaults to role=\"alert\" to promptly notify assistive technology of critical health warnings."),
+        new("Continuous speech announcement", "Uses <span role=\"text\"> to concatenate the visually hidden prefix and label without awkward pauses."),
+        new("Sequential heading hierarchy", "HeadingLevel parameter allows specifying <h1>-<h6> to match the page document outline without skipping levels."),
+        new("High contrast mode support", "Container borders and heading text properly adapt to CanvasText and Highlight under forced-colors mode."),
+        new("Localisation ready", "All alert prefixes and fallback headings support full Welsh bilingual configuration.")
+    ];
+}

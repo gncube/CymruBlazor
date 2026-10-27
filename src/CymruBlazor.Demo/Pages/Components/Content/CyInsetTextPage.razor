@@ -1,0 +1,125 @@
+@page "/content/inset-text"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+@using CymruBlazor.Enums
+
+<CyPageHeader Title="CyInsetText" Subtitle="NHS content emphasis callout with distinctive border styling and screen reader assistance.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyInsetText" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+
+            <h2 style="margin: 0; font-size: 1.125rem;">1. Standard NHS Inset Text</h2>
+            <CyInsetText>
+                <p>It can take up to 3 working days for your referral to be processed by the specialist clinic.</p>
+            </CyInsetText>
+
+            <h2 style="margin: 0; font-size: 1.125rem;">2. Semantic Accent Variants</h2>
+            <CyInsetText Colour="ComponentColour.Primary">
+                <p><strong>Primary accent:</strong> Use this border variant for standard service guidance and process information.</p>
+            </CyInsetText>
+            <CyInsetText Colour="ComponentColour.Info">
+                <p><strong>Info accent:</strong> You can report any side effect you get to the MHRA Yellow Card scheme.</p>
+            </CyInsetText>
+            <CyInsetText Colour="ComponentColour.Warning">
+                <p><strong>Warning accent:</strong> Do not take aspirin or ibuprofen without speaking to your doctor or pharmacist first.</p>
+            </CyInsetText>
+
+            <h2 style="margin: 0; font-size: 1.125rem;">3. Welsh Localisation (Cymraeg)</h2>
+            <CyInsetText Text="_welshText">
+                <p>Gall gymryd hyd at 3 diwrnod gwaith i'ch atgyfeiriad gael ei brosesu gan y clinig arbenigol.</p>
+            </CyInsetText>
+
+        </div>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyInsetText.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private readonly CyInsetTextText _welshText = new()
+    {
+        VisuallyHiddenText = "Gwybodaeth: "
+    };
+
+    private string GeneratedCode => """
+        @* 1. Standard NHS Inset Text *@
+        <CyInsetText>
+            <p>It can take up to 3 working days for your referral to be processed.</p>
+        </CyInsetText>
+
+        @* 2. Semantic color variants *@
+        <CyInsetText Colour="ComponentColour.Primary">
+            <p>Standard service guidance and process information.</p>
+        </CyInsetText>
+        <CyInsetText Colour="ComponentColour.Warning">
+            <p>Do not take medication without speaking to your doctor.</p>
+        </CyInsetText>
+
+        @* 3. Welsh localisation *@
+        <CyInsetText Text="_welshText">
+            <p>Gall gymryd hyd at 3 diwrnod gwaith i'ch atgyfeiriad gael ei brosesu.</p>
+        </CyInsetText>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyInsetText.ChildContent", "RenderFragment?", "null", "The emphasized callout content."),
+        new("CyInsetText.Role", "string?", "\"note\"", "The accessible ARIA role. Defaults to \"note\", or can be customized / cleared to null."),
+        new("CyInsetText.Colour", "ComponentColour", "Unspecified", "Optional border accent color (Primary, Info, Warning, Danger, Success)."),
+        new("CyInsetText.VisuallyHiddenText", "string?", "null", "Custom screen reader prefix. Overrides EffectiveText.VisuallyHiddenText."),
+        new("CyInsetText.ShowVisuallyHiddenText", "bool", "true", "Whether to render the visually hidden prefix for screen readers."),
+        new("CyInsetText.Text", "CyInsetTextText?", "null", "Localized text phrases. Defaults to English (\"Information: \")."),
+        new("CyInsetText.Id", "string?", "generated", "HTML id attribute. Generated if omitted."),
+        new("CyInsetText.Class", "string?", "null", "Additional CSS classes applied to the container."),
+        new("CyInsetText.Style", "string?", "null", "Inline CSS styles applied to the container.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Accessible role", "Renders role=\"note\" by default for supplementary or contextual information."),
+        new("Screen reader prefix", "Includes visually hidden text (\"Information: \") so assistive technology announces the emphasis."),
+        new("Theme & High Contrast adaptation", "Thick left border automatically resolves to CanvasText in Windows High Contrast forced-colors mode."),
+        new("Reflow & Content wrapping", "Maintains clean vertical rhythm and border padding without clipping or layout breakage on mobile."),
+        new("Localisation support", "Visually hidden prefix is fully translatable for Welsh language parity.")
+    ];
+}

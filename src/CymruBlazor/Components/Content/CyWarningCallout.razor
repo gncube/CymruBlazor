@@ -1,0 +1,57 @@
+@inherits CyLayoutComponentBase
+@namespace CymruBlazor.Components.Content
+
+<div
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    role="@Role"
+    @attributes="AdditionalAttributes">
+
+    @if (HasHeading)
+    {
+        RenderFragment headingContent = @<text>
+            <span role="text">
+                @if (ShowVisuallyHiddenPrefix && !string.IsNullOrWhiteSpace(EffectiveVisuallyHiddenPrefix))
+                {
+                    <span class="cy-visually-hidden">@EffectiveVisuallyHiddenPrefix</span>
+                }
+                @if (HeadingTemplate != null)
+                {
+                    @HeadingTemplate
+                }
+                else
+                {
+                    @(Heading ?? Title ?? EffectiveText.DefaultHeading)
+                }
+            </span>
+        </text>;
+
+        @switch (HeadingLevel)
+        {
+            case 1:
+                <h1 class="cy-warning-callout__label">@headingContent</h1>
+                break;
+            case 2:
+                <h2 class="cy-warning-callout__label">@headingContent</h2>
+                break;
+            case 4:
+                <h4 class="cy-warning-callout__label">@headingContent</h4>
+                break;
+            case 5:
+                <h5 class="cy-warning-callout__label">@headingContent</h5>
+                break;
+            case 6:
+                <h6 class="cy-warning-callout__label">@headingContent</h6>
+                break;
+            default:
+                <h3 class="cy-warning-callout__label">@headingContent</h3>
+                break;
+        }
+    }
+
+    <div class="cy-warning-callout__body">
+        @ChildContent
+    </div>
+
+</div>
