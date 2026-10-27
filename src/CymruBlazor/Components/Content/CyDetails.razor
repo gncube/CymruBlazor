@@ -1,0 +1,29 @@
+@inherits CyLayoutComponentBase
+@namespace CymruBlazor.Components.Content
+
+<details
+    id="@Id"
+    class="@CssClass"
+    style="@CssStyle"
+    open="@Open"
+    @ontoggle="HandleToggleAsync"
+    @attributes="AdditionalAttributes">
+
+    <summary class="cy-details__summary">
+        <span class="cy-details__summary-text">
+            @if (SummaryTemplate != null)
+            {
+                @SummaryTemplate
+            }
+            else
+            {
+                @(Summary ?? EffectiveText.DefaultSummary)
+            }
+        </span>
+    </summary>
+
+    <div class="cy-details__text">
+        @ChildContent
+    </div>
+
+</details>

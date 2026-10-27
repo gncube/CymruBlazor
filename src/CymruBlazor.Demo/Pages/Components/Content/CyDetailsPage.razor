@@ -1,0 +1,132 @@
+@page "/content/details"
+@namespace CymruBlazor.Demo.Pages.Components.Content
+@using CymruBlazor.Demo.SharedComponents
+
+<CyPageHeader Title="CyDetails" Subtitle="Expandable disclosure: hide and reveal additional help or guidance.">
+    <Breadcrumb>
+        <CyBreadcrumb>
+            <CyBreadcrumbItem Text="Content" Href="/content" />
+            <CyBreadcrumbItem Text="CyDetails" />
+        </CyBreadcrumb>
+    </Breadcrumb>
+</CyPageHeader>
+
+<div class="cb-tabs" role="tablist" aria-label="@Strings.Nav.ComponentDocumentationTabs">
+    <button type="button" role="tab" id="tab-examples" aria-controls="@(_activeTab == Tab.Examples ? "panel-examples" : null)" aria-selected="@(_activeTab == Tab.Examples)" class="cb-tab-btn @(_activeTab == Tab.Examples ? "active" : "")" @onclick="() => _activeTab = Tab.Examples">@Strings.Nav.Examples</button>
+    <button type="button" role="tab" id="tab-api" aria-controls="@(_activeTab == Tab.Api ? "panel-api" : null)" aria-selected="@(_activeTab == Tab.Api)" class="cb-tab-btn @(_activeTab == Tab.Api ? "active" : "")" @onclick="() => _activeTab = Tab.Api">@Strings.Nav.Api</button>
+    <button type="button" role="tab" id="tab-accessibility" aria-controls="@(_activeTab == Tab.Accessibility ? "panel-accessibility" : null)" aria-selected="@(_activeTab == Tab.Accessibility)" class="cb-tab-btn @(_activeTab == Tab.Accessibility ? "active" : "")" @onclick="() => _activeTab = Tab.Accessibility">@Strings.Nav.Accessibility</button>
+</div>
+
+@if (_activeTab == Tab.Examples)
+{
+    <div role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" tabindex="0">
+        <span class="cb-panel-caption">Preview</span>
+        <div class="cb-workbench-preview" style="justify-content: flex-start; align-items: stretch; flex-direction: column; gap: var(--cymru-space-4);">
+            
+            <h3 style="margin: 0; font-size: 1.125rem;">1. Standard NHS Help Disclosure</h3>
+            <CyDetails Summary="Where can I find my NHS number?">
+                <p>An NHS number is a 10 digit number, like 485 777 3456.</p>
+                <p>You can find your NHS number on any letter the NHS has sent you, on a prescription, or by logging in to a GP practice online service.</p>
+            </CyDetails>
+
+            <h3 style="margin: 0; font-size: 1.125rem;">2. Two-Way Binding (@@bind-Open)</h3>
+            <div>
+                <CyButton Variant="ComponentColour.Secondary" OnClick="ToggleDisclosure">
+                    @(_isOpen ? "Close Help Panel" : "Open Help Panel")
+                </CyButton>
+                <span style="margin-left: var(--cymru-space-3); font-size: 0.875rem; color: var(--cymru-color-text-muted);">
+                    Current state: <strong>@(_isOpen ? "Open" : "Closed")</strong>
+                </span>
+            </div>
+            <CyDetails @bind-Open="_isOpen" Summary="How to request test results">
+                <p>Test results can take between 3 and 7 working days to be returned to your clinic.</p>
+                <p>If your doctor needs to discuss results urgently, the clinic team will contact you directly by telephone.</p>
+            </CyDetails>
+
+            <h3 style="margin: 0; font-size: 1.125rem;">3. Welsh Localisation (Cymraeg)</h3>
+            <CyDetails Summary="Ble alla i ddod o hyd i fy rhif GIG?" Text="_welshText">
+                <p>Mae rhif GIG yn rhif 10 digid, fel 485 777 3456.</p>
+                <p>Gallwch ddod o hyd i'ch rhif GIG ar unrhyw lythyr y mae'r GIG wedi'i anfon atoch, ar bresgripsiwn, neu drwy fewngofnodi i wasanaeth ar-lein practis meddyg teulu.</p>
+            </CyDetails>
+
+        </div>
+
+        <div class="cb-playground-panel" style="padding:0; background:none; border:none;">
+            <span class="cb-panel-caption">Code</span>
+            <CyCodeBlock Code="@GeneratedCode" Language="razor" />
+            <a class="cb-open-in-github"
+               href="https://github.com/gncube/CymruBlazor/blob/main/src/CymruBlazor/Components/Content/CyDetails.razor"
+               target="_blank" rel="noopener noreferrer">
+                Open in GitHub<span class="u-sr-only"> (opens in new tab)</span>
+            </a>
+        </div>
+    </div>
+}
+else if (_activeTab == Tab.Api)
+{
+    <div role="tabpanel" id="panel-api" aria-labelledby="tab-api" tabindex="0">
+        <DemoApiTable Parameters="_apiDocs" />
+    </div>
+}
+else
+{
+    <div role="tabpanel" id="panel-accessibility" aria-labelledby="tab-accessibility" tabindex="0">
+        <DemoAccessibilityChecklist Items="_a11yItems" />
+    </div>
+}
+
+@code {
+    private enum Tab { Examples, Api, Accessibility }
+
+    private Tab _activeTab = Tab.Examples;
+
+    private bool _isOpen;
+
+    private void ToggleDisclosure() => _isOpen = !_isOpen;
+
+    private readonly CyDetailsText _welshText = new()
+    {
+        DefaultSummary = "Cymorth gyda hyn"
+    };
+
+    private string GeneratedCode => """
+        @* 1. Standard NHS Details Disclosure *@
+        <CyDetails Summary="Where can I find my NHS number?">
+            <p>An NHS number is a 10 digit number, like 485 777 3456.</p>
+            <p>You can find your NHS number on any letter the NHS has sent you.</p>
+        </CyDetails>
+
+        @* 2. Two-way data binding *@
+        <CyDetails @bind-Open="_isOpen" Summary="How to request test results">
+            <p>Test results take between 3 and 7 working days to process.</p>
+        </CyDetails>
+
+        @* 3. Welsh localisation *@
+        <CyDetails Summary="Ble alla i ddod o hyd i fy rhif GIG?" Text="_welshText">
+            <p>Mae rhif GIG yn rhif 10 digid, fel 485 777 3456.</p>
+        </CyDetails>
+        """;
+
+    private readonly IReadOnlyList<DemoApiTable.ApiParameterDoc> _apiDocs =
+    [
+        new("CyDetails.Summary", "string?", "null", "The summary heading text rendered inside the <summary> element."),
+        new("CyDetails.SummaryTemplate", "RenderFragment?", "null", "Custom render fragment for rich summary heading markup. Takes precedence over Summary."),
+        new("CyDetails.ChildContent", "RenderFragment?", "null", "The disclosure panel content revealed when opened."),
+        new("CyDetails.Open", "bool", "false", "Controls whether the disclosure is currently expanded. Supports two-way binding with @bind-Open."),
+        new("CyDetails.OpenChanged", "EventCallback<bool>", "-", "Event callback invoked when the expanded state changes."),
+        new("CyDetails.OnToggle", "EventCallback<bool>", "-", "Event callback invoked when the user or API toggles the disclosure."),
+        new("CyDetails.Text", "CyDetailsText?", "null", "Localized text phrases. Unset properties keep their English defaults."),
+        new("CyDetails.Id", "string?", "generated", "HTML id attribute. Generated if omitted."),
+        new("CyDetails.Class", "string?", "null", "Additional CSS classes applied to the root <details> element."),
+        new("CyDetails.Style", "string?", "null", "Inline CSS styles applied to the root <details> element.")
+    ];
+
+    private readonly IReadOnlyList<DemoAccessibilityChecklist.AccessibilityCriterion> _a11yItems =
+    [
+        new("Native HTML5 disclosure", "Wraps semantic <details> and <summary> elements without JavaScript dependencies for core interaction."),
+        new("Keyboard accessibility", "Operable with Space and Enter keys out of the box with standard focus order."),
+        new("Accessible focus indicator", "Displays NHS Wales yellow focus outline with high-contrast text when focused via keyboard."),
+        new("Screen reader support", "Exposes native expanded/collapsed states in VoiceOver, NVDA, JAWS, and Narrator without custom ARIA roles."),
+        new("Forced colors mode", "Arrow indicator and left border automatically adapt to LinkText and CanvasText in Windows High Contrast mode.")
+    ];
+}
