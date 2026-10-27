@@ -118,6 +118,12 @@ public partial class CyUserNav : CyLayoutComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets or sets whether the dropdown menu is open. Supports two-way binding (<c>@bind-Open</c>).
     /// </summary>
+    /// <summary>
+    /// Gets or sets localised phrases for the component. When null, English defaults are used.
+    /// </summary>
+    [Parameter]
+    public CyUserNavText? Text { get; set; }
+
     [Parameter]
     public bool Open { get; set; }
 
@@ -147,10 +153,18 @@ public partial class CyUserNav : CyLayoutComponentBase, IAsyncDisposable
                 ? Name
                 : Email;
 
+    private static readonly CyUserNavText DefaultText = new();
+
+    private CyUserNavText EffectiveText => Text ?? DefaultText;
+
+    private string EffectiveLoginText => !string.IsNullOrWhiteSpace(LoginText) && LoginText != "Log in" ? LoginText : EffectiveText.Login;
+
+    private string EffectiveLogoutText => !string.IsNullOrWhiteSpace(LogoutText) && LogoutText != "Log out" ? LogoutText : EffectiveText.Logout;
+
     private string? TriggerAriaLabel =>
         !string.IsNullOrWhiteSpace(AriaLabel)
             ? AriaLabel
-            : (string.IsNullOrWhiteSpace(EffectiveName) ? "User menu" : null);
+            : (string.IsNullOrWhiteSpace(EffectiveName) ? EffectiveText.UserMenu : null);
 
     private RenderFragment? EffectiveMenuItems => MenuItems ?? ChildContent;
 
@@ -167,12 +181,12 @@ public partial class CyUserNav : CyLayoutComponentBase, IAsyncDisposable
     /// <summary>
     /// Returns the localized display text for the given status.
     /// </summary>
-    public static string StatusLabel(AvatarStatus status) => status switch
+    public string StatusLabel(AvatarStatus status) => status switch
     {
-        AvatarStatus.Online => "Online",
-        AvatarStatus.Busy => "Busy",
-        AvatarStatus.Away => "Away",
-        AvatarStatus.Offline => "Offline",
+        AvatarStatus.Online => EffectiveText.StatusOnline,
+        AvatarStatus.Busy => EffectiveText.StatusBusy,
+        AvatarStatus.Away => EffectiveText.StatusAway,
+        AvatarStatus.Offline => EffectiveText.StatusOffline,
         _ => string.Empty
     };
 
@@ -273,11 +287,34 @@ public partial class CyUserNav : CyLayoutComponentBase, IAsyncDisposable
     }
 
     /// <inheritdoc />
+    private bool _wasAuthenticated;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && IsAuthenticated)
+        if (IsAuthenticated && (_token == 0 || !_wasAuthenticated))
         {
             await AttachAsync();
+        }
+        else if (!IsAuthenticated && _token != 0)
+        {
+            await DetachAsync();
+        }
+
+        _wasAuthenticated = IsAuthenticated;
+    }
+
+    private async Task DetachAsync()
+    {
+        if (_token != 0 && _module is not null)
+        {
+            try
+            {
+                await _module.InvokeVoidAsync("detachMenu", _token);
+            }
+            catch (Exception ex) when (ex is JSException or JSDisconnectedException or ObjectDisposedException or InvalidOperationException)
+            {
+            }
+            _token = 0;
         }
     }
 
@@ -309,11 +346,7 @@ public partial class CyUserNav : CyLayoutComponentBase, IAsyncDisposable
         {
             if (_module is not null)
             {
-                if (_token != 0)
-                {
-                    await _module.InvokeVoidAsync("detachMenu", _token);
-                    _token = 0;
-                }
+                await DetachAsync();
 
                 await _module.DisposeAsync();
                 _module = null;

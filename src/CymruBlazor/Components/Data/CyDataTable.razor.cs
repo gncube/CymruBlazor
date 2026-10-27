@@ -285,7 +285,7 @@ public partial class CyDataTable<TItem> : CyComponentBase, IDisposable
 
     /// <summary>Whether to transform table rows into card rows on small viewports (<c>&lt; 768px</c>). Default true.</summary>
     [Parameter]
-    public bool Responsive { get; set; } = true;
+    public bool Responsive { get; set; } = false;
 
     /// <inheritdoc />
     protected override string BaseCssClass => "cy-data-table";

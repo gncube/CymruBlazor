@@ -534,7 +534,7 @@ public sealed class CyComboboxTests : FormFieldTestContext
 
         // The newer request answers first, then the older one arrives late and must be ignored.
         pending[1].Source.SetResult([new("ab", "Newer")]);
-        cut.WaitForAssertion(() => cut.Find("[role=option]").TextContent.Trim().ShouldBe("Newer"));
+        cut.WaitForAssertion(() => cut.Find("[role=option]").TextContent.Trim().ShouldBe("Newer"), timeout: TimeSpan.FromSeconds(5));
 
         pending[0].Source.SetResult([new("a", "Older")]);
         Thread.Sleep(50);

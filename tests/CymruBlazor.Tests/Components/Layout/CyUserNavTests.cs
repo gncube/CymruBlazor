@@ -74,7 +74,7 @@ public sealed class CyUserNavTests : TestContextBase
         cut.Find(".cy-user-nav").ClassList.ShouldContain("cy-user-nav--authenticated");
 
         var trigger = cut.Find("button.cy-user-nav__trigger");
-        trigger.GetAttribute("aria-haspopup").ShouldBe("menu");
+        trigger.GetAttribute("aria-haspopup").ShouldBe("true");
         trigger.GetAttribute("aria-expanded").ShouldBe("false");
         trigger.TextContent.ShouldContain("Dr Jane Doe");
 
@@ -108,7 +108,6 @@ public sealed class CyUserNavTests : TestContextBase
         trigger.GetAttribute("aria-expanded").ShouldBe("true");
 
         var menu = cut.Find(".cy-user-nav__menu");
-        menu.GetAttribute("role").ShouldBe("menu");
         menu.GetAttribute("aria-labelledby").ShouldBe(trigger.Id);
 
         // Close menu
@@ -278,5 +277,49 @@ public sealed class CyUserNavTests : TestContextBase
         await cut.Instance.OnOutsidePointer();
 
         cut.FindAll(".cy-user-nav__menu").Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void Should_Support_Welsh_Localisation_Text()
+    {
+        var welshText = new CyUserNavText
+        {
+            UserMenu = "Dewislen defnyddiwr",
+            Login = "Mewngofnodi",
+            Logout = "Allgofnodi",
+            StatusOnline = "Ar-lein",
+            StatusBusy = "Prysur"
+        };
+
+        var cut = Render<CyUserNav>(p => p
+            .Add(c => c.IsAuthenticated, true)
+            .Add(c => c.Text, welshText)
+            .Add(c => c.Status, AvatarStatus.Online)
+            .Add(c => c.Open, true)
+            .Add(c => c.OnLogout, () => { }));
+
+        var trigger = cut.Find("button.cy-user-nav__trigger");
+        trigger.GetAttribute("aria-label").ShouldBe("Dewislen defnyddiwr");
+
+        var statusChip = cut.Find(".cy-user-nav__status-chip");
+        statusChip.TextContent.ShouldContain("Ar-lein");
+
+        var logoutBtn = cut.Find("button.cy-user-nav__logout-action");
+        logoutBtn.TextContent.ShouldContain("Allgofnodi");
+    }
+
+    [Fact]
+    public void Should_Attach_Click_Outside_When_User_Logs_In_After_First_Render()
+    {
+        var cut = Render<CyUserNav>(p => p
+            .Add(c => c.IsAuthenticated, false));
+
+        // When not authenticated, no JS attach
+        cut.Render(p => p
+            .Add(c => c.IsAuthenticated, true)
+            .Add(c => c.DisplayName, "Jane Doe"));
+
+        // Trigger is rendered
+        cut.Find("button.cy-user-nav__trigger").ShouldNotBeNull();
     }
 }

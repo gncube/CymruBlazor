@@ -17,7 +17,7 @@
                class="cy-user-nav__login cy-user-nav__login--link"
                @onclick="HandleLoginClickAsync">
                 <CyIcon Name="user" Size="18" />
-                <span class="cy-user-nav__login-label">@LoginText</span>
+                <span class="cy-user-nav__login-label">@EffectiveLoginText</span>
             </a>
         }
         else
@@ -26,7 +26,7 @@
                     class="cy-user-nav__login cy-user-nav__login--button"
                     @onclick="HandleLoginClickAsync">
                 <CyIcon Name="user" Size="18" />
-                <span class="cy-user-nav__login-label">@LoginText</span>
+                <span class="cy-user-nav__login-label">@EffectiveLoginText</span>
             </button>
         }
     }
@@ -36,7 +36,7 @@
                 id="@TriggerId"
                 type="button"
                 class="cy-user-nav__trigger"
-                aria-haspopup="menu"
+                aria-haspopup="true"
                 aria-expanded="@(Open ? "true" : "false")"
                 aria-controls="@(Open ? MenuId : null)"
                 aria-label="@TriggerAriaLabel"
@@ -69,19 +69,18 @@
             <div id="@MenuId"
                  @ref="_menu"
                  class="cy-user-nav__menu"
-                 role="menu"
                  aria-labelledby="@TriggerId"
                  @onkeydown="HandleMenuKeyDownAsync">
 
                 @if (ProfileHeader is not null)
                 {
-                    <div class="cy-user-nav__profile-header" role="none">
+                    <div class="cy-user-nav__profile-header">
                         @ProfileHeader
                     </div>
                 }
                 else
                 {
-                    <div class="cy-user-nav__profile-header" role="none">
+                    <div class="cy-user-nav__profile-header">
                         <CyAvatar Size="ComponentSize.Large"
                                   Name="@EffectiveName"
                                   ImageUrl="@AvatarUrl"
@@ -107,26 +106,25 @@
 
                 @if (EffectiveMenuItems is not null)
                 {
-                    <div class="cy-user-nav__menu-items" role="none">
+                    <div class="cy-user-nav__menu-items">
                         @EffectiveMenuItems
                     </div>
                 }
 
                 @if (LogoutContent is not null)
                 {
-                    <div class="cy-user-nav__logout" role="none">
+                    <div class="cy-user-nav__logout">
                         @LogoutContent
                     </div>
                 }
                 else if (OnLogout.HasDelegate)
                 {
-                    <div class="cy-user-nav__logout" role="none">
+                    <div class="cy-user-nav__logout">
                         <button type="button"
                                 class="cy-user-nav__logout-action"
-                                role="menuitem"
                                 @onclick="HandleLogoutClickAsync">
                             <CyIcon Name="logout" Size="18" />
-                            <span>@LogoutText</span>
+                            <span>@EffectiveLogoutText</span>
                         </button>
                     </div>
                 }

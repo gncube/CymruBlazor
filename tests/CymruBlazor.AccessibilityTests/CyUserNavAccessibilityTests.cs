@@ -61,7 +61,7 @@ public sealed class CyUserNavAccessibilityTests : AxeTestBase
             {
                 builder.OpenElement(0, "a");
                 builder.AddAttribute(1, "href", "/account");
-                builder.AddAttribute(2, "role", "menuitem");
+                
                 builder.AddContent(3, "Account Settings");
                 builder.CloseElement();
             }))
