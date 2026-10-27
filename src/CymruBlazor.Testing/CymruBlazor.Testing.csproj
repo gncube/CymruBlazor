@@ -57,7 +57,7 @@
       (see CONTRIBUTING.md). First published in 1.13.0.
     -->
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>1.13.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>2.3.0</PackageValidationBaselineVersion>
 
     <!-- XML documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

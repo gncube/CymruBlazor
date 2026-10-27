@@ -263,7 +263,7 @@ else
         new("SearchQuery", "string?", "null", "Two-way bindable global search filter string (@bind-SearchQuery)."),
         new("Filters", "IReadOnlyDictionary<string, string>?", "null", "Two-way bindable per-column filter values dictionary (@bind-Filters)."),
         new("FilterDebounceMs", "int", "250", "Debounce delay in milliseconds for filter and search input changes (0 to disable)."),
-        new("Responsive", "bool", "true", "When true, transforms table rows into stacked key-value cards on mobile viewports (< 768px)."),
+        new("Responsive", "bool", "false", "When true, transforms table rows into stacked key-value cards on mobile viewports (< 768px)."),
         new("DetailTemplate", "RenderFragment<TItem>?", "null", "Template rendered in an accessible disclosure row below the main row for master-detail views."),
         new("AutoCollapseDetails", "bool", "false", "When true, expanding any row automatically collapses all other open rows."),
         new("ExpandedItems", "IReadOnlyList<TItem>?", "null", "The currently expanded rows. Two-way bindable (@bind-ExpandedItems)."),

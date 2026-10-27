@@ -51,7 +51,7 @@
 
     @if (SelectionMode != CyDataSelectionMode.None && SelectedCount > 0)
     {
-        <div class="cy-data-table__bulk-bar" role="region" aria-label="@EffectiveText.SelectedCount">
+        <div class="cy-data-table__bulk-bar" role="region" aria-label="@Format(EffectiveText.SelectedCount, SelectedCount)">
             <div class="cy-data-table__bulk-info">
                 <span class="cy-data-table__selection cy-data-table__bulk-count">
                     @Format(EffectiveText.SelectedCount, SelectedCount)

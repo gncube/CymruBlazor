@@ -153,6 +153,7 @@ public sealed class CyDataTableClinicalWorkflowsTests : TestContextBase
 
         cut.FindAll(".cy-data-table__bulk-bar").Count.ShouldBe(1);
         cut.Find(".cy-data-table__bulk-count").TextContent.ShouldContain("2 selected");
+        cut.Find(".cy-data-table__bulk-bar").GetAttribute("aria-label").ShouldBe("2 selected");
 
         var actionBtn = cut.Find(".test-bulk-action");
         actionBtn.TextContent.ShouldBe("Export 2");
