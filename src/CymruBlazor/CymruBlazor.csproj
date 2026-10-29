@@ -3,6 +3,16 @@
   <PropertyGroup>
     <!-- Target -->
     <TargetFramework>net10.0</TargetFramework>
+    <Version>2.3.1</Version>
+
+    <!-- Ensure AssemblyVersion reflects minor releases to prevent WebAssembly typeref binding to stale cached assemblies -->
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <FileVersion>2.3.1.0</FileVersion>
+    <Deterministic>true</Deterministic>
+
+    <!-- Generate unique bundle fingerprint on static assets -->
+    <GenerateStaticWebAssetsManifest>true</GenerateStaticWebAssetsManifest>
+
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
@@ -116,6 +126,18 @@
     stylesheet on Release/Publish builds. See build/BundleCss.targets and
     CONTRIBUTING.md for details.
   -->
+  <!--
+    MinVer pins AssemblyVersion to $(MinVerMajor).0.0.0 by default.
+    Ensure AssemblyVersion tracks $(MinVerMajor).$(MinVerMinor).0.0 (or 2.3.0.0)
+    to prevent WebAssembly typeref binding issues on minor releases.
+  -->
+  <Target Name="TrackMinorAssemblyVersion" AfterTargets="MinVer" BeforeTargets="GetAssemblyVersion;CoreCompile">
+    <PropertyGroup>
+      <AssemblyVersion Condition="'$(MinVerMajor)' != '' and '$(MinVerMinor)' != ''">$(MinVerMajor).$(MinVerMinor).0.0</AssemblyVersion>
+      <AssemblyVersion Condition="'$(AssemblyVersion)' == '' or '$(AssemblyVersion)' == '2.0.0.0'">2.3.0.0</AssemblyVersion>
+    </PropertyGroup>
+  </Target>
+
   <Import Project="build\BundleCss.targets" />
 
 </Project>

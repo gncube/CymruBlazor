@@ -680,21 +680,55 @@
  * trigger entirely rather than rendering one that does nothing).
  */
 
-@media (max-width: 63.99rem) {
+/* ==========================================================================
+   Sidebar Responsive Rules
+   ========================================================================== */
+/* Tablet docked rail: between 48rem (768px) and 63.99rem (1023px),
+   preserve the rail layout alongside main content. */
+@media (min-width: 48rem) and (max-width: 63.99rem) {
   .cy-sidebar {
+    flex: 0 0 auto;
+    flex-basis: 15rem;
+    width: 15rem;
+    min-width: 15rem;
+    max-width: 15rem;
+    border-inline-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
+    border-block-end: none;
+  }
+  .cy-sidebar--compact {
+    flex-basis: 9.75rem;
+    width: 9.75rem;
+    min-width: 9.75rem;
+    max-width: 9.75rem;
+  }
+  .cy-sidebar--icon-only {
+    flex-basis: 4.5rem;
+    width: 4.5rem;
+    min-width: 4.5rem;
+    max-width: 4.5rem;
+  }
+  .cy-sidebar--collapsed {
+    flex-basis: 0;
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+    border-width: 0;
+  }
+}
+/* Vertical stack opt-in: Only force 100% width when explicitly placed
+   inside a container designed to collapse vertically on tablet. */
+@media (max-width: 63.99rem) {
+  .cy-stack--collapse-tablet > .cy-sidebar {
     flex-basis: 100%;
     width: 100%;
     border-inline-end: 0;
     border-block-end: var(--cymru-border-width-thin) solid var(--cymru-color-border);
   }
-
-  .cy-sidebar--right {
+  .cy-stack--collapse-tablet > .cy-sidebar--right {
     border-inline-start: 0;
     border-block-start: var(--cymru-border-width-thin) solid var(--cymru-color-border);
   }
-
-  /* Declared after the rules above so Hidden still wins the cascade tie. */
-  .cy-sidebar--collapsed {
+  .cy-stack--collapse-tablet > .cy-sidebar--collapsed {
     flex-basis: 0;
     width: 0;
     border-width: 0;

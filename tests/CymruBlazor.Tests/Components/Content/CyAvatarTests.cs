@@ -152,6 +152,28 @@ public sealed class CyAvatarTests : TestContextBase
         cut.FindAll(".cy-avatar__status").Count.ShouldBe(0);
     }
 
+    [Fact]
+    public void Avatar_Should_Instantiate_And_Render_With_AvatarStatus_Busy_Without_TypeLoadException()
+    {
+        var cut = Render<CyAvatar>(p => p
+            .Add(c => c.Name, "Test Clinician")
+            .Add(c => c.Status, AvatarStatus.Busy));
+
+        cut.Instance.Status.ShouldBe(AvatarStatus.Busy);
+        var dot = cut.Find(".cy-avatar__status--busy");
+        dot.ShouldNotBeNull();
+        dot.ClassList.ShouldContain("cy-avatar__status");
+    }
+
+    [Fact]
+    public void AssemblyVersion_Should_Reflect_Minor_Version_2_3_0_0()
+    {
+        var assembly = typeof(CyAvatar).Assembly;
+        var version = assembly.GetName().Version;
+        version.ShouldNotBeNull();
+        version.ToString().ShouldBe("2.3.0.0");
+    }
+
     [Theory]
     [InlineData(ComponentColour.Primary, "cy-avatar--primary")]
     [InlineData(ComponentColour.Danger, "cy-avatar--danger")]

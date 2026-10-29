@@ -59,8 +59,8 @@
     justify-content: center;
     gap: 0.25rem;
     width: 100%;
-    min-height: 3.75rem;
-    padding: 0.5rem 0.25rem 0.35rem 0.25rem;
+    min-height: 3.85rem;
+    padding: 0.45rem 0.2rem 0.35rem 0.2rem;
     border: none;
     background: transparent;
     color: var(--cymru-color-text-muted, #64748b);
@@ -99,10 +99,12 @@
 
 ::deep .mobile-nav__label,
 .mobile-nav__label {
-    font-size: 0.6875rem;
+    font-size: var(--cymru-font-size-sm, 0.875rem);
+    font-weight: var(--cymru-font-weight-semibold, 600);
     line-height: 1.2;
     white-space: nowrap;
     text-align: center;
+    letter-spacing: -0.01em;
     text-decoration: none !important;
 }
 
