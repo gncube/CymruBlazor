@@ -457,3 +457,25 @@ body:has(.cy-theme-provider[data-theme="dark"]) .cy-navigation__link--active {
   opacity: 0.6;
   font-size: var(--cymru-font-size-xs);
 }
+
+/* ==========================================================================
+   Mobile Bottom Navigation
+   ========================================================================== */
+
+/* Mobile Navigation Item Labels */
+.cy-mobile-nav__label,
+.mobile-nav__label {
+  font-size: var(--cymru-font-size-sm, 0.875rem); /* Increased from 0.6875rem (+27.3%) */
+  font-weight: var(--cymru-font-weight-semibold, 600);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.cy-mobile-nav__link,
+.mobile-nav__link,
+.mobile-nav__button {
+  min-height: 3.85rem;
+  padding: 0.45rem 0.2rem 0.35rem 0.2rem;
+}

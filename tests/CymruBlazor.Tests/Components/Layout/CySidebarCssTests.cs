@@ -46,6 +46,32 @@ public sealed class CySidebarCssTests
         icon.ShouldContain("height: 1.5rem");
     }
 
+    [Fact]
+    public void Tablet_Docked_Rail_Should_Preserve_Fixed_Width_And_Not_Force_Global_Full_Width()
+    {
+        var path = Path.Combine(
+            FindRepositoryRoot(), "src", "CymruBlazor", "wwwroot", "css", "layout", "grid.css");
+        var css = File.ReadAllText(path);
+
+        css.ShouldContain("@media (min-width: 48rem) and (max-width: 63.99rem)");
+        css.ShouldContain("flex-basis: 15rem");
+        css.ShouldContain("width: 15rem");
+        css.ShouldContain(".cy-stack--collapse-tablet > .cy-sidebar");
+        css.ShouldNotMatch(@"(?s)@media\s*\(max-width:\s*63\.99rem\)\s*\{\s*\.cy-sidebar\s*\{[^}]*width:\s*100%");
+    }
+
+    [Fact]
+    public void Mobile_Navigation_Labels_Should_Use_14px_And_Link_Min_Height_3_85rem()
+    {
+        var path = Path.Combine(
+            FindRepositoryRoot(), "src", "CymruBlazor", "wwwroot", "css", "components", "navigation.css");
+        var css = File.ReadAllText(path);
+
+        css.ShouldContain(".cy-mobile-nav__label");
+        css.ShouldContain("0.875rem");
+        css.ShouldContain("min-height: 3.85rem");
+    }
+
     private static string ReadRule(string escapedSelector)
     {
         var path = Path.Combine(

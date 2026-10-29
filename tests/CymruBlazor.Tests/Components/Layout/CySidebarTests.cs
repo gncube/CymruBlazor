@@ -30,6 +30,24 @@ public sealed class CySidebarTests : TestContextBase
         rootElement.ClassList.ShouldContain("cy-sidebar--left");
     }
 
+    [Fact]
+    public void Sidebar_Should_Render_Correct_Classes_And_Not_Apply_Full_Width_Under_Default_Layout()
+    {
+        // Act - rendered inside a standard layout shell
+        var cut = Render<CySidebar>();
+
+        // Assert
+        var aside = cut.Find("aside.cy-sidebar");
+        aside.ClassList.ShouldContain("cy-sidebar");
+        aside.ClassList.ShouldContain("cy-sidebar--left");
+        aside.ClassList.ShouldNotContain("cy-stack--collapse-tablet");
+
+        // The default horizontal layout does not force 100% width or flex-basis
+        var style = aside.GetAttribute("style") ?? string.Empty;
+        style.ShouldNotContain("flex-basis: 100%");
+        style.ShouldNotContain("width: 100%");
+    }
+
     [Theory]
     [InlineData(SidebarPosition.Left, "cy-sidebar--left")]
     [InlineData(SidebarPosition.Right, "cy-sidebar--right")]
